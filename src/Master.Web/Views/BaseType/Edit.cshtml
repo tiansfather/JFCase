@@ -1,0 +1,72 @@
+﻿@using Master.Entity
+@model BaseTree
+@{
+	Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+
+<form class="layui-form layui-form-pane" id="app">
+	<div class="layui-form-item">
+		<label class="layui-form-label">@L("分类名称")</label>
+		<div class="layui-input-block">
+			<input type="text" v-model="currentItem.name" name="name" lay-verify="required" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">@L("分类编码")</label>
+		<div class="layui-input-block">
+			<input type="text" name="BriefCode" v-model="currentItem.code" lay-verify="required" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">@L("排序")</label>
+		<div class="layui-input-block">
+			<input type="text" name="Sort" v-model="currentItem.sort" lay-verify="number|required" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item layui-form-text">
+		<label class="layui-form-label">@L("备注")</label>
+		<div class="layui-input-block">
+			<textarea placeholder="" class="layui-textarea" name="Remarks" v-model="currentItem.remarks"></textarea>
+		</div>
+	</div>
+	<div class="layui-form-item" style="display:none">
+		<div class="layui-input-block">
+			<button class="layui-btn" type="button" lay-submit="" id="submitBtn">@L("提交")</button>
+		</div>
+	</div>
+</form>
+
+@section scripts{
+	<script>
+		var app;
+		config.ready = function () {
+			layui.form.on('submit', function () {
+				func.runAsync(abp.services.app.baseType.submit(app.currentItem).done(function () {
+					parent.layer.closeAll('iframe');
+					parent.config.refresh();
+				}));
+			})
+			app = new Vue({
+				el: '#app',
+				data: {
+					currentItem: {}
+				},
+				mounted: function () {
+					var that = this;
+					var id = $.getUrlParam("data");
+					abp.services.app.baseType.getBaseType(id).done(function (data) {
+						that.currentItem = data;
+						that.$nextTick(function () {
+						})
+					});
+					
+
+				}
+			})
+		}
+
+		function submit() {
+			$("#submitBtn").click();
+		}
+	</script>
+}

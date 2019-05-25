@@ -1,0 +1,53 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("审核新矿工申请")</div>
+        <div class="layui-card-body">
+            <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                <vc:module-button module-key="NewMiner"></vc:module-button>
+                <input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
+                <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
+            </div>
+            <vc:module-table param="@(new ModuleTableViewParam() {ID="NewMiner",ModuleKey="NewMiner",Height="full-150",Where="" })"></vc:module-table>
+
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var app;
+        var searchKeys = {};
+        
+        config.ready = function () {
+            
+        };
+        config.refresh = function () {
+           
+        };
+        config.reloadTable = function () {
+            layui.table.reload('Assistant', {
+                where: getWhere()
+            })
+        }
+        function getWhere(index) {
+            var where = { searchKeys: JSON.stringify(searchKeys) };
+            
+            var value = $('#name-input').val();
+            if (value) {
+                where.keyword = value;
+            }
+            where.searchCondition = func.buildSearchCondition('NewMiner');
+
+            return where;
+
+        }
+    </script>
+}
+

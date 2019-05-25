@@ -1,0 +1,269 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("部门管理")</div>
+        <div class="layui-card-body">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-xs3">
+                    <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                        <button class="layui-btn  " onclick="app.doAdd()">@L("添加部门")</button>
+                    </div>
+                    <ul id="tree" class="ztree"
+                        style="padding: 2px; border: 1px solid #ddd; overflow: auto;min-height:500px"></ul>
+                </div>
+                <div class="layui-col-xs9 ">
+                    <div id="app" class="layui-hide">
+                        <blockquote class="layui-elem-quote">{{title}}</blockquote>
+                        <form class="layui-form layui-form-pane">
+                            <input type="hidden" name="Id" v-model="currentItem.id" />
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">@L("部门名称")</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" v-model="currentItem.displayName" name="DisplayName" lay-verify="required" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">@L("上级部门")</label>
+                                    <div cyType="dropDownTool" cyProps="url:'/api/services/app/Organization/GetTreeJson?maxlevel=1',search:'false',checkbox:'false',key_name:'briefName'"
+                                         name="ParentId" value="" class="layui-input-inline" style="position:relative">
+                                    </div>
+                                    <div class="layui-form-mid layui-word-aux">@L("留空表示根级")</div>
+                                </div>
+
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">@L("部门编码")</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="BriefCode" v-model="currentItem.briefCode" lay-verify="required" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">@L("排序")</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="Sort" v-model="currentItem.sort" lay-verify="number" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item layui-form-text">
+                                <label class="layui-form-label">@L("备注")</label>
+                                <div class="layui-input-block">
+                                    <textarea placeholder="" class="layui-textarea" name="Remarks" v-model="currentItem.remarks"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <button class="layui-btn"  type="button" lay-submit>@L("保存")</button>
+                                <button v-if="!isAdd" class="layui-btn layui-btn-danger" @@click="doDelete" type="button">@L("删除")</button>
+                            </div>
+                            @*<vc:form-submit param="@(new FormSubmitViewParam() { ModuleKey="Organization",ButtonKey="Submit",Callback="submitCallback"})"></vc:form-submit>*@
+                            @*<div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button class="layui-btn" type="button" lay-submit="" lay-filter="submit">提交</button>
+                                    </div>
+                                </div>*@
+                        </form>
+                    </div>
+
+                    <div id="userDiv" style="display:none">
+                        <blockquote class="layui-elem-quote">
+                            本单位内人员
+                            <button class="layui-btn layui-btn-normal layui-btn-sm" type="button" fornonerow="1" buttonname="选入人员" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;],&quot;btn&quot;:null}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Select/SelUser?key=User&where=@(System.Net.WebUtility.UrlEncode("OrganizationId=null and IsActive=true"))" onclick="func.callModuleButtonEvent()">选入人员</button>
+                            <button class="layui-btn layui-btn-danger layui-btn-sm" moduleKey="User" type="button" buttonname="移出人员" lay-event="Move" confirmmsg="确认将这些用户移出?" buttonactiontype="Ajax" buttonactionurl="abp.services.app.organization.moveUserOutOrganization" onclick="func.callModuleButtonEvent()" callback="loadUser">移出人员</button>
+
+                        </blockquote>
+                        <table autoevent="1" id="User" lay-filter="User" class="layui-table " lay-data="{ url:'/api/services/app/User/GetSimplePageResult', page:false, id:'User',  even: true,limit:1000,initSort:{field:'Name',type:'asc'}}">
+                            <thead>
+                                <tr>
+                                    <th lay-data="{checkbox:true,fixed:'left'}"></th>
+                                    <th lay-data="{align:'center',field:'name'}">@L("姓名")</th>
+                                    <th lay-data="{align:'center',field:'userName'}">@L("登录账号")</th>
+                                    <th lay-data="{align:'center',field:'phoneNumber'}">@L("手机号码")</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var app;
+        var searchKeys = {};
+        var ztree = function () {
+            var zTreeObj;
+            var setting = {
+                view: { selectedMulti: false },
+                data: {
+                    key: {
+                        name: 'displayName',
+                        title: 'displayName'
+                    },
+                    simpleData: {
+                        enable: true,
+                        idKey: 'id',
+                        pIdKey: 'parentId',
+                        rootPId: null
+                    }
+                },
+                callback: {
+                    onClick: function (event, treeId, treeNode) {
+                        console.log(treeNode);
+                        $("#userDiv").hide();
+                        if (treeNode.level >= 0) {
+                            app.currentItem = treeNode;
+                            reloadDropDown();
+						}
+						loadUser();
+                        if (treeNode.level == 1) {
+                            
+
+                        }
+                        //searchKeys.parentId = treeNode.id;
+                        //config.reloadTable();
+                    }
+                }
+            };
+            var load = function () {
+                abp.services.app.organization.getTreeJson().done(function (json) {
+                    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                    //var newNode = { briefName: "根节点", id: null, parentId: "" };
+                    //json.push(newNode);
+                    zTreeObj.addNodes(null, json);
+                    //mainList({ orgId: "" });
+                    zTreeObj.expandAll(true);
+                });
+                //$.getJSON(url, function (json) {
+                //    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                //    var newNode = { Name: "根节点", Id: null, ParentId: "" };
+                //    json.push(newNode);
+                //    zTreeObj.addNodes(null, json);
+                //    //mainList({ orgId: "" });
+                //    zTreeObj.expandAll(true);
+                //});
+            };
+            load();
+            return {
+                reload: load
+            };
+        }();
+        config.ready = function () {
+            layui.form.on("submit", function () {
+                app.currentItem.parentId = $("input[name='ParentId']").val() || null;
+                func.runAsync(abp.services.app.organization.submitOrganization(app.currentItem).done(function () {
+                    layer.msg("提交成功");
+                    config.refresh();
+
+                }))
+
+            })
+            //$("#tree").height($("div.layui-table-view").height());
+            app = new Vue({
+                el: '#app',
+                data: {
+                    currentItem: {}
+                },
+                computed: {
+                    isAdd: function () {
+                        return this.currentItem.id==0;
+                    },
+                    title: function () {
+                        if (this.isAdd) { return "添加部门"; }
+                        else { return "修改部门 "+this.currentItem.displayName; }
+
+                    }
+
+                },
+                methods: {
+                    doSave: function () {
+                        submit();
+                    },
+                    doAdd: function () {
+                        this.currentItem = { id: 0,parentId:null };
+                        $("#userDiv").hide();
+                    },
+                    doDelete: function () {
+                        var that = this;
+                        abp.message.confirm('确认删除部门[' + this.currentItem.displayName + "]?子部门也将被删除", function () {
+                            func.runAsync(abp.services.app.organization.deleteEntity([that.currentItem.id])
+                                .done(function (data) {
+                                    layer.msg("提交成功");
+                                    config.refresh();
+                                }));
+
+                        })
+
+                    }
+
+                },
+                mounted: function () {
+                    $("#app").removeClass("layui-hide");
+                    this.doAdd();
+                    $('div[cytype="dropDownTool"]').dropDownTool();
+                }
+
+            });
+
+            func.bringBackFuncs["User"] = function (data) {
+                console.log(data);
+                var userIds = data.map(function (o) { return o.id; });
+                func.runAsync(abp.services.app.organization.moveUserIntoOrganization(app.currentItem.id, userIds).done(function () {
+                    layer.msg("加入成功");
+                    loadUser();
+                }));
+                return true;
+            };
+        };
+        config.refresh = function () {
+            ztree.reload();
+            app.doAdd();
+            reloadDropDown();
+        };
+        config.reloadTable = function () {
+
+
+        }
+        function reloadDropDown() {
+            $("div[name='ParentId']").attr("value", app.currentItem.parentId).dropDownTool();
+        }
+        function loadUser() {
+            var organizationId = app.currentItem.id;
+            $("#userDiv").show();
+            layui.table.reload('User', {
+                where: { where: 'OrganizationId=' + organizationId+' and IsActive=true',orderfield:'Name',ordertype:'asc' }
+            });
+
+        }
+        function moveUserOut() {
+            var data = layui.table.checkStatus('User').data.map(function (o) { return o.Id; });
+            if (data.length === 0) {
+                abp.message.info("请先选择记录");
+                return false;
+            } else {
+                console.log(data);
+                func.runAsync(abp.services.app.organization.moveUserOutOrganization(data).done(function () {
+                    layer.msg("移除成功");
+                    loadUser();
+                }))
+            }
+        }
+        function submitCallback(data) {
+            console.log(data);
+            layer.msg("提交成功");
+            config.refresh();
+            app.doAdd();
+        }
+    </script>
+}
+

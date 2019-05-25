@@ -1,0 +1,223 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "审核开单-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <style>
+        .iconfont {
+            margin-right: 10px;
+            color: #007aff;
+        }
+
+        #app {
+            position: relative;
+        }
+
+        header {
+            padding: 35px 0;
+            background: #fff;
+        }
+
+        .r-fanhui {
+            position: absolute;
+            left: 17px;
+            top: 15px;
+            font-size: 18px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 34px;
+            color: #3cc51f;
+            font-weight: 400;
+            margin: 0 15%;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .r-cell__bd-p2 {
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .r-cell__bd-p2 span {
+                display: inline-block;
+                width: 140px;
+            }
+
+        .detail-wrap {
+            line-height: 2;
+            font-size: 14px;
+            background: #fff;
+            margin: 15px;
+            border-radius: 5px;
+        }
+
+        .detail-title {
+            padding: 0 20px;
+            color: #000;
+        }
+        .img-wrap{
+            text-align:center;
+        }
+        .detail-title_p {
+            text-align: left;
+            font-weight: 600
+        }
+
+        .detail-title-right {
+            float: right;
+            color: #007aff;
+        }
+
+        img {
+            width:200px;
+            object-fit: cover;
+        }
+
+        small {
+            font-size: 13px;
+            color: #ddd;
+        }
+
+        .load-more-wrap {
+            font-size: 18px;
+            margin-top: 20px;
+            height: 80px;
+            display: flex;
+            background: #fff;
+            align-items: center;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 14px;
+            line-height: 50px;
+        }
+    </style>
+}
+    <div id="app">
+        <i class="iconfont icon-fanhui r-fanhui" @@click="back"></i>
+        <h1>生产任务</h1>
+        <router-view></router-view>
+    </div>
+
+
+@section scripts{
+   
+    <script type="text/x-template" id="User">
+        <page-msg :where="'ProcessTaskStatus=0'" :getData="abp.services.app.processTask.getPageResult" :go="userGo">
+            <template #default="part">
+                <div>
+                    <div class="weui-cells__title">{{part.list.processSN||'未开单'}}</div>
+                    <div class="weui-cells">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <p>{{part.list.partName}}({{part.list.partSN}})/{{part.list.processTypeName}}</p>
+                                <p class="r-cell__bd-p2">
+                                    <span :style="{color:func.getProcessTaskStatusColor(part.list.processTaskStatus).color}">{{func.getProcessTaskStatusColor(part.list.processTaskStatus).name}}</span>
+                                    <span><i class="iconfont icon-rili1" style="color:red;"></i>{{part.list.requireDate}}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </page-msg>
+    </script>
+    <script type="text/x-template" id="pageMsg">
+        <div>
+            <div>
+                <ul>
+                    <li v-for="(list,index) in lists" @@click="$emit('go',{list:list,index:index})">
+                       <slot :list="list" :index="index"></slot>
+                    </li>
+                </ul>
+            </div>
+            <water-load :loaded="lists.length==page*limit" :nomore="noMore" @@page-add="page++;loadData()"></water-load>
+        </div>
+    </script>
+    <script>
+        Vue.component('page-msg', {
+            data: function () {
+                return {
+                    lists: [],
+                    page: 1,
+                    limit: 10,
+                    noMore: false,
+                }
+            },
+            props: ['where', 'getData'],
+            computed: {
+                options: function () {
+                    return {
+                        page: this.page,
+                        limit: this.limit,
+                        where: this.where,
+                    }
+                }
+            },
+            methods: {
+                loadData: function () {
+                    var that = this;
+                    this.getData(this.options).done(function (res) {
+                        if (res.data.length < that.limit) {//已无更多数据
+                            that.noMore = true;
+                        }
+                        that.lists = that.lists.concat(res.data);
+                    })
+                }
+            },
+            mounted: function () {
+                if (!this.lists.length) {
+                    this.loadData();
+                }
+            },
+            watch: {
+                where: function () {
+                    this.page = 1;//当查询条件更改，要重新渲染。在调用时，要先用一个暂时变量来保存，等点击查询后再赋值父级的where值
+                    this.loadData();
+                }
+            },
+            template: "#pageMsg"
+        });
+    </script>
+    <script>
+        var User = {
+            data: {},
+            methods: {
+                userGo: function (obj) {
+                    var id = obj.list.id
+                    var index = obj.index;
+                    location.href = "/MES/JGKD?taskid=" + id;
+                    //window.listNow = this.lists[index];
+                    //this.$router.push('/charger/project/user/msg/' + id)
+                }
+            },
+            template: "#User"
+        }
+        
+        var router = new VueRouter({
+            routes: [
+                { path: '/', redirect: 'user'},
+                { name: 'user', path: '/user', component: User },
+                //{ name: 'msg', path: '/charger/project/user/msg/:id', component: Msg }
+            ]
+        })
+        new Vue({
+            el: '#app',
+            router: router,
+            methods: {
+                back: function () {
+                    router.go(-1);
+                },
+            }
+        })
+    </script>
+}

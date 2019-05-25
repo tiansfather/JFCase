@@ -1,0 +1,140 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@{
+    ViewData["Title"] = "Index";
+
+
+}
+@section styles{
+    <style>
+        html, body, .layui-anim, #LAY-app-message, .layui-card, .layui-card-body, .layui-row, .layui-col-xs2, .ztree {
+            height: 100%;
+            box-sizing: border-box;
+        }
+        .layui-col-xs2 .ztree {
+            overflow: auto;
+            height: calc(100% - 80px);
+        }
+    </style>
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-body">
+
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-xs2">
+                    <ul id="processTypeTree" class="ztree"
+                        style="padding: 2px; border: 1px solid #ddd;"></ul>
+                    <div style="padding:10px;">
+                        <button class="layui-btn layui-btn-fluid" fornonerow="1" type="button" buttonname="@L("工序初始化")" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;90%&quot;],&quot;btn&quot;:[&quot;提交&quot;,&quot;关闭&quot;]}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/ProcessType" onclick="func.callModuleButtonEvent()">@L("工序初始化")</button>
+                    </div>
+
+                </div>
+                <div class="layui-col-xs10">
+                    <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                        <vc:module-button module-key="Equipment"></vc:module-button>
+                    </div>
+                    <vc:module-table param="@(new ModuleTableViewParam() {ID="Equipment",ModuleKey="Equipment" ,Height="full-110" ,DataUrl="/api/services/app/equipment/GetPageResult" ,Where="unitId=null" })"></vc:module-table>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var searchKeys = {};
+        //layui加载完成后调用此方法，
+        config.ready = function () {
+            var element = layui.element;
+            var table = layui.table;
+
+            var processTypeTree = function () {
+                var zTreeObj;
+                var setting = {
+                    view: {
+                        selectedMulti: false,
+                        addDiyDom: function (treeId, treeNode) {
+                            console.log(treeNode);
+                            var count = treeNode.equipmentCount;
+                            if (!count) { return; }
+                            var aObj = $("#" + treeNode.tId + "_a");
+                            aObj.append("<span style='color:#1E9FFF'>【" + count + "】</span>");
+                        }
+
+                    },
+                    data: {
+                        key: {
+                            name: 'displayName',
+                            title: 'displayName'
+                        },
+                        simpleData: {
+                            enable: true,
+                            idKey: 'id',
+                            pIdKey: 'parentId',
+                            rootPId: 'null'
+                        }
+                    },
+                    callback: {
+                        onClick: function (event, treeId, treeNode) {
+                            var processTypeId = treeNode.id;//加工点id
+                            if (processTypeId) {
+                                searchKeys.processTypeId = processTypeId;
+                                config.reloadTable();
+                            }
+
+                        }
+                    }
+                };
+                var load = function () {
+                    abp.services.app.processType.getAllWithEquipmentCount().done(function (json) {
+                        zTreeObj = $.fn.zTree.init($("#processTypeTree"), setting);
+                        var nodes = [];
+                        var newNode = { displayName: "全部工序", id: null, parentId: "" };
+                        nodes.push(newNode);
+                        $.each(json, function (i, v) {
+                            nodes.push({ displayName: v.processTypeName, equipmentCount: v.equipmentCount, id: v.id, parentId: null });
+                        });
+                        zTreeObj.addNodes(null, nodes);
+                        zTreeObj.expandAll(true);
+                    });
+
+                };
+                load();
+                return {
+                    node: {},
+                    reload: load
+                }
+            }();
+
+            config.refresh();
+
+
+        }
+        //当检索窗体提交后会调用此方法
+        config.reloadTable = function () {
+            layui.table.reload('Equipment', {
+                where: getWhere()
+
+            })
+        }
+        config.onTableDone = function () {
+
+        }
+        //当编辑或删除或添加表单提交后会调用此方法
+        config.refresh = function () {
+
+        }
+        function getWhere() {
+            var where = { searchKeys: JSON.stringify(searchKeys), where: 'unitId=null' };
+            where.searchCondition = func.buildSearchCondition('Equipment');
+
+            return where;
+
+        }
+    </script>
+}

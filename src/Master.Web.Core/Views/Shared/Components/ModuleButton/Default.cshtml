@@ -1,0 +1,23 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleInfo
+@{
+    var buttons = Model.Buttons.Where(o => o.IsEnabled && (o.ButtonType.HasFlag(ButtonType.ForNoneRow) || o.ButtonType.HasFlag(ButtonType.ForSelectedRows))).OrderBy(o=>o.Sort);
+}
+
+@foreach (var button in buttons)
+{    
+
+    if (!button.RequirePermission || await PermissionChecker.IsGrantedAsync(button.ButtonPermissionName))
+    {
+        <button module-button="@button" class="layui-btn @button.ButtonClass layui-btn-sm" ></button>
+
+    }
+
+
+}
+
+<button type="button" class="layui-btn layui-btn-sm" onclick="config.showSearchForm('@Model.ModuleKey')"><i class="layui-icon layui-icon-search"></i></button>

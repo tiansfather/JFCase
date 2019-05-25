@@ -1,0 +1,287 @@
+﻿
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    @section styles{
+        @*<link href="/Views/MES/Rcss.css" rel="stylesheet" />*@
+        <style>
+        </style>
+        <link rel="stylesheet" href="/Views/MES/CSS/wechatList.css" asp-append-version="true">
+        <link rel="stylesheet" href="/lib/iconfont/wechaticon.css" asp-append-version="true">
+    }
+}
+
+
+@*<div class="weui-tab__bd">
+    <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">*@
+<a href="~/MES/Index/factory" class="gobackhome">
+    <i class="iconfont icon-fanhui"></i>
+</a>
+
+
+<div class="layui-fluid" id="LAY-app-message" style="padding-top: 50px;">
+    <div class="layui-card">
+        <div class="layui-card-body">
+
+
+            <div class="LAY-app-message-btns">
+                <form class="layui-form layui-form-pane " onsubmit="doSearch(); return false;">
+                    <div class="my-search">
+
+                        <div class="my-inline-block">
+                            <div class="layui-input-inline">
+                                <input type="text" id="projectSNSearch" autocomplete="off" class="layui-input" placeholder="模具编号">
+                            </div>
+                            <button class="layui-btn  layui-btn-sm" type="button" onclick="doSearch()">查询</button>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+
+
+            <div class="disnone flow-wrap">
+                <div class="grid my-grid" style="">
+                </div>
+                <div class="append-btn-wrap">
+                    <i style="font-size:30px;" class="dom-append-i layui-icon layui-icon-loading-1 layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+                    <span class="dom-append-span" style="display:none">已无更多内容</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>
+    </div>*@
+@section scripts{
+    <script src="~/lib/masonry/masonry.min.js"></script>
+    <script src="~/lib/masonry/imagesLoaded.min.js"></script>
+
+    <script type="text/html" id="exhibition">
+        {{#
+            layui.each(d, function(index, item){
+            var date;
+            item.startDate?item.startDate:'未报工'
+        }}
+        <a dataid="{{item.projectSN}}" buttonname="开单任务:{{item.projectSN}}" modulekey="ProcessTask" class="receiptaudit-wrap" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;101%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/MES/ProcessTask" onclick="func.callModuleButtonEvent($(this))">
+            <div class="grid-item">
+                <div class="c-card">
+                    <div class="img-wrap">
+                        @*<div class="over-time-div">*@
+                        <div>
+                            <img src="{{item.file}}?w=100" width="100" />
+                        </div>
+                    </div>
+                    <div class="text-wrap">
+                        <p>{{item.projectName}}</p>
+                        <p> {{item.projectSN}}</p>
+                        <p>{{item.requireDate}}</p>
+
+                        <div class="c-unit">
+                            <p class="c-unit-p1" title="{{item.projectCharger}}">
+
+                                <span>{{item.projectCharger}}</span>
+
+                            </p>
+                            <p class="c-unit-p2" title=""></p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </a>
+        {{#  }); }}
+    </script>
+    <script>
+
+
+
+        //高级查询设置
+
+
+        var page = 1;//当前打开页
+        var PageCount;//共有n页
+        var getHtml;
+        var $grid;
+        var firstSwitchFlag = true;
+        var searchFlag = false;
+
+        var addEd = false;
+
+        var manyState = layui.data('manyState');
+        if (manyState && manyState.reportState) {
+            switchMode();
+            //layui.data('manyState', {key: 'reportState', value: true });
+        } else {
+            layui.data('manyState', {
+                key: 'reportState'
+                , value: false
+            });
+        }
+
+        function getData(fn, searchVal) {
+            var where = "";
+            if (searchVal) {
+              where = ' ProjectSN.Contains("' + searchVal + '")';
+                //where = "(ProcessTask.Part.Project.ProjectSN.Contains(\"" + searchVal + "\") or ProcessTask.ProcessSN.Contains(\"" + searchVal + "\") )";
+               
+            } else {
+                where = '1=1'
+            }
+            where += "";//TODO 是开单任务的 必备条件
+            var options = { limit: 11, page: page, where: where };
+            page++;
+            abp.services.app.project.getPageResult(options).done(function (data) {
+                if (!PageCount) {
+                    PageCount = Math.ceil(data.count / options.limit);
+                }
+                console.log(data);
+                var aExhibition = [];
+
+                data.data.forEach(function (n) {
+                    aExhibition.push({
+                        projectSN: getstr(n.ProjectSN),
+                        projectName: getstr(n.ProjectName),
+                        requireDate: getstr(n.RequireDate),
+                        projectCharger: getstr(n.ProjectCharger),
+                        creatorUserId: getstr(n.CreatorUserId),
+                        isActive: getstr(n.IsActive),
+                        creationTime: getstr(n.CreationTime),
+                        number: getstr(n.Number),
+
+
+                    })
+                })
+                var getTpl = exhibition.innerHTML;
+                layui.laytpl(getTpl).render(aExhibition, function (html) {
+                    getHtml = html;
+                    if (typeof fn == 'function') {
+                        fn();
+                    }
+                    //
+                });
+            });
+            function getstr(str) {
+                if (str == null || str == undefined) {
+                    return "";
+                }
+                return str;
+            }
+        };
+        function fImgError() {
+            $("img").error(function () {
+                console.log('error')
+                $(this).parent().addClass('error-div')
+                $(this).hide();
+            });
+        }
+
+        function addMore(searchVal) {
+            if (searchVal) {
+                getData(sclBotCallBack, searchVal);
+            } else {
+                getData(sclBotCallBack);
+            }
+            function sclBotCallBack() {
+                var $items = $(getHtml);
+                $grid.append($items);
+                fImgError();
+                $grid.imagesLoaded(function () {
+                    $grid.masonry('appended', $items);
+                    addEd = false;
+                });
+            }
+        }
+        var judiNum = 200;
+        $(function () {
+            switchMode();
+        })
+        function switchMode() {
+
+
+            if (firstSwitchFlag) {
+                $('.flow-wrap').toggle();
+                $('.yanqi-msg').toggle();
+                getData(configCallBack);
+                function configCallBack() {
+                    $('.grid').append(getHtml);
+                    fImgError();
+                    $grid = $('.grid').imagesLoaded(function () {
+                        $('.grid').masonry({
+                            itemSelector: '.grid-item',
+                            columnWidth: 400
+                        });
+                    });
+                }
+                firstSwitchFlag = false;
+            }
+
+
+            function fWindowScroll() {
+                if ($(document).scrollTop() <= 0) {
+                    //console.log("滚动条已经到达顶部为0");
+                }
+                if ($(document).scrollTop() >= $(document).height() - $(window).height() - judiNum) {
+                    if (page < PageCount) {
+                        if (!addEd) {
+                            if (searchFlag) {
+                                addMore($('#projectSNSearch').val());
+                            } else {
+                                addMore();
+                            }
+                            addEd = true;
+                        }
+                        setTimeout(function () { }, 2000);
+
+                    } else {
+                        clearTimeout();
+                        function fUnHad() {
+                            $('.dom-append-i').hide(100);
+                            $('.dom-append-span').show(100);
+                        }
+                        var a = setTimeout(fUnHad, 2000)
+
+                    }
+                }
+            }
+            $(window).scroll(fWindowScroll);
+
+
+        }
+
+
+        var tenantId = $.getUrlParam("tenantId");
+        var oriWhereStr = tenantId ? "tenantId=" + tenantId : "1=1";
+
+        window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhereStr, whereFilter: oriWhereStr };
+        var currentFilter = {};
+
+
+
+        function doSearch() {
+            var projectsn = $('#projectSNSearch').val();//搜索框内容
+
+            //if (projectsn != null && projectsn != "") {
+            //    layer.msg('展示模具编号为"' + projectsn + '"的报工信息');
+            //}
+            page = 1;
+            firstSwitchFlag = true;
+            searchFlag = true;
+            PageCount = false;
+            $('.dom-append-i').show(100);
+            $('.dom-append-span').hide(100);
+
+            $('.grid .grid-item').remove();
+            addMore(projectsn);
+
+            $grid.masonry('layout');
+
+
+
+        }
+
+
+    </script>
+
+}

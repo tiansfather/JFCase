@@ -1,0 +1,252 @@
+﻿select{
+    padding:3px;
+}
+.laydialog{
+	cursor:pointer;
+}
+.ztree * {
+	font-size: 14px !important;
+}
+.bold{
+    font-weight:bold;
+}
+.layui-card-header .layui-icon {
+    right: auto !important;
+    left: 15px !important;
+    margin-top: -8px !important;
+    color: green;
+}
+.layui-card-header {
+    padding-left: 35px !important;
+}
+/*--------------------------------固定列和筛选的样式---------------------------------*/
+.layui-table-view .layui-table th.layui-unselect .layui-table-cell span {
+    cursor: text;
+}
+
+.my-colsth-div {
+    position: absolute;
+    top: 4px;
+    background: #e8e8e8;
+    display: none;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.my-colsth-i {
+    /*color:black;*/
+    /*color:rgb(45, 146, 233);*/
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.my-colsth-done {
+    display: block!important;
+}
+.my-colsth-done i:first-child {
+    color: rgb(45, 146, 233);
+}
+.my-colsth-div:nth-last-child(2) {
+    right: 25px
+}
+.my-colsth-div:last-child{
+    right: 10px;
+}
+#domSelect dd>.xm-cz {
+    display: none;
+}
+#domSelect dd >.xm-cz-group {
+    max-width: 100%!important;
+    margin-right: 0;
+}
+/*------------------------------表格图片放大----------------------------------------------*/
+.mylayer-mesimg {
+}
+.mylayer-mesimg{
+
+}
+.layui-layer-page .layui-layer-content {
+/*可能会改变其他页面的layer*/
+    /*display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;*/
+}
+.my-flayerimg-icon {
+    position: fixed;
+    font-size: 30px;
+    display: block;
+    top: 18px;
+    color: #20222a;
+    opacity: 0.8;
+}
+.my-flayerimg-icon:hover {
+    transform: scale(1.1,1.1);
+    opacity: 1;
+    cursor: pointer;
+}
+/*---------------------------------------------------下拉框---------------------------------*/
+
+#domSelect .xm-form-select .xm-select-tips:first-child {
+    position:absolute;
+    top:0;
+    z-index:99;
+}
+#domSelect .xm-form-select .xm-select-dl {
+    padding-top: 36px;
+    width: 250px;
+    /*设置下拉框的宽度*/
+}
+#domSelect dd[tree-folder] {
+    height: 25px;
+}
+#domSelect dd .xm-form-checkbox span{
+    font-size:14px;
+    line-height:25px;
+}
+#domSelect dd .xm-form-checkbox i{
+    font-size:14px;
+    top:5px;
+    width:13px;
+    height:13px;
+}
+/*-------------------------------------------------表格隔行变色--------------------------------------------*/
+.layui-table .layui-table-hover {
+    background-color: #eff6ff !important;
+}
+.layui-table .my-table-active, .layui-table .my-table-active_checked {
+    background-color: #fff9d6 !important;
+}
+
+.layui-table tr {
+    transition: background-color .5s;
+    -webkit-transition: background-color .5s;
+}
+/*---------------------------------------------重置layui-table样式------------------------------------------*/
+.layui-form-pane .layui-input {
+    border-radius: 4px;
+}
+
+.layui-table-tool { /*工具栏*/
+    background: white;
+}
+
+.layui-table thead tr {
+    background-color: #e8e8e8;
+    color: #000;
+}
+
+.layui-table[lay-even] tr:nth-child(2n) {
+    background-color: #fafafa;
+}
+
+.layui-table td, .layui-table th {
+    border-width: 0 1px 0 1px;
+    border-bottom: 1px solid #ccc;
+    border-color: #ccc;
+}
+
+.layui-table-header {
+    border: none;
+}
+
+.layui-table-header .layui-table {
+    margin: 0;
+}
+/*------------------*/
+[v-cloak] {
+    display: none;
+}
+/*----表格样式-----*/
+.layui-table-cell{
+    height:24px;
+    line-height:24px;
+    padding:0 5px;
+}
+.layui-table-view .layui-table th{
+    padding:3px 0;
+}
+.layui-table-view .layui-table td{
+    padding:3px 0;
+}
+/*------------------表格templet中a标签的重置样式-----------------------*/
+.templet-a {
+    text-decoration: none;
+    color: black;
+}
+
+.templet-a:hover {
+    text-decoration: underline;
+    color: #3b3bf5;
+    cursor: pointer;
+}
+/*----------------------------搜索框样式--------------------------*/
+
+.my-search .layui-input {
+    height: 30px;
+}
+.my-search {
+    padding: 10px 15px;
+}
+
+.my-inline-block {
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+/*------------显示隐藏--------*/
+.disnone{
+    display:none;
+}
+.disblock{
+    display:block;
+}
+/*--------必填项的*号-----*/
+.my-required-span {
+    font-size: 14px;
+    color: red;
+}
+/*--扩展背景色-*/
+.my-bg-green {
+    background: #5FB878;
+}
+/*----------global中的func.splitDrag中，tree左右可拖拽------------*/
+/*html, body, .layui-anim, #r-treedrag, #r-treedrag ul {
+    想要从和html一样高，这样做
+    height: 100%;
+    box-sizing: border-box;
+}*/
+#r-treedrag {
+    position: relative;
+    vertical-align: bottom;
+    padding: 10px;
+    background: #fff;
+    display: flex;
+}
+
+#r-treedrag-width {
+    flex-basis: 10px;
+    width: 10px;
+    z-index: 999;
+    /*position: absolute;*/
+    top: 0;
+    /*height: 100%;*/
+    background: #efefef;
+    cursor: col-resize;
+}
+
+#r-treedrag-ul {
+    width: 250px;
+    overflow: hidden;
+}
+
+#r-treedrag-table {
+    border: 1px solid #ddd;
+    flex: 2;
+    overflow: hidden;
+}
+
+.r-treedrag-table_wrap {
+    width: 100%;
+    overflow: auto;
+}

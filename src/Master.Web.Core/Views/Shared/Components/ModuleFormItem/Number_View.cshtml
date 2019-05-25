@@ -1,0 +1,27 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleFormItemViewModel
+@{
+	var column = Model.ColumnInfo;
+	var inline = false;
+
+	var value = Model.Value?.ToString();
+	if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(column.DisplayFormat))
+	{
+		value = Convert.ToDecimal(value).ToString(column.DisplayFormat);
+
+	}
+	var renderer = !string.IsNullOrEmpty(column.Renderer) ? column.Renderer : "lay-text-view";
+}
+
+<div is="@renderer" value="@value" :column-Info="{ColumnKey:'@column.ColumnKey',ColumnName:'@column.ColumnName'}"></div>
+
+@*<div class="@(inline?"layui-inline":"layui-form-item")">
+	<label class="layui-form-label">@column.ColumnName</label>
+	<div class="@(inline?"layui-input-inline":"layui-input-block")">
+		@value
+	</div>
+</div>*@

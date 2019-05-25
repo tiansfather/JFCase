@@ -1,0 +1,51 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@{
+	ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div class="layui-card-body">
+            <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                <vc:module-button module-key="EquipmentOperatorHistory"></vc:module-button>
+            </div>
+			<vc:module-table param="@(new ModuleTableViewParam() {ID="EquipmentOperatorHistory",ModuleKey="EquipmentOperatorHistory",DataUrl="/api/services/app/equipmentOperatorHistory/GetPageResult",Height="full-100",Where="" })"></vc:module-table>
+		</div>
+		
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		//layui加载完成后调用此方法，
+		config.ready = function () {
+			var element = layui.element;
+
+			config.refresh();
+		}
+		//当检索窗体提交后会调用此方法
+		config.reloadTable = function () {
+            layui.table.reload('EquipmentOperatorHistory', {
+				where: getWhere()
+
+			})
+		}
+		config.onTableDone = function () {
+
+		}
+		//当编辑或删除或添加表单提交后会调用此方法
+        config.refresh = function () {
+            
+		}
+		function getWhere() {
+			var where = {where:''};
+            where.searchCondition = func.buildSearchCondition('EquipmentOperatorHistory');
+
+			return where;
+
+		}
+	</script>
+}

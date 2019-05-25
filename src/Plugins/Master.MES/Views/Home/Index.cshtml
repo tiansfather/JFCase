@@ -1,0 +1,337 @@
+﻿
+@using Master.Web
+@using Master.Configuration;
+@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@inject WebCoreConfiguration WebCoreConfiguration
+@inject Master.Timing.AppTimes AppTimes
+@model Master.Session.Dto.LoginInformationDto
+@{
+    Layout = null;
+    var isHost = AbpSession.MultiTenancySide == Abp.MultiTenancy.MultiTenancySides.Host;
+    string softTitle = WebCoreConfiguration.SoftName;
+
+}
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>@softTitle</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="~/view-resources/Views/_Bundles/base.min.css" rel="stylesheet" asp-append-version="true" />
+    <link rel="stylesheet" href="/assets/layuiadmin/layui/css/layui.css" media="all" asp-append-version="true" />
+    <link rel="stylesheet" href="/assets/layuiadmin/style/admin.css" media="all" asp-append-version="true" />
+    <link href="~/assets/css/index.css" rel="stylesheet" asp-append-version="true" />
+
+    <style>
+    </style>
+    <style id="style-1-cropbar-clipper">
+        /* Copyright 2014 Evernote Corporation. All rights reserved. */
+        .en-markup-crop-options {
+            top: 18px !important;
+            left: 50% !important;
+            margin-left: -100px !important;
+            width: 200px !important;
+            border: 2px rgba(255,255,255,.38) solid !important;
+            border-radius: 4px !important;
+        }
+
+            .en-markup-crop-options div div:first-of-type {
+                margin-left: 0px !important;
+            }
+    </style>
+    <style>
+        .layui-side-menu .layui-nav-item > a i.fa {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            margin-top: -7px;
+        }
+        /*下面五个全是处理左边栏宽度和left值的*/
+        .layui-side-menu, .layui-logo {
+            width: 170px !important;
+        }
+
+        .layadmin-side-shrink .layui-side {
+            width: 60px !important;
+        }
+
+        .layadmin-side-shrink .layui-layout-admin .layui-logo {
+            width: 60px !important;
+        }
+
+        .layadmin-side-spread-sm .layadmin-pagetabs, .layadmin-side-spread-sm .layui-layout-admin .layui-body, .layadmin-side-spread-sm .layui-layout-admin .layui-footer, .layadmin-side-spread-sm .layui-layout-admin .layui-layout-left {
+            left: -50px;
+        }
+
+        @@media screen and (min-width: 992px) {
+            .layadmin-pagetabs, .layui-layout-admin .layui-body, .layui-layout-admin .layui-footer, .layui-layout-admin .layui-layout-left {
+                left: 170px;
+            }
+        }
+        /*更改了原有的导航条样式*/
+        .layadmin-pagetabs {
+            background: #f2f2f2;
+        }
+
+        .layui-tab-title .layui-this {
+            color: #3788ff;
+            background: #fbfbfb;
+        }
+
+        .layadmin-pagetabs .layui-tab-title li.layui-this, .layadmin-pagetabs .layui-tab-title li:hover {
+            background-color: #fefefe;
+        }
+
+        .layui-logo span {
+            font-size: 22px;
+            font-weight: 700;
+        }
+    </style>
+    <style>
+        [v-cloak] {
+            display: none !important;
+        }
+
+        .gonggao {
+            color: #1ab699;
+            padding: 0 5px;
+            margin-top: 1px;
+        }
+
+        #bulletin a {
+            color: #1ab699;
+            font-size: 13px;
+        }
+
+        .bulletin-board {
+            overflow: hidden;
+            width: 200px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+            .bulletin-board .bulletin-board-qimo {
+                /*width:99999999px;*/
+                width: 8000%;
+                height: 30px;
+            }
+
+                .bulletin-board .bulletin-board-qimo div {
+                    float: left;
+                }
+
+                .bulletin-board .bulletin-board-qimo ul {
+                    float: left;
+                    height: 30px;
+                    overflow: hidden;
+                    zoom: 1;
+                }
+
+                    .bulletin-board .bulletin-board-qimo ul li {
+                        float: left;
+                        line-height: 30px;
+                        list-style: none;
+                    }
+
+            .bulletin-board li a {
+                margin-right: 10px;
+                color: #444444;
+            }
+    </style>
+</head>
+<body class="layui-layout-body">
+
+    <div id="LAY_app">
+        <div class="layui-layout layui-layout-admin">
+            <div class="layui-header">
+                <!-- 头部区域 -->
+                @await Component.InvokeAsync(typeof(TopBarNavViewComponent))
+                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect v-if="text" v-cloak :tips="tipsText">
+                        <a href="javascript:;" class="gonggao" style="padding:0 10px;">
+                            <i class="iconfont icon-gonggao"></i>
+                        </a>
+                    </li>
+                    <li class="bulletin-board" id="bulletin" v-if="text" :tips="tipsText">
+                        <div class="bulletin-board-qimo">
+                            <div id="bulletin1">
+                                <ul><li><a v-html="text"></a></li></ul>
+                            </div>
+                            <div id="bulletin2">
+                                <ul><li><a v-html="text"></a></li></ul>
+                            </div>
+                        </div>
+                    </li>
+                    @*<li class="layui-nav-item layui-hide-xs " lay-unselect>
+                        <a lay-href="/Home/Show?name=../purchase" lay-direction="2" lay-tips="购买会员" title="@L("购买会员")">
+                            <i class="layui-icon layui-icon-cart-simple"></i>
+                            <cite hidden>购买会员</cite>
+                        </a>
+                    </li>*@
+                    <li class="layui-nav-item layui-hide-xs layui-hide" lay-unselect>
+                        <a href="javascript:;" custom-event="help" title="@L("帮助文档")">
+                            <i class="iconfont icon-bangzhuwendang1"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="/Home/Show?name=../MES/helpvideoplay" target="_blank" custom-event="video" title="@L("帮助视频")" onclick="layui.data('manyState', {key: 'hideBee', value: false});">
+                            <i class="iconfont icon-bangzhushipin"></i>
+                        </a>
+                    </li>
+                    <!-- 如果有新消息，则显示小圆点 -->
+                    @*<li class="layui-nav-item" lay-unselect>
+            <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
+                <i class="layui-icon layui-icon-notice"></i>
+                <span class="layui-badge-dot"></span>
+            </a>
+        </li>*@
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="javascript:;" layadmin-event="theme">
+                            <i class="layui-icon layui-icon-theme"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="javascript:;" layadmin-event="note">
+                            <i class="layui-icon layui-icon-note"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="javascript:;" custom-event="lock" title="@L("锁屏")">
+                            <i class="layui-icon layui-icon-zlock-l"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item" lay-unselect>
+                        <a href="javascript:;">
+                            <cite>@Model.User.Name</cite>
+                        </a>
+                        <dl class="layui-nav-child">
+                            @if (!isHost)
+                            {
+                                <dd><a lay-href="/Home/Tenant" tips="企业资料">企业资料</a></dd>
+                            }
+                            <dd><a lay-href="/Home/UserInfo" tips="个人资料">个人资料</a></dd>
+                            <dd><a tips="@L("修改密码")" fornonerow="1" buttonname="@L("修改密码")" params="{&quot;area&quot;: [&quot;500px&quot;, &quot;400px&quot;]}" buttonactiontype="Form" buttonactionurl="/Account/ChangePassword" onclick="func.callModuleButtonEvent()" style="cursor:pointer">修改密码</a></dd>
+                            <hr />
+                            <dd style="text-align: center;"><a href="/Account/Logout">退出</a></dd>
+                        </dl>
+                    </li>
+
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                    </li>
+                    <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
+                        <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 侧边菜单 -->
+            <div class="layui-side layui-side-menu">
+                <div class="layui-side-scroll">
+                    <div class="layui-logo" lay-href="@Model.User.HomeUrl">
+                        <span>@softTitle</span>
+                    </div>
+
+                    @await Component.InvokeAsync(typeof(SideBarNavViewComponent), new { activeMenu = "" })
+
+                </div>
+            </div>
+
+            <!-- 页面标签 -->
+            <div class="layadmin-pagetabs" id="LAY_app_tabs">
+                <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
+                <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+                <div class="layui-icon layadmin-tabs-control layui-icon-down">
+                    <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+                        <li class="layui-nav-item" lay-unselect>
+                            <a href="javascript:;"></a>
+                            <dl class="layui-nav-child layui-anim-fadein">
+                                <dd layadmin-event="closeThisTabs"><a href="javascript:;">关闭当前标签页</a></dd>
+                                <dd layadmin-event="closeOtherTabs"><a href="javascript:;">关闭其它标签页</a></dd>
+                                <dd layadmin-event="closeAllTabs"><a href="javascript:;">关闭全部标签页</a></dd>
+                                <dd class="my-full" onclick="Full()"><a href="javascript:;">全屏模式/窗口模式</a></dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+                <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
+                    <ul class="layui-tab-title" id="LAY_app_tabsheader">
+                        <li lay-id="/Home" class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- 主体内容 -->
+            <div class="layui-body" id="LAY_app_body">
+                <div class="layadmin-tabsbody-item layui-show">
+                    <iframe src="@Model.User.HomeUrl" frameborder="0" class="layadmin-iframe" name="default"></iframe>
+                </div>
+            </div>
+
+            <!-- 辅助元素，一般用于移动设备下遮罩 -->
+            <div class="layadmin-body-shade" layadmin-event="shade"></div>
+        </div>
+    </div>
+    <!--标签页右键菜单-->
+    <ul class="rightmenu">
+        <li data-type="closethis">关闭当前</li>
+        <li data-type="closeall">关闭所有</li>
+        <li data-type="closeothers">关闭非当前</li>
+        <li data-type="closeleft">关闭左侧所有</li>
+        <li data-type="closeright">关闭右侧所有</li>
+        <li data-type="cancel"><i class="layui-icon layui-icon-yinshenim"></i>取消</li>
+    </ul>
+    <div class="layui-layer-shade" id="r-shade"></div>
+    <div id="help-bee" style="right: 50px; bottom: 50px;display:none;">
+        <a href="/Home/Show?name=../MES/helpvideoplay" target="_blank"><img src="~/assets/images/bee.png?w=50" alt="help" /></a>
+    </div>
+
+    <script src="/assets/layuiadmin/layui/layui.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/_Bundles/base.min.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
+    <script src="~/lib/signalr-client/signalr.min.js"></script>
+
+    <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
+    <script src="~/scripts/GetAll.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    @*<script src="~/scripts/GetScripts.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
+    @*<script src="~/AbpServiceProxies/GetAll?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
+    <script src="~/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+
+    <script>
+        var abp = abp || {};
+        abp.signalr = abp.signalr || {};
+        //模拟登录的不展现IM
+        if ($.cookie("simulateLogin")) {
+            abp.signalr.autoConnect = false;
+        }
+    </script>
+
+    <script src="~/assets/js/chat.js" asp-append-version="true"></script>
+    <script src="~/lib/abp-web-resources/Abp/Framework/scripts/libs/abp.signalr-client.js" asp-append-version="true"></script>
+    <script src="~/assets/js/global.js" asp-append-version="true"></script>
+    <script src="~/assets/js/index.js" asp-append-version="true"></script>
+    <script>
+        layui.config({
+            base: config.layuiBase, //静态资源所在路径
+            version: 20181201
+        }).extend({
+            index: config.layuiIndex //主入口模块
+        }).use(['index', 'table', 'layer', 'form', 'element', 'laydate'], function () {
+            initIndex();
+        });
+
+    </script>
+
+
+    <div class="layui-layer-move"></div>
+
+</body>
+</html>
+

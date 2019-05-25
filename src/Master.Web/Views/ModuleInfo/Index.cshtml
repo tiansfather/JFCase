@@ -1,0 +1,139 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="moduleTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this all">@L("全部模块")<span class="layui-badge">0</span></li>
+                <li class="in">@L("内置模块")<span class="layui-badge">0</span></li>
+                <li class="out">@L("自定义模块")<span class="layui-badge">0</span></li>
+            </ul>
+            <div class="layui-tab-content">
+                <form class="layui-form layui-form-pane" onsubmit="return doSearch();">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("模块名称")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="moduleName" name="moduleName" autocomplete="off" class="layui-input">
+                            </div>
+                            <button class="layui-btn layui-btn-primary" type="button" onclick="doSearch()">@L("搜索")</button>
+                            <button class="layui-btn  " type="button" onclick="addModuleInfo()">@L("添加")</button>
+                            
+                        </div>
+                    </div>
+                </form>
+
+
+                <table autoevent="1" id="ModuleInfo" lay-filter="ModuleInfo" class="layui-table " lay-data="{cellMinWidth:'80',height:'full-170', url:'/api/services/app/ModuleInfo/GetPageResult', page:true, id:'ModuleInfo', limit:20, even: true,done:config.onTableDone}" @*lay-size="sm" *@>
+                    <thead>
+                        <tr>
+                            <th lay-data="{type:'checkbox'}"></th>
+                            <th lay-data="{field:'moduleKey'}">@L("模块ID")</th>
+                            <th lay-data="{field:'moduleName' }">@L("模块名")</th>
+                            <th lay-data="{field:'isInterModule',templet:'#isInterModuleTpl' }">@L("类型")</th>
+                            <th lay-data="{field:'columnCount' }">@L("列数量")</th>
+                            <th lay-data="{field:'btnCount' }">@L("按钮数量")</th>
+                            <th lay-data="{field:'creator'}">@L("创建人")</th>
+                            <th lay-data="{field:'creationTime'}">@L("创建时间")</th>
+                            <th lay-data="{align:'left', toolbar: '#toolbar',width:260}">@L("操作")</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="toolbar">
+    <a dataid="{{d.moduleKey}}" buttonname="@L("编辑")" class="layui-btn layui-btn-xs " params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/ModuleInfo/Edit" onclick="func.callModuleButtonEvent()">@L("编辑")</a>
+    <a dataid="{{d.moduleKey}}" buttonname="@L("列定义")" class="layui-btn layui-btn-xs " params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/ModuleInfo/Column" onclick="func.callModuleButtonEvent()">@L("列定义")</a>
+    <a dataid="{{d.moduleKey}}" buttonname="@L("按钮定义")" class="layui-btn layui-btn-xs " params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/ModuleInfo/Button" onclick="func.callModuleButtonEvent()">@L("按钮定义")</a>
+
+    {{#if( !d.isInterModule){}}
+    <a dataid="{{d.id}}" class="layui-btn layui-btn-danger layui-btn-xs" buttonname="@L("删除")" modulekey="ModuleInfo" params="" lay-event="Delete" confirmmsg="@(L("确认删除"))？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.moduleInfo.deleteEntity" onclick="func.callModuleButtonEvent()">@L("删除")</a>
+    {{#}else{}}
+    <a dataid="{{d.id}}" class="layui-btn layui-btn-danger layui-btn-xs" buttonname="@L("重置")" modulekey="ModuleInfo" params="" lay-event="Reset" confirmmsg="@(L("确认重置?原有模块数据将丢失!"))" buttonactiontype="Ajax" buttonactionurl="abp.services.app.moduleInfo.initModuleInfo" onclick="func.callModuleButtonEvent()">@L("重置")</a>
+    {{#}}}
+</script>
+<script type="text/html" id="isInterModuleTpl">
+    {{#if( d.isInterModule ){}}
+    <span class="layui-badge layui-bg-blue">@L("内置")</span>
+    {{# }else{}}
+    <span class="layui-badge layui-bg-cyan">@L("用户")</span>
+    {{#}}}
+</script>
+@section scripts{
+    <script>
+        config.ready = function () {
+            var element = layui.element,
+                table = layui.table;
+            //一些事件监听
+            element.on('tab(moduleTab)', function (data) {
+
+                table.reload('ModuleInfo', {
+                    where: getWhere(data.index),
+                    page:1
+                })
+            });
+            config.refresh();
+        }
+        config.onTableDone = function () {
+
+        }
+        config.refresh = function () {
+            //重新加载汇总数据
+            abp.services.app.moduleInfo.getModuleCountSummary()
+                .done(function (result) {
+                    $("li.in span").html(result.inCount);
+                    $("li.out span").html(result.outCount);
+                    $("li.all span").html(result.allCount);
+                });
+        }
+        function getWhere(index) {
+            switch (index) {
+                case 0:
+                    return { where: '1=1' };
+                case 1:
+                    return { where: 'IsInterModule=true' };
+                case 2:
+                    return { where: 'IsInterModule=false' };
+            }
+
+        }
+        function doSearch() {
+            var where = getWhere($("li.layui-this").index());
+            var moduleName = $("#moduleName").val();
+            where.keyword = moduleName;
+            layui.table.reload('ModuleInfo', {
+                where: where,
+                page:1
+            })
+
+            return false;
+        }
+        function addModuleInfo() {
+                    layer.prompt({ title: '@L("请输入模块名")', formType: 0 }, function (text, index) {
+                        layer.close(index);
+                        var key = pinyinUtil.getPinyin(text, '').toUpperCase();
+                        func.runAsync(abp.services.app.moduleInfo.addModuleInfo(text, key).done(function (data) {
+                            layer.msg('@L("提交成功")');
+                            doSearch();
+
+                        }));
+
+                    });
+
+        }
+        function initAllModuleInfo() {
+            abp.message.confirm(L("确认进行模块信息更新?此操作不会删除现有模块数据"), function () {
+                func.runAsync(abp.services.app.moduleInfo.initAllModuleInfo().done(function () {
+                    layer.msg('@L("提交成功")');
+                            doSearch();
+                }))
+            })
+        }
+    </script>
+}

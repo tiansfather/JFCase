@@ -1,0 +1,67 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleFormItemViewModel
+@{
+	var column = Model.ColumnInfo;
+	var value = Model.Value?.ToString();
+}
+@if (column.MaxFileNumber == 1)
+{
+	//单个上传
+	<div class="layui-form-item">
+		<label class="layui-form-label">@column.ColumnName</label>
+		<div class="layui-input-block">
+			<div class="layui-upload">
+				<div class="layui-upload-list">
+					@if (!string.IsNullOrEmpty(value))
+					{
+						var file = await FileManager.GetByIdFromCacheAsync(Convert.ToInt32(value));
+						<a href="/File/GetFile?fileid=@value" target="_blank">@file.FileName</a>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+
+}
+else
+{
+	//多文件上传
+	<div class="layui-form-item">
+		<label class="layui-form-label">@column.ColumnName</label>
+		<div class="layui-input-block">
+			<div class="layui-upload">
+				<div class="layui-upload-list">
+					<table class="layui-table">
+						<thead>
+							<tr>
+								<th>@L("文件名")</th>
+								<th>@L("大小")</th>
+							</tr>
+						</thead>
+						<tbody id="@(column.ColumnKey)List">
+							@if (!string.IsNullOrEmpty(value))
+							{
+								var fileids = value.Split(',').ToList().ConvertAll(o => int.Parse(o));
+								var files = await FileManager.GetListByIdsAsync(fileids);
+								foreach (var file in files)
+								{
+									<tr>
+										<td><a href="/File/GetFile?fileid=@file.Id" target="_blank">@file.FileName</a></td>
+										<td>@(file.FileSize)kb</td>
+									</tr>
+
+								}
+
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+}

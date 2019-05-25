@@ -1,0 +1,250 @@
+html {
+    width: 100%;
+}
+
+.weui-tab {
+    width: 100%;
+}
+
+.weui-navbar {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    position: fixed;
+    z-index: 500;
+    top: 0;
+    width: 100%;
+    background-color: #fafafa;
+}
+
+.weui-navbar__item.weui-bar__item--on {
+    color: #666;
+    background-color: #f1f1f1;
+}
+
+.weui-navbar__item {
+    color: #888;
+}
+
+.weui-navbar__item {
+    position: relative;
+    display: block;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    padding: 13px 0;
+    text-align: center;
+    font-size: 15px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+a {
+    text-decoration: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.layui-anim-upbit {
+    animation-name: layui;
+    -webkit-animation-name: layui;
+}
+
+ 
+
+
+/*来自原来的rcss样式 */
+.layui-card-body {
+    padding: 0;
+}
+.grid-item {
+    min-width: 100px;
+    margin-bottom: 10px;
+}
+.c-card{
+    min-width: 100px;
+}
+@media (min-width: 360px) {
+    .grid-item {
+        min-width: 310px;
+    }
+    .c-card {
+        min-width: 310px;
+    }
+}
+
+@media (min-width: 410px) {
+    .grid-item {
+        min-width: 340px;
+    }
+    .c-card {
+        min-width: 340px;
+    }
+}
+
+
+.my-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.flow-wrap {
+    padding: 20px;
+}
+
+.disnone {
+    display: none;
+}
+
+.disblock {
+    display: block;
+}
+
+.error-div {
+    box-sizing: border-box;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #939393;
+}
+
+.over-time-div {
+    box-sizing: border-box;
+    border: 2px solid red;
+    width: 70px;
+}
+
+.append-btn-wrap {
+    text-align: center;
+    height: 350px;
+    line-height: 250px;
+}
+
+.c-card__name-span {
+    font-size: 12px;
+    float: right;
+    margin-right: 15px;
+    border: 1px solid;
+    padding: 0 3px;
+    line-height: 23px;
+}
+/*---------------------------------------------------*/
+.my-search {
+    display: flex;
+    align-items: center;
+}
+
+.my-switch-mode_wrap {
+    position: fixed;
+    top: 25px;
+    right: 100px;
+    z-index: 9999;
+    transition: all .3s;
+}
+
+    .my-switch-mode_wrap:hover {
+        top: 22px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+.c-card {
+    background-color: white;
+    border-radius: 2px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.12);
+    height: auto;
+    margin-top: 20px;
+ 
+}
+
+.img-wrap {
+    float: left;
+}
+
+.text-wrap {
+    float: right;
+}
+
+.c-card__thumbnail {
+    padding-bottom: 10px;
+}
+
+.c-card .c-card__name {
+    color: #717171;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 27px;
+    padding: 5px 0 0 20px;
+}
+
+.c-card .c-card__location {
+    color: #acaaaa;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 27px;
+    padding-left: 18px;
+}
+
+.c-card .c-card__description {
+    color: #acaaaa;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+    padding: 10px 0 20px 20px;
+}
+
+.c-card .c-card__rating {
+    padding: 0 0 15px 15px;
+}
+
+.c-unit {
+    padding-left: 18px;
+    color: #989898;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+    .c-unit p {
+        line-height: 18px;
+        white-space: nowrap;
+        display: inline-block;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+.c-unit-p1 {
+    width: 71%;
+}
+
+.c-unit-p2 {
+    width: 25%;
+}
+
+.yanqi-msg {
+    display: none;
+}
+
+    .yanqi-msg div {
+        border: 2px solid red;
+        box-sizing: border-box;
+        width: 30px;
+        height: 24px;
+        margin-right: 5px;
+        margin-left: 10px;
+        float: left;
+    }
+
+    .yanqi-msg span {
+        font-size: 10px;
+    }
+
+.receiptaudit-wrap {
+    cursor: pointer;
+    background: rgba(191, 191, 191, 0.1);
+}
+
+
+.gobackhome {
+    position: fixed;
+    display: flex;
+    top: 20px;
+    left: 10px;
+    font-size: 20px;
+    z-index: 999;
+}

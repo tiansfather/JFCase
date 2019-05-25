@@ -1,0 +1,465 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "生产任务-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <style>
+        .layui-tab-title li{
+            padding:0 5px;
+        }
+        .iconfont {
+            margin-right: 10px;
+            color: #007aff;
+        }
+
+        #app {
+            position: relative;
+        }
+
+        header {
+            padding: 35px 0;
+            background: #fff;
+        }
+
+        .r-fanhui {
+            position: absolute;
+            left: 17px;
+            top: 15px;
+            font-size: 18px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 34px;
+            color: #3cc51f;
+            font-weight: 400;
+            margin: 0 15%;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .r-cell__bd-p2 {
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .r-cell__bd-p2 span {
+                display: inline-block;
+                width: 140px;
+            }
+
+        .detail-wrap {
+            line-height: 2;
+            font-size: 14px;
+            background: #fff;
+            margin: 15px;
+            border-radius: 5px;
+        }
+
+        .detail-title {
+            padding: 0 20px;
+            color: #000;
+        }
+        .img-wrap{
+            text-align:center;
+        }
+        .detail-title_p {
+            text-align: left;
+            font-weight: 600
+        }
+
+        .detail-title-right {
+            float: right;
+            color: #007aff;
+        }
+
+        img {
+            width:200px;
+            object-fit: cover;
+        }
+
+        small {
+            font-size: 13px;
+            color: #ddd;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 14px;
+            line-height: 50px;
+        }
+    </style>
+}
+    <div id="app">
+        <h1>生产任务</h1>
+        <router-view></router-view>
+    </div>
+
+@section scripts{
+
+    <script type="text/x-template" id="msg">
+        <div>
+            <div class="detail" v-if="listNow.partName">
+                <i class="iconfont icon-fanhui r-fanhui" @@click="back"></i>
+                <div class="detail-wrap">
+                    <div class="detail-title">
+                        <p class="detail-title_p">{{ listNow.partName }}({{ listNow.partSN }})/{{ listNow.processTypeName }}</p>
+                        @*<span class="detail-title-right">{{ listNow.processSN }}</span>*@
+                        <p>
+                            <span>
+                                <i class="iconfont icon-rili1"></i>{{ listNow.appointDate }}/{{ listNow.requireDate }}
+                            </span>
+                            <span style="float:right;">
+                                <i class="iconfont icon-xiaoxijilu"></i>{{ listNow.estimateHours }}
+                            </span>
+
+                        </p>
+                        <p>
+                            <span>
+                                <i class="iconfont icon-yuanliaojiedian"></i>
+                                <small>规格：</small>{{ listNow.partSpecification }}&nbsp;&nbsp;
+                                <small>数量：</small>{{ listNow.partNum }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="detail-wrap img-wrap" v-if="sheetFileImg">
+                    <p class="detail-title detail-title_p">加工示意图</p>
+                    <img :src="sheetFileImg" alt="加工图"/>
+                </div>
+                <div class="detail-wrap img-wrap">
+                    <p class="detail-title detail-title_p">报工二维码</p>
+                    <img :src="qrCode" alt="报工二维码" />
+                </div>
+                <div class="detail-title detail-wrap">
+                    <p class="detail-title_p">计价方式:{{ func.getFeeTypeByNum(listNow.feeType) }}</p>
+                    <p>
+                        <span><i class="iconfont icon-xunjia"></i><small>单价：</small>{{ listNow.price }}</span>&nbsp;&nbsp;
+                        <span><small>单位：</small>{{ listNow.feeFactor }}</span>
+                    </p>
+                    <p>
+                        <span> <i class="iconfont icon-caigou_feiyongshenqing"></i><small>预计金额：</small>{{ listNow.jobFee }}</span>&nbsp;&nbsp;
+                        <span><small>客户回单金额：</small>{{ listNow.Fee }}</span>
+                    </p>
+                </div>
+                <div class="detail-wrap">
+                    <p class="detail-title detail-title_p">工艺要求</p>
+                    <p style="min-height:80px;">{{ listNow.taskInfo }}</p>
+                </div>
+            </div>
+            <div v-else class="loading">
+                <i class="weui-loading"></i>加载中 
+            </div>
+        </div>
+    </script>
+    <script type="text/x-template" id="user">
+        <div>
+            <i class="iconfont icon-fanhui r-fanhui" @@click="back"></i>
+            <div>
+                <ul>
+                    <li v-for="(list,index) in lists" @@click="go(list.id,index)">
+                        <div class="weui-cells__title">{{list.processSN||'未开单'}}</div>
+                        <div class="weui-cells">
+                            <div class="weui-cell">
+                                <div class="weui-cell__bd">
+                                    <p>{{list.partName}}({{list.partSN}})/{{list.processTypeName}}</p>
+                                    <p class="r-cell__bd-p2">
+                                        <span :style="{color:func.getProcessTaskStatusColor(list.processTaskStatus).color}">{{func.getProcessTaskStatusColor(list.processTaskStatus).name}}</span>
+                                        <span><i class="iconfont icon-rili1" style="color:red;"></i>{{list.requireDate}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <water-load :loaded="lists.length==page*limit" :nomore="noMore" @@page-add="page++;loadData()"></water-load>
+            @*<div class="load-more-wrap" v-if="lists.length==page*limit">
+                    <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default" @@click="page++;loadData();">加载更多</a>
+                </div>
+                <div class="loading" v-else>
+                    <div v-if="!noMore">
+                        <i class="weui-loading"></i>加载中
+                    </div>
+                    <div v-else>
+                        已无更多数据
+                    </div>
+                </div>*@
+        </div>
+    </script>
+    <script type="text/x-template" id="project">
+        <div>
+            <i class="iconfont icon-fanhui r-fanhui" @@click="router.go(-1);"></i>
+            <div class="weui-search-bar" style="font-size:16px;">
+                <form class="weui-search-bar__form" @@submit.prevent="doSearch">
+                    <div class="weui-search-bar__box">
+                        <i class="weui-icon-search"></i>
+                        <input type="search" class="weui-search-bar__input" v-model="projectCharger" placeholder="模具组长">
+                        <a href="javascript:" class="weui-icon-clear"></a>
+                    </div>
+                    <label class="weui-search-bar__label">
+                        <i class="weui-icon-search"></i>
+                        <span>搜索模具组长</span>
+                    </label>
+                </form>
+                <a href="javascript:" class="weui-search-bar__cancel-btn">取消</a>
+            </div>
+            <div>
+                <div class="weui-cells">
+                    <div class="weui-cell" v-for="(project,index) in projects" @@click="go(project.id,index)">
+                        <div class="weui-cell__bd">
+                            <p>{{project.projectSN}}</p>
+                        </div>
+                        <div class="weui-cell__ft">
+                            {{project.projectName}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <water-load :loaded="projects.length==page*limit" :nomore="noMore" @@page-add="page++;loadData()"></water-load>
+        </div>
+    </script>
+    <script type="text/x-template" id="charger">
+        <div>
+            <div class="layui-tab" lay-filter="charger">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" lay-id="chargers">模具组长</li>
+                    <li lay-id="poster">开单人</li>
+                    <li lay-id="verifier">审核人</li>
+                    <li lay-id="craftsMan">工艺师</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="weui-cells">
+                            <div class="weui-cell" v-for="(charger,index) in showObj[nowShow]" @@click="go(charger.name)">
+                                <div class="weui-cell__bd">
+                                    <p>{{charger.name|| '未安排模具组长'}}</p>
+                                </div>
+                                <div class="weui-cell__ft">
+                                    {{charger.projectCount}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>
+            </div>
+        </div>
+    </script>
+    <script>
+        var Charger = {
+            data: function () {
+                return {
+                    nowShow:'chargers',
+                    showObj: {
+                        chargers: [],
+                        poster: [],
+                        craftsMan: []
+                    },
+                }
+            },
+            methods: {
+                loadData: function () {
+                    var that = this;
+                    abp.services.app.mESProject.getProjectChargers().done(function (res) {
+                        that.showObj.chargers = res;
+                    })
+                    abp.services.app.processTask.getHistoryPerson('poster').done(res => {
+                        that.showObj.poster = res.map(el => {
+                            return {name:el}
+                        });
+                    })
+                    abp.services.app.processTask.getHistoryPerson('craftsMan').done(res => {
+                        that.showObj.craftsMan = res.map(el => {
+                            return { name: el }
+                        });
+                    })
+                    abp.services.app.processTask.getHistoryPerson('verifier').done(res => {
+                        that.showObj.verifier = res.map(el => {
+                            return { name: el }
+                        });
+                    })
+                },
+                go: function (name) {
+                    if (this.nowShow == 'chargers') {
+                        this.$router.push('/charger/project?charger=' + name)
+                    } else {
+                        var where = this.nowShow + '=\"' + name+'\"';
+                        this.$router.push('/charger/project/user?where=' + where)
+                    }
+                }
+            },
+            mounted: function () {
+                var that = this;
+                console.log('charger的Mounted')
+                this.loadData();
+                function elementOn() {
+                    layui.element.on('tab(charger)', function (data) {
+                        that.nowShow = this.getAttribute('lay-id');
+                    });
+                }
+                if (!layui.element) {
+                    layui.use(['element'], elementOn)
+                } else {
+                    elementOn();
+                }
+            },
+            template: "#charger"
+        };
+        var Project = {
+            data: function () {
+                return {
+                    projects: [],
+                    page: 1,
+                    limit: 10,
+                    noMore: false,
+                    projectCharger: ''
+                }
+            },
+            computed: {
+                options: function () {
+                    return {
+                        page: this.page,
+                        limit: this.limit,
+                        keyword: this.projectCharger,
+                    }
+                }
+            },
+            methods: {
+                doSearch: function () {
+                    //初始化各项数据
+                    this.projects = [];
+                    this.page = 1;
+                    this.noMore = false;
+                    this.loadData();
+                    return false;
+                },
+                loadData: function () {
+                    var that = this;
+                    abp.services.app.mESProject.getPageResult(this.options).done(function (res) {
+                        if (res.data.length < that.limit) {//已无更多数据
+                            that.noMore = true;
+                        }
+                        that.projects = that.projects.concat(res.data);
+                    })
+                },
+                go: function (id, index) {
+                    this.$router.push('/charger/project/user?projectId=' + id)
+                }
+            },
+            mounted: function () {
+                this.projectCharger = this.$route.query.charger
+                console.log(this.$route.query)
+                if (!this.projects.length) {
+                    this.loadData();
+                }
+            },
+            template: "#project",
+        };
+        var User = {
+            data: function () {
+                return {
+                    lists: [],
+                    page: 1,
+                    limit: 10,
+                    //where: '1=1',
+                    noMore: false,
+                }
+            },
+            computed: {
+                where: function () {
+                    //不支持又有where又有id，都有查询id
+                    console.log(this.$route.query);
+                    var w = this.$route.query.where;
+                    if (this.$route.query.projectId) {
+                        w= 'part.project.id=' + this.$route.query.projectId + ''
+                    }else if(!w){
+                        w = '1=1';
+                    }
+                    return w;
+                },
+                options: function () {
+                    return {
+                        page: this.page,
+                        limit: this.limit,
+                        where: this.where,
+                    }
+                }
+            },
+            methods: {
+                loadData: function () {
+                    var that = this;
+                    abp.services.app.processTask.getPageResult(this.options).done(function (res) {
+                        if (res.data.length < that.limit) {//已无更多数据
+                            that.noMore = true;
+                        }
+                        that.lists = that.lists.concat(res.data);
+                    })
+                },
+                go: function (id, index) {
+                    window.listNow = this.lists[index];
+                    this.$router.push('/charger/project/user/msg/' + id)
+                },
+                back: function () {
+                    console.log('back');
+                    router.go(-1);
+                }
+            },
+            mounted: function () {
+                if (!this.lists.length) {
+                    this.loadData();
+                }
+            },
+            template: "#user"
+        };
+        var Msg = {
+            data: function () {
+                return { listNow: {} }
+            },
+            computed: {
+                qrCode: function () {
+                    return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Report?taskid=" + this.listNow.id);
+                },
+                sheetFileImg: function () {
+                    return (this.listNow.sheetFile && this.listNow.sheetFile.filePath) ? this.listNow.sheetFile.filePath + '?w=250' : ''
+                },
+            },
+            methods: {
+                back: function () {
+                    console.log('back');
+                    router.go(-1);
+                }
+            },
+            created: function () {
+                if (this.$route.params.id && window.listNow) {
+                    this.listNow = window.listNow;
+                    Vue.set(this.listNow, 'partName', window.listNow.partName)
+                    console.log(this.listNow)
+                }
+            },
+            template: '#msg'
+        }
+        var router = new VueRouter({
+            routes: [
+                { path: '/', redirect: 'charger'},
+                { name: 'charger',  path: '/charger', component: Charger },
+                { name: 'project', path: '/charger/project', component: Project},
+                { name: 'user', path: '/charger/project/user', component: User },
+                { name: 'msg', path: '/charger/project/user/msg/:id', component: Msg }
+            ]
+        })
+        new Vue({
+            el: '#app',
+            router: router
+        })
+    </script>
+}

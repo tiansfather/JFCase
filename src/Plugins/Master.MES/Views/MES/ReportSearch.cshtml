@@ -1,0 +1,865 @@
+﻿
+@{
+    ViewData["Title"] = "ProcessTypeChoose";
+}
+@section styles{
+    <style>
+        /*重置样式*/
+        .layui-form-item{
+            margin-bottom:8px;
+        }
+        .layui-form-item .layui-form-checkbox[lay-skin=primary] {
+            margin-top: 0;
+        }
+
+        .multi dl dd.layui-this {
+            background-color: #fff
+        }
+
+        html {
+            background: #fff;
+            color: black;
+        }
+
+        div, button {
+            box-sizing: border-box;
+        }
+
+        .search-wrap .layui-input {
+            height: 30px;
+        }
+
+        .search-wrap .layui-form-label {
+            padding: 5px 0;
+        }
+
+        .search-wrap .layui-input-block {
+            min-height: 30px;
+            margin-left: 90px;
+        }
+
+        .search-wrap .layui-form-item {
+            position: relative;
+            width: 50%;
+            display: inline-block;
+        }
+        /*---模板---*/
+        .menu {
+            border-bottom: 1px solid #f5f5f5;
+            line-height: 37px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+
+            .menu ul {
+                padding: 4px;
+            }
+
+            .menu li {
+                text-align: center;
+                display: inline-block;
+                width: 24px;
+                padding: 0 5px;
+                cursor: pointer;
+            }
+
+                .menu li:hover {
+                    color: #3788ff;
+                    background: #fff;
+                }
+
+        .shancumuban {
+            display: none;
+            top: 5px;
+            line-height: 24px;
+            width: 24px;
+            position: absolute;
+            right: 1px;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            text-align: center;
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(255,255,255,.5);
+            color: black;
+        }
+
+        .my-sider1-li:hover .shancumuban {
+            display: block;
+        }
+
+        .xiugai-input {
+            position: absolute;
+            left: 0;
+            height: 100%;
+            box-sizing: border-box;
+            width: calc(100% - 30px);
+        }
+        /*--------------------------------*/
+        /*html, body, .layui-anim, .my-body,.my-layout-sider1{
+            height:100%;
+            box-sizing:border-box;
+        }*/
+
+        #app {
+            background:#fff;
+            display: flex;
+        }
+
+        @@media only screen and (max-width: 790px) {
+        }
+
+        .my-layout-sider1 {
+            position: relative;
+            display: inline-block;
+            width: 20%;
+            padding: 10px;
+        }
+
+        .my-sider1-son {
+            max-width: 185px;
+        }
+
+        .my-sider1-span1 {
+            color: #333;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .my-sider1-span2 {
+            color: #000;
+            font-weight: 400;
+            font-size: 12px;
+        }
+
+        .my-sider1-div {
+            height: 36px;
+            line-height: 36px;
+        }
+
+        .my-sider1-ul {
+            display: block;
+        }
+
+        .my-sider1-li {
+            position: relative;
+            padding-left: 20px;
+            white-space: nowrap;
+            height: 36px;
+            line-height: 36px;
+        }
+
+            .my-sider1-li:hover {
+                cursor: pointer;
+                background-color: #e4f1ff;
+                color: black;
+            }
+
+        #app .my-li-active {
+            background-color: #3788ff;
+            color: #fff;
+        }
+
+            #app .my-li-active span {
+                color: #fff;
+            }
+
+        .my-layout-sider2 {
+            padding: 20px 0;
+            position: relative;
+            display: inline-block;
+            width: 77%;
+            height: 100%;
+            border-left: 1px solid #e9e9e9;
+        }
+
+        .my-input-inline {
+            margin-bottom: 20px;
+        }
+
+        #app .layui-form-item .layui-input-inline {
+            width: 150px;
+        }
+
+        .icon-rili1 {
+            position: absolute;
+            right: 0;
+            z-index: 99;
+            top: 0;
+            line-height: 30px;
+            width: 22px;
+            cursor: pointer;
+            text-align: center;
+        }
+        /*-------時間選擇----------*/
+        #time-handle-wrap {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+        }
+
+        .ant-popover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1030;
+            cursor: auto;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+            white-space: normal;
+            font-size: 12px;
+            line-height: 1.5;
+            font-weight: 400;
+            text-align: left;
+        }
+
+        .datepanel {
+            background-color: #fff;
+            background-clip: padding-box;
+            border-radius: 4px;
+            box-shadow: 0 1px 6px rgba(0,0,0,.2);
+            border: 1px solid rgba(55,136,255,.5);
+            padding: 18px 26px;
+        }
+
+            .datepanel span:first-child {
+                width: 30px;
+                display: inline-block;
+            }
+
+            .datepanel div {
+                padding: 5px 0;
+            }
+
+        .ant-btn:hover {
+            border-color: #3788ff;
+        }
+
+        .ant-btn {
+            margin: 0 5px;
+            display: inline-block;
+            text-align: center;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            line-height: 1.15;
+            padding: 0 15px;
+            font-size: 12px;
+            border-radius: 4px;
+            height: 28px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            transition: all .3s cubic-bezier(.645,.045,.355,1);
+            position: relative;
+            color: #000;
+            background-color: #fff;
+            border-color: #d9d9d9;
+        }
+    </style>
+}
+<div class="my-body" id="app">
+
+
+    <div class=" my-layout-sider1">
+        <div class="menu">
+            <ul>
+                <li class="menu-li" @@click="editModel">
+                    <i class="iconfont icon-edit-square"></i>
+                </li>
+                <li class="menu-li" @@click="saveModel('xiugai')" tips="修改模板并保存">
+                    <i class="iconfont icon-baocun"></i>
+                </li>
+                <li class="menu-li" @@click="saveModel()" tips="另存为新模板" lay-direction="2">
+                    <i class="iconfont icon-lingcunwei"></i>
+                </li>
+                <li class="menu-li" @@click="memory = [];" tips="清除模板内容">
+                    <i class="iconfont icon-qingkong2"></i>
+                </li>
+            </ul>
+        </div>
+        <div class="my-sider1-son">
+            <div class="my-sider1-div">
+                <span class="my-sider1-span1">公共方案</span>
+            </div>
+            <ul class="my-sider1-ul">
+                <li class="my-sider1-li" @@click="getData()" :class="{'my-li-active':activeIndex==-1}">
+                    <span class="my-sider1-span2">默认方案</span>
+                </li>
+            </ul>
+        </div>
+        <div class="my-sider1-son" v-cloak>
+            <div class="my-sider1-div">
+                <span class="my-sider1-span1">个人方案</span>
+            </div>
+            <ul class="my-sider1-ul">
+                @*<li class="my-sider1-li" @@click="getData()" :class="{'my-li-active':activeIndex==-1}">
+                    <span class="my-sider1-span2">默认方案</span>
+                </li>*@
+                <li class="my-sider1-li " :class="{'my-li-active':activeIndex==index}" v-for="(item,index) in mblist" @@click="getData(item,index)">
+                    <span class="my-sider1-span2">{{item}}</span>
+                    <i class="iconfont icon-shanchu shancumuban" @@click.stop="delModel(index)"></i>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="my-layout-sider2" v-cloak>
+        <div class="search-wrap layui-form">
+            <template v-for="(item,index) in items">
+                @*<div is="lay-tableselect" v-if="item.searchType=='Search'||item.searchType=='Like'"
+                    value=""
+                    :column-Info="getCols(index)"
+                    :data="memory[getKey(index)]||''"
+                    @@choose="choosed"></div>*@
+                <div :is="temObj[item.searchType]"
+                     :value="memory[getKey(index)]||''"
+                     :column-Info="getCols(index)"
+                     :data="memory[getKey(index)]||''"
+                     @@choose="choosed"></div>
+            </template>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/x-template" id="layRangeDateL">
+        <div class="layui-form-item">
+            <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+            <div class="layui-input-block">
+                <input type="text" :name="columnInfo.ColumnKey" class="layui-input" :id="columnInfo.ColumnKey" placeholder="请选择时间范围" :lay-key="columnInfo.ColumnKey" :value="data" autocomplete="off" />
+            </div>
+            <i class="iconfont icon-rili1" @@click.stop="openHandleTime($event)"></i>
+        </div>
+    </script>
+    <script>
+        Vue.component('lay-range-datel', {
+            template: '#layRangeDateL',
+            props: ['columnInfo', 'value', 'data'],
+            created: function () {
+                this.$nextTick(function () {
+                    layui.laydate.render({
+                        elem: '#' + this.columnInfo.ColumnKey
+                        , range: '|' //或 range: '~' 来自定义分割字符
+                        , value: this.data
+                        , position: 'fixed'
+                        , done: function (value, date, endDate) {
+                            console.log(value); //得到日期生成的值，如：2017-08-18
+                            console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+                            console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+                        }
+                    });
+                })
+            },
+            methods: {
+                openHandleTime: function (ev) {
+                    $('.layui-laydate.layui-laydate-range').hide()
+                    console.log(ev)
+                    var data = {};
+                    var getTpl = handleDate.innerHTML
+                        , view = document.getElementById('time-handle-wrap');
+                    layui.laytpl(getTpl).render(data, function (html) {
+                        view.innerHTML = html;
+                    });
+                    var id = $(ev.target).siblings('.layui-input-block').find('input').attr('id'),
+                        awidth = $('.ant-popover').width(),
+                        bwidth = $(ev.target).width(),
+                        bheight = $(ev.target).height(),
+                        antL = $(ev.target).offset().left,
+                        antT = $(ev.target).offset().top,
+                        t = antT + bheight;
+                    if (awidth + antL > $(document).width()) {
+                        console.log('小了')
+                        $('.ant-popover').offset({ left: antL + bwidth - awidth, top: t })
+                    } else {
+                        $('.ant-popover').offset({ left: antL, top: t })
+
+                    }
+                    //模板引擎
+                    //插进去
+                    //设置position
+                    //点击关闭
+                    function setDate() {
+                        var h = $(this).text().replace(/\s+/g, "");
+                        var t = func.getHandleDate({ type: h })
+                        layui.laydate.render({
+                            elem: '#' + id
+                            , range: '|' //或 range: '~' 来自定义分割字符
+                            , value: t
+                            , position: 'fixed'
+                        });
+                    }
+                    $('.ant-popover').on('click', '.ant-btn', setDate)
+                    function removeHnadle() {
+                        console.log('aaa')
+                        $('.ant-popover').remove();
+                        $(document).off('click', removeHnadle)
+                    }
+                    $(document).on('click', removeHnadle)
+                    //document.addEventListener('click', removeHnadle, false)
+                },
+            },
+            mounted: function () {
+                //时间处理的div放在这个wrap中
+                if (!$('body').children('#time-handle-wrap').length) {
+                    $('body').append('<div id = "time-handle-wrap"></div >')
+                }
+                console.log($('body').children('#time-handle-wrap').length)
+            }
+        });
+    </script>
+
+    <script type="text/x-template" id="layMultiSelect">
+        <div class="layui-form-item">
+            <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+            <div class="layui-input-block">
+                <select multiple="multiple" :lay-filter="columnInfo.ColumnKey">
+                    <option value="">{{columnInfo.placeholder}}</option>
+                    <option :value="index" :selected="item.selected" v-for="(item,index) in showVal">{{item.value}}</option>
+                </select>
+            </div>
+        </div>
+    </script>
+    <script>
+        Vue.component('lay-multi-select', {
+            template: '#layMultiSelect',
+            props: ['columnInfo', 'value', 'data'],
+            computed: {
+                showVal: function () {
+                    var that = this;
+                    var arr = this.columnInfo.arrayData.map(function (item, index) {
+                        if (that.value.indexOf(item) != -1) {
+                            return { value: item, selected: true }
+                        } else {
+                            return { value: item, selected: false }
+                        }
+                    })
+                    return arr;
+                }
+            },
+            mounted: function () {
+                this.$nextTick(function () {
+                    layui.multiSelect.render();
+                })
+            }
+        });
+    </script>
+
+    <script type="text/x-template" id="layCheckbox">
+        <div class="layui-form" :lay-filter="columnInfo.ColumnKey">
+            <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+            <div class="layui-input-block">
+                <div v-for="(item,index) in showVal" style="width:106px;display:inline-block;margin-bottom:5px;">
+                    <input type="checkbox" :name="columnInfo.ColumnKey+'-'+index" :title="item.value"  :checked="item.checked">
+                </div>
+                
+            </div>
+        </div>
+    </script>
+    <script>
+        Vue.component('lay-checkbox', {
+            template: '#layCheckbox',
+            props: ['columnInfo', 'value', 'data'],
+            computed: {
+                showVal: function () {
+                    var that = this;
+                    //由自己组装，100%没有中文逗号
+                    var value = this.value.split(',');
+                    var arr = this.columnInfo.arrayData.map(function (item, index) {
+                        var had = false;
+                        value.forEach(function (n) {
+                            if (item == n) {
+                                had = true;
+                            }
+                        })
+                        if (had) {
+                            return { value: item, checked: true }
+                        } else {
+                            return { value: item, checked: false }
+                        }
+                    })
+                    this.$nextTick(function () {
+                        layui.form.render('checkbox');
+                    })
+                    return arr;
+                }
+            },
+            mounted: function () {
+                var that = this;
+                this.$nextTick(function () {
+                    //layui.form.render(null, that.columnInfo.ColumnKey)
+                    layui.form.render('checkbox');
+                })
+            },
+        });
+    </script>
+
+
+    <script>
+        Vue.component('linshi', {
+            data: function () {
+                return {
+                    count: 0
+                }
+            },
+            template: '<input type="hidden"/>'
+        })
+        // 定义一个名为 button-counter 的新组件
+        var myColSearch = {
+            "零件": {
+                checkedKey: 'partSN',
+                //ColumnKey: 'partName',
+                SearchPlaceholder: '搜索零件与零件编号',
+                ColumnName: '零件',
+                RelativeDataString: '/api/services/app/Part/GetTaskPageResult',
+                ReferenceItemTpl: 'partSN',
+                ReferenceSearchColumns: JSON.stringify([
+                    { field: "partName", title: "零件名称" },
+                    { field: "partSN", title: "零件编号" },
+                    { field: "partNum", title: "数量" },
+                    { field: "partSpecification", title: "规格" }]),
+            },
+            "模具编号": {
+                checkedKey: 'projectSN',
+                //ColumnKey: 'ProjectSN',
+                SearchPlaceholder: '搜索模具编号',
+                ColumnName: '模具编号',
+                RelativeDataString: '/api/services/app/Project/GetPageResult',
+                ReferenceItemTpl: 'projectSN',
+                ReferenceSearchColumns: JSON.stringify([{ field: "projectSN", title: "模具编号" },
+                { field: "projectName", title: "模具名称" }]),
+            },
+            "加工点": {
+                checkedKey: 'unitName',
+                //ColumnKey:'UnitName' ,
+                SearchPlaceholder: '搜索企业名称',
+                ColumnName: '加工点',
+                RelativeDataString: '/api/services/app/Unit/GetPageResult',
+                ReferenceItemTpl: 'unitName',
+                ReferenceSearchColumns: JSON.stringify([{ field: "unitName", width: 250, title: "企业" },
+                { field: "address", title: "地址" }]),
+            },
+            "工序": {
+                checkedKey: 'processTypeName',
+                //ColumnKey: 'processTypeName',
+                SearchPlaceholder: '搜索工序名称',
+                ColumnName: '工序',
+                RelativeDataString: '/api/services/app/ProcessType/GetPageResult',
+                ReferenceItemTpl: 'processTypeName',
+                ReferenceSearchColumns: JSON.stringify([{ field: "processTypeName", title: "工序" }]),
+            },
+            "开单人": {
+                checkedKey: 'poster',
+                SearchPlaceholder: '搜索',
+                ColumnName: '开单人',
+                RelativeDataString: [{poster:''}],
+                ReferenceItemTpl: 'poster',
+                ReferenceSearchColumns: JSON.stringify([{ field: "poster", title: "开单人" }]),
+            },
+            "计价方式": {
+                ColumnKey: '',
+                SearchPlaceholder: '搜索工序名称',
+                ColumnName: '计价方式',
+                RelativeDataString: '/api/services/app/ProcessType/GetPageResult',
+                ReferenceItemTpl: 'processTypeName',
+                ReferenceSearchColumns: JSON.stringify([{ field: "processTypeName", title: "工序" }]),
+            },
+            "模具组长": {
+                ColumnKey: '',
+                SearchPlaceholder: '搜索工序名称',
+                ColumnName: '模具组长',
+                RelativeDataString: '/api/services/app/ProcessType/GetPageResult',
+                ReferenceItemTpl: 'processTypeName',
+                ReferenceSearchColumns: JSON.stringify([{ field: "processTypeName", title: "工序" }]),
+            },
+            "工艺师": {
+                ColumnKey: '',
+                SearchPlaceholder: '搜索工序名称',
+                ColumnName: '工艺师',
+                RelativeDataString: '/api/services/app/ProcessType/GetPageResult',
+                ReferenceItemTpl: 'processTypeName',
+                ReferenceSearchColumns: JSON.stringify([{ field: "processTypeName", title: "工序" }]),
+            },
+            "审核人": {
+                ColumnKey: '',
+                SearchPlaceholder: '搜索工序名称',
+                ColumnName: '审核人',
+                RelativeDataString: '/api/services/app/ProcessType/GetPageResult',
+                ReferenceItemTpl: 'processTypeName',
+                ReferenceSearchColumns: JSON.stringify([{ field: "processTypeName", title: "工序" }]),
+            },
+            "检验人": {
+                ColumnKey: '',
+                SearchPlaceholder: '搜索工序名称',
+                ColumnName: '检验人',
+                RelativeDataString: '/api/services/app/ProcessType/GetPageResult',
+                ReferenceItemTpl: 'processTypeName',
+                ReferenceSearchColumns: JSON.stringify([{ field: "processTypeName", title: "工序" }]),
+            }
+        }
+        cols = {
+            ColumnKey: 'unitName',
+            SearchPlaceholder: '搜索企业名称',
+            ColumnName: '加工点',
+            VerifyRules: '',
+            RelativeDataType: 'Url',
+            RelativeDataString: '/api/services/app/Unit/GetPageResult',
+            MaxReferenceNumber: '-1',
+            ReferenceItemTpl: 'UnitName',
+            ReferenceSearchColumns: JSON.stringify([{ field: "UnitName", width: 250, title: "企业" },
+            { field: "Address", title: "地址" }]),
+        }
+        var app;
+        config.ready = function () {
+            app = new Vue({
+                el: '#app',
+                data: {
+                    memory: [],
+                    items: [],
+                    mblist: [],
+                    modelname: "",
+                    pagename: "",
+                    temObj: { Search: 'lay-tableselect', Like: 'lay-tableselect', Date: 'lay-range-datel', Array: 'lay-multi-select', Check: 'lay-checkbox' },
+                    activeIndex: -1,
+                },
+                computed: {
+                    lastMemory: function () {
+                        var lastM = {};
+                        if (parent.SearchData.length > 0) {
+                            for (var i = 0; i < parent.SearchData.length; i++) {
+                                lastM[parent.SearchData[i].key] = parent.SearchData[i].data;
+                            }
+                        }
+                        return lastM;
+                    },
+                },
+                methods: {
+                    delModel: function (i) {
+                        var that = this;
+                        abp.message.confirm('确定删除' + this.mblist[i] + '模板吗？', function () {
+                            var pdata = { Name: that.mblist[i], PageName: that.pagename, Key: that.modelname };
+                            func.runAsync(abp.services.app.search.delSearchData(pdata).done(function (data) { }));
+                            that.mblist.splice(i, 1);
+                            that.getData();
+                        })
+                    },
+                    editModel: function () {
+                        var that = this;
+                        if (this.activeIndex == -1) {
+                            layer.msg('默认模板不允许更改名字')
+                        } else {
+                            layer.prompt({ title: '模板名称', formType: 2, value: this.mblist[this.activeIndex] }, function (text, index) {
+                                var pdata = { Name: text, PageName: that.pagename, Key: that.modelname, OldName: that.mblist[that.activeIndex] };
+                                func.runAsync(abp.services.app.search.rNameSearchData(pdata).done(function (data) {
+                                    that.mblist.splice(that.activeIndex, 1, text);
+                                }));
+                                layer.close(index);
+                                //SaveSearchData(text);
+                            });
+                        }
+
+                    },
+                    saveModel: function (x) {
+                        var that = this;
+                        if (x && this.activeIndex != -1) {
+                            SaveSearchData(this.mblist[this.activeIndex]);
+                        } else {
+                            layer.prompt({ title: '模板名称', formType: 2 }, function (text, index) {
+                                SaveSearchData(text);
+                                that.mblist.push(text)
+                                layer.close(index);
+                            });
+                        }
+                        //保存模板数据的方法
+                        function SaveSearchData(name) {
+                            var searchdatas = [];
+                            for (var i = 0; i < app.items.length; i++) {
+                                searchdatas.push({ Name: app.items[i].name, Keys: app.items[i].keys, Model: app.items[i].model, SearchType: app.items[i].searchType, ArrayData: app.items[i].arrayData, CanAnd: app.items[i].canAnd, Data: getInputsVal(app.items[i], i) });
+                            }
+
+                            var pdata = { Name: name, PageName: app.pagename, Key: app.modelname, searchDatas: searchdatas };
+                            func.runAsync(abp.services.app.search.saveSearchData(pdata).done(function (data) { }));
+                        }
+                    },
+                    lazySetH: function () {
+                        $('#app').css('min-height', $(document).height());
+                        //$('#app').height($(document).height())
+                    },
+                    //设置数据
+                    //SetData:function () {
+                    //    if(parent.SearchData.length > 0) {
+                    //        for (var i = 0; i < parent.SearchData.length; i++) {
+                    //            app.memory[parent.SearchData[i].key] = parent.SearchData[i].data;
+                    //        }
+                    //    }
+                    //},
+                    getData: function (programName, index) {
+                        if (typeof index != "undefined") {
+                            this.activeIndex = index;
+                        } else {
+                            this.activeIndex = -1;
+                        }
+                        var that = this;
+                        func.runAsync(abp.services.app.search.getSearchData(programName, this.modelname, this.pagename).done(function (data) {
+                            console.log('查询信息', data)
+                            that.items = data;
+                            that.memory = [];
+                            for (var i = 0; i < data.length; i++) {
+                                that.memory[that.getKey(i)] = data[i].data;
+                                //that.memory[(data[i].model == that.modelname ? '' : (data[i].model + '.')) + data[i].keys] = data.data;
+                            }
+                            console.log(that.memory, data)
+                            if (typeof index == "undefined") {
+                                $.extend(that.memory, that.lastMemory)
+                            }
+                        }));
+                    },
+                    getKey: function (index) {
+                        return (this.items[index].model == this.modelname ? '' : (this.items[index].model + '.')) + this.items[index].keys
+                    },
+                    choosed: function (address) {
+                        console.log(address)
+                    },
+                    getCols: function (index) {
+                        var basisCols = {};
+                        var item = this.items[index];
+                        var backObj = { ColumnKey: 'gjS' + index };
+                        if (item.searchType == 'Search' || item.searchType == 'Like') {
+                            basisCols = { checkedKey: 'Id', MaxReferenceNumber: '-1', VerifyRules: '', RelativeDataType: 'Url', placeholder: '' };
+                            $.extend(backObj, basisCols, myColSearch[this.items[index].name]);
+                            //console.log(index,backObj)
+                        } else if (item.searchType == 'Date') {
+                            basisCols = { ColumnName: item.name }
+                            $.extend(backObj, basisCols);
+                        } else if (item.searchType == 'Array' || item.searchType == 'Check') {
+                            basisCols = { ColumnName: item.name, arrayData: item.arrayData || [] }
+                            $.extend(backObj, basisCols);
+                        }
+
+                        return backObj;
+                    }
+                },
+                created: function () {
+                    this.modelname = $.getUrlParam('modelname');
+                    this.pagename = $.getUrlParam('pagename');
+
+                    abp.services.app.processTask.getHistoryPerson('poster').done((res) =>{
+                        myColSearch['开单人'].RelativeDataString = res.map((elm, index) => {
+                            return { poster: elm }
+                        })
+                        this.getData();
+                    })
+                 
+                },
+                mounted: function () {
+                    var that = this;
+                    func.runAsync(abp.services.app.processType.getAll().done(function (data) {
+                        that.processTypes = data;
+                        console.log(data);
+                        that.lazySetH();
+                    }));
+
+                }
+            });
+            //GetName();
+            //GetData();
+            GetMBList();
+        };
+
+        function getInputsVal(item,i) {
+            var data = '';
+            if (item.searchType == 'Search' || item.searchType == 'Like' || item.searchType == 'Date') {
+                data = $('#gjS' + i).val();
+            } else if (item.searchType == 'Array') {
+                data = $('[lay-filter="gjS' + i + '"]').siblings().find('[readonly]').val();
+            } else if (item.searchType == 'Check') {
+                data = [];
+                $('[lay-filter="gjS' + i + '"]')
+                item.arrayData.forEach(function (item, index) {
+                    if ($('[name="gjS' + i + '-' + index + '"]').prop('checked')) {
+                        data.push(item);
+                    }
+                })
+                data = data.join(',');
+            } else {
+                data = $("[name='" + (item.model == app.modelname ? "" : (item.model + ".")) + item.keys + "']").val();
+            }
+            return data
+        }
+
+        function submit() {
+            var templist = [];
+            for (var i = 0; i < app.items.length; i++) {
+                var item = app.items[i];
+                var data = getInputsVal(item, i);
+                
+                if (data) {
+                    var temp = { key: (item.model == app.modelname ? "" : (item.model + ".")) + item.keys, data: data, type: item.searchType, canAnd: item.canAnd };
+                    templist.push(temp);
+                }
+            }
+            parent.SearchData = [];
+            $.extend(parent.SearchData, templist);
+            console.log(templist)
+            parent.layer.closeAll();
+
+            parent.GJSearch();
+        }
+
+
+
+        //得到对应模板列表
+        function GetMBList() {
+
+            func.runAsync(abp.services.app.search.getSearchDataSave(app.modelname, app.pagename).done(function (data) {
+                app.mblist = data;
+            }));
+        }
+
+                                //切换显示的数据
+                                //function switchData(t) {
+
+                                //    GetData(t);
+                                //}
+
+                                //function GetName() {
+                                //    var arry = location.search.split('&');
+                                //    for (var i = 0; i < arry.length; i++) {
+                                //        if (arry[i].startsWith("modelname")) {
+                                //            app.modelname = arry[i].split('=')[1];
+                                //            break;
+                                //        }
+
+                                //    }
+                                //    for (var i = 0; i < arry.length; i++) {
+                                //        if (arry[i].startsWith("pagename")) {
+
+                                //            app.pagename = arry[i].split('=')[1];
+                                //            break;
+                                //        }
+
+                                //    }
+
+                                //}
+
+                                            //获取数据
+                                //function GetData(t) {
+                                //    func.runAsync(abp.services.app.search.getSearchData(t, app.modelname, app.pagename).done(function (data) {
+                                //        app.items = data;
+                                //        app.memory = [];
+                                //        for (var i = 0; i < app.items.length; i++) {
+                                //            app.memory[(app.items[i].model == app.modelname ? '' : (app.items[i].model + '.')) + app.items[i].keys] = app.items[i].data;
+                                //        }
+                                //        SetData();
+                                //    }));
+
+                                //}
+
+
+    </script>
+}

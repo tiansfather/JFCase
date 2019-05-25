@@ -1,0 +1,369 @@
+﻿<style>
+    @media print {
+        #btn, .print_unshow-span, .print-p {
+            display: none !important;
+        }
+    }
+
+    .logo-wrap {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+        .logo-wrap img {
+            max-height: 100px;
+            max-width: 150px;
+            margin-left: 15px;
+        }
+
+    .print-p {
+        font-size: 12px;
+    }
+
+    .my-btn {
+        width: 26px;
+        padding: 0 5px;
+        overflow: hidden;
+        transition: width 0.3s;
+        -moz-transition: width 0.3s; /* Firefox 4 */
+        -webkit-transition: width 0.3s; /* Safari 和 Chrome */
+        -o-transition: width 0.3s; /* Opera */
+    }
+
+        .my-btn:first-child:hover {
+            width: 60px;
+        }
+
+    #app {
+        position: relative;
+    }
+
+    #print {
+        position: absolute;
+        left: 50px;
+        top: 22px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    .my-zhuti {
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    p {
+        padding: 0;
+        margin: 0;
+    }
+
+    .process {
+        position:relative;
+        font-size: 10px;
+        margin: 0;
+        padding: 5px;
+        width: 100%;
+    }
+
+    .top {
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        letter-spacing: 10px;
+    }
+
+        .top img.logo {
+            padding: 0 0 0 10px;
+            float: left;
+            height: 50px;
+        }
+
+    tr {
+        height: 35px;
+    }
+
+    .process td {
+        font-size: 14px;
+        border-bottom: 1px solid #222;
+        border-right: 1px solid #222;
+        line-height: 18px;
+        padding: 0 5px;
+        text-align: center;
+        font-family: "宋体";
+        letter-spacing: 4px;
+    }
+
+    .process table {
+        border-left: 1px solid #222;
+        border-top: 1px solid #222;
+    }
+
+    .process ul {
+        list-style: none;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        display: block;
+    }
+
+    .process li {
+        float: left;
+        width: 25%;
+        text-align: left;
+    }
+
+    .peo li {
+        float: left;
+        width: 20%;
+        text-align: left;
+    }
+
+    strong {
+        font-size: 14px;
+        font-family: "楷体_GB2312";
+    }
+
+    .qrcode {
+        height: 200px;
+        width: 200px;
+        float: left;
+        margin-left: 20px;
+        padding: 3px 0
+    }
+
+        .qrcode img {
+            height: 200px;
+            width: 200px;
+        }
+
+    .had-print {
+        background: #ccc;
+    }
+
+    body {
+        background: #fff;
+    }
+    .first-tr td{
+        width:16.5%;
+    }
+    td[field] {
+        text-align: left;
+        letter-spacing: 0;
+        background:#fbfbfb;
+    }
+    input[type="checkbox"]{
+        width:18px;
+        height:18px;
+        padding-right:5px;
+    }
+</style>
+<div id="app" class="my-zhuti" style="display:none">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-style: none;">
+        <tbody>
+            <tr style="border-style: none;">
+                <td rowspan="2" width="25%" style="border-style: none; padding-left:5px">
+                    <div class="logo-wrap" id="btn">
+                        <button class="my-btn layui-btn layui-btn-sm" :class="{'had-print':currentItem.printed}" @click="myPrint">
+                            <i class="layui-icon layui-icon-print my-i-print"></i> &nbsp;打印
+                        </button>
+                    </div>
+                    <div class="logo-wrap">
+                        <img :src="currentItem.logo||'/assets/images/master-logo.png'" alt="" class="logo-img" />
+                    </div>
+                    <!--<p class="print-p">
+                        请联系我们定制打印模板
+                    </p>-->
+                    <!--<img src="" alt="" class="logo" width="90px" height="50px" />-->
+                </td>
+                <td rowspan="2" style="text-align: center; border-style: none;" width="50%">
+                    <p style="letter-spacing:0; font-size:32px; font-weight: bold;color:black;font-family: STXingkai;">{{currentItem.tenancyName}}</p>
+                    <span style="letter-spacing:0; font-size:22px;">试模通知单</span>
+                </td>
+                <td width="25%" style="border-style: none; padding-right: 3px;">
+                    <!--<span style="color:#C30; letter-spacing:0; float:right; font-size:18px; font-weight: bold;">{{currentItem.tenantId}}{{currentItem.processSN}}</span>-->
+                </td>
+            </tr>
+            <tr style="border-style: none;">
+                <td style="border-style: none; padding-right: 3px;">
+                    <!--<span style="letter-spacing:0;float:right; font-size:14px;">开单日期：{{nowDate}}</span>-->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="process">
+        <table cellpadding="0" cellspacing="0" align="center" width="100%">
+            <tbody>
+                <tr class="first-tr">
+                    <td>
+                        模具编号
+                    </td>
+                    <td>{{currentItem.projectSN}}</td>
+                    <td>模具名称</td>
+                    <td></td>
+                    <td>模具组长</td>
+                    <td>{{currentItem.projectCharger}}</td>
+                </tr>
+                <tr class="bt">
+                    <td>
+                        试模材料
+                    </td>
+                    <td contenteditable="true" field="smcl"></td>
+                    <td>试模日期</td>
+                    <td contenteditable="true" field="smrq"></td>
+                    <td>试模次数</td>
+                    <td contenteditable="true" field="smcs"></td>
+                </tr>
+                <tr class="bt">
+                    <td>
+                        是否烘料
+                    </td>
+                    <td contenteditable="true" field="sfhl"></td>
+                    <td>注塑机台</td>
+                    <td contenteditable="true" field="csjt"></td>
+                    <td>颜色/色号</td>
+                    <td contenteditable="true" field="color"></td>
+                </tr>
+                <tr class="bt">
+                    <td>
+                        产品重量
+                    </td>
+                    <td contenteditable="true" field="cpzl"></td>
+                    <td>样件数量</td>
+                    <td contenteditable="true" field="yjsl"></td>
+                    <td>用料重量</td>
+                    <td contenteditable="true" field="ylzl"></td>
+                </tr>
+                <tr class="bt">
+                    <td>进浇方式</td>
+                    <td contenteditable="true" field="jjfs"></td>
+                    <td>温控箱要求</td>
+                    <td contenteditable="true" field="wkxyq"></td>
+                    <td>冷却水</td>
+                    <td contenteditable="true" field="lqs"></td>
+                </tr>
+                <tr style="height:100px;">
+                    <td>附注</td>
+                    <td contenteditable="true" field="fz" colspan="5" style="padding: 5px; vertical-align: top;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="checkbox" field="t1" />
+                        <span>T1</span>
+                    </td>
+                    <td colspan="2">
+                        <input type="checkbox" field="khjy" />
+                        <span>客户寄样</span>
+                    </td>
+                    <td colspan="2">
+                        <input type="checkbox" field="xm" />
+                        <span>修模</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="checkbox" field="xgj" />
+                        <span>型改进</span>
+                    </td>
+                    <td colspan="2">
+                        <input type="checkbox" field="khys" />
+                        <span>客户验收</span>
+                    </td>
+                    <td colspan="2">
+                        <input type="checkbox" field="sc" />
+                        <span>试产</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>部门</td>
+                    <td colspan="2">项目负责人</td>
+                    <td colspan="2">生产部</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>签字</td>
+                    <td colspan="2"></td>
+                    <td colspan="2"></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="position:absolute;right:-20px;top:10px;">
+            <p style="font-size: 16px; writing-mode: vertical-rl;">第一联&emsp;项目部（红）&emsp;&emsp; &emsp;第二联&emsp;生产部（白）</p>
+        </div>
+    </div>  
+</div>
+<script>
+    var app;
+
+    layui.use(['layer'], function () {
+
+    })
+    //图片上传
+    app = new Vue({
+        el: '#app',
+        data: {
+            currentItem: {},
+            taskId: $.getUrlParam("taskid"),
+        },
+        methods: {
+            loadItem: function (taskId) {
+                var that = this;
+                func.runAsync(abp.services.app.processTask.getTaskInfoById(taskId).done(function (data) {
+                    that.currentItem = data;
+                    //加载额外添加数据
+                    loadTemplateData(function () {
+                        $("#app").show();
+                        typeof dataLoaded != "undefined" &&that.$nextTick(dataLoaded);
+                    });
+
+                }))
+
+            },
+            myPrint: function () {
+                window.print();
+                this.currentItem.printed = true;
+                //提交打印额外添加数据
+                submitTemplateData();
+                abp.services.app.processTask.setTaskStatus(this.taskId, 'Print', true)
+            }
+        },
+        computed: {
+            nowDate: function () {
+                var myDate = new Date();
+                var date = myDate.getDate();
+                var month = myDate.getMonth() + 1;
+                var year = myDate.getFullYear();
+                return year + '-' + month + '-' + date;
+            },
+            qrCode: function () {
+                return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Report?taskid=" + this.taskId);
+
+            }
+        },
+        mounted: function () {
+            this.loadItem(this.taskId);
+
+        }
+
+    })
+
+    $(".uploadinsert").on('mousewheel', 'img', function (e) {
+        var delta = e.originalEvent.wheelDelta;
+        var oriWidth = $(this).width();
+        var newWidth = oriWidth * (delta > 0 ? 1.2 : 0.8);
+        $(this).css("width", newWidth + "px");
+        console.log(e);
+    })
+
+    function uploadCallback(res) {
+        var filePath = res.filePath;//图片路径
+        $(".uploadinsert").html("<img src='" + filePath + "' width='300' tips='鼠标滚轮进行图片缩放' />");
+        //提交至加工图片
+        abp.services.app.processTask.attachSheetFile(app.taskId, filePath);
+        console.log(res);
+    }
+
+            //function print() {
+            //    window.print();
+            //}
+</script>

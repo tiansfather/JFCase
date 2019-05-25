@@ -1,0 +1,810 @@
+﻿@using Abp.Localization
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@{
+
+}
+@section styles{
+    <link href="/Views/MES/Rcss.css" rel="stylesheet" />
+    <style>
+        /*input {
+            border-radius: 4px!important;
+        }*/
+        .layui-form-item .my-layui-select {
+            text-align: right;
+            right: 10px;
+            padding: 8px 0;
+            width: 90px;
+            border-style: none;
+        }
+
+        .my-five {
+            margin-left: 12px;
+        }
+
+        .my-layui-select-five {
+            text-align: right;
+            right: 10px;
+            padding: 8px 0;
+            width: 60px;
+        }
+
+        .layui-form-item .my-input-inline-five {
+            width: 100px;
+        }
+
+        .my-layui-card {
+            width: 970px;
+            margin: 0 auto;
+        }
+
+        .my-layui-sub {
+            position: absolute;
+            top: -50px;
+            right: 10px;
+        }
+
+        .my-layui-bold {
+            height: 65px;
+            line-height: 65px;
+            box-shadow: 2px 2px 4px #ddd;
+        }
+
+        .my-textarea {
+            /*display:inline-block;*/
+        }
+
+            .my-textarea textarea {
+                width: 350px;
+            }
+
+            .my-textarea div {
+                margin-left: 0;
+                display: inline-block;
+            }
+
+        .my-textarea-btn {
+            display: inline-block;
+            vertical-align: top;
+            /*position:relative;
+            top:-97px;
+            left:27px;*/
+        }
+
+        .partname-span {
+            display: inline-block;
+            position: relative;
+            height: 100%;
+            font-size: 14px;
+            border-radius: 2px 0 0 2px;
+            background-color: #d2d2d2;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            background: 0 0;
+            color: #666;
+            line-height: 36px;
+        }
+
+        .xm-form-select .xm-select-dl {
+            width: 290px;
+            /*设置下拉框的宽度*/
+        }
+
+        div[fs_id="unitName"] .xm-form-select .xm-select-dl {
+            width: 240px;
+        }
+
+        .xm-form-select .xm-select-dl .xm-cz-group {
+            max-width: none !important;
+        }
+
+        .my-required-span {
+            font-size: 14px;
+            color: red;
+        }
+
+        .my-five .xm-form-select .xm-select-dl {
+            width: 180px;
+        }
+
+        div[xm-hg] .xm-select-label {
+            right: 23px;
+        }
+
+        .xm-select-parent .xm-select-sj {
+        }
+        /*----------------------------工艺流程-----------------------------------------*/
+        .my-li-typeName .my-lity-span, .my-li-date span {
+            color: #ccc;
+        }
+
+        .my-li-typeName {
+            line-height: 20px !important;
+        }
+
+        .my-tasksli-active span {
+            color: black !important;
+        }
+
+        .my-tasksli-active.my-li-typeName span {
+            font-size: 16px;
+        }
+
+        .my-lity_date-span {
+            font-size: 12px !important;
+            color: #ccc !important;
+        }
+
+        .my-tasksli-active.my-li-typeName {
+            background: #fff2a8 !important;
+        }
+        /*----------------------------------------------------------------------------------*/
+        .defalut-gray {
+            color: gray;
+        }
+        /*-----------------------------------云设备--------------------------------------------------*/
+        .my-unitname-cloud {
+            width: 200px;
+            max-height: 300px;
+            left: 245px;
+            top: 39px;
+            overflow-y: auto;
+            animation-fill-mode: both;
+            -webkit-animation-name: layui-upbit;
+            animation-name: layui-upbit;
+            -webkit-animation-duration: .3s;
+            animation-duration: .3s;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+        }
+
+        .my-unitname-cloud, #hoveredLi {
+            border: 1px solid #d2d2d2;
+            position: absolute;
+            z-index: 999;
+            background-color: #fff;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.12);
+            box-sizing: border-box;
+            display: none;
+        }
+
+        .my-unitnamecld_opened {
+            display: block;
+        }
+
+        #dom-unitnamecld_ul {
+            margin-top: 7px;
+            position: relative;
+        }
+
+        .unitcld-li_span {
+            position: relative;
+            left: 30px;
+        }
+
+        #dom-unitnamecld_ul li {
+            position: relative;
+            cursor: pointer;
+            height: 36px;
+            padding: 0 10px;
+            line-height: 36px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #hoveredLi {
+            padding: 5px 3px;
+            top: 166px;
+            left: 860px;
+            width: 200px;
+            height: 154px;
+        }
+
+            #hoveredLi li {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+                #hoveredLi li span:first-child {
+                    white-space: nowrap;
+                    font-size: 14px;
+                    line-height: 36px;
+                    font-weight: 600;
+                }
+
+                #hoveredLi li span:last-child {
+                    font-size: 13px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+        #dom-unitnamecld_ul i {
+            color: #fff;
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            top: 9px;
+            border: 1px solid #5fb878;
+            border-radius: 20px;
+            z-index: 2;
+        }
+
+        #dom-unitnamecld_ul .opened i {
+            border: none;
+            color: #009688;
+            font-size: 18px;
+            top: 1px;
+        }
+
+            #dom-unitnamecld_ul .opened i:after {
+                content: '\e62b';
+            }
+
+        .dom-unitnamecld_li:hover {
+            background: #f0f0f0;
+        }
+
+        #my-unitnamecld-b {
+            margin-left: 10px;
+            margin-top: 10px;
+            display: block;
+        }
+        /*font[fsw="xm-select"] {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 90px;
+            display: inline-block;
+        }*/
+        /*---------------------------------------------*/
+        .my-unit-wrap {
+            position: relative;
+        }
+
+        .my-unit-span {
+            font-size: 14px;
+            position: absolute;
+            right: 5px;
+            top: 7px;
+        }
+
+        .layui-input-block {
+            margin-left: 90px;
+        }
+
+        .my-file-wrap {
+            display: inline-block;
+            padding-left: 70px;
+            vertical-align: top;
+            position: relative;
+        }
+
+        .my-file-div {
+            left: 192px;
+            position: absolute;
+            height: 115px;
+            width: 150px;
+            top: 0;
+        }
+        .sheetfile-delete_i {
+            position: absolute;
+            font-size: 35px;
+            background: rgba(0, 0, 0, 0.1);
+            line-height: 35px;
+            border-radius: 5px;
+            padding: 5px;
+            top:0;
+            right: -60px;
+            cursor: pointer;
+        }
+        .my-file-img {
+            width: 100%;
+            height: 100%;
+            vertical-align: top;
+            -o-object-fit: cover;
+            object-fit: cover;
+        }
+
+        innput.layui-disabled, innput.layui-disabled:hover {
+            color: #009688 !important;
+        }
+/*--明细--*/
+        .details {
+            position: relative;
+        }
+        .details .r-input-number {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+/*多零件*/
+        .multi-part-btn {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .multi-part-btn .layui-form-switch {
+            margin-top: 0;
+            margin-bottom: 10px;
+            line-height: 30px;
+            height: 30px;
+            margin-right: 20px;
+        }
+        .multi-part-btn i{
+            top: 7px;
+        }
+        .multi-part .r-multi td.readonlyfilename span {
+            display: block;
+            width: 7em;
+            word-break: keep-all;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card my-layui-card">
+        <div class="layui-card-header bold my-layui-bold"><i class="layui-icon layui-icon-next"></i>加工开单</div>
+        <div class="layui-card-body layui-hide" id="app">
+            <div id="hoveredLi">
+                <ul>
+                    <li :title="liMesseage.companyName">
+                        <span>加工点:</span><span>{{liMesseage.companyName }}</span>
+                    </li>
+                    <li :title="liMesseage.mobile">
+                        <span>电话:</span><span>{{liMesseage.mobile}}</span>
+                    </li>
+                    <li :title="liMesseage.address">
+                        <span>地址:</span><span>{{liMesseage.address}}</span>
+                    </li>
+                    <li :title="liMesseage.speciality">
+                        <span>特长:</span><span>{{liMesseage.speciality}}</span>
+                    </li>
+                </ul>
+            </div>
+            <form class="layui-form " action="">
+                <div class="layui-form-item my-layui-sub">
+                    <div class="layui-btn-container">
+                        <div class="multi-part-btn" v-if="abp.setting.getBoolean('MES.EnableMultiPartKaiDan')&&!currentItem.id">
+                            <lay-switch :value="currentItem.multi" filter="processTaskParts" @@on-change="currentItem.multi=$event;if(!$event){currentItem.processTaskParts=[{}]}" laytext="多零件|单零件" />
+                            @*<input type="checkbox" checked lay-skin="switch" v-model="currentItem.multi" lay-text="多零件|单零件">*@
+                        </div>
+                        <button class="layui-btn layui-btn-radius layui-btn-primary"type="button" :buttonname="currentItem.partName+'('+currentItem.partSN+')'" 
+                                params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;],&quot;btn&quot;:[&quot;发布&quot;,&quot;暂存&quot;,&quot;关闭&quot;]}" 
+                                lay-event="Add" confirmmsg="" buttonactiontype="Form" fornonerow="1" 
+                                buttonactionurl="/ProcessQuote/Submit" oriurl="/ProcessQuote/Submit" modulekey="ProcessQuote"
+                                onclick="doSubmitProcessQuote()" lay-submit=""
+                                v-if="abp.auth.isGranted('Module.ProcessQuote.Button.Add')"
+                                v-disabled="currentItem.processSN">
+                            询价
+                        </button>
+                        <button class="layui-btn layui-btn-radius layui-btn-primary" lay-submit="" lay-filter="submit" type="button"
+                                v-disabled="!ConfirmProcessFlag||currentItem.verified">
+                            {{mustConfirmProcess?"审核":"保存"}}
+                        </button>
+                        <button class="layui-btn layui-btn-radius layui-btn-primary" type="button" onclick="doSend()" tips="发送加工单给加工点" v-disabled="currentItem.inner||!abp.auth.isGranted('Module.JGKD.Button.SendToUnit') ">
+                            发送
+                        </button>
+                        @*  :class="{ 'layui-disabled':currentItem.inner&&!currentItem.processSN}" :disabled="currentItem.inner&&!currentItem.processSN"  *@
+                        <button class="layui-btn layui-btn-radius layui-btn-primary" type="button" onclick="doPreview()" lay-filter="submit" >
+                            打印
+                        </button>
+                        @* :class="{'layui-disabled':!currentItem.processSN}" :disabled="!currentItem.processSN" *@
+                        @*<button class="layui-btn layui-btn-radius layui-btn-primary" type="button">打印</button>*@
+
+                        <button class="layui-btn layui-btn-radius layui-btn-primary" lay-submit="" lay-filter="submitNext" type="button">下一道</button>
+                    </div>
+
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">模具编号<span class="my-required-span">*</span></label>
+                        <div class="layui-input-inline" id="projectSNSelect" title="">
+                            <!--<input type="text" v-model="currentItem.projectSN" autocomplete="off" class="layui-input " lay-verify="required">-->
+                            <div v-show="showmode.proSNpName">
+                                <select name="projectSN" xm-select="projectSN" xm-select-radio="" xm-select-search="" lay-verify="required" lay-vertype="tips" xm-select-height="36px"></select>
+                            </div>
+                            <input type="text" name="projectSN" autocomplete="off" class="layui-input" v-model="currentItem.projectSN" v-show="!showmode.proSNpName" v-disabled="!showmode.proSNpName">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">预约日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" v-model="currentItem.appointDate" autocomplete="off" class="layui-input layui-date" lay-key="2" id="date2" v-disabled="disabled.verified">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">要求完成日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" v-model="currentItem.requireDate" autocomplete="off" class="layui-input layui-date" lay-key="1" id="date1" v-disabled="disabled.verified">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">零件名称<span class="my-required-span">*</span></label>
+                        <div class="layui-input-inline" id="partNameSelect" title="">
+                            <!--<input type="text" v-model="currentItem.partName" autocomplete="off" class="layui-input" lay-verify="required">-->
+                            <div v-show="showmode.proSNpName">
+                                <select name="partName" xm-select="partName" xm-select-radio="" xm-select-search="" lay-verify="required" lay-vertype="tips" xm-select-height="36px"></select>
+                            </div>
+                            <input type="text" name="partName" autocomplete="off" class="layui-input" :value="currentItem.partName+'('+currentItem.partSN+')'" v-show="!showmode.proSNpName" v-disabled="!showmode.proSNpName">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">规格</label>
+                        <div class="layui-input-inline">
+                            <input type="text" v-model="currentItem.partSpecification" autocomplete="off" class="layui-input" v-disabled="disabled.running||disabled.verified">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">数量<span class="my-required-span">*</span></label>
+                        <div class="layui-input-inline">
+                            <input type="text" v-model="currentItem.partNum" autocomplete="off" class="layui-input" v-disabled="disabled.running||disabled.verified" lay-verify="required|integer">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">加工工艺<span class="my-required-span">*</span></label>
+                        <div class="layui-input-inline">
+                            <!--<input type="text" v-model="currentItem.processType" autocomplete="off" class="layui-input" lay-verify="required">-->
+                            <select name="processTypeName" xm-select="processTypeName" xm-select-radio="" xm-select-search="" lay-verify="required" lay-vertype="tips" xm-select-height="36px" v-fs-disabled="disabled.running||disabled.verified"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline" v-show="!currentItem.inner">
+                        <label class="layui-form-label my-layui-select">加工点</label>
+                        <div class="layui-input-inline">
+                            <!--<input type="text" v-model="currentItem.unitName" autocomplete="off" class="layui-input" lay-verify="required">-->
+                            <select name="unitName" xm-select="unitName" xm-select-radio="" xm-select-search="" xm-select-height="36px" lay-vertype="tips" v-fs-disabled="disabled.running||disabled.verified"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline" v-show="currentItem.inner">
+                        <label class="layui-form-label my-layui-select">设备</label>
+                        <div class="layui-input-inline">
+                            <select name="equipmentSN" xm-select="equipmentSN" xm-select-radio="" xm-select-search="" xm-select-height="36px" lay-vertype="tips" v-fs-disabled="disabled.running||disabled.verified"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline  my-unit-wrap">
+                        <label class="layui-form-label my-layui-select">预计工时</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="estimateHours" autocomplete="off" class="layui-input" v-model="currentItem.estimateHours" lay-verify="numberOrempty" lay-vertype="tips" v-disabled="disabled.verified">
+                            <span class="my-unit-span">h</span>
+                        </div>
+                    </div>
+                    @*<div class="layui-inline">
+                <label class="layui-form-label my-layui-select">加工单价</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="price" autocomplete="off" class="layui-input" v-model="currentItem.price">
+                </div>
+            </div>*@
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">计价方式</label>
+                        <div class="layui-input-inline">
+                            <select name="feeType" xm-select-radio="" xm-select="feeType" xm-select-search="" v-fs-disabled="disabled.verified">
+                                <option value="">请选择</option>
+                                <option value="0">承包</option>
+                                <option value="1">按时间</option>
+                                <option value="2">按平方</option>
+                                <option value="3">按长度</option>
+                                <option value="4">按重量</option>
+                                <option value="5">按数量</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select">{{FeeTypeContent.PriceName}}</label>
+                        <div class="layui-input-inline">
+                            <input v-show="FeeTypeContent.PriceName=='承包金额'" lay-verify="numberOrempty" type="text" name="2" autocomplete="off" class="layui-input" v-model="currentItem.jobFee" v-disabled="disabled.verified">
+                            <input v-show="FeeTypeContent.PriceName=='加工单价'" lay-verify="numberOrempty" type="text" name="2" autocomplete="off" class="layui-input" v-model="currentItem.price" v-disabled="disabled.verified">
+                        </div>
+                    </div>
+                    <div class="layui-inline" v-if="FeeTypeContent.feeFactor">
+                        <label class="layui-form-label my-layui-select">{{FeeTypeContent.feeFactor}}</label>
+                        <div class="layui-input-inline my-unit-wrap">
+                            <input type="text" lay-verify="numberOrempty" lay-vertype="tips" name="feeFactor" autocomplete="off" class="layui-input" v-model="currentItem.feeFactor" v-disabled="disabled.verified">
+                            <span class="my-unit-span">{{FeeTypeContent.feeFactorName}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label my-layui-select">实际工时</label>
+                <div class="layui-input-inline">
+                    <input type="text" v-model="currentItem.actualHours" autocomplete="off" class="layui-input" lay-verify="number">
+                </div>
+            </div>
+        </div>*@
+
+                <div class="layui-form-item layui-form-text my-textarea">
+                    <label class="layui-form-label my-layui-select">工艺要求<span class="my-required-span">*</span></label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入加工内容与要求" class="layui-textarea" lay-verify="required" lay-vertype="tips" v-model="currentItem.taskInfo" :class="{'defalut-gray':isDefault}" v-disabled="disabled.verified"></textarea>
+                    </div>
+                    <div class="layui-form-item my-file-wrap">
+                        <button type="button" class="layui-btn layui-btn-sm" v-disabled="disabled.verified" id="sheetFile">加工示意图</button>
+                        <div class="my-file-div" v-if="currentItem.sheetFile&&currentItem.sheetFile.filePath">
+                            <img class="my-file-img"
+                                 :src="currentItem.sheetFile?currentItem.sheetFile.filePath+'?W=150&gap=false&':''"
+                                 @@click="flyOpenImg" />
+                            <i class="iconfont icon-qingkong1 sheetfile-delete_i" @@click="currentItem.sheetFile={}"></i>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:flex-start;align-items:center;">
+                    <div class="layui-form-item my-textarea-btn">
+                        <label class="layui-form-label my-layui-select-five ">加急</label>
+                        <div class="layui-input-block">
+                            @*<input type="checkbox" name="open" lay-skin="switch" lay-filter="emergency" title="开关" :checked="currentItem.emergency">*@
+                            <lay-switch :value="currentItem.emergency" filter="emergency" @@on-change="swtichEmergency($event)" :disabled="disabled.verified||disabled.running" />
+                        </div>
+                    </div>
+                    <div class="layui-form-item my-textarea-btn" style="margin-left:40px;">
+                        <label class="layui-form-label my-layui-select-five ">厂内</label>
+                        <div class="layui-input-block">
+                            @*<input type="checkbox" name="close" lay-skin="switch" lay-filter="bFactory" :checked="currentItem.inner==true">*@
+                            <lay-switch :value="currentItem.inner" filter="inner" @@on-change="switchInner($event)" :disabled="disabled.verified||disabled.running" />
+                        </div>
+                    </div>
+                    <div class="layui-form-item my-textarea-btn" style="margin-left:40px;">
+                        <label class="layui-form-label my-layui-select-five ">插单</label>
+                        <div class="layui-input-block">
+                            @*<input type="checkbox" name="close" lay-skin="switch" lay-filter="" :checked="currentItem.cha==true">*@
+                            <lay-switch :value="currentItem.cha" filter="cha" @@on-change="currentItem.cha=$event" :disabled="disabled.verified||disabled.running" />
+                        </div>
+                    </div>
+                    <div class="layui-form-item my-textarea-btn" style="margin-left:40px;">
+                        <label class="layui-form-label my-layui-select-five ">修模</label>
+                        <div class="layui-input-block">
+                            <lay-switch :value="currentItem.xiu" filter="xiu" @@on-change="currentItem.xiu=$event" :disabled="disabled.verified||disabled.running" />
+                        </div>
+                    </div>
+                    <div class="layui-form-item my-textarea-btn" style="margin-left:40px;">
+                        <label class="layui-form-label my-layui-select-five">备注</label>
+                        <div class="layui-input-inline my-input-inline-five">
+                            <select name="reason" xm-select="reason" xm-select-radio="" xm-select-search="" xm-select-height="36px" xm-select-search-type="dl" v-fs-disabled="disabled.verified"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item my-five">
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select-five">开单人</label>
+                        <div class="layui-input-inline my-input-inline-five">
+                            <select name="poster" xm-select="poster" xm-select-radio="" xm-select-search="" xm-select-height="36px" xm-select-create xm-select-search-type="dl" v-fs-disabled="disabled.verified"></select>
+                            @*<input type="text" v-model="currentItem.poster" autocomplete="off" class="layui-input">*@
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select-five">模具组长</label>
+                        <div class="layui-input-inline my-input-inline-five">
+                            <select name="projectCharger" xm-select="projectCharger" xm-select-radio="" xm-select-search="" xm-select-height="36px" xm-select-create xm-select-search-type="dl" v-fs-disabled="disabled.verified"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select-five">工艺师</label>
+                        <div class="layui-input-inline my-input-inline-five">
+                            <select name="craftsMan" xm-select="craftsMan" xm-select-radio="" xm-select-search="" xm-select-height="36px" xm-select-create xm-select-search-type="dl" v-fs-disabled="disabled.verified"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select-five">审核</label>
+                        <div class="layui-input-inline my-input-inline-five">
+                            <select name="verifier" xm-select="verifier" xm-select-radio="" xm-select-search="" xm-select-height="36px" xm-select-create xm-select-search-type="dl" v-fs-disabled="disabled.verified"></select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label my-layui-select-five">检验</label>
+                        <div class="layui-input-inline my-input-inline-five">
+                            <select name="checker" xm-select="checker" xm-select-radio="" xm-select-search="" xm-select-height="36px" xm-select-create xm-select-search-type="dl" v-fs-disabled="disabled.verified"></select>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div>
+                    附件清单
+                    <button class="layui-btn layui-btn-sm" v-disabled="disabled.verified" style="float:right" type="button" id="uploadBtn">上传附件</button>
+                </div>
+                <hr />
+                <table class="layui-table">
+                    <colgroup>
+                        <col width="300">
+                        <col>
+                        <col width="80">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>文件名称</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item,index) in currentItem.files" :data="item">
+                            <td style="width:80%"><a :href="item.filePath" target="_blank" style="color:blue;text-decoration:underline; ">{{item.fileName}}</a></td>
+                            <td><button type="button" class="layui-btn layui-btn-danger layui-btn-sm" @@click="removeFile(index)">删除</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="details" v-show="FeeTypeContent.PriceName=='承包金额'">
+                    <div style="height:34px;">
+                        明细清单
+                    </div>
+                    <hr />
+                    <div is="multi-data-add" :items="DetailsItems" :parts="currentItem.processTaskDetails" :maximum="8"></div>
+                </div>
+                <div class="multi-part details" v-if="currentItem.multi&&!currentItem.id">
+                    <div style="height:34px;">
+                        多零件清单
+                    </div>
+                    <hr />
+                    <div is="multi-data-add" :items="multiItems" :parts="currentItem.processTaskParts" :maximum="8"></div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <table id="PartTask" lay-filter="PartTask"></table>
+</div>
+@await Html.PartialAsync("/Views/MES/Common/partCommon.cshtml")
+@section scripts{
+    <script type="text/html" id="tasks">
+        <ul class="my-tasks-ul" data-partid="{{d.id}}">
+            {{#
+                var theLastStatus=(function() {
+                    var x = -1;
+                    d.tasks.forEach(function (n, i) {
+                        var s = n.processTaskStatus;
+                        if ([2, 3].indexOf(s) != -1) {
+                            x=i;
+                        }
+                    });
+                    return x;
+                })();
+            }}
+            {{#  layui.each(d.tasks, function(index, item){ }}
+            {{#
+            var planStartDate,planEndDate,arrangeDate,arrangeEndDate;
+            var estimateHours=item.estimateHours;
+            if(typeof item.planStartDate=='string'){
+            planStartDate=item.planStartDate.split('-').join('.')
+            }
+            if(typeof item.planEndDate=='string'){
+            planEndDate='-'.concat(item.planEndDate.split('-').join('.'))
+            }
+            if(item.arrangeDate){
+            arrangeDate=item.arrangeDate.split(' ')[0];
+            arrangeDate=arrangeDate.substr(5);
+            }else if(typeof item.planStartDate=='string'){
+            arrangeDate=planStartDate;
+            }
+            if(arrangeDate&&estimateHours){
+            var ms = new Date(item.arrangeDate).getTime() + estimateHours * 60 * 60 * 1000;
+            arrangeEndDate='-'+ func.formatDate(new Date(ms),{ type: 'Mounth' });
+            }else if(typeof item.planEndDate=='string'){
+            arrangeEndDate=planEndDate;
+            }
+
+            if(typeof item.startDate=='string'){
+            var startDate=item.startDate.split(' ')[0].substr(5)
+            }
+            if(typeof item.endDate=='string'){
+            var endDate='-'.concat(item.endDate.split(' ')[0].substr(5))
+            }
+            var showredEnd=false;
+            var showredStart=false;
+            if(endDate&&planEndDate){
+            showredEnd= (new Date(endDate)-new Date(planEndDate))>0;
+            }
+            if(startDate && planStartDate){
+            showredStart= (new Date(startDate)-new Date(planStartDate))>0;
+            }
+            var typeBack;
+            switch(item.processTaskStatus)
+            {
+            case 0:
+            typeBack="rgba(218,218,218,0.5)";
+            break;
+            case 1:
+            typeBack="rgba(250,118,59,0.5)";
+            break;
+            case 2:
+            typeBack="rgba(0, 253, 255, .5)";
+            break;
+            case 3:
+            typeBack="rgba(38,153,246,0.5)";
+            break;
+            case 4:
+            typeBack="rgba(117,210,57,0.5)";
+            break;
+            case 5:
+            typeBack="rgba(252, 252, 0,0.5)";
+            break;
+            default:
+            typeBack="rgba(189, 189, 189, .5)";
+            }
+            var actived='';
+            if(item.id==app.currentItem.id){
+            actived='my-tasksli-active';
+            }else{
+            actived='';
+            }
+            @*if(actived){
+                    typeBack=typeBack.replace('0.5',1);
+                }*@
+
+            }}
+            <li class="my-tasks-li {{theLastStatus==index?'reached':''}}">
+                <div class="my-li-typeName {{actived}} " style="border-color:{{typeBack}};" tips="<p class='text-overflow'>{{item.rateInfo||(item.SubmitFeeFromProcessor?item.SubmitFeeFromProcessor.info:'双击切换加工单')}}</p>" ondblclick=" typeNameDbClick(this, {{item.id}}) ">
+                    {{#if(d.processorReaded){}}
+                    <i class="iconfont icon-qingqiuyifasong my-icon-readed" title="已查收"></i>
+                    {{#}else if(d.sendProcessor){}}
+                    <i class="iconfont icon-yifasong my-icon-sent" title="已发送"></i>
+                    {{# }else if(item.printed){ }}
+                    <i class="layui-icon layui-icon-print my-icon-print" title="已打印"></i>
+                    {{# }else if(item.quoted){ }}
+                    <i class="iconfont icon-xunjia my-icon-quoted" title="已询价 "></i>
+                    {{# }else if(!item.inner){ }}
+                    <i class="iconfont icon-xinfeng my-icon-out" title="委外"></i>
+                    {{#} }}
+                    {{# if(item.emergency){ }}
+                    <i class="iconfont icon-jiaji my-icon-jiaji" title="加急"></i>
+                    {{#}}}
+                    <span class="my-lity-span" style=" white-space: nowrap">{{ item.processTypeName }}</span>
+                    <div class="lity-date_wrap">
+                        <span class=" my-lity_date-span">{{planStartDate || ''}}</span>
+                        <span class=" my-lity_date-span">{{planEndDate || '' }}</span>
+                    </div>
+                </div>
+                <div class="my-li-date" data-itemid="{{item.id }}" data-ptstatus="{{item.processTaskStatus}}" onclick="reportTimes({{item.sort }},{{item.processTaskStatus}})">
+                    <div class="anpai-div" title="安排时间,单击填写">
+                        <span class=" my-lidate-span">{{arrangeDate || ''}}</span>
+                        <span class=" my-lidate-span">{{arrangeEndDate || '' }}</span>
+                    </div>
+                    <div class="layui-progress layuiadmin-order-progress">
+                        <div class="layui-progress-bar {{func.getProgressColor(item.processTaskProgressInfo.progressType)}}"
+                             style="width: {{item.processTaskProgressInfo.progress*100}}%;height: 3px;"
+                             lay-percent="{{item.processTaskProgressInfo.progress*100}}%"></div>
+                    </div>
+                    <div class="baogong-div" title="报工时间,单击填写">
+                        <span class=" my-lidate-span  {{showredStart?'showred':''}}">{{startDate || ''}}</span>
+                        <span class=" my-lidate-span  {{showredEnd?'showred':''}}">{{endDate || '' }}</span>
+                    </div>
+                </div>
+                {{# if(abp.auth.isGranted('Module.PartTask.Button.Del')&&item.processTaskStatus!=3&&(item.processTaskStatus!=4)){ }}
+                <i class="iconfont icon-qingkong1 my-li-delete"></i>
+                {{# } }}      
+                {{# if(abp.auth.isGranted('Module.ProcessQuote.Button.Add')&&item.processTaskStatus==0){ }}
+                @* 未开单并且有权限 *@
+                <i class="iconfont icon-chengben my-li-quote" tips="直接询价" onclick="func.callModuleButtonEvent()"
+                   buttonname="{{d.partName+'('+d.partSN+')'}}"
+                   params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;],&quot;btn&quot;:[&quot;发布&quot;,&quot;暂存&quot;,&quot;关闭&quot;]}"
+                   lay-event="Add" confirmmsg="" buttonactiontype="Form" fornonerow="1"
+                   buttonactionurl="/ProcessQuote/Submit?taskid={{item.id}}" modulekey="ProcessQuote"></i>
+                {{#}}}
+                {{#if(theLastStatus==index){ }}
+                <i class="iconfont icon-yuanliaojiedian liao-icon"></i>
+                {{#}}}
+            </li>
+            {{#  }); }}
+            @if (await PermissionChecker.IsGrantedAsync("Module.PartTask.Button.Set"))
+            {
+            <li class="my-tasks-li_icon my-tasks_li-lock"><i class="iconfont icon-lock2" lay-direction="2" tips="锁定编辑" onclick="editLock(this)"></i></li>
+            <li class="my-tasks-li_icon my-tasks_li-add"><i class="iconfont icon-jiahao" lay-direction="2" tips="添加工序" onclick="addProcess({{d.id}})"></i></li>
+            }
+            @*<i class="my-tasks-add layui-icon layui-icon-tianjia2" tips="添加工序" onclick="addProcess({{d.id}})"></i>*@
+        </ul>
+    </script>
+    @*<script src="/Views/MES/js/JGKD.js"></script>*@
+    <script src="/assets/js/JGKD.js?v=20191241455" asp-append-version="true"></script>
+}

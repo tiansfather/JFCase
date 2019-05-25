@@ -1,0 +1,281 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@{
+	ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card" id="app" v-cloak>
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>{{title}}</div>
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane">
+                <div class="site-title">
+                    <fieldset>
+                        <legend>
+                            <a name="card">
+                                基本信息
+                            </a>
+                        </legend>
+                    </fieldset>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">案号<font color="red">*</font></label>
+                        <div class="layui-input-block">
+                            <input type="text" name="SourceSN" v-model="currentItem.sourceSN" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">城市<font color="red">*</font></label>
+                        <div class="layui-input-block">
+                            <select name="cityId" lay-filter="cityId" v-model="currentItem.cityId" lay-verify="required">
+                                <option v-for="(item,index) in cities" :value="item.id" v-text="item.name"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">一审法院</label>
+                        <div class="layui-input-block">
+                            <select name="court1Id" lay-filter="court1Id" v-model="currentItem.court1Id">
+                                <option v-for="(item,index) in courts" :value="item.id" v-text="item.name"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">二审法院</label>
+                        <div class="layui-input-block">
+                            <select name="court2Id" lay-filter="court2Id" v-model="currentItem.court2Id">
+                                <option v-for="(item,index) in courts" :value="item.id" v-text="item.name"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">案由<font color="red">*</font></label>
+                        <div class="layui-input-block">
+                            <select name="anYouId" lay-filter="anYouId" v-model="currentItem.anYouId" lay-verify="required">
+                                <option v-for="(item,index) in anYous" :value="item.id" v-text="item.name"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">生效日期<font color="red">*</font></label>
+                        <div class="layui-input-block">
+                            <input type="text" id="validDate" name="validDate" v-model="currentItem.validDate" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">判例原件<font color="red">*</font></label>
+                        <div class="layui-input-inline" style="width:300px">
+                            <input type="text" v-model="currentItem.sourceFile" autocomplete="off" class="layui-input" lay-verify="required" readonly>
+                        </div>
+                        <div class="layui-input-inline">
+                            <button type="button" class="layui-btn layui-btn-normal" id="uploadBtn">上传</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="site-title">
+                    <fieldset>
+                        <legend>
+                            <a name="card">
+                                律师信息
+                            </a>
+                        </legend>
+                    </fieldset>
+                </div>
+                <multi-data-add :items="lawyerItems" :parts="currentItem.lawyerFirms"></multi-data-add>
+                <div class="site-title">
+                    <fieldset>
+                        <legend>
+                            <a name="card">
+                                审判组织
+                            </a>
+                        </legend>
+                    </fieldset>
+                </div>
+                <multi-data-add :items="trialItems" :parts="currentItem.trialPeople"></multi-data-add>
+
+                <div class="layui-form-item" v-show="!currentItem.id">
+                    <div class="layui-input-block">
+                        <button style="display:none" lay-submit="" id="submitBtn" type="button"></button>
+                        <button class="layui-btn" @@click="submit1" type="button">保存后再新建一个</button>
+                        <button type="button" class="layui-btn layui-btn-normal" @@click="submit2">保存后至列表</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var app;        
+        config.ready = function () {
+            layui.form.on('select', function (data) {
+                console.log(data);
+                var elemName = data.elem.name;
+                app.currentItem[elemName] = data.value;
+                if (elemName == "cityId") {
+                    var cityId = data.value;
+                    app.currentItem.cityId = cityId;
+                    app.currentItem.court1Id = null;
+                    app.currentItem.court2Id = null;
+                    app.loadCourts();
+                }
+                
+            })
+            layui.form.on('submit', function () {
+                if (!app.currentItem.cityId) {
+                    abp.message.error("请选择城市");
+                    return false;
+                }
+                if (!app.currentItem.anYouId) {
+                    abp.message.error("请选择案由");
+                    return false;
+                }
+                func.runAsync(abp.services.app.caseSource.update(app.currentItem).done(function () {
+                    top.layer.msg('提交成功');
+                    if (app.submitType == 1) {                        
+                        window.setTimeout(function () {
+                            location.reload();
+                        }, 200);
+
+                    } else if (app.submitType == 2) {
+                        $("[data-name='Admin.Tenancy.CaseSource'] a").click();
+                        location.reload();
+                    } else {
+                        //编辑提交
+                        parent.layer.closeAll();
+                        parent.config.reloadTable();
+                    }
+                }))
+            })
+            app = new Vue({
+                el: '#app',
+                data: {
+                    currentItem: {
+                        id:0,
+                        cityId: null,
+                        sourceFile: '',
+                        court1Id: null,
+                        court2Id: null,
+                        lawyerFirms: [],
+                        trialPeople: [],
+                    },
+                    lawyerItems: [
+                        { type: 'text', key: 'firmName', title: '律师事务所' },
+                        { type: 'text', key: 'lawyer', title: '律师' }
+                    ],
+                    trialItems: [
+                        { type: 'select', key: 'trialRole', title: '身份', options: [{ value: '0', text: '审判长' }, { value: '1', text: '审判员' }, {value:'2',text:'书记员'}] },
+                        { type: 'text', key: 'name', title: '姓名' },
+                    ],
+                    submitType: 1,
+                    cities: [],
+                    courts: [],
+                    anYous: []
+                },
+                computed: {
+                    title: function () {
+                        return this.currentItem.id?"修改判例":"新增判例";
+                    }
+                },
+                methods: {
+                    submit1: function () {
+                        this.submitType = 1;
+                        $("#submitBtn").trigger("click");
+                    },
+                    submit2: function () {
+                        this.submitType = 2;
+                        $("#submitBtn").trigger("click");
+                    },
+                    //编辑提交
+                    submit3: function () {
+                        this.submitType = 3;
+                        $("#submitBtn").trigger("click");
+                    },
+                    loadAnYou: function () {
+                        var that = this;
+                        return abp.services.app.type.getTypesByParentName("纠纷属性").done(function (data) {
+                            that.anYous = data;
+                            refresh();
+                        })
+                    },
+                    loadCities: function () {
+                        var that = this;
+                        return abp.services.app.type.getTypesByParentName("审判组织").done(function (data) {
+                            that.cities = data;
+                            refresh();
+                        })
+                    },
+                    loadCourts: function () {
+                        var that = this;                        
+                        return abp.services.app.type.getTypesByParentId(that.currentItem.cityId).done(function (data) {
+                            that.courts = data;
+                            refresh();
+                        })
+                    },
+                    loadItem: function (id) {
+                        var that = this;
+                        return abp.services.app.caseSource.getById(id).done(function (data) {
+                            that.currentItem = data;
+                            if (that.currentItem.cityId) {
+                                that.loadCourts();
+                            }
+                            refresh();
+                        })
+                    }
+                },
+                mounted: function () {
+                    this.currentItem.id =$.getUrlParam("data");
+                    
+                    this.loadCities();
+                    this.loadAnYou();
+                    func.renderSimpleUpload('#uploadBtn', {
+                        acceptMime: 'application/pdf',
+                        exts:'pdf',
+                        callback: function (res) {
+                            app.currentItem.sourceFile = res.filePath;
+                        }
+                    })
+                    var load = {};
+                    if (this.currentItem.id) {
+                        load=this.loadItem(this.currentItem.id);
+                    }
+                    Promise.all([load]).then(function () {
+                        layui.laydate.render({
+                            elem: '#validDate'
+                            , value: app.currentItem.validDate
+                            , done: function (value, date, endDate) {
+                                app.currentItem.validDate = value;
+                            }
+                        });
+                        console.log(app.currentItem);
+                    })
+                }
+            })
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+            })
+            
+        }
+
+        function submit() {
+            abp.message.confirm("确认提交?", app.submit3)
+        }
+    </script>
+}

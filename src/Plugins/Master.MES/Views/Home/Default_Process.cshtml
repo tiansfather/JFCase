@@ -1,0 +1,220 @@
+﻿@section styles{
+    <style>
+        .my-header {
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .my-body {
+            /*height:500px;*/
+        }
+
+        .my-tree-h2 {
+            padding-left: 10px;
+            color: #333;
+            font-size: 16px;
+            line-height: 30px;
+            font-weight:600;
+        }
+
+        .my-process {
+            position: relative;
+            border: dotted 2px #b1b1b1;
+            overflow: hidden;
+        }
+
+        .my-process-line {
+            margin: 0 auto;
+            position: relative;
+            width: 700px;
+            height: 300px;
+        }
+
+            .my-process-line i {
+                font-size: 45px;
+                color: #289be5;
+            }
+
+        .my-line-img {
+            width: 60px;
+            text-align: center;
+        }
+
+        .my-line-span {
+            font-size: 12px;
+            text-align: center;
+            width: 60px;
+            padding: 4px 0;
+        }
+
+        .my-line-scale:hover {
+            transform: scale(1.1);
+            -ms-transform: scale(1.1); /* IE 9 */
+            -webkit-transform: scale(1.1); /* Safari and Chrome */
+            -o-transform: scale(1.1); /* Opera */
+            -moz-transform: scale(1.1); /*Firefox*/
+            cursor: pointer;
+        }
+
+        .my-line-scale {
+            position: absolute;
+        }
+
+        .my-ab-1 {
+            top: 100px;
+            left: 50px;
+        }
+
+        .my-ab-2 {
+            top: 100px;
+            left: 200px;
+        }
+
+        .my-ab-3 {
+            top: 100px;
+            left: 350px;
+        }
+
+        .my-ab-4 {
+            top: 50px;
+            left: 530px;
+        }
+
+        .my-ab-5 {
+            top: 150px;
+            left: 530px;
+        }
+
+        .xuxian:after {
+            position: absolute;
+            display: inline-block;
+            border-top: 6px solid transparent;
+            border-left: 6px solid #b1b1b1;
+            border-bottom: 6px solid transparent;
+            right: -7px;
+            top: -7px;
+            content: '';
+        }
+
+        .xuxian {
+            position: absolute;
+            border-top: dotted 2px #b1b1b1;
+        }
+
+        .my-xuxian-1 {
+            width: 80px;
+            top: 136px;
+            left: 110px;
+        }
+
+        .my-xuxian-2 {
+            top: 136px;
+            left: 265px;
+            width: 80px;
+        }
+
+        .my-xuxian-3 {
+            top: -2px;
+            left: 35px;
+            width: 70px;
+        }
+
+        .my-xuxian-4 {
+            top: 101px;
+            left: 35px;
+            width: 70px;
+        }
+
+        .xuxian-kuang {
+            position: absolute;
+            top: 86px;
+            left: 412px;
+            height: 101px;
+            width: 108px;
+            /*border: 1px solid;*/
+        }
+
+        .none-xuxian-left {
+            position: absolute;
+            top: 49px;
+            border-top: dotted 2px #b1b1b1;
+            width: 30px;
+        }
+
+        .none-xuxian-middle {
+            position: absolute;
+            left: 31px;
+            border-left: dotted 2px #b1b1b1;
+            height: 100px;
+        }
+    </style>
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card my-layui-card">
+        <div class="my-body">
+            <div class="my-tree">
+                <h2 class="my-tree-h2">生产流程</h2>
+            </div>
+            <div class="my-process">
+                <div class="my-process-line">
+                    <div class="my-line-scale my-ab-1" onclick="editSheet('JGKD', '加工开单')">
+                        <div class="my-line-img"><i class="layui-icon layui-icon-zwrite-l my-icon-baobiao"></i></div>
+                        <div class="my-line-span"><span>加工开单</span></div>
+                    </div>
+                    <div class="xuxian my-xuxian-1"></div>
+                    <div class="my-line-scale my-ab-2" onclick="editSheet('PartTask','加工路线')">
+                        <div class="my-line-img"><i class="layui-icon layui-icon-zzexchange my-icon-baobiao"></i></div>
+                        <div class="my-line-span"><span>加工路线</span></div>
+                    </div>
+                    <div class="xuxian my-xuxian-2"></div>
+                    <div class="my-line-scale my-ab-3" onclick="editSheet('ProcessTask','开单任务')">
+                        <div class="my-line-img"><i class="layui-icon layui-icon-zlist-clipboard my-icon-baobiao"></i></div>
+                        <div class="my-line-span"><span>开单任务</span></div>
+                    </div>
+                    <div class="xuxian-kuang">
+                        <div class="none-xuxian-left"></div>
+                        <div class="none-xuxian-middle"></div>
+                        <div class="xuxian my-xuxian-3"></div>
+                        <div class="xuxian my-xuxian-4"></div>
+                    </div>
+                    <div class=" my-ab-4" style="position: absolute;">
+                        <div class="my-line-img">
+                            <i class="layui-icon layui-icon-baobiao my-icon-baobiao" style="color:#ccc;"></i>
+                        </div>
+                        <div class="my-line-span"><span>生产报表</span></div>
+                    </div>
+                    <div class="my-line-scale my-ab-5"  onclick="editSheet('RemindTactics','提醒策略')">
+                        <div class="my-line-img"><i class="layui-icon layui-icon-zclock my-icon-baobiao"></i></div>
+                        <div class="my-line-span"><span>提醒策略</span></div>
+                    </div>
+                    <div style="display:none">
+                        <i class="layui-icon layui-icon-zzedit my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzfilter my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzexchange my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzretweet my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzcheck my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzclose my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzexclamation my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzwarning my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzexpand my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzcompress my-icon-baobiao"></i>
+                        <i class="layui-icon layui-icon-zzexclamation my-icon-baobiao"></i>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        function editSheet(taskId, taskName) {
+            top.layui.index.openTabsPage('/Home/Show?name=../MES/' + taskId, taskName)
+        }
+    </script>
+}

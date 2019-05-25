@@ -1,0 +1,88 @@
+﻿@section styles{
+    <style>
+        .btm a {
+            color: #2e82ff;
+            cursor: pointer;
+            border-bottom: 1px solid;
+            float: right;
+            margin: 35px 25px 0 0;
+        }
+        .btm p {
+            margin-top: 15px;
+            text-align:center;
+        }
+    </style>
+}
+    <div id="app" v-cloak>
+        <div align="center" v-show="clicked"><p style="color:red;font-size:16px">已为您生成新的二维码:</p> </div>
+        <div style="text-align:center;margin-top:20px">
+            <img :src="qrCode" v-show="!clicked" id="img1" />
+            <img :src="qrCode2" v-show="clicked" id="img2" />
+        </div>
+
+        @*<p style="display:none;color:red">已为您生成新的二维码:</p>*@
+        <div class="btm">
+            <a @@click="clicked=true;" v-if="!clicked">无法绑定点这里</a>
+            <p v-else>请重新扫描此二维码，可直接绑定</p>
+        </div>
+    </div>
+
+
+@section scripts{
+    <script>
+		var userid = "@Html.Raw(ViewBag.UserId)";
+		config.ready = function () {
+			var app = new Vue({
+                el: '#app',
+                data: {clicked:false},
+				computed: {
+                    qrCode: function () {
+                        var url = '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/BindLoginCallback?userid=" + encodeURIComponent(userid));
+                        console.log(url);
+                        return url;
+                    },
+                    qrCode2: function() {
+                        var url = '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/BindLoginCallbackDirect?userid=" + encodeURIComponent(userid));
+                        console.log(url);
+                        return url;
+                    }
+				}
+
+			});
+			var loopFunc = function () {
+				abp.services.app.weiXin.getBindLoginInfo('Wechat',userid).done(function (data) {
+					console.log(data);
+					if (data) {
+
+						//window.clearInterval(loop);
+						parent.bindRefresh('Wechat');
+					} else {
+						window.setTimeout(loopFunc, 1000);
+					}
+
+
+				});
+			}
+			loopFunc();
+			//定时轮询
+			//var loop=window.setInterval(function () {
+			//	abp.services.app.weiXin.getBindLoginInfo('Wechat', { error: function () { }}).done(function (data) {
+			//		console.log(data);
+			//		if (data) {
+
+			//			window.clearInterval(loop);
+			//			parent.bindRefresh('Wechat');
+			//		}
+
+
+			//	});
+            //}, 1000);
+		}
+        //function newUrl() {
+        //    $('.btm').hide();
+        //    $("#img1").hide();
+        //    $("#img2").css("display", "inline");
+        //    $("p").css("display","inline");
+        //}
+    </script>
+}

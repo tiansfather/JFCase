@@ -1,0 +1,97 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+	//这是Host管理公告
+}
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+
+				<button class="layui-btn  layui-btn-sm" type="button" buttonname="添加" modulekey="Notice" onclick="addNotice()">@L("添加")</button>
+				<button class="layui-btn layui-btn-danger layui-btn-sm" type="button" buttonname="删除" modulekey="Notice" params="" lay-event="Delete" confirmmsg="@L("确认删除")？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.notice.deleteEntity" onclick="func.callModuleButtonEvent()">@L("删除")</button>
+
+			</div>
+			<table id="Notice" lay-filter="Notice" class="layui-table "></table>
+		</div>
+	</div>
+</div>
+
+@section scripts{
+
+	<script type="text/html" id="toolbar">
+
+		@*<a dataid="{{d.id}}" buttonname="加工单模板" modulekey="Company" class="layui-btn layui-btn-xs " lay-event="Edit" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/TaskTemplateEdit" onclick="func.callModuleButtonEvent()">加工单模板</a>*@
+	</script>
+	<script type="text/html" id="test-table-toolbar-toolbarDemo">
+
+
+	</script>
+	<script type="text/html" id="switchTpl">
+		<input type="checkbox" name="isActive" value="{{d.id}}" lay-skin="switch" lay-text="显示|不显示" lay-filter="isActive" {{ d.isActive ? 'checked' : '' }}>
+	</script>
+	<script>
+		window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: "", whereFilter: '' };
+		var currentFilter = {};
+		config.ready = function () {
+			layui.form.on('switch(isActive)', function (obj) {
+				func.runAsync(abp.services.app.notice.setActive(this.value, obj.elem.checked).done(function () {
+					layer.msg("提交成功");
+				}))
+			});
+			layui.table.on('edit(Notice)', function (obj) {
+				var value = obj.value //得到修改后的值
+					, data = obj.data //得到所在行所有键值
+					, field = obj.field; //得到字段
+				//layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+				if (!value.trim()) {
+					layer.msg("输入不能为空", { icon: 5, anim: 6 });
+					return false;
+				}
+				abp.message.confirm(L('确认修改?'), function () {
+					func.runAsync(abp.services.app.notice.updateField(data.id, field, value, {
+						error: function () {
+							layui.table.reload('Notice');
+						}
+					}).done(function () {
+						layer.msg('更新成功');
+					}));
+				})
+
+			});
+			window.Notice = [{
+				elem: '#Notice',
+				defaultToolbar: ['filter', 'print', 'exports'],
+				cellMinWidth: '120',
+				height: 'full-31',
+				url: '/api/services/app/Notice/GetPageResult',
+				page: true,
+				limit: 20,
+				id: 'Notice',
+				even: true,
+				done: config.onTableDone,
+				initSort: { field: 'Id', type: 'desc' }
+			}, [[
+				{ align: 'center', type: 'checkbox', fixed: 'left', fixed: 'left', gudinglie: false },
+				{ align: 'center', field: 'noticeTitle', title: '标题',width:'400', edit: 'text' },
+				{ align: 'center', field: 'isActive', title: '显示', templet: '#switchTpl' },
+				{ align: 'center', toolbar: '#toolbar', title: '操作', fixed: 'right', width: '250' }
+			]]
+			]
+			layuiExt.reRender('Notice');
+		};
+		function addNotice() {
+			layer.prompt({ title: '@L("请输入公告标题")', formType: 0 }, function (text, index) {
+				layer.close(index);
+				if (text) {
+					func.runAsync(abp.services.app.notice.addNotice(text).done(function () {
+						layui.table.reload('Notice');
+					}));
+				}
+            });
+		}
+		config.reload = function () {
+			layui.table.reload('Notice');
+		}
+	</script>
+
+}

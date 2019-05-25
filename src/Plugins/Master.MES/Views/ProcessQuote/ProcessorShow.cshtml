@@ -1,0 +1,317 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@using Master.Module
+@section styles{
+    <style>
+        html {
+            background: #fff;
+            color: #000;
+        }
+
+        #app {
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 1.2em;
+        }
+
+        .layui-table td {
+            color: black;
+        }
+
+        .verify-span {
+            font-size: 20px;
+            color: red;
+        }
+
+        .site-title {
+            margin: 30px 0 20px;
+        }
+
+            .site-title fieldset {
+                border: none;
+                padding: 0;
+                border-top: 1px solid #c0c0c0;
+            }
+
+                .site-title fieldset legend {
+                    margin-left: 20px;
+                    padding: 0 10px;
+                    font-size: 22px;
+                    font-weight: 300;
+                }
+
+        .header-title {
+            display: flex;
+            margin: 30px 0 20px;
+        }
+
+            .header-title ul {
+                margin: 0 30px;
+            }
+
+            .header-title li {
+                min-width: 200px;
+            }
+
+                .header-title li p {
+                    line-height: 2em;
+                    font-size: 15px;
+                    color: black;
+                }
+
+                .header-title li strong {
+                    font-size: 18px;
+                }
+
+        .overdue {
+            width: 70%;
+            margin-left: 100px;
+        }
+
+        .disflex {
+            display: flex;
+            justify-content: space-between;
+            justify-content: space-evenly;
+        }
+        thead .feetype {
+            width: 120px;
+        }
+
+        thead .partspecification {
+            width: 150px;
+        }
+    </style>
+}
+<div id="app" v-cloak>
+    <h1>
+        <span>客户:{{currentItem.tenancyName}}</span>
+        <span :class="[quoteBidStatusObj[currentItem.quoteBidStatus].class,'layui-badge']" style="margin: 0 20px;">{{quoteBidStatusObj[currentItem.quoteBidStatus].txt}}</span>
+    </h1>
+    <div :class="[canSubmit?'disflex':'overdue']">
+        <header class="layui-form layui-form-pane" v-if="canSubmit">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">价格<span class="verify-span">*</span></label>
+                    <div class="layui-input-block">
+                        <input type="text" autocomplete="off" placeholder="请输入数字" class="layui-input" v-model="currentItem.bidCost">
+                    </div>
+
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-radius layui-btn-primary" @@click="bid">报价</button>
+                    <button class="layui-btn layui-btn-radius layui-btn-danger" @@click="giveUp">放弃</button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入内容" class="layui-textarea" v-model="currentItem.bidRemarks"></textarea>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div v-else>
+            <blockquote class="layui-elem-quote">
+                <span>已结束投标</span>
+            </blockquote>
+        </div>
+        <div class="header-title">
+            <ul>
+                <li><p>询价名称: <strong>{{currentItem.quoteName}}</strong></p></li>
+                <li><p>询价类型: <strong>{{[null,'邀请投标','公开投标'][currentItem.quoteScope]}} </strong></p></li>
+                <li><p>付款方式: <strong>{{[null,'协议','现金'][currentItem.quotePayType]}}</strong></p></li>
+                <li tips="超过截止日期将无法进行投标，请注意时间"><p>截止日期: <strong :style="{color:this.currentItem.quoteStatus == 1?'green':'red'}">{{currentItem.expireDate}}</strong></p></li>
+            </ul>
+            <ul v-if="!canSubmit">
+                <li><p>投标价格: <strong>{{currentItem.bidCost||'未填写'}}</strong></p></li>
+                <li><p>备注: <strong>{{currentItem.bidRemarks||'未填写'}} </strong></p></li>
+            </ul>
+        </div>
+    </div>
+    <blockquote class="layui-elem-quote" style="padding:0 10px; margin-bottom: 0px;line-height:2.5;" v-if="canSubmit">
+        若超过报价截止日期，报价通道将关闭，企业将无法进行投标及报价，请注意截止日期！
+        @*超过截止日期，企业单位将无法进行投标；例如截止日期为2020-01-02 00:00:00,即代表最后投标时间为2020年1月1日的23点59分*@
+    </blockquote>
+
+    <div class="site-title">
+        <fieldset><legend><a name="card">询价明细</a></legend></fieldset>
+    </div>
+
+    <div>
+        <multi-data-add :readonly="true" :items="items" :parts="currentItem.processQuoteTasks"> </multi-data-add>
+    </div>
+
+    <div class="site-title">
+        <fieldset><legend><a name="card">备注及附件</a></legend></fieldset>
+    </div>
+    <div style="display:flex;" class="layui-form layui-form-pane">
+        <div class="layui-form-item layui-form-text" style="width:500px;margin-right:50px;margin-top:10px;">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea v-model="currentItem.remarks" class="layui-textarea" readonly></textarea>
+            </div>
+        </div>
+        <div style="flex:1;">
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th style="width:30%">文件名称</th>
+                        <th style="width:70%">数据路径</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item,index) in currentItem.files" :data="item">
+                        <td><a :href="item.filePath" target="_blank" style="color:blue;text-decoration:underline; ">{{item.fileName}}</a></td>
+                        <td>{{item.filePath}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        config.ready = function () {
+
+            window.app = new Vue({
+                el: '#app',
+                data: function () {
+                    var items = [
+                        { type: 'text', title: '项目名称', verify: '', key: 'projectName' },
+                        { type: 'text', title: '零件名称', verify: '', key: 'partName' },
+                        { type: 'text', title: '加工工艺', verify: '', key: 'processTypeName' },
+                        { type: 'text', title: '规格', verify: '', key: 'partSpecification' },
+                        { type: 'number', title: '数量', verify: '', key: 'partNum' },
+                        { type: 'date', title: '要求完成日期', verify: '', key: 'requireDate' },
+                        //{ type: 'text', title: '预计工时', verify: '', key: 'estimateHours' },
+                        {
+                            type: 'select', title: '计价方式', verify: '', key: 'feeType',
+                            options: [{ text: '承包', value: 0 }, { text: '按时间', value: 1 }, { text: '按平方', value: 2 }, { text: '按长度', value: 3 }, { text: '按重量', value: 4 }, { text: '按数量', value: 5 }], onChange: function (newVal, partIndex) {
+                                console.log(newVal, partIndex)
+                            }
+                        },
+                        { type: 'number', title: '时间/长度/重量/平方', verify: '', key: 'feeFactor' },
+                        { type: 'text', title: '工艺要求', verify: '', key: 'taskInfo' },
+                    ]
+                    return {
+                        items: items,
+                        currentItem: {
+                            id: $.getUrlParam('data'),
+                            quoteName: '',
+                            quoteScope: 1,
+                            quotePayType: 1,
+                            expireDate: '截止日期未显示',
+                            unitIds: [{}],
+                            processQuoteTasks: [{}],
+                            files: [],
+                            bidRemarks: '',
+                            bidCost: '',
+                            quoteBidStatus: 1,
+                            bidType: '',
+                            tenancyName: ''
+                        },
+                    }
+                },
+                computed: {
+                    canSubmit: function () {
+                        //只有询价单为询价中，且自己是待投标状态才可以投标
+                        return this.currentItem.quoteBidStatus == 1 && this.currentItem.quoteStatus == 1
+                    },
+                    reportData: function () {
+                        return {
+                            processQuoteId: $.getUrlParam('data'),
+                            bidType: 1,
+                            cost: this.currentItem.bidCost,
+                            remarks: this.currentItem.bidRemarks
+                        }
+                    },
+                    quoteBidStatusObj: function () {
+                        return {
+                            '-1': { class: '', txt: '未加入' },
+                            '0': { class: 'layui-bg-orange', txt: '未发送' },
+                            '1': { class: 'layui-bg-cyan', txt: '待投标' },
+                            '2': { class: 'layui-bg-blue', txt: '已投标' },
+                            '3': { class: 'layui-bg-balck', txt: '已放弃' },
+                            '4': { class: 'layui-bg-gray', txt: '未中标' },
+                            '5': { class: 'layui-bg-green', txt: '已中标' }, 
+                        }
+                    }
+                },
+                methods: {
+                    giveUp: function () {
+                        //放弃
+                        var reportData = this.reportData;
+                        reportData.bidType = 0;
+                        abp.message.confirm('您确定放弃吗？放弃后将无法进行此次询价，无法撤销，请慎重考虑!!!', function () {
+                            func.runAsync(abp.services.app.processQuoteProcessor.bid(reportData).done(function () {
+                                parent.config.reloadTable();
+                                parent.layer.closeAll();
+                                parent.layer.msg('提交成功')
+                            }))
+                        })
+                    },
+                    bid: function () {
+                        var that = this;
+                        if (this.reportData.cost) {
+                            abp.message.confirm('您确定提交吗？提交后将无法进行修改!', function () {
+                                func.runAsync(abp.services.app.processQuoteProcessor.bid(that.reportData).done(function () {
+                                    parent.config.reloadTable();
+                                    parent.layer.closeAll();
+                                    parent.layer.msg('提交成功')
+                                }))
+                            })
+                        } else {
+                            abp.message.error('价格必须填写，并且只能提交一次，请确认！')
+                        }
+
+                    },
+                    loadItem: function () {
+                        function resetData(res) {
+                            //res.expireDate = new Date(res.expireDate).pattern('yyyy-MM-dd HH:mm:ss');
+
+                            res.processQuoteTasks.forEach(function (elm, index) {
+                                elm.requireDate && (elm.requireDate = new Date(elm.requireDate).pattern('yyyy-MM-dd'));
+                                var TaskId = elm.processTaskId
+                                elm.processTaskId = { displayValue: TaskId || ' ', value: TaskId || '' }
+                            })
+                            //res.unitIds = res.processQuoteBids.map(function (elm, index) {
+                            //    elm.remarks = elm.bidData.remarks
+                            //    elm.cost = elm.bidData.cost;
+                            //    return elm
+                            //})
+                            var processQuoteBids = res.processQuoteBids[0];
+                            var obj = {
+                                bidRemarks: processQuoteBids.remarks,
+                                bidCost: processQuoteBids.cost,
+                                quoteBidStatus: processQuoteBids.quoteBidStatus,
+                                bidType: processQuoteBids.bidType
+                            };
+                            $.extend(res, obj);
+
+                            return res
+                        }
+                        var that = this;
+                        abp.services.app.processQuoteProcessor.getQuoteInfo(this.currentItem.id).done(function (res) {
+                            that.currentItem = resetData(res);
+                        })
+                    }
+                },
+                mounted: function () {
+                    if ($.getUrlParam('data')) {
+                        this.loadItem();
+                    }
+                    refresh();
+                }
+            })
+        }
+        function refresh() {
+            Vue.nextTick(layui.form.render)
+
+        }
+    </script>
+}

@@ -1,0 +1,167 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    //微信端员工注册页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "注册";
+
+    var name = ViewBag.Name;
+    var logo = ViewBag.Logo;
+    var openId = ViewBag.OpenId;
+    var tenantId = ViewBag.TenantId;
+}
+@section styles{ 
+    <style>
+        .my-required-span {
+            font-size: 14px;
+            color: red;
+        }
+    </style>
+}
+<div id="app" style="display:none">
+    <div class="weui-cells__title" style="text-align: center; color: #c74949; font-size: 20px">注册@(name)账号</div>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">姓名<span class="my-required-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" v-model="currentItem.name">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">手机号码<span class="my-required-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" v-model="currentItem.mobile" placeholder="用户名及手机号码" />
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">性别</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" id="sex" type="text" value="男" readonly="">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">部门</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" id="organization" type="text" value="" readonly="" data-values="">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">角色</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" id="role" type="text" value="" readonly="" data-values="">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">登录密码<span class="my-required-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="password" v-model="currentItem.password" placeholder="6~16个字符，区分大小写">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">重复密码<span class="my-required-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="password" v-model="currentItem.password2" placeholder="请再次填写密码">
+            </div>
+        </div>
+    </div>
+
+    <div class="weui-btn-area" style="position: fixed; bottom: 2px; width: 92%;">
+        <a class="weui-btn weui-btn_primary" @@click="doSubmit">提交</a>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        var app;
+        app = new Vue({
+            el: '#app',
+			data: {
+                currentItem: { tenantId:@tenantId, providerKey:'@openId',LoginProvider:'Wechat'}
+            },
+            methods: {
+				doSubmit: function () {
+					var currentItem = this.currentItem;
+					//有效性检测					
+					if (!currentItem.mobile) {
+						$.toptip('请输入手机号', 'error');
+						return false;
+					}
+					if (!currentItem.name) {
+						$.toptip('请输入姓名', 'error');
+						return false;
+					}
+                    if (!currentItem.password) {
+						$.toptip('请输入密码', 'error');
+						return false;
+                    }
+                    if (!( /^.{6,16}$/.test(currentItem.password))) {
+                        $.toptip('密码长度需为6~16个字符', 'error');
+                        return false;
+                    }
+					if (!currentItem.password2) {
+						$.toptip('请重复输入密码', 'error');
+						return false;
+					}
+					if (currentItem.password2 != currentItem.password) {
+						$.toptip('两次密码输入不一致', 'error');
+						return false;
+					}
+                    currentItem.sex=$('#sex').val()||'';
+                    currentItem.organizationId = $('#organization').data('values') || '';
+                    var roles = $('#role').data('values');
+                    currentItem.roleIds =roles? roles.split(','):[];   
+                    func.runAsync(abp.services.app.user.externalUserRegister(currentItem).done(function () {
+						//abp.message.success('注册成功，请耐心等待后台审核');
+						location.href = '/WeiXin/Success?msg=' + encodeURIComponent('注册成功，请耐心等待审核');
+						//location.href = '/WeiXin/GuanZhu';
+					}));
+				}
+
+            },
+			mounted: function () {				
+                $("#app").show();    
+                $("#sex").select({
+                    title: "选择性别",
+                    items: ["男","女"]
+                });
+                //通过企业id获取所有部门
+                abp.services.app.organization.getTenantTreeJson(this.currentItem.tenantId).done(function (res) {
+                    var items = res.map(function (n) {
+                        return { title: n.displayName, value: n.id }
+                    });
+                    $("#organization").select({
+                        title: "选择部门",
+                        items:items
+                    });
+                })
+                //通过企业id获取所有角色，设置jqweui的下拉选择
+                abp.services.app.role.getTenantRoles(this.currentItem.tenantId).done(function (res) {
+                    var roles = res.map(function (n) {
+                        return { title: n.displayName, value: n.id }
+                    });
+                    $("#role").select({
+                        multi: true,
+                        title: "选择角色",
+                        items: roles
+                    });
+                })
+            }
+
+        });
+    </script>
+
+}

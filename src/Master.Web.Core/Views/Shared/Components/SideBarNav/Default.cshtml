@@ -1,0 +1,88 @@
+﻿@using Abp.Collections.Extensions
+@using Abp.Extensions
+@using Master.Web.Views
+@using Master.Web.Components
+@model SideBarNavViewModel
+@{
+    //var calculateMenuUrl = new Func<string, string>((url) =>
+    //{
+    //    if (string.IsNullOrEmpty(url))
+    //    {
+    //        return ApplicationPath;
+    //    }
+
+    //    if (UrlChecker.IsRooted(url))
+    //    {
+    //        return url;
+    //    }
+
+    //    return ApplicationPath + url;
+    //});
+}
+<ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+    @foreach (var group in Model.MenuItems)
+    {
+        foreach (var menuItem in group.Items)
+        {
+            <li data-name="@menuItem.Name" class="layui-nav-item" menu-name="@group.Name" style="display:none">
+                <a lay-href="@(menuItem.Url)" lay-tips="@menuItem.DisplayName" lay-direction="2">
+                    <i class="@menuItem.Icon "></i>
+                    <cite>@menuItem.DisplayName</cite>
+                </a>
+                @if (menuItem.Items.Count > 0)
+                {
+                    <dl class="layui-nav-child">
+                        @foreach (var subMenuItem in menuItem.Items)
+                        {
+                            <dd data-name="@subMenuItem.Name" class="@(Model.ActiveMenuItemName == menuItem.Name ? "layui-this" : "")">
+                                <a lay-href="@subMenuItem.Url">
+                                    <i class="@subMenuItem.Icon "></i>
+                                    @subMenuItem.DisplayName
+                                </a>
+                            </dd>
+                        }
+
+                    </dl>
+
+                }
+
+            </li>
+
+        }
+
+        @*<li class="@(Model.ActiveMenuItemName == menuItem.Name ? "active" : "")">
+                @if (menuItem.Items.IsNullOrEmpty())
+                {
+                    <a class="J_menuItem" href="@calculateMenuUrl(menuItem.Url)">
+                        @if (!string.IsNullOrWhiteSpace(menuItem.Icon))
+                        {
+                            <i class="fa @menuItem.Icon">@menuItem.Icon</i>
+                        }
+                        <span class="nav-label">@menuItem.DisplayName</span>
+                    </a>
+                }
+                else
+                {
+                    <a href="#">
+                        <i class="fa @menuItem.Icon"></i>
+                        <span class="nav-label">@menuItem.DisplayName</span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level">
+                        @foreach (var subMenuItem in menuItem.Items)
+                        {
+                            <li class="@(Model.ActiveMenuItemName == subMenuItem.Name ? "active" : "")">
+                                <a class="J_menuItem" href="@calculateMenuUrl(subMenuItem.Url)">
+                                    <i class="fa @subMenuItem.Icon"></i>
+                                    @subMenuItem.DisplayName
+                                </a>
+                            </li>
+                        }
+
+                    </ul>
+
+                }
+            </li>*@
+    }
+
+</ul>

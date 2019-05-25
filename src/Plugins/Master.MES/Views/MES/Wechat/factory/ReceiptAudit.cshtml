@@ -1,0 +1,478 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端报工页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "回单审核";
+}
+<link href="~/lib/jquery-nstslider/jquery.nstSlider.min.css" rel="stylesheet" />
+<link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+<link href="~/assets/layuiadmin/layui/css/layui.css" rel="stylesheet" />
+@section styles{
+    <style>
+        #app {
+            margin-bottom: 80px;
+        }
+
+        #imglist img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .verify {
+            color: red;
+            font-size: 20px;
+        }
+        .no-power{
+            font-size: 16px;
+            text-align: center;
+            color: red;
+            margin: 40px 0;
+            font-weight: 600;
+        }
+        .un-importance{
+            color: #abafb3;
+        }
+
+        .base-block {
+            background-color: #fff;
+            margin-bottom: 6px;
+            padding: 13px 0 10px 20px;
+        }
+
+        .basic-info {
+            position: relative;
+        }
+
+        .info-title {
+            line-height: 2;
+        }
+
+        .mod-base {
+            width: 100%;
+            overflow: hidden;
+            /*padding-top: .1rem;*/
+            margin-bottom: 10px;
+        }
+
+            .mod-base li {
+                width: 33.33%;
+                float: left;
+                text-align: left;
+                margin-bottom: 10px;
+            }
+
+                .mod-base li span {
+                    font-size: 14px;
+                    color: #abafb3;
+                }
+
+                .mod-base li p {
+                    font-size: 15px;
+                    color: #757f89;
+                    word-break: keep-all;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+        .write-area{
+            border: 1px dashed #9c9c9c;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+}
+    <div id="app" style="display:none">
+        <div class="weui-cells__title un-importance" style="text-align: center; color: #c74949; font-size: 20px">{{currentItem.tenancyName}} 回单审核</div>
+        <div class="weui-cells weui-cells_form un-importance">
+            <div class="weui-cells__title">任务信息</div>
+
+            <mb-project-detail :item="currentItem"></mb-project-detail>
+            <div class="weui-cell">
+                <div class="weui-cell__hd">
+                    <label class="weui-label">加工工艺</label>
+                </div>
+                <div class="weui-cell__bd ">
+                    <input class="weui-input" type="text" :value="currentItem.processTypeName" readonly>
+                </div>
+            </div>
+        </div>
+        @* 下面填写提交信息 *@
+        <div class="weui-cells weui-cells_form write-area">
+            <div class="weui-cells__title" style="color: #1aad19;">回单审核/填写区域</div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd">
+                    <label class="weui-label">加工金额<span class="verify">*</span></label>
+                </div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="number" placeholder="请输入数字" v-model="task.fee">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd">
+                    <label class="weui-label">加工品质</label>
+                </div>
+                <div class="weui-cell__bd ">
+                    <input class="weui-input" id="quanlityType" type="text" readonly="" placeholder="选择是否合格">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd">
+                    <label class="weui-label">加工评级</label>
+                </div>
+                <div class="weui-cell__bd weui-cell_primary">
+                    <receipt-rate :rate="task.rate" @@change="task.rate=$event"></receipt-rate>
+                    @*<template v-if="!currentItem.verified">
+                    </template>
+                    <div class="rate-div_wrap">
+                        <span v-else v-for="i in 5">
+                            <i class="layui-icon" :class="{'layui-icon-rate':i>task.rate,'layui-icon-rate-solid':i<=task.rate}"></i>
+                        </span>
+                    </div>*@
+                </div>
+            </div>
+            <div class="weui-cells__title">加工评语</div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <textarea class="weui-textarea" placeholder="请输入内容" rows="3" name="remarks" v-model="task.rateInfo"></textarea>
+                </div>
+            </div>
+            <wx-uploader-img v-model="imgArr"></wx-uploader-img>
+        </div>
+        <div class="weui-cells weui-cells_form">
+            <div class="base-block basic-info">
+                <p class="info-title">历史提交</p>
+                <ul class="mod-base showNotice" v-for="info,index in currentItem.rateFeeInfos" :key="index">
+                    <li v-for="list,key in randerList" :key="key">
+                        <span>{{list}}</span>
+                        <p>{{info[key]}}</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="weui-cells weui-cells_form un-importance">
+            <div class="weui-cells__title">回单信息</div>
+            <div class="weui-cell">
+                <div style="width: 50%;">金额:{{currentItem.submitFeeFromProcessor|objEmptyStr('fee')}}</div>
+                <div style="width: 50%;">单价:{{currentItem.submitFeeFromProcessor|objEmptyStr('price')}}</div>
+            </div>
+            <div class="weui-cell">
+                <div style="width: 50%;">数量:{{currentItem.submitFeeFromProcessor|objEmptyStr('num')}}</div>
+                <div style="width: 50%;">备注:{{currentItem.submitFeeFromProcessor|objEmptyStr('info')}}</div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-uploader__bd">
+                    <ul class="weui-uploader__files" id="uploaderFiles" v-if="currentItem.submitFeeFromProcessor&&currentItem.submitFeeFromProcessor.files">
+                        <li class="weui-uploader__file" v-for="file in currentItem.submitFeeFromProcessor.files"
+                            :style="{'background-image':'url('+ file.filePath +'?h=100&gap=false)'}"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="weui-cells weui-cells_form" style="margin-bottom:45px;">
+        </div>
+        <div class="weui-btn-area" style="position: fixed; bottom: 2px; width: 92%;z-index:9;">
+            <a class="weui-btn weui-btn_primary" href="javascript:;" @@click="submit" id="submitBtn">提交</a>
+        </div>
+    </div>
+
+
+@section scripts{
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script src="~/lib/jquery-nstslider/jquery.nstSlider.js"></script>
+    <script>
+            wx.config({
+                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: '@Model.AppId', // 必填，公众号的唯一标识
+                timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+                nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+                signature: '@Model.Signature',// 必填，签名
+                jsApiList: [
+                        'checkJsApi',
+                        'onMenuShareTimeline',
+                        'onMenuShareAppMessage',
+                        'onMenuShareQQ',
+                        'onMenuShareWeibo',
+                        'hideMenuItems',
+                        'showMenuItems',
+                        'hideAllNonBaseMenuItem',
+                        'showAllNonBaseMenuItem',
+                        'translateVoice',
+                        'startRecord',
+                        'stopRecord',
+                        'onRecordEnd',
+                        'playVoice',
+                        'pauseVoice',
+                        'stopVoice',
+                        'uploadVoice',
+                        'downloadVoice',
+                        'chooseImage',
+                        'previewImage',
+                        'uploadImage',
+                        'downloadImage',
+                        'getNetworkType',
+                        'openLocation',
+                        'getLocation',
+                        'hideOptionMenu',
+                        'showOptionMenu',
+                        'closeWindow',
+                        'scanQRCode',
+                        'chooseWXPay',
+                        'openProductSpecificView',
+                        'addCard',
+                        'chooseCard',
+                        'openCard'
+                ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+            });
+
+            wx.error(function (res) {
+                console.log(res);
+                alert('验证失败:' + JSON.stringify(res));
+            });
+
+             wx.ready(function () {
+
+                });
+    </script>
+    <style>
+        .mobeil-cell-project .iconfont {
+            color: #c74949;
+            margin-right: 10px;
+        }
+    </style>
+    <script type="text/x-template" id="mbProjectDetail">
+        <div class="mobeil-cell-project">
+            <div v-show="showSimple">
+                <div class="weui-cell">
+                    <div style="width: 55%;">模号:{{item.projectSN}}</div>
+                    <div style="width: 45%;" @@click="showSimple=!showSimple"><i class="iconfont icon-gongjian"></i>{{item.partName}}</div>
+                </div>
+                <div class="weui-cell">
+                    <div style="width: 55%;">规格:{{item.partSpecification}}</div>
+                    <div style="width: 45%;" @@click="showSimple=!showSimple"><i class="iconfont icon-number"></i>{{item.partNum}}</div>
+                </div>
+            </div>
+            <div v-show="!showSimple">
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">模具编号</label>
+                    </div>
+                    <div class="weui-cell__bd">
+                        <input class="weui-input" type="text" :value="item.projectSN" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件名称</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partName" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件规格</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partSpecification" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件数量</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partNum" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script>
+        Vue.component('mb-project-detail', {
+            data: function () {
+                var showSimple = false;
+                if (window.innerHeight < 660) {
+                    showSimple = true;
+                }
+                return { showSimple: showSimple }
+            },
+            props: ['item'],
+            template: '#mbProjectDetail',
+            created: function () {
+                console.log(this.item)
+            }
+        })
+    </script>
+    <style>
+
+        .rate-div_wrap {
+            display: inline-block;
+        }
+
+            .rate-div_wrap span {
+                cursor: pointer;
+                display: inline-block;
+                position: relative;
+                font-size: 0;
+                vertical-align: middle;
+            }
+
+            .rate-div_wrap .layui-icon {
+                font-size: 22px;
+                margin-right: 10px;
+                color: #c0c4cc;
+                transition: .3s;
+            }
+
+                .rate-div_wrap .layui-icon.layui-icon-rate-solid {
+                    color: rgb(247, 186, 42);
+                }
+    </style>
+    <script type="text/x-template" id="receiptRate">
+        <div class="rate-div_wrap">
+            <span @@mouseover="rateIndex=i" @@mouseout="rateIndex=0" @@click="fRateClick(i)" v-for="i in 5">
+                <i class="layui-icon" :class="{'layui-icon-rate':i>rateIndex&&i>rate,'layui-icon-rate-solid':i<=rateIndex||i<=rate}"></i>
+            </span>
+        </div>
+    </script>
+    <script>
+        Vue.component('receipt-rate', {
+            data: function () {
+                return {
+                    rateIndex: 0,
+                    rateClickRep: this.rate 
+                }
+            },
+            props: ['rate'],
+            template: '#receiptRate',
+            methods: {
+                fRateClick: function (i) {
+                    if (i == this.rateClickRep) {
+                        this.rateClickRep = 0
+                    } else {
+                        this.rateClickRep = i
+                    }
+                    this.$emit('change', this.rateClickRep)
+                },
+            },
+            updated: function(){
+                console.log(this.rate)
+            }
+        })
+    </script>
+    <script>
+        var quanlityTypeObj = {
+            1: "合格", 2: "不合格",0: "未检",
+        }
+        var app;
+        app = new Vue({
+            el: '#app',
+            data: {
+                taskId: '未传入',
+                currentItem: {},
+                task: { rate: 0, rateInfo: '', quanlityType:0,fee:''},
+                imgArr: [],//服务器图片id数组
+                randerList: {
+                    fee: '金额',
+                    quanlityType: '品质',
+                    rate: '评级',
+                    rateInfo: '评语',
+                    verifier: '审核人',
+                    verifyTime:'审核时间'
+                }
+            },
+            computed: {
+
+            },
+            methods: {
+                loadItem: function (taskId) {
+                    var that = this;
+                    abp.services.app.processTask.getTaskInfoById(taskId).done(function (data) {
+                        //处理下历史提交，显示
+                        data.rateFeeInfos.forEach(info => {
+                            info.quanlityType = quanlityTypeObj[info.quanlityType];
+                            info.verifyTime = new Date(info.verifyTime).pattern('MM/dd HH:mm')
+                        })
+                        console.log('任务', data)
+                        that.currentItem = data;
+                        if (data.verified) {
+                            //回单过了
+                            that.task.rate = data.rate;
+                            that.task.rateInfo = data.rateInfo;
+                            that.task.quanlityType = data.quanlityType;
+                            that.task.fee = data.fee;
+                        } 
+                        //回没回过都可以选择
+                        that.$nextTick(function () {
+                            $("#quanlityType").select({
+                                title: "选择加工品质",
+                                items: [
+                                    {
+                                        title: "合格",
+                                        value: "1",
+                                    }, {
+                                        title: "不合格",
+                                        value: "2",
+                                    }, {
+                                        title: "未检",
+                                        value: "0",
+                                    }]
+                            })
+                        })
+                        $('#quanlityType').val(quanlityTypeObj[that.task.quanlityType]);
+                        $('#quanlityType').attr('data-value', that.task.quanlityType);
+                        $("#app").show();
+                    })
+                },
+                doVerify: function () {
+                    if (!this.task.fee || isNaN(Number(this.task.fee))) {
+                        $.toptip('未填写金额或金额为非数字')
+                        return false
+                    }
+                    return true
+                },
+                submit: function () {
+                    var that = this;
+                    //1.验证
+                    if (!this.doVerify()) {
+                        return false;
+                    }
+                    //上传图片
+                    $.confirm("确认进行回单审核?",async function () {
+                        abp.ui.setBusy();
+                        if (that.imgArr.length) {
+                            let files= await abp.services.app.weiXin.downLoadMedia(that.imgArr)
+                            await abp.services.app.processTask.attachFiles(that.taskId, files, 'returnFiles')
+                        } 
+                        verifyFee();
+                        //上传数据
+                        function verifyFee() {
+                            var params = [{
+                                id: app.currentItem.id,
+                                fee: app.task.fee,
+                                rate: app.task.rate,
+                                rateInfo: app.task.rateInfo,
+                                quanlityType: $('#quanlityType').data('values') || 0,
+                            }];
+                            abp.services.app.processTask.verifyFee(params).done(function () {
+                                abp.ui.clearBusy();
+                                location.href = '/WeiXin/Success?msg=' + encodeURIComponent('提交成功');
+                            })
+                        }
+                    })
+     
+                }
+            },
+            mounted: function () {
+                if (!abp.auth.isGranted('Module.ProcessTask.Button.Verify')) {
+                    $('#app').html('<p class="no-power">您没有回单审核权限，请联系管理员</p>').show();
+                    return
+                } else {
+                    this.taskId = $.getUrlParam("taskid");
+                    this.loadItem(this.taskId);
+                }
+            }
+        });
+    </script>
+
+}

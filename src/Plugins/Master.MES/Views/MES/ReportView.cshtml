@@ -1,0 +1,433 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端报工信息查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "报工详情-模来模往";
+}
+@section styles{
+
+    <link rel="stylesheet" href="/lib/swiper/swiper.min.css">
+    <style>
+        #imglist img {
+            width: 100%;
+            height: 100%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        a {
+            /* color:#666; */
+            text-decoration: none
+        }
+
+            a:hover {
+                cursor: pointer
+            }
+
+        button {
+            cursor: pointer
+        }
+
+        ul, li {
+            padding: 0;
+            margin: 0;
+            list-style: none
+        }
+
+        body {
+            /* background-color:#f3f5f7 ; */
+            /* background-color:#082c60 ; */
+            background-color: #e9edee;
+            /* background-image: url(zhanwei3.png); */
+            /* background-position: center; */
+            opacity: 0.95;
+        }
+
+        .left {
+            float: left;
+        }
+
+        .right {
+            float: right;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        span {
+            font-size: 0.42666667rem;
+        }
+
+        .split {
+            width: 9.6rem;
+            background-color: #e9edee;
+            height: 0.2rem;
+            position: relative;
+            left: -0.266667rem
+        }
+
+        .zhuti {
+            width: 9.6rem;
+            margin: 0 auto;
+            padding: 0.2666667rem;
+            background: white;
+        }
+
+        .nav-head {
+            padding-bottom: 0.4rem;
+        }
+
+            .nav-head p {
+                font-size: 0.42666667rem;
+                /* display: inline; */
+            }
+
+        #Time {
+            /* 	float: right;
+        position: relative;
+        top: 0.5866667rem; */
+            /* float: left; */
+        }
+
+        /*#loading {
+                display: block;
+            }*/
+
+        #watermark {
+            position: absolute;
+            width: 10rem;
+            opacity: 0.3;
+            pointer-events: none;
+            /*IE11+有效，解决点击事件传不下去*/
+            z-index: 9999;
+            /* overflow : hidden; */
+        }
+
+        .main-head {
+            margin: 0.8rem 0;
+            /* height: 50px; */
+            /* line-height: 50px; */
+        }
+
+            .main-head span {
+                font-weight: 900;
+                font-size: 0.5066667rem;
+                color: #2a82b0;
+            }
+
+        .main-img {
+            /*margin: 0 0 20px 0;*/
+        }
+
+        .content-part {
+            /* height: 30px; */
+            /*margin: 80px 0;*/
+            /* line-height: 30px; */
+        }
+
+            .content-part span {
+                font-weight: 900;
+                font-size: 0.5066667rem;
+                color: #2a82b0;
+            }
+
+        .content-main {
+            position: relative;
+        }
+
+        .content-message {
+            box-shadow: 7px 7px 8px rgba(0, 0, 0, 0.4);
+            height: 0.9rem;
+            font-weight: 900;
+        }
+
+        .content-baogong {
+            margin: 0.666667rem 0;
+        }
+
+        .content-baogong p, .content-img p {
+            text-align:left;
+            font-size: 0.4rem;
+            line-height: 0.66667rem;
+        }
+
+        .content-main h2 {
+            margin: 55px 0 30px 5px;
+            font-size: 0.5066667rem;
+        }
+
+        .content-content {
+            padding: 1px 9px 2px 9px;
+            margin: 20px 0;
+            box-shadow: 0 0 10px #0cc;
+        }
+
+        .content-content-h {
+            height: 1rem;
+            border-bottom: #ccc 3px solid;
+        }
+
+        .content-content_li {
+            position: relative;
+            /* height: 1.5333333rem; */
+            line-height: 0.9rem;
+        }
+
+            .content-content_li span {
+                color: #000;
+                font-size: 0.373333rem;
+            }
+
+            .content-content_li .type-name {
+                color: #000;
+            }
+
+            .content-content_li .ta-eq-name {
+                color: #000000;
+            }
+
+            .content-content_li .eq-name {
+                float: right;
+            }
+
+        .main-img {
+            text-align: center;
+        }
+
+        .content-img {
+            text-align: center;
+        }
+
+        .now {
+            /* box-shadow: 0 5px 5px #FFFFFF; */
+            font-weight: 900;
+            border-radius: 0.2rem;
+        }
+        .gehang {
+            background: #f4f4f4;
+        }
+
+        .time-img {
+            width: 30px;
+        }
+        .swiper-pagination-bullet{
+            width:18px;
+            height:18px;
+        }
+    </style>
+}
+
+<div id="app" class="zhuti" style="display:none;">
+	<div class="nav-head ">
+		<p>单号:{{currentItem.processSN}}</p>
+		<p>提交人:{{currentItem.name}}</p>
+		<p>提交时间:{{currentItem.creationTime}}</p>
+		<p>模具组长:{{currentItem.projectCharger}}</p>
+		<p v-if="currentItem.unitName">加工点:{{currentItem.unitName}}</p>
+		<p v-if="currentItem.equipmentSN">设备:{{currentItem.equipmentSN}}</p>
+	</div>
+    <div class="split"></div>
+    <div class="main ">
+        <div class="main-head">
+            <span id="mouldsn">模具编号:{{currentItem.projectSN}}</span>
+        </div>
+        <div class="main-img">
+            <img id="mouldpath" :src="currentItem.partImg" alt="模具信息" />
+        </div>
+
+    </div>
+    <div class="split"></div>
+    <div class="content ">
+        <div class="content-part">
+            @*<span id="PartSN">{{currentItem.PartSN}}</span>&nbsp;&nbsp;&nbsp;*@
+            <span id="PartName">零件名称:{{currentItem.partName}}</span>
+        </div>
+        <div id="NowReport" class="content-main">
+            <div class="content-message--dad">
+                <div class="content-message content-content_li">
+                    <span class="type-name">{{currentItem.processTypeName}}</span>
+                    <span class="time">{{currentItem.reportTime}}</span>
+                    <span class="ta-eq-name">&nbsp;{{getReportTypeName(currentItem.reportType)}}&nbsp;|&nbsp;{{currentItem.name}}</span>
+                </div>
+                <div id="NowReportMessage" class="content-baogong ">
+                    <p>{{"报工信息内容："+currentItem.remarks}}</p>
+                </div>
+                <div class="content-img">
+                    <p>报工图片：</p>
+                    @*<img id="NowImg" :src="currentItem.files[0].filePath" alt="报工信息" />*@
+                    <div class="swiper-container"  data-space-between='10' data-pagination='.swiper-pagination' data-autoplay="1000">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide" v-for="item in currentItem.files">
+                                <img :src="item.filePath" alt="报工图片">
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+                <h2>历史报工</h2>
+                <div class="content-content ">
+                    <ul>
+                        <li v-for="(item,index) in lishiTaskReports" class="content-content_li content-content-h" :class="{now:(item.id== reportId),gehang:!(index%2)}">
+                            <span class="type-name">{{item.processTypeName}}</span>
+                            <span class="time">{{item.reportTime}}</span>
+                            <span class="ta-eq-name">{{getReportTypeName(item.reportType)}}&nbsp;|&nbsp;{{item.reporterName}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+
+    <script src="/lib/swiper/swiper.min.js"></script>
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+        wx.error(function (res) {
+            console.log(res);
+            alert('验证失败');
+        });
+
+         wx.ready(function () {
+
+            });
+    </script>
+    <script>
+
+
+
+        var scale = 1 / window.devicePixelRatio;
+        document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width,initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+        var docFontSize = document.documentElement.clientWidth / 10;
+        //document.documentElement.style.fontSize = document.documentElement.clientWidth / 10 + 'px';
+        var cssText = $("html").attr("style") + ";font-size:" + docFontSize + "px !important;";
+        $("html").css("cssText", cssText);
+        $('html').attr('font-size', docFontSize)
+        console.log($('h2').html(), $('html').attr('font-size'))
+        var app;
+        app = new Vue({
+            el: '#app',
+            data: {
+                currentItem: { files: [] },
+                lishiTaskReports: [],
+                reportId: -1
+            },
+            methods: {
+                loadItem: function (reportId) {
+                    var that = this;
+                    func.runAsync(abp.services.app.processTaskReport.getReportInfoById(reportId).done(function (data) {
+                        that.currentItem = data;
+                        console.log(that.currentItem)
+                        func.runAsync(abp.services.app.part.getPartReports(that.currentItem.partId).done(function (res) {
+                            that.lishiTaskReports = res;
+                            console.log(that.lishiTaskReports)
+                            var mySwiper = new Swiper('.swiper-container', {
+                                pagination: {
+                                    el: '.swiper-pagination',
+                                },
+                                observer: true,//修改swiper自己或子元素时，自动初始化swiper
+                                observeParents: true//修改swiper的父元素时，自动初始化swiper
+                            })
+                            
+                            $("#app").show();
+                        }));
+                    }));
+                },
+                viewImg: function (obj) {
+                    var imgList = [];
+                    $("#imglist img").each(function () {
+                        var a = $(this).attr("src");
+                        var b = a.split('?');
+                        imgList.push(b[0]);
+                    })
+                    var nowstr = $(obj).attr("src").split('?');
+                    wx.previewImage({
+                        current: nowstr[0], // 当前显示图片的http链接
+                        urls: imgList // 需要预览的图片http链接列表
+                    });
+                },
+                getReportTypeName: function (reportType) {
+                    switch (reportType) {
+                        case 1:
+                            return "到料";
+                            break;
+                        case 2:
+                            return "上机";
+                            break;
+                        case 3:
+                            return "加工";
+                            break;
+                        case 4:
+                            return "暂停";
+                            break;
+                        case 5:
+                            return "下机";
+                            break;
+                    }
+                }
+            },
+            created: function () {
+                //报工id
+                
+            },
+            mounted: function () {
+                this.reportId = $.getUrlParam("id");
+                this.loadItem(this.reportId);
+               
+            }
+        });
+    </script>
+
+}

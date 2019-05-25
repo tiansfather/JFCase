@@ -1,0 +1,178 @@
+﻿@using Master.Web.Components
+@model ModuleFormViewParam
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+    var m = Model;
+    m.FormType = Master.Module.FormType.Search;
+    var searchColumns = ViewData["searchColumns"] as List<Master.Dto.SearchColumnInfoDto>;
+}
+
+@*<vc:module-form param="@m"></vc:module-form>*@
+
+<div id="app" class="layui-hide">
+    <blockquote class="layui-elem-quote" style="padding:5px;margin-bottom:0">
+        <button type="button" class="layui-btn layui-btn-sm" @@click="addRow()">@L("添加项")</button>
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" @@click="items=[]">@L("重置")</button>
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @@click="doSearch()">@L("提交")</button>
+    </blockquote>
+    <table id="searchTable" class="layui-table" lay-size="sm">
+        <thead>
+            <tr>
+                <th></th>
+                <th>@L("项")</th>
+                <th>@L("条件")</th>
+                <th>@L("值")</th>
+                <th></th>
+                <th></th>
+                <th>@L("操作")</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(item,index) in items">
+                <td>
+                    <select v-model="item.leftBracket">
+                        <option value=""></option>
+                        <option value="(">(</option>
+                    </select>
+                </td>
+                <td><select v-model="item.column">
+                    <option v-for="(searchColumn,sIndex) in searchColumns" :value="searchColumn">{{searchColumn.columnName}}</option>
+                    </select></td>
+                <td>
+                    <select v-model="item.operator">
+                        <option value="==">@L("等于")</option>
+                        <option value="!=">@L("不等于")</option>
+                        <template v-if="item.column.columnType==3||item.column.columnType==4">
+                            <option value=">">@L("大于")</option>
+                            <option value=">=">@L("大于等于")</option>
+                            <option value="<">@L("小于")</option>
+                            <option value="<=">@L("小于等于")</option>
+                        </template>
+                        <template v-if="item.column.columnType==1||item.column.columnType==2">
+                            <option value=".Contains">@L("包含")</option>
+                            <option value=".StartsWith">@L("以_开始")</option>
+                            <option value=".EndWith">@L("以_结尾")</option>
+                        </template>
+                        <template v-if="item.column.columnType==7">
+                            <option value=".Contains">@L("包含")</option>
+                        </template>
+                    </select>
+                </td>
+                <td style="cursor:pointer;background-color:bisque" @@click="showValueForm(item)">{{item.value}}</td>
+                <td>
+                    <select v-model="item.rightBracket">
+                        <option value=""></option>
+                        <option value=")">)</option>
+                    </select>
+                </td>
+                <td>
+                    <select v-model="item.joiner">
+                        <option value=""></option>
+                        <option value="and">并且</option>
+                        <option value="or">或者</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" @@click="items.splice(index,1)"><i class="layui-icon layui-icon-delete"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    var items = layui.sessionData("@(Model.ModuleKey)").conditions || [];
+    var searchColumns=@Html.Raw(Common.JSONConvert.SerializeCamelCase(searchColumns));
+    var app = new Vue({
+        el: '#app',
+        data: {
+            items: items,
+            searchColumns: searchColumns,
+            currentItem: {}
+        },
+        mounted: function () {
+            $("#app").removeClass("layui-hide");
+
+        },
+        methods: {
+            addRow: function () {
+                this.items.push({ leftBracket:'',rightBracket:'',operator:'==',joiner:'', column: {},value:''});
+            },
+            showValueForm: function (item) {
+                if (!item.column.columnKey) { return; }
+                this.currentItem = item;
+                var url = "/@Model.ModuleKey/SearchItemShow?moduleKey=@Model.ModuleKey&columnKey=" + item.column.columnKey + "&value=" + (item.value ? item.value : '');
+                layer.open({
+                    type: 2,
+                    title: L('检索'),
+                    closeBtn: 1,
+                    shade: 0.1,
+                    shadeClose: true,
+                    area: ['80%', '80%'],
+                    content: [url] //iframe的url，no代表不显示滚动条
+                });
+            },
+            setItemValue: function (val) {
+                this.currentItem.value = val;
+                layer.closeAll("iframe");
+            },
+            doSearch: function () {
+                //查询条件有效性检查 20180612 lijianbo
+
+                
+                var leftnum = 0;
+                var rightnum = 0;
+
+                var message = "";
+
+                for (var i = 0; i < this.items.length; i++) {
+
+                    //获取括号的值
+                    if (this.items[i].leftBracket == "(") {
+                        leftnum++;
+                    }
+                    if (this.items[i].rightBracket == ")") {
+                        rightnum++;
+                    }
+
+                    if (!this.items[i].column.columnKey) {
+                        message = "项没有指定";
+                        break;
+                    }
+                    if (this.items[i].joiner == "" && i < (this.items.length-1)) {
+                        message = "关联没有指定";
+                        break;
+
+                    }
+
+                }
+                if (leftnum != rightnum) {
+                    //提示层
+                    message = "括号没有闭合";
+                    
+                }
+
+                if (message != "") {
+                    layer.msg('格式不正确,' + message);
+                    return false;
+                }
+
+
+                if (this.items.length > 0) {
+                    layui.sessionData("@(Model.ModuleKey)", { key: 'conditions', value: this.items });
+                }
+                else {
+                    layui.sessionData("@(Model.ModuleKey)", { key: 'conditions', value: "" });
+
+                }
+                parent.layer.closeAll("iframe");
+                parent.config.reloadTable();
+
+            }
+
+        }
+
+    });
+
+</script>

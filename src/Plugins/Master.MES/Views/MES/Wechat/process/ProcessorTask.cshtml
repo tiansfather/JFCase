@@ -1,0 +1,348 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端加工点根据客户查看任务
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "生产任务-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <style>
+        .iconfont {
+            margin-right: 10px;
+            color: #007aff;
+        }
+
+        #app {
+            position: relative;
+        }
+
+        header {
+            padding: 35px 0;
+            background: #fff;
+        }
+
+        .r-fanhui {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            font-size: 18px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 34px;
+            color: #3cc51f;
+            font-weight: 400;
+            margin: 0 15%;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .r-cell__bd-p2 {
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .r-cell__bd-p2 span {
+                display: inline-block;
+                width: 140px;
+            }
+
+        .detail-wrap {
+            line-height: 2;
+            font-size: 14px;
+            background: #fff;
+            margin: 15px;
+            border-radius: 5px;
+        }
+
+        .detail-title {
+            padding: 0 20px;
+            color: #000;
+        }
+
+        .detail-title_p {
+            font-weight: 600
+        }
+
+        .detail-title-right {
+            float: right;
+            color: #007aff;
+        }
+
+        img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+        }
+
+        small {
+            font-size: 13px;
+            color: #ddd;
+        }
+
+        .load-more-wrap {
+            font-size: 18px;
+            margin-top: 20px;
+            height: 80px;
+            display: flex;
+            background: #fff;
+            align-items: center;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 14px;
+            line-height: 50px;
+        }
+    </style>
+}
+
+<div id="app" v-cloak>
+    <header>
+        <i class="iconfont icon-fanhui r-fanhui" @@click="toBack" v-show="tenant.tenantId"></i><!--首页,客户数组只有一条或者没有时不显示返回-->
+        <h1>{{h1Title}}</h1>
+    </header>
+    <article>
+        <!-- 首屏为选择客户 -->
+        <div v-show="!tenant">
+            <div class="weui-cells">
+                <div class="weui-cell" v-for="tenant in tenants" @@click="loadDataByunit(tenant)" :key="tenant.tenantId">
+                    <div class="weui-cell__bd">
+                        <p>{{tenant.name}}</p>
+                    </div>
+                    <div class="weui-cell__ft">累计{{tenant.taskCount}}个任务<i class="iconfont icon-xiaoxijilu" style="margin: 0 4px 0 10px;"></i>延期{{tenant.delayCount}}</div>
+                </div>
+            </div>
+        </div>
+        <!--  当选择了客户后显示 -->
+        <div v-show="tenant">
+            <div>
+                <ul>
+                    <li v-for="list in lists" @@click="goTaskView(list.id)" :key="list.id">
+                        <div class="weui-cells__title">{{list.processSN}}</div>
+                        <div class="weui-cells">
+                            <div class="weui-cell">
+                                <div class="weui-cell__bd">
+                                    <p class="r-cell__bd-p2">
+                                        <p>{{list.partName}}({{list.partSN}})/{{list.processTypeName}}</p>
+                                        <small :style="{color:hadSubmitFee(list.submitFeeFromProcessor).color}">{{hadSubmitFee(list.submitFeeFromProcessor).text}}</small>
+                                    </p>
+                                    <p class="r-cell__bd-p2">
+                                        <span :style="{color:func.getProcessTaskStatusColor(list.processTaskStatus).color}">{{func.getProcessTaskStatusColor(list.processTaskStatus).name}}</span>
+                                        <span><i class="iconfont icon-rili1" style="color:red;"></i>{{list.requireDate}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="load-more-wrap" v-if="lists.length==page*limit">
+                <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default" @@click="page++;loadData();">加载更多</a>
+            </div>
+            <div class="loading" v-else>
+                <div v-if="!noMore">
+                    <i class="weui-loading"></i>加载中
+                </div>
+                <div v-else>
+                    已无更多数据
+                </div>
+            </div>
+
+        </div>
+        <!-- 当点击了具体任务 -->
+        @*<div v-show="tenant&&listNow" class="detail">
+            <div class="detail-wrap">
+                <div class="detail-title">
+                    <p class="detail-title_p">{{listNow.partName}}({{listNow.partSN}})/{{listNow.processTypeName}}</p>
+                    <p>
+                        <span>
+                            <i class="iconfont icon-rili1"></i>{{listNow.appointDate}}/{{listNow.requireDate}}
+                        </span>
+
+                    </p>
+                    <p>
+                        <span>
+                            <i class="iconfont icon-yuanliaojiedian"></i>
+                            <small>规格：</small>{{listNow.partSpecification}}&nbsp;&nbsp;
+                            <small>数量：</small>{{listNow.partNum}}
+                        </span>
+                    </p>
+                </div>
+            </div>
+            <div class="detail-wrap">
+                <p class="detail-title detail-title_p">加工示意图</p>
+                <img @@click="previewImage()" v-if="sheetFileImg" :src="sheetFileImg" alt="加工图" />
+            </div>
+            <div class="detail-title detail-wrap">
+                <p class="detail-title_p">计价方式:{{func.getFeeTypeByNum(listNow.feeType)}}</p>
+                <p>
+                    <span><i class="iconfont icon-xunjia"></i><small>单价：</small>{{listNow.price}}</span>&nbsp;&nbsp;
+                    <span><small>单位：</small>{{listNow.feeFactor}}</span>
+                </p>
+                <p>
+                    <span> <i class="iconfont icon-caigou_feiyongshenqing"></i><small>预计金额：</small>{{listNow.jobFee}}</span>&nbsp;&nbsp;
+                    <span><small>客户回单金额：</small>{{listNow.Fee}}</span>
+                </p>
+            </div>
+            <div class="detail-wrap">
+                <p class="detail-title detail-title_p">工艺要求</p>
+                <p style="min-height:200px;">{{listNow.taskInfo}}</p>
+            </div>
+        </div>*@
+    </article>
+
+</div>
+
+
+
+@section scripts{
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+        wx.error(function (res) {
+			console.log(res);
+			alert('验证失败:' + JSON.stringify(res));
+        });
+
+         wx.ready(function () {
+
+            });
+    </script>
+
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                page: 1,
+                limit: 10,
+                tenants: [],
+                lists: [],
+                listNow: false,
+                tenant: false,
+                noMore: false
+            },
+            computed: {
+                //sheetFileImg: function () {
+                //    return this.listNow.sheetFile ? this.listNow.sheetFile.filePath + '?w=250' : ''
+                //},
+                h1Title: function () {
+                    return this.listNow ? this.listNow.processSN : (this.tenant ? this.tenant.name : '选择客户企业');
+                },
+                options: function () {
+                    return {
+                        page: this.page,
+                        limit: this.limit,
+                        where: "Status.Contains(\"SendProcessor\")",
+                        searchKeys: JSON.stringify({ tenantId: this.tenant ? this.tenant.tenantId : '' })
+                    }
+                }
+            },
+            methods: {
+                hadSubmitFee: function (obj) {
+                    var b = obj && typeof( obj.Fee == 'number'||obj.Fee);
+                    return {text: b? '费用:' +obj.Fee : '未填写',color:b?'black':'green'}
+                },
+                goTaskView: function (id) {
+                    location.href = location.origin+"/MES/OuterTaskView?id=" + id;
+                },
+                //previewImage: function (url) {
+                //    var url = location.origin + this.sheetFileImg
+                //    wx.previewImage({
+                //        current:  url,
+                //        urls: [url]
+                //    });
+                //},
+                toBack: function () {//返回图标点击
+                    if (this.listNow) {
+                        this.listNow = false;
+                        return
+                    } else if (this.tenant) {
+                        this.tenant = false;
+                        this.lists = [];
+                        this.page = 1;
+                        this.noMore = false;
+                        return
+                    }
+                },
+                loadDataByunit: function (tenant) {
+                    this.tenant = tenant;
+                    this.loadData();
+                },
+                loadData: function () {
+                    var that = this;
+                    abp.services.app.processTaskProcessor.getPageResult(this.options).done(function (res) {
+                        if (res.data.length < that.limit) {//已无更多数据
+                            that.noMore = true;
+                        }
+                        that.lists = that.lists.concat(res.data);
+                    })
+                },
+                loadUnit: function () {
+                    var that = this;
+                    abp.services.app.processTaskProcessor.getCustomers().done(function (res) {
+                        if (res.length == 1) {
+                            that.loadDataByunit(res[0])
+                        }
+                        that.tenants = res;
+                        //$('#app').show();
+                    })
+
+                }
+            },
+            created: function () {
+                this.loadUnit();
+            }
+        })
+    </script>
+
+}

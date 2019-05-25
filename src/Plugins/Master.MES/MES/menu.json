@@ -1,0 +1,232 @@
+[
+
+    {
+        "name": "MES",
+        "displayName": "生产",
+      "icon": "iconfont icon-lingjian",
+      "order":1,
+        "url": "",
+      "items": [
+        {
+          "name": "MES.Tenancy.ProcessQuote",
+          "displayName": "加工询价",
+          "icon": "iconfont icon-chengben",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/ProcessQuote"
+        },
+        {
+          "name": "MES.Tenancy.ProcessQuoteProcessor",
+          "displayName": "任务大厅",
+          "icon": "iconfont icon-chengben",
+          "requiredFeature": "MESSupplier",
+          "url": "/Home/Show?name=../MES/ProcessQuoteProcessor"
+        },
+        {
+          "name": "MES.Tenancy.JGKD",
+          "displayName": "加工开单",
+          "icon": "iconfont icon-icon-kaidan",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/JGKD",
+          "customData": "ConfirmProcess|审核,SendToUnit|发送"
+        },
+        {
+          "name": "MES.Tenancy.ProcessTask",
+          "displayName": "生产任务",
+          "icon": "iconfont icon-renwu",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/ProcessTask",
+          "customData": "Verify|回单审核,DirectReport|直接报工|0,Del|删除,ManyPrint|多项打印"
+        },
+        {
+          "name": "MES.Tenancy.ProcessTaskProcessor",
+          "displayName": "加工任务",
+          "icon": "iconfont icon-renwu",
+          "requiredFeature": "MESSupplier",
+          "url": "/Home/Show?name=../MES/ProcessTaskProcessor",
+          "customData": ""
+        },
+        {
+          "name": "MES.Tenancy.PartTask",
+          "displayName": "加工路线",
+          "icon": "iconfont icon-workflow",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/PartTask",
+          "customData": "Set|工艺设定|0,Del|删除"
+        },
+        {
+          "name": "MES.Tenancy.ProcessTaskReport",
+          "displayName": "报工记录",
+          "icon": "iconfont icon-baogong-",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/ProcessTaskReport",
+          "customData": "Del|撤销"
+        },
+        {
+          "name": "MES.Tenancy.FieldControl",
+          "displayName": "现场管理",
+          "icon": "iconfont icon-shebei",
+          "requiredFeature": "",
+          "url": "/Home/Show?name=../MES/FieldControl",
+          "customData": "OutSoursing|外协加工|0"
+        },
+        {
+          "name": "MES.Tenancy.CloudEquipment",
+          "displayName": "云设备",
+          "icon": "iconfont icon-yun",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/CloudEquipment"
+        },
+        {
+          "name": "MES.Tenancy.Equipment",
+          "displayName": "设备管理",
+          "icon": "iconfont icon-shukongchechuang",
+          "url": "/Home/Show?name=../MES/Equipment"
+        },
+        {
+          "name": "MES.Tenancy.EquipmentOperatorHistory",
+          "displayName": "交接班记录",
+          "icon": "iconfont icon-jiaojie",
+          "url": "/EquipmentOperatorHistory/Index"
+        },
+        {
+          "name": "MES.Tenancy.RemindTactic",
+          "displayName": "提醒策略",
+          "icon": "iconfont icon-celve",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/RemindTactic"
+        },
+        {
+          "name": "MES.Tenancy.RemindLog",
+          "displayName": "提醒记录",
+          "icon": "iconfont icon-xiaoxijilu",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/RemindLog"
+        },
+        {
+          "name": "MES.Tenancy.ProcessCost",
+          "displayName": "加工费用",
+          "icon": "iconfont icon-chengben",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/ProcessCost",
+          "customData": "Dui|对账,CancelDui|取消对账"
+        },
+        {
+          "name": "MES.Tenancy.ProcessReportForm",
+          "displayName": "生产报表",
+          "icon": "iconfont icon-baobiao1",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/ProcessReportForm",
+          "customData": ""
+        },
+        {
+          "name": "MES.Tenancy.RankList",
+          "displayName": "外协排行",
+          "icon": "iconfont icon-paixingbang",
+          "requiredFeature": "MESManufacture",
+          "url": "/Home/Show?name=../MES/RankList"
+        },
+        {
+          "name": "MES.Host.Company",
+          "displayName": "注册企业管理",
+          "icon": "iconfont icon-houtaiguanli1",
+          "url": "/Home/Show?name=../MES/CompanyManager"
+        },
+        {
+          "name": "MES.Host.Edition",
+          "displayName": "版本管理",
+          "icon": "iconfont icon-yuanliaojiedian",
+          "url": "/Home/Show?name=../MES/Edition"
+        },
+        {
+          "name": "MES.Host.RemindTacticHost",
+          "displayName": "提醒策略",
+          "icon": "iconfont icon-celve",
+          "url": "/Home/Show?name=../MES/RemindTacticsHost"
+        },
+        {
+          "name": "MES.Host.Notice",
+          "displayName": "公告通知",
+          "icon": "iconfont icon-m-fileFormat",
+          "url": "/Home/Show?name=../MES/Notice"
+        },
+        {
+          "name": "MES.Host.RankList",
+          "displayName": "外协排行",
+          "icon": "iconfont icon-paixingbang",
+          "url": "/Home/Show?name=../MES/RankList"
+        },
+        {
+          "name": "MES.Host.Video",
+          "displayName": "帮助视频",
+          "icon": "iconfont icon-bangzhushipin",
+          "url": "/Home/Show?name=../MES/helpvideo"
+        }
+      ]
+    },
+  {
+    "name": "Project",
+    "displayName": "项目",
+    "icon": "iconfont icon-xiangmuguanli",
+    
+    "order": 2,
+    "url": "",
+    "items": [
+      {
+        "name": "MES.Tenancy.Project",
+        "displayName": "模具列表",
+        "icon": "iconfont icon-25",
+        "requiredFeature": "MESManufacture",
+        "url": "/Home/Show?name=../MES/Project"
+      },
+      {
+        "name": "MES.Tenancy.MyProject",
+        "displayName": "我的模具",
+        "icon": "iconfont icon-25",
+        "requiredFeature": "MESCustomer",
+        "url": "/Home/Show?name=../MES/Customer/Project"
+      },
+      {
+        "name": "MES.Tenancy.Bom",
+        "displayName": "BOM清单",
+        "icon": "iconfont icon-iLinkapp-",
+        "requiredFeature": "MESManufacture",
+        "url": "/Home/Show?name=../MES/Bom"
+      },
+      {
+        "name": "MES.Tenancy.cpsj",
+        "displayName": "产品设计",
+        "icon": "iconfont icon-pinpaishejichuangxintiyan",
+        "requiredFeature": "MESManufacture",
+        "url": "/Home/Show?name=../MES/Bom"
+      },
+      {
+        "name": "MES.Tenancy.mjsj",
+        "displayName": "模具设计",
+        "icon": "iconfont icon-mojugongzuozhan-",
+        "requiredFeature": "MESManufacture",
+        "url": "/Home/Show?name=../MES/Bom"
+      },
+      {
+        "name": "MES.Tenancy.process",
+        "displayName": "模具进度",
+        "icon": "iconfont icon-jindu1",
+        "requiredFeature": "MESManufacture",
+        "url": "/Home/Show?name=../MES/Bom"
+      },
+      {
+        "name": "MES.Tenancy.mingxi",
+        "displayName": "跟踪明细",
+        "icon": "iconfont icon-mingxi1",
+        "requiredFeature": "MESManufacture",
+        "url": "/Home/Show?name=../MES/Bom"
+      },
+      {
+        "name": "MES.Tenancy.zonglan",
+        "displayName": "模具总览",
+        "icon": "iconfont icon-zonglan",
+        "requiredFeature": "MESManufacture",
+        "url": "/Home/Show?name=../MES/Bom"
+      }
+    ]
+  }
+]

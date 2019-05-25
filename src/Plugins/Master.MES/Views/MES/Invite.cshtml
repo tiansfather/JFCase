@@ -1,0 +1,251 @@
+﻿@using Master.Configuration;
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+    //邀请加入二维码扫码页，手机和电脑端通用
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "邀请注册";
+}
+@section styles{
+    <link rel="stylesheet" href="/lib/jqueryweui/lib/weui.min.css" asp-append-version="true">
+    <link rel="stylesheet" href="/lib/jqueryweui/css/jquery-weui.min.css" asp-append-version="true">
+    <link rel="stylesheet" href="/assets/layuiadmin/layui/css/layui.css" asp-append-version="true">
+    <style>
+        fieldset {
+            text-align: left;
+        }
+            fieldset .layui-field-box {
+                min-height: 6em;
+                display: flex;
+                flex-wrap: wrap;
+            }
+            fieldset .layui-field-box p {
+                line-height: 2;
+                margin: 10px;
+            }
+                fieldset .layui-field-box span {
+                    line-height: 28px;
+                    height: 28px;
+                    font-size: 14px;
+                }
+                fieldset .layui-field-box i {
+                    font-size: 20px;
+                    cursor: pointer;
+                }
+    </style>
+}
+
+<div id="app" v-cloak>
+    <div v-if="inviter&&(!companyName)">
+        <div>
+            <div class="weui-cells weui-cells_form">
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">企业名</label></div>
+                    <div class="weui-cell__bd">
+                        <input class="weui-input" placeholder="请输入" id="UnitName">
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label for="name" class="weui-label">性质</label></div>
+                    <div class="weui-cell__bd">
+                        <input class="weui-input" id="nature" type="text" value="" readonly="">
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label for="name" class="weui-label">供应类别</label></div>
+                    <div class="weui-cell__bd">
+                        <input class="weui-input" id="SupplierType" type="text" value="" readonly="">
+                    </div>
+                </div>
+            </div>
+            <button class="weui-btn weui-btn_plain-default" style=" width: 80%;margin: 20px auto;" @@click="addUnit">添加往来单位</button>
+        </div>
+        <div>
+            <div class="weui-cells__title">邀请加入模来模往</div>
+            <div class="weui-cells">
+                <a class="weui-cell weui-cell_access" href="javascript:;" @@click="companyName=true">
+                    <div class="weui-cell__bd">
+                        <p>成为模来模往的伙伴</p>
+                    </div>
+                    <div class="weui-cell__ft">
+                    </div>
+                </a>
+            </div>
+            <div class="weui-cells__title">领取注册往来单位</div>
+            <div class="weui-cells">
+                <a class="weui-cell weui-cell_access" href="javascript:;" @@click="companyName=list.unitName" v-for="(list,index) in lists">
+                    <div class="weui-cell__bd">
+                        <p>{{list.unitName}}</p>
+                    </div>
+                    <div class="weui-cell__ft">
+                    </div>
+                </a>
+            </div>
+        </div>
+        <water-load :loaded="lists.length==page*limit" :nomore="noMore" @@page-add="page++;loadData()"></water-load>
+    </div>
+    <div style="text-align:center;margin: 20px 50px 0" v-else>
+        <img :src="qrCode" />
+        <br />
+        <b id="codeB">{{qrMsg}}</b><br />
+        @*<fieldset class="layui-elem-field">
+            <legend>已绑定人员</legend>
+            <div class="layui-field-box">
+                <p v-for="(item,index) in reminders" tips="双击解除绑定" @@dblclick="removeReminder(item.id)">
+                    <span class="layui-badge layui-bg-green" style="line-height:28px;height:28px;font-size:14px;">{{item.name}}</span>
+                    <i class="layui-icon layui-icon-delete" @@click="removeReminder(item.id)"></i>
+                </p>
+            </div>
+        </fieldset>*@
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        //没有inviter，直接进到注册页邀请页；有inviter无公司名，代表邀请其他公司加入模来模往；有inviter和公司名，代表注册成为该公司的往来单位
+        config.ready = function () {
+            window.app = new Vue({
+                el: '#app',
+                data: {
+                    lists: [],
+                    page: 1,
+                    limit: 10,
+                    searchKeys: { "Binded": "0" },
+                    noMore: false,
+                    companyName: $.getUrlParam("companyName"),
+                    inviter: $.getUrlParam("inviter") || abp.session.tenantId,
+                    unitId: $.getUrlParam("unitId"),
+                    unitNature: $.getUrlParam("unitNature"),//往来单位性质
+                    reminders: []//提醒人
+                },
+                computed: {
+                    isCustomer: function () {
+                        //是否是客户
+                        return this.unitNature == 1 || this.unitNature == 3;
+                    },
+                    qrCode: function () {
+                        var url;
+                        url = location.origin + "/MES/Register";
+                        if (this.inviter && (typeof this.companyName == 'string' && this.companyName)) {
+                            url += "?inviter=" + this.inviter + "&companyName=" + this.companyName;
+                        } else if (this.inviter) {
+                            url += "?inviter=" + this.inviter
+                        }
+                        //if (!this.isCustomer) {
+                        //    url = location.origin + "/MES/Register";
+                        //    if (this.inviter && (typeof this.companyName == 'string' && this.companyName)) {
+                        //        url += "?inviter=" + this.inviter + "&companyName=" + this.companyName;
+                        //    } else if (this.inviter) {
+                        //        url += "?inviter=" + this.inviter
+                        //    }
+                        //} else {
+                        //    //如果是客户，则进入绑定报工二维码
+                        //    url = location.origin + "/MES/BindCustomerReminder?unitId=" + this.unitId;
+                        //}
+                        url = "/api/qrcode?url=" + encodeURIComponent(url);
+                        return url;
+                    },
+                    qrMsg: function () {
+                        return "扫描此二维码进行注册或领取";
+                        //if (!this.isCustomer) {
+                        //    return "扫描此二维码进行注册或领取";
+                        //} else {
+                        //    return "扫描此二维码绑定报工提醒";
+                        //}
+                    },
+                    options: function () {
+                        return {
+                            page: this.page,
+                            limit: this.limit,
+                            searchKeys: JSON.stringify(this.searchKeys)
+                        }
+                    }
+                },
+                methods: {
+                    addUnit: function () {
+                        var datas = { BriefName: $('#UnitName').val(), UnitName: $('#UnitName').val(), SupplierType: $("#SupplierType").val(), UnitNature: $("#nature").data("values") }
+                        var data = { action: "Add", moduleKey: "Unit", datas: datas }
+                        console.log(data)
+                        abp.services.app.unit.formSubmit(data).done((res) => {
+                            this.lists = [];
+                            this.page = 1;
+                            this.noMore = false;
+                            this.loadData();
+                        })
+                    },
+                    loadData: function () {
+                        var that = this;
+                        abp.services.app.mESUnit.getPageResult(this.options).done(function (res) {
+                            if (res.data.length < that.limit) {//已无更多数据
+                                that.noMore = true;
+                            }
+                            that.lists = that.lists.concat(res.data);
+                        })
+                    },
+                    //loadReminders: function () {
+                    //    var that = this;
+                    //    abp.services.app.mESUnit.getUnitBindedReminders(this.unitId).done(function (data) {
+                    //        that.reminders = data;
+                    //    })
+                    //},
+                    //removeReminder: function (id) {
+                    //    var that = this;
+                    //    abp.message.confirm('确认移除此提醒人?', function () {
+                    //        func.runAsync(abp.services.app.mESUnit.removeUnitReminder(that.unitId, id).done(function () {
+                    //            abp.message.success('提交成功');
+                    //            location.reload();
+                    //        }))
+                    //    })
+                    //}
+                },
+                mounted: function () {
+                    if (this.inviter) {
+                        this.loadData();
+                    }
+                    //if (this.isCustomer) {
+                    //    //如果是客户的话，请求对应的绑定提醒人员
+                    //    this.loadReminders();
+                    //}
+                    $("#nature").select({
+                        title: "选择性质",
+                        items: [{
+                            title: "客户",
+                            value: "0",
+                        },
+                        {
+                            title: "供应商",
+                            value: "1",
+                        },
+                        {
+                            title: "客户及供应商",
+                            value: "2",
+                        },]
+                    });
+                    $("#SupplierType").select({
+                        title: "选择供应类别",
+                        multi: true,
+                        items: ["采购", "加工"]
+                    });
+
+                    if (this.inviter && this.companyName) {
+                        //当开始的时候有inviter和公司名，就可能是电脑端的注册页
+                        (function loopFunc() {
+                            abp.services.app.mESUnit.getUnitTenantInfos([$.getUrlParam("unitId")]).done(res => {
+                                if (res[0].tenantBinded) {
+                                    //跳出循环
+                                    parent.layer.closeAll();
+                                    parent.config.reloadTable();
+                                } else {
+                                    window.setTimeout(loopFunc, 1000);
+                                }
+                            })
+                        })()
+                    }
+                }
+            });
+        }
+
+
+    </script>
+}

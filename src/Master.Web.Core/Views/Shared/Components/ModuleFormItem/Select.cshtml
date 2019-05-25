@@ -1,0 +1,54 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@using Master.Configuration.Dictionaries
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@inject IDictionaryManager DictionaryManager
+@model ModuleFormItemViewModel
+@{
+	var column = Model.ColumnInfo;
+	//展示方式
+	var controlFormat = string.IsNullOrWhiteSpace(column.ControlFormat) ? "select" : column.ControlFormat;
+
+	var dictionary =await DictionaryManager.GetAllDictionaries();
+	//column.DictionaryName有可能是字典名称，也可能直接就是字典的内容
+	Dictionary<string, string> dic=new Dictionary<string, string>();
+	if (dictionary.ContainsKey(column.DictionaryName))
+	{
+		dic = dictionary[column.DictionaryName];
+	}
+	else
+	{
+		try
+		{
+			dic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(column.DictionaryName);
+		}
+		catch
+		{
+
+		}
+	}
+	var renderer = !string.IsNullOrEmpty(column.Renderer) ? column.Renderer : "lay-select";
+}
+
+<div is="@renderer" :column-Info="{ColumnKey:'@column.ColumnKey',ColumnName:'@column.ColumnName',VerifyRules:'@column.VerifyRules',Tips:'@column.Tips',ControlFormat:'@column.ControlFormat'}" :dictionary='@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(dic))' value="@Model.Value?.ToString()"></div>
+
+@*<div class="@(inline?"layui-inline":"layui-form-item")">
+	<label class="layui-form-label">@column.ColumnName</label>
+	<div class="@(inline?"layui-input-inline":"layui-input-block")">
+		@if (controlFormat == "select")
+		{
+			<select name="@column.ColumnKey" lay-filter="@column.ColumnKey" dictionary-name="@column.DictionaryName" value="@Model.Value?.ToString()">
+				<option value="">@L("未选择")</option>
+			</select>
+
+		}
+		else if (controlFormat == "radio")
+		{
+
+			<radio dictionary-name="@column.DictionaryName" name="@column.ColumnKey" value="@Model.Value?.ToString()"></radio>
+		}
+
+	</div>
+</div>*@

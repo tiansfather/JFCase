@@ -1,0 +1,577 @@
+﻿@using Master.Module
+@using Master.Web.Components
+@model Master.Module.ModuleInfo
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+    var allModules = ViewData["AllModules"] as List<ModuleInfo>;
+}
+@section styles{
+    <link href="/lib/codemirror-minified/lib/codemirror.css" rel="stylesheet" />
+    <link href="~/lib/codemirror-minified/theme/dracula.css" rel="stylesheet" />
+    <link href="~/lib/codemirror-minified/addon/fold/foldgutter.css" rel="stylesheet" />
+    <style>
+        tr.active {
+            background-color: #c2deda !important;
+        }
+    </style>
+
+}
+
+<form class="layui-form-pane layui-hide" id="app">
+    <input type="hidden" name="ids" value="@Model.Id" />
+    <div class="layui-row layui-col-space1">
+        <div class="layui-col-md4">
+            
+            <blockquote class="layui-elem-quote" style="padding:5px;margin-bottom:0"><button type="button" class="layui-btn layui-btn-sm" @@click="addColumn()">@L("添加列")</button></blockquote>
+            <div layouth="65">
+            <table class="layui-table" style="margin:0">
+                <thead>
+                    <tr>
+                        <th>@L("序号")</th>
+                        <th>@L("列名")</th>
+                        <th>@L("类别")</th>
+                        <th>@L("操作")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item,index) in columns" @@click="setCurrent(item)" :class="{active:currentColumn==item}" style="cursor:pointer">
+                        <td>{{index+1}}</td>
+                        <td>{{item.columnName}}</td>
+                        <td>
+                            <span class="layui-badge" v-if="item.isSystemColumn">系统</span>
+                            <span v-else-if="item.isInterColumn" class="layui-badge layui-bg-blue">内置</span>
+                            <span v-else class="layui-badge layui-bg-cyan">用户</span>
+                        </td>
+                        <td>
+
+                            <a @@click.stop="upItem(index)" style="cursor:pointer"><i class="layui-icon layui-icon-up"></i></a>
+                            <a @@click.stop="downItem(index)" style="cursor:pointer"><i class="layui-icon layui-icon-down"></i></a>
+                            <a v-if="!item.isInterColumn" @@click.stop="removeItem(index)" style="cursor:pointer" title="@L("删除")"><i class="layui-icon layui-icon-delete"></i></a>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div class="layui-col-md8">
+            <div class="layui-tab layui-tab-card" style="margin-top:0" lay-filter="tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">@L("基础信息")</li>
+                    <li>@L("控件信息")</li>
+                    <li>@L("显示设置")</li>
+                    <li>@L("数据")</li>
+                    <li>@L("展示")</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">@L("列标志")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" :disabled="currentColumn.isSystemColumn||currentColumn.isInterColumn" class="layui-input" name="columnKey" v-model="currentColumn.columnKey">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">@L("列名")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="columnName" autocomplete="off" lay-verify="required" class="layui-input" v-model="currentColumn.columnName">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item" v-if="!currentColumn.isSystemColumn">
+                            <label class="layui-form-label">@L("列类型")</label>
+                            <div class="layui-input-block">
+                                <select asp-items="@Html.GetEnumSelectList(typeof(Master.Module.ColumnTypes))" v-model="currentColumn.columnType" lay-filter="columnType" name="columnType"></select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">@L("字段权限")</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" lay-skin="switch" name="enableFieldPermission" lay-text="ON|OFF" :checked="currentColumn.enableFieldPermission">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">                        
+						<template v-if="currentColumn.columnType!=15 && !currentColumn.isSystemColumn ">
+							<div class="layui-form-item">
+								<label class="layui-form-label">@L("列控件")</label>
+								<div class="layui-input-block">
+									<select v-model="currentColumn.controlFormat" name="controlFormat">
+										<template v-if="currentColumn.ColumnType==3">
+											<option value="date">@L("日期")</option>
+											<option value="datetime">@L("日期时间")</option>
+										</template>
+										<template v-if="currentColumn.columnType==5">
+											<option value="select">@L("下拉")</option>
+											<option value="radio">@L("单选按钮")</option>
+										</template>
+										<template v-if="currentColumn.columnType==7">
+											<option value="default">@L("默认")</option>
+											<option value="primary">@L("原始")</option>
+										</template>
+										@*<template v-if="currentColumn.columnType==11">
+											<option value="default">@L("默认")</option>
+											<option value="select">@L("下拉")</option>
+										</template>*@
+									</select>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">@L("呈现控件")</label>
+								<div class="layui-input-block">
+									<input type="text" name="renderer" autocomplete="off" class="layui-input" v-model="currentColumn.renderer" placeholder="自定义呈现">
+								</div>
+							</div>
+						</template>
+
+                        <template v-if="currentColumn.columnType==15">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">@L("自定义")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" name="customizeControl" class="layui-input" v-model="currentColumn.customizeControl" placeholder="自定义控件名">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">@L("控件配置")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" name="controlParameter" class="layui-input" v-model="currentColumn.controlParameter" placeholder="自定义控件配置">
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">@L("列表显示")</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" lay-skin="switch" name="isShownInList" lay-text="ON|OFF" :checked="currentColumn.isShownInList">
+                            </div>
+                        </div>
+                        <template v-if="!currentColumn.isOperationColumn">
+                            <div class="layui-form-item" pane>
+                                <label class="layui-form-label">@L("启用检索")</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" lay-skin="switch" name="isShownInAdvanceSearch" lay-text="ON|OFF" :checked="currentColumn.isShownInAdvanceSearch">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" pane>
+                                <label class="layui-form-label">@L("启用排序")</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" lay-skin="switch" name="isEnableSort" lay-text="ON|OFF" :checked="currentColumn.isEnableSort">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" pane>
+                                <label class="layui-form-label">@L("查看显示")</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" lay-skin="switch" name="isShownInView" lay-text="ON|OFF" :checked="currentColumn.isShownInView">
+                                </div>
+                            </div>
+                        </template>
+                        <template v-if="!currentColumn.isSystemColumn">
+                            <div class="layui-form-item" pane>
+                                <label class="layui-form-label">@L("启用添加")</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" lay-skin="switch" name="isShownInAdd" lay-text="ON|OFF" :checked="currentColumn.isShownInAdd">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" pane>
+                                <label class="layui-form-label">@L("启用修改")</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" lay-skin="switch" name="isShownInEdit" lay-text="ON|OFF" :checked="currentColumn.isShownInEdit">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" pane>
+                                <label class="layui-form-label">@L("批量修改")</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" lay-skin="switch" name="isShownInMultiEdit" lay-text="ON|OFF" :checked="currentColumn.isShownInMultiEdit">
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item" v-if="currentColumn.columnType==11">
+                            <label class="layui-form-label">@L("关联数据")</label>
+                            <div class="layui-input-block">
+                                <select v-model="currentColumn.relativeDataType" name="relativeDataType">
+                                    <option value="1">@L("默认")</option>
+                                    <option value="2">@L("模块")</option>
+                                    <option value="3">@L("自定义SQL")</option>
+                                    <option value="4">@L("Url")</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" v-if="currentColumn.columnType==11 && currentColumn.relativeDataType!=1">
+                            <label class="layui-form-label">@L("数据源")</label>
+                            <div class="layui-input-block">
+                                <template v-if="currentColumn.relativeDataType!=2">
+                                    <input type="text" autocomplete="off" class="layui-input" name="relativeDataString" v-model="currentColumn.relativeDataString" placeholder="select count(0) as SubNum from core_staffs where id>@@Id">
+                                </template>
+
+                                <select v-model="currentColumn.relativeDataString" name="relativeDataString" v-if="currentColumn.relativeDataType==2" asp-items="@(new SelectList(allModules,"ModuleKey","ModuleName"))"></select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" v-if="currentColumn.columnType==11 && (currentColumn.relativeDataType==2||currentColumn.relativeDataType==4)">
+                            <label class="layui-form-label">@L("引用数量")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" lay-verify="number" class="layui-input" name="extension.maxReferenceNumber" v-model="currentColumn.extension.maxReferenceNumber" placeholder="@L("最大引用数量")">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" v-if="currentColumn.columnType==11 && (currentColumn.relativeDataType==2||currentColumn.relativeDataType==4) ">
+                            <label class="layui-form-label">@L("查询项")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" name="extension.referenceSearchColumns" v-model="currentColumn.extension.referenceSearchColumns" placeholder="查询列名">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" v-if="currentColumn.columnType==11 && (currentColumn.relativeDataType==2||currentColumn.relativeDataType==4) ">
+                            <label class="layui-form-label">@L("查询条件")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" name="extension.referenceSearchWhere" v-model="currentColumn.extension.referenceSearchWhere" placeholder="{where:'1=1',searchKeys:''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" v-if="currentColumn.columnType==11 && (currentColumn.relativeDataType==2||currentColumn.relativeDataType==4)">
+                            <label class="layui-form-label">@L("项模板")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" lay-verify="number" class="layui-input" name="extension.referenceItemTpl" v-model="currentColumn.extension.referenceItemTpl" placeholder="UnitName">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" v-if="currentColumn.columnType==5||currentColumn.columnType==7">
+                            <label class="layui-form-label">@L("数据字典")</label>
+                            <div class="layui-input-inline">
+                                <select v-model="currentColumn.dictionaryName" name="dictionaryName" id="dictionaryName">
+                                    <option value="">@L("未指定")</option>
+                                    <option v-for="(item,index) in dicKeys">{{item}}</option>
+                                </select>
+                            </div>
+                            <div class="layui-form-mid " style="padding-top:4px!important">
+                                <button type="button" class="layui-btn layui-btn-sm" @@click="addDictionary()" title="@L("添加字典")"><i class="layui-icon layui-icon-add-1"></i></button>
+                                <button id="btn_editDictionary" :dataid="currentColumn.dictionaryName" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;]}" buttonactiontype="Form" buttonactionurl="/Dictionary/Edit" type="button" class="layui-btn layui-btn-primary layui-btn-sm" @@click="editDictionary()"><i class="layui-icon layui-icon-edit"></i></button>
+                            </div>
+
+                        </div>
+                        <template v-if="!currentColumn.isSystemColumn">
+                            <div class="layui-form-item" v-if="currentColumn.columnType==3||currentColumn.columnType==4">
+                                <label class="layui-form-label">@L("展示格式")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" class="layui-input" name="displayFormat" v-model="currentColumn.displayFormat" placeholder="仅对日期类型或数字类型有效,如yyyy-MM-dd">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" v-if="currentColumn.columnType==9||currentColumn.columnType==10">
+                                <label class="layui-form-label">@L("上传数量")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" class="layui-input" name="maxFileNumber" lay-verify="number" v-model="currentColumn.maxFileNumber">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">@L("验证规则")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" class="layui-input" name="verifyRules" v-model="currentColumn.verifyRules">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">@L("值路径")</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" class="layui-input" name="valuePath" v-model="currentColumn.valuePath">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux" style="color:red">@L("请勿随意更改此项")</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">@L("显示路径")</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" autocomplete="off" class="layui-input" name="displayPath" v-model="currentColumn.displayPath">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux" style="color:red">@L("请勿随意更改此项")</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">@L("默认值")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" autocomplete="off" class="layui-input" name="defaultValue" v-model="currentColumn.defaultValue" placeholder="常量请使用双引号包裹">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" pane v-if="currentColumn.columnType==4">
+                                <label class="layui-form-label">@L("汇总行")</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" lay-skin="switch" name="extension.enableTotalRow" lay-text="ON|OFF" :checked="currentColumn.extension.enableTotalRow">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" pane v-if="currentColumn.columnType==1">
+                                <label class="layui-form-label">@L("输入提示")</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" lay-skin="switch" name="extension.enableAutoComplete" lay-text="ON|OFF" :checked="currentColumn.extension.enableAutoComplete">
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("列宽")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" name="extension.width" class="layui-input" v-model="currentColumn.extension.width" placeholder="可输入数字100或百分比20%">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("CSS样式")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" name="extension.style" class="layui-input" v-model="currentColumn.extension.style">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("对齐")</label>
+                            <div class="layui-input-block">
+                                <select v-model="currentColumn.extension.align" name="extension.align">
+                                    <option value="">@L("默认")</option>
+                                    <option value="left">@L("居左")</option>
+                                    <option value="center">@L("居中")</option>
+                                    <option value="right">@L("居右")</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("固定")</label>
+                            <div class="layui-input-block">
+                                <select v-model="currentColumn.extension.fixed" name="extension.fixed">
+                                    <option value="">@L("默认")</option>
+                                    <option value="left">@L("左")</option>
+                                    <option value="right">@L("右")</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">@L("模板")</label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="@L("模板内容")" class="layui-textarea" id="templet" name="templet" v-model="currentColumn.templet"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div style="display:none">
+        <vc:module-form-submit param="@(new ModuleFormSubmitViewParam() { ModuleKey="ModuleInfo",ButtonKey="Column"})"></vc:module-form-submit>
+    </div>
+
+</form>
+
+@section scripts{
+    <script src="/lib/codemirror-minified/lib/codemirror.js"></script>
+    <script src="/lib/codemirror-minified/mode/javascript/javascript.js"></script>
+    <script src="~/lib/codemirror-minified/addon/fold/foldcode.js"></script>
+    <script src="~/lib/codemirror-minified/addon/fold/foldgutter.js"></script>
+    <script src="~/lib/codemirror-minified/addon/fold/brace-fold.js"></script>
+    <script src="~/lib/codemirror-minified/addon/fold/comment-fold.js"></script>
+    <script>
+        var editor,app;
+        config.ready = function () {
+            var editorLoaded = false;
+            layui.element.on('tab(tab)', function (data) {
+                if (!editorLoaded && data.index == 4) {
+                    //编辑器
+                    editor = CodeMirror.fromTextArea(document.getElementById("templet"), {
+                        lineNumbers: true,	//显示行号
+                        theme: "dracula",	//设置主题
+                        lineWrapping: true,	//代码折叠
+                        foldGutter: true,
+                        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                        matchBrackets: true,	//括号匹配
+                    });
+                    editor.on("change", function (obj, data) {
+                        var value = obj.getValue()
+                        app.currentColumn.templet = value;
+                        console.log(obj.getValue());
+
+                    })
+
+                    editorLoaded = true;
+                }
+
+            })
+            app = new Vue({
+            el: "#app",
+            data: {
+                columns: [],
+                dicKeys:[],
+                currentColumn:
+                    {
+                    extension: {}
+                    }
+
+            },
+            created: function () {
+                
+                abp.services.app.moduleInfo.getColumnInfos('@Model.ModuleKey').done(function (data) {
+                    var result = data;
+                    for (var i = 0; i < result.length; i++) {
+                        if (result[i].extensionData) {
+                            result[i].extension = JSON.parse(result[i].extensionData);
+                        } else {
+                            result[i].extension = {};
+
+                        }
+                        app.columns.push(result[i]);
+                    }
+                    app.setCurrent(app.columns[0]);
+                })
+                //获取所有字典
+                abp.services.app.dictionary.getAllKeys().done(function (data) {
+                    app.dicKeys = data;
+                    
+
+                });
+            },
+            mounted: function () {
+                $("#app").removeClass("layui-hide");
+            },
+            methods: {
+                setCurrent: function (item) {
+                    this.currentColumn = item;
+                    //对于代码编辑器重新设置值
+                    if (editor) {
+                        editor.setValue(this.currentColumn.templet||'');
+                    }
+                    refresh();
+                },
+                upItem: function (index) {
+                    if (index > 0) {
+                        var preItem = this.columns[index - 1];
+                        app.$set(this.columns, index - 1, this.columns[index]);
+                        app.$set(this.columns, index, preItem);
+                    }
+                },
+                downItem: function (index) {
+                    if (index < this.columns.length - 1) {
+                        var nextItem = this.columns[index + 1];
+                        app.$set(this.columns, index + 1, this.columns[index]);
+                        app.$set(this.columns, index, nextItem);
+                    }
+
+                },
+                removeItem: function (index) {
+                    abp.message.confirm("@(L("确认删除列"))?", function () {
+                        app.columns.splice(index, 1);
+                        app.currentColumn = app.columns[0];
+                    });
+
+                },
+                addColumn: function () {
+                    //添加列
+                    layer.prompt({ title: '@L("请输入列名")', formType: 0 }, function (text, index) {
+                        layer.close(index);
+                        var key = pinyinUtil.getPinyin(text, '').toLowerCase();
+                        var column = {
+                            columnKey: key, columnName: text, columnType: 1, extension: {}, relativeDataType:0,
+                            isShownInAdd: true, isShownInAdvanceSearch: true, isShownInEdit: true, isShownInList: true,
+                            isShownInMultiEdit: true, inShownInView: true, valuePath: 'Property'
+                        };
+                        app.columns.push(column);
+                        app.setCurrent(column);
+
+                    });
+
+                },
+                addDictionary: function () {
+                    //添加字典
+                    layer.prompt({ title: '@L("请输入字典名")', formType: 0 }, function (text, index) {
+                        layer.close(index);
+                        //检测此字典是否是内置字典
+                        func.runAsync(abp.services.app.dictionary.isInInnerDics(text).done(function (data) {
+                            if (data) {
+                                //如果是内置字典不允许添加
+                                abp.message.error(L("内置字典名不能在模块设置中添加,请到字典管理中添加"));
+
+                            } else {
+                                doAdd(text);
+
+                            }
+
+                        }));
+                    });
+
+                    function doAdd(text) {
+                        //添加新增的字典到表单中
+                        func.runAsync(abp.services.app.dictionary.addDictionary(text).done(function (data) {
+                            app.dicKeys.push(text);
+                            app.currentColumn.dictionaryName = text;
+                            //对于select 类型控件更新必须进行刷新
+                            refresh();
+                        }));
+                    }
+                },
+                editDictionary: function () {
+                    var dictionaryName = app.currentColumn.dictionaryName;
+                    if (!dictionaryName) {
+                        abp.message.error(L("请先选择字典再进行修改"));
+                    } else {
+                        func.callModuleButtonEvent($("#btn_editDictionary"));
+
+                    }
+
+                }
+
+
+            }
+        });
+            var form = layui.form;
+            form.on('select', function (data) {
+                var column = app.currentColumn;
+                var name = $(data.elem).attr("name");
+                //扩展属性另外处理
+                if (name.indexOf("extension") >= 0) {
+                    column.extension[name.replace("extension.", "")] = data.value;
+
+                } else {
+                    column[name] = data.value;
+                }
+
+                //todo:切换列类型后需要清空原有数据
+                refresh();
+            })
+            form.on('switch', function (data) {
+                var column = app.currentColumn;
+                var name = $(data.elem).attr("name");
+                //扩展属性另外处理
+                if (name.indexOf("extension") >= 0) {
+                    column.extension[name.replace("extension.", "")] = data.elem.checked;
+
+                } else {
+                    column[name] = data.elem.checked;
+                }
+                //app.currentColumn[name] = data.elem.checked;
+                //console.log(data.elem); //得到checkbox原始DOM对象
+                //console.log(data.elem.checked); //开关是否开启，true或者false
+                //console.log(data.value); //开关value值，也可以通过data.elem.value得到
+                //console.log(data.othis); //得到美化后的DOM对象
+            });
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                $(".layui-form-switch,.layui-form-select").remove();
+                $("#app").addClass("layui-form");//layui-form加载必须在vue加载之后，不然会出现下拉选项无法绑定数据
+                layui.form.render();
+                
+            })
+        }
+
+        function submit() {
+            //数据处理
+            for (var i = 0; i < app.columns.length; i++) {
+                app.columns[i].sort = i + 1;//更新排序值
+                app.columns[i].extensionData = JSON.stringify(app.columns[i].extension);//特殊属性
+            }
+            func.runAsync(abp.services.app.moduleInfo.updateColumns( app.columns,'@Model.Id' )
+                .done(function () {
+
+                    parent.layer.msg("@L("提交成功")");
+                    parent.layer.closeAll("iframe");
+                    parent.func.reload("ModuleInfo");
+                    parent.config.refresh();
+                }));
+            console.log(app.columns);
+
+        }
+    </script>
+}

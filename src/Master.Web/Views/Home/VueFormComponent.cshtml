@@ -1,0 +1,481 @@
+﻿@*文本*@
+<script>
+    Vue.component('lay-text', {
+        template: '#layText',
+        props: ['columnInfo', 'value', 'pluginName', 'moduleKey'],
+        created: function () {
+            //如果启用了输入提示
+            if (this.columnInfo.EnableAutoComplete) {
+                var serviceName = func.getModuleServiceName(this.moduleKey);
+                var url = '/api/services/' + this.pluginName + '/' + serviceName + '/GetSuggestResult?moduleKey=' + this.moduleKey + '&columnKey=' + this.columnInfo.ColumnKey + '&keyword=';
+                //console.log(url);
+                this.$nextTick(function () {
+                    layui.suggest.render({
+                        id: this.inputId, //设置容器唯一id
+                        type: 'sug', //设置输入框提示类型：sug-下拉框，sugTable-下拉表格
+                        url: url //设置异步数据接口,url为必填项
+                    });
+                })            
+            }
+            
+        },
+        computed: {
+            inputId: function () {
+                var columnKey = this.columnInfo.ColumnKey;
+                return columnKey[0].toLowerCase() + columnKey.substring(1);
+            }
+        }
+    });
+</script>
+<script type="text/x-template" id="layText">
+    <div class="layui-form-item">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}<span class="my-required-span" v-if="columnInfo.VerifyRules.indexOf('required')!=-1">*</span></label>
+        <div class="layui-input-block" :tips="columnInfo.Tips">
+            <input type="text" :id="inputId" :name="columnInfo.ColumnKey" :lay-verify="columnInfo.VerifyRules" autocomplete="off" class="layui-input" :value="value">
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('lay-text-view', {
+        template: '#layTextView',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="layTextView">
+    <div class="layui-form-item">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            {{value}}
+        </div>
+    </div>
+</script>
+@*数字*@
+<script>
+    Vue.component('lay-number', {
+        template: '#layNumber',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="layNumber">
+    <div class="layui-form-item">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}<span class="my-required-span" v-if="columnInfo.VerifyRules.indexOf('required')!=-1">*</span></label>
+        <div class="layui-input-block" :tips="columnInfo.Tips">
+            <input type="number" :name="columnInfo.ColumnKey" :lay-verify="columnInfo.VerifyRules" autocomplete="off" class="layui-input" :value="value">
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('lay-number-view', {
+        template: '#layNumberView',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="layNumberView">
+    <div class="layui-form-item">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            {{value}}
+        </div>
+    </div>
+</script>
+@*文本域*@
+<script>
+    Vue.component('lay-textarea', {
+        template: '#layTextArea',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="layTextArea">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}<span class="my-required-span" v-if="columnInfo.VerifyRules.indexOf('required')!=-1">*</span></label>
+        <div class="layui-input-block">
+            <textarea :lay-verify="columnInfo.VerifyRules" class="layui-textarea" :name="columnInfo.ColumnKey" :tips="columnInfo.Tips">{{value}}</textarea>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('lay-textarea-view', {
+        template: '#layTextAreaView',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="layTextAreaView">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            {{value}}
+        </div>
+    </div>
+</script>
+
+@*开关*@
+<script>
+    Vue.component('lay-switch', {
+        template: '#laySwitch',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="laySwitch">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}<span class="my-required-span" v-if="columnInfo.VerifyRules.indexOf('required')!=-1">*</span></label>
+        <div class="layui-input-block" :tips="columnInfo.Tips">
+            <input type="checkbox" :name="columnInfo.ColumnKey" :checked="value" value="true" :lay-verify="columnInfo.VerifyRules" lay-skin="switch" lay-text="ON|OFF" :lay-filter="columnInfo.ColumnKey">
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('lay-switch-view', {
+        template: '#laySwitchView',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="laySwitchView">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            {{value?'是':'否'}}
+        </div>
+    </div>
+</script>
+@*日期*@
+<script>
+    Vue.component('lay-datetime', {
+        template: '#layDateTime',
+        props: ['columnInfo', 'value'],
+        created: function () {
+            var that = this;
+            this.$nextTick(function () {
+                layui.use(['laydate'], function () {
+                    layui.laydate.render({
+                        elem: '#' + that.columnInfo.ColumnKey,
+                        type: that.columnInfo.controlFormat,
+                        calendar: true
+                    });
+                })
+            })
+        }
+    });
+</script>
+<script type="text/x-template" id="layDateTime">
+    <div class="layui-form-item">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}<span class="my-required-span" v-if="columnInfo.VerifyRules.indexOf('required')!=-1">*</span></label>
+        <div class="layui-input-block">
+            <input type="text" class="laydate layui-input" :name="columnInfo.ColumnKey" :id="columnInfo.ColumnKey" :lay-verify="columnInfo.VerifyRules" autocomplete="off" :value="value" :tips="columnInfo.Tips">
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('lay-datetime-view', {
+        template: '#layDateTimeView',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="layDateTimeView">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            {{value}}
+        </div>
+    </div>
+</script>
+@*下拉单选*@
+<script>
+    Vue.component('lay-select', {
+        template: '#laySelect',
+        props: ['columnInfo', 'value', 'dictionary']
+    });
+</script>
+<script type="text/x-template" id="laySelect">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}<span class="my-required-span" v-if="columnInfo.VerifyRules.indexOf('required')!=-1">*</span></label>
+        <div class="layui-input-block" :tips="columnInfo.Tips">
+            <select v-if="columnInfo.ControlFormat=='select'" :name="columnInfo.ColumnKey" :lay-filter="columnInfo.ColumnKey">
+                <option value="">@L("未选择")</option>
+                <option v-for="(item,key) in dictionary" :value="key" :selected="item==value||key==value">{{item}}</option>
+            </select>
+            <div v-else >
+                <input type="radio" :name="columnInfo.ColumnKey" v-for="(item,key) in dictionary" :value="key" :title="item" :checked="value==key||value==item">
+            </div>
+
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('lay-select-view', {
+        template: '#laySelectView',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="laySelectView">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            {{value}}
+        </div>
+    </div>
+</script>
+@*多选*@
+<script>
+    Vue.component('lay-multiselect', {
+        template: '#layMultiSelect',
+        props: ['columnInfo', 'value', 'dictionary'],
+        created: function () {
+            console.log(this.dictionary);
+        }
+    });
+</script>
+<script type="text/x-template" id="layMultiSelect">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block" :tips="columnInfo.Tips">
+            <div>
+                <input type="checkbox" :name="columnInfo.ColumnKey" v-for="(item,key) in dictionary" :value="key" :title="item" :checked="value && value.split(',').indexOf(key)>=0" :lay-skin="columnInfo.ControlFormat=='primary'?'primary':''">
+            </div>
+
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('lay-multiselect-view', {
+        template: '#layMultiSelectView',
+        props: ['columnInfo', 'value']
+    });
+</script>
+<script type="text/x-template" id="layMultiSelectView">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            <div>
+
+            </div>
+
+        </div>
+    </div>
+</script>
+@*引用*@
+<script>
+    /*参数详解
+    columnInfo:[ColumnKey,ColumnName,RelativeDataType,RelativeDataString,ReferenceSearchColumns,ReferenceSearchWhere,ReferenceItemTpl,MaxReferenceNumber]
+    ColumnKey：字段名,UnitName
+    ColumnName:显示名称，往来单位
+    RelativeDataType:引用来源类型，可选"Module"或"Url",分别表示数据来源为模块或者url请求
+    RelativeDataString:请求来源地址，当选择"Module"时，内容为模块Key,如"Unit","User",当选择”Url"时，为接口地址，如"'/api/services/app/ProcessTask/GetPageResult'
+    ReferenceSearchColumns:在table中要显示的列信息，当选择”Module"，内容为模块中的列标志以，分隔，如"unitName,unitId",注意首字母小写，当选择"url"时,内容为layuitable的列定义，如"[{"title":"名称","field":"unitName"}]"
+    ReferenceSearchWhere:
+    ReferenceItemTpl:选中数据的显示字段,"unitName"
+    MaxReferenceNumber:最大引用数量，设为1是单选，其余是多选,小于0时不做限制
+    value:初始选中值:"1,2"
+    data:初始数据，"[{"id:"1","unitName":"a"},{"id:"2","unitName":"b"}]"
+    placeholder: '',    input提示内容
+    SearchPlaceholder: '搜索企业名称', 搜索框提示内容
+    */
+
+    Vue.component('lay-tableselect', {
+        template: '#layTableSelect',
+        props: ['columnInfo', 'value', 'data'],
+        data: function () {
+            return {
+                Handledata: this.data,
+                selectValue: this.value,
+                displayValue: '',
+                key: 'id'
+            }
+        },
+        created: function () {
+            console.log(this.columnInfo);
+            var that = this;
+            this.getDisValue();
+            if (this.columnInfo.RelativeDataType == 'Module') {
+                //获取模块的所有列定义信息
+                abp.services.app.moduleInfo.getColumnLayData(this.columnInfo.RelativeDataString)
+                    .done(function (data) {
+                        var cols = data.columns;
+                        if (that.columnInfo.ReferenceSearchColumns) {
+                            var searchColumns = that.columnInfo.ReferenceSearchColumns.split(',');
+                            cols = cols.filter(function (o) { return searchColumns.indexOf(o.field) >= 0 });
+                        }
+                        console.log(cols);
+                        that.renderTableSelect(cols, '/api/services/' + data.plugin + '/' + that.columnInfo.RelativeDataString + '/GetPageResult', that.columnInfo.ReferenceSearchWhere);
+                    });
+            } else if (this.columnInfo.RelativeDataType == "Url") {
+                //url方式返回数据均为驼峰形式
+                that.key = this.columnInfo.checkedKey || "id";
+                this.$nextTick(function () {
+                    //console.log(that.columnInfo.ReferenceSearchColumns);
+                    that.renderTableSelect(JSON.parse(that.columnInfo.ReferenceSearchColumns), that.columnInfo.RelativeDataString, that.columnInfo.ReferenceSearchWhere);
+                })
+
+            }
+        },
+        methods: {
+            getDisValue: function () {
+                var that = this;
+                if (typeof this.data == 'string') {
+                    this.displayValue = this.data;
+                } else {
+                    this.displayValue = this.data.map(function (o) { return o[that.columnInfo.ReferenceItemTpl]; }).join(',');
+                }
+
+            },
+            renderTableSelect: function (cols, url, where) {
+                console.log(where);
+                try {
+                    where = JSON.parse(where);
+                } catch (ex) {
+                    where = {};
+                }
+                var that = this;
+                //根据最大引用数量判断是单选还是多选
+                if (this.columnInfo.MaxReferenceNumber == 1) {
+                    cols.splice(0, 0, { type: 'radio' });
+                } else {
+                    cols.splice(0, 0, { type: 'checkbox' });
+                }
+                var tableParm = {
+                    where: where,
+                    cols: [cols]
+                };
+                typeof url === 'string' ? tableParm.url = url : tableParm.data = url;
+                layui.tableSelect.render({
+                    elem: '#' + this.columnInfo.ColumnKey,	//定义输入框input对象 必填
+                    checkedKey: this.key, //表格的唯一建值，非常重要，影响到选中状态 必填
+                    searchKey: 'keyword',	//搜索输入框的name值 默认keyword
+                    searchPlaceholder: this.columnInfo.SearchPlaceholder || '关键词搜索',	//搜索输入框的提示文字 默认关键词搜索
+                    //table: {	//定义表格参数，与LAYUI的TABLE模块一致，只是无需再定义表格elem
+                    //    url: url,
+                    //    where: where,
+                    //    cols: [cols]
+                    //},
+                    table:tableParm,
+                    done: function (elem, data) {
+                        //选择完后的回调，包含2个返回值 elem:返回之前input对象；data:表格返回的选中的数据 []
+                        //拿到data[]后 就按照业务需求做想做的事情啦~比如加个隐藏域放ID...
+                        //console.log(data);
+                        if (that.columnInfo.MaxReferenceNumber > 0 && data.data.length > that.columnInfo.MaxReferenceNumber) {
+                            layer.msg("最多只能选择" + that.columnInfo.MaxReferenceNumber + "项");
+                            return false;
+                        }
+                        that.selectValue = data.data.map(function (o) { return o[that.key]; }).join(',');
+                        that.displayValue = data.data.map(function (o) { return o[that.columnInfo.ReferenceItemTpl]; }).join(',');
+                        that.$emit('choose', { value: that.selectValue, displayValue: that.displayValue });
+                        console.log(that.selectValue, $('#' + that.columnInfo.ColumnKey).attr('ts-selected'), that.displayValue)
+                    }
+                })
+            }
+        },
+        watch: {
+            'columnInfo.RelativeDataString': {
+                handler: function (val, oldVal) {
+                    console.log(val, oldVal, this.columnInfo.RelativeDataString);
+                    this.renderTableSelect(JSON.parse(this.columnInfo.ReferenceSearchColumns), this.columnInfo.RelativeDataString);
+                },
+                deep: true
+            },
+            value: {
+                handler: function (val, oldVal) {
+                    console.log(val, oldVal, 'value')
+                    this.selectValue = this.value;
+                    this.getDisValue()
+                    this.renderTableSelect(JSON.parse(this.columnInfo.ReferenceSearchColumns), this.columnInfo.RelativeDataString);
+                },
+                deep: true
+            },
+            selectValue: function (val, oldVal) {
+                console.log(val, oldVal, 'selectValue')
+                console.log('new: %s, old: %s', val, oldVal)
+            },
+        }
+    });
+</script>
+<script type="text/x-template" id="layTableSelect">
+    <div class="layui-form-item">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}<span class="my-required-span" v-if="columnInfo.VerifyRules.indexOf('required')!=-1">*</span></label>
+        <div class="layui-input-block">
+            <input type="hidden" :name="columnInfo.ColumnKey" :value="selectValue" />
+            <input type="text" :placeholder="typeof columnInfo.placeholder=='string'?columnInfo.placeholder:'请选择'" autocomplete="off" class="layui-input" :id="columnInfo.ColumnKey" :ts-selected="selectValue" :value="displayValue">
+        </div>
+    </div>
+
+</script>
+<script>
+    Vue.component('lay-tableselect-view', {
+        template: '#layTableSelectView',
+        props: ['columnInfo', 'value', 'data'],
+        data: function () {
+            return {
+                displayValue: ''
+            }
+        },
+        created: function () {
+            console.log(this.data);
+            var that = this;
+            that.displayValue = this.data.map(function (o) { return o[that.columnInfo.ReferenceItemTpl]; }).join(',');
+        }
+    });
+</script>
+<script type="text/x-template" id="layTableSelectView">
+    <div class="layui-form-item">
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            {{displayValue}}
+        </div>
+    </div>
+
+</script>
+@*图片*@
+<script>
+    Vue.component('lay-image', {
+        template: '#layImage',
+        props: ['columnInfo', 'value'],
+        data: function () {
+            return {
+                fileId: this.value
+            }
+        },
+        created: function () {
+            console.log(this.data);
+            var that = this;
+        },
+        computed: {
+            imgSrc: function () {
+                return "/File/Thumb/" + this.fileId;
+            }
+        },
+        methods: {
+            removeFile: function () {
+                this.fileId = "";
+            }
+        },
+        mounted: function () {
+            var that = this;
+            this.$nextTick(function () {
+                //配置上传
+                func.renderUpload('#' + that.columnInfo.ColumnKey + '_trigger', {
+                    trigger: 'click', callback: function (data) {
+                        that.fileId = data.fileId;
+                        console.log(data);
+                    }
+                })
+            })
+        }
+    });
+</script>
+<script type="text/x-template" id="layImage">
+    <div class="layui-form-item">
+        <input type="hidden" :name="columnInfo.ColumnKey" :value="fileId" />
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            <div class="layui-upload">
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-warn" :id="columnInfo.ColumnKey+'_trigger'"><i class="layui-icon layui-icon-zzcloud-upload"></i>@L("上传图片")</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-danger img" @@click="removeFile">@L("删除")</button>
+                <div class="layui-upload-list">
+
+                    <img class="layui-upload-img thumb" style="max-width:120px;max-height:120px;" :src="imgSrc" onerror="this.src='/assets/images/noloaded.png'">
+
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</script>

@@ -1,0 +1,106 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+	//这是Host管理版本信息
+}
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<div class="layui-form-item">
+				<button class="layui-btn  " buttonname="@L("添加")" type="button" onclick="addEdition()">@L("添加")</button>
+			</div>
+			<table id="Edition" lay-filter="Edition" class="layui-table "></table>
+		</div>
+	</div>
+</div>
+
+@section scripts{
+
+<script type="text/html" id="toolbar">
+	<a dataid="{{d.id}}" buttonname="特性设置" modulekey="Edition" class="layui-btn layui-btn-xs " params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Feature/Assign?type=edition" onclick="func.callModuleButtonEvent()">特性设置</a>
+	@*<a dataid="{{d.id}}" buttonname="模块初始化" modulekey="Company" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="Edit" confirmmsg="确认对此账套初始化模块?原有模块信息将丢失" buttonactiontype="Ajax" buttonactionurl="abp.services.app.mesTenancy.initModule" onclick="func.callModuleButtonEvent()">模块初始化</a>
+		<a dataid="{{d.id}}" buttonname="模拟登录" modulekey="" class="layui-btn layui-btn-xs layui-btn-normal" lay-event="Edit" confirmmsg="确认模拟此账套登录" buttonactiontype="Ajax" buttonactionurl="abp.services.app.tokenAuth.simulateAuthenicate" onclick="func.callModuleButtonEvent()" callback="simulateLoginCallback">模拟登录</a>*@
+</script>
+
+	<script type="text/html" id="switchTpl">
+		<input type="checkbox" name="isActive" value="{{d.id}}" lay-skin="switch" lay-text="激活|未激活" lay-filter="isActive" {{ d.isActive ? 'checked' : '' }}>
+	</script>
+	<script>
+		window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: "", whereFilter: '' };
+		var currentFilter = {};
+		config.ready = function () {
+			layui.form.on('switch(isActive)', function (obj) {
+				func.runAsync(abp.services.app.mesTenancy.setActive(this.value, obj.elem.checked).done(function () {
+					layer.msg("提交成功");
+				}))
+			});
+			layui.table.on('edit(Edition)', function (obj) {
+				var value = obj.value //得到修改后的值
+					, data = obj.data //得到所在行所有键值
+					, field = obj.field; //得到字段
+				//layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+				if (!value.trim()) {
+					layer.msg("输入不能为空", { icon: 5, anim: 6 });
+					return false;
+				}
+				abp.message.confirm(L('确认修改?'), function () {
+					func.runAsync(abp.services.app.mESEdition.updateField(data.id, field, value, {
+						error: function () {
+							layui.table.reload('Edition');
+						}
+					}).done(function () {
+						layer.msg('更新成功');
+					}));
+				})
+
+			});
+			window.Edition = [{
+				elem: '#Edition',
+				defaultToolbar: ['filter', 'print', 'exports'],
+				cellMinWidth: '120',
+				height: 'full-31',
+				url: '/api/services/app/mesedition/GetPageResult',
+				page: true,
+				id: 'Edition',
+				even: true,
+				done: config.onTableDone,
+				initSort: { field: 'Id', type: 'desc' }
+			}, [[
+					{ align: 'center', type: 'checkbox', fixed: 'left', fixed: 'left', gudinglie: false },
+					{ align: 'center', field: 'name', title: '版本标志', edit: 'text',width:'300' },
+					{ align: 'center', field: 'displayName', title: '版本名称', edit: 'text', width: '300' },
+				{ align: 'center', toolbar: '#toolbar', title: '操作', fixed: 'right', width: '250' }
+			]]
+			]
+			layuiExt.reRender('Edition');
+		};
+
+		config.reload = function () {
+			layui.table.reload('Edition');
+		}
+		function doSearch() {
+
+			layui.table.reload('Edition', {
+				where: ""
+
+			})
+
+			return false;
+
+		}
+
+		function addEdition() {
+            layer.prompt({ title: '@L("请输入版本名称")', formType: 0 }, function (text, index) {
+				layer.close(index);
+				var key = pinyinUtil.getPinyin(text, '').toUpperCase();
+                abp.services.app.mESEdition.addEdition(text,key).done(function (data) {
+                    layer.msg('@L("提交成功")');
+                    doSearch();
+
+                })
+            });
+
+        }
+	</script>
+
+}

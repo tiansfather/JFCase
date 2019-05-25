@@ -1,0 +1,240 @@
+﻿@using Master.Authentication.External
+@{ 
+	//外部验证提供者
+	var providers = ViewBag.ExternalAuthProviders as List<ExternalLoginProviderInfo>;
+}
+@section styles{ 
+    <style>
+        .signature-wrap {
+            cursor: pointer;
+        }
+            .signature-wrap .jiahao {
+                width: 100px;
+                height: 100px;
+                border: 1px solid #ccc;
+                text-align: center;
+            }
+            .signature-wrap .iconfont{
+                line-height: 100px;
+                font-size: 28px;
+            }
+    </style>
+}
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("用户信息")</div>
+		<div class="layui-card-body layui-form layui-hide" id="app">
+
+			<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+				<ul class="layui-tab-title">
+					<li class="layui-this">@L("基本信息")</li>
+					<li>@L("关联账号")</li>
+				</ul>
+				<div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("用户名")</label>
+                            <div class="layui-input-block">
+                                <input type="text" :value="currentItem.user.userName" autocomplete="off" class="layui-input" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("姓名")</label>
+                            <div class="layui-input-block">
+                                <input type="text" v-model="currentItem.user.name" autocomplete="off" class="layui-input" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("角色")</label>
+                            <div class="layui-input-block">
+                                <input type="text" :value="roleName" autocomplete="off" class="layui-input" readonly>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("组织")</label>
+                            <div class="layui-input-block">
+                                <input type="text" :value="departName" autocomplete="off" class="layui-input" readonly>
+                            </div>
+                        </div>                        
+                        @*<div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" type="button">保存</button>
+            </div>
+        </div>*@
+                    </div>
+					<div class="layui-tab-item">
+						<div is="lay-userbindlogin" user-id="@AbpSession.UserId.Value"></div>
+						@*@foreach (var provider in providers.Where(o => !string.IsNullOrEmpty(o.BindUrl)))
+						{
+							<div class="layui-form-item" provider="@provider.Name">
+								<label class="layui-form-label">@provider.Name</label>
+								<div class="layui-input-inline">
+									<input type="text" autocomplete="off" class="layui-input" :value="isBinded('@provider.Name')?'已绑定':'未绑定'" readonly>
+								</div>
+								<input v-if="!isBinded('@provider.Name')" type="button" class="layui-btn laydialog" value="绑定"  url="@provider.BindUrl" title="绑定登录" width="400" height="400"/>
+								<input v-else type="button" class="layui-btn layui-btn-danger" value="取消绑定" onclick="unBindLogin('@provider.Name')" />
+							</div>
+						}*@
+						@*@{
+							var wechatProvider = providers.Where(o => o.Name == "Wechat").SingleOrDefault();
+						}
+						@if (wechatProvider != null && ViewBag.EnableWeChatAuthentication)
+						{
+							<div class="layui-form-item" provider="Wechat">
+								<label class="layui-form-label">微信</label>
+								<div class="layui-input-inline">
+									<input type="text" autocomplete="off" class="layui-input" :value="isBinded('Wechat')?'已绑定':'未绑定'" readonly>
+								</div>
+								<input v-if="!isBinded('Wechat')" type="button" class="layui-btn " value="绑定" onclick="bindLogin(this)" bindurl="@wechatProvider.BindUrl" />
+								<input v-else type="button" class="layui-btn layui-btn-danger" value="取消绑定" onclick="unBindLogin('Wechat')" />
+							</div>
+						}
+						@{
+							var miniProgramProvider = providers.Where(o => o.Name == "MiniProgram").SingleOrDefault();
+						}
+						@if (miniProgramProvider != null && ViewBag.EnableMiniProgramAuthentication)
+						{
+							<div class="layui-form-item" provider="MiniProgram">
+								<label class="layui-form-label">小程序</label>
+								<div class="layui-input-inline">
+									<input type="text" autocomplete="off" class="layui-input" :value="isBinded('MiniProgram')?'已绑定':'未绑定'" readonly>
+								</div>
+								<input v-if="!isBinded('MiniProgram')" type="button" class="layui-btn " value="绑定" onclick="bindLogin(this)" bindurl="@miniProgramProvider.BindUrl" />
+								<input v-else type="button" class="layui-btn layui-btn-danger" value="取消绑定" onclick="unBindLogin('MiniProgram')" />
+							</div>
+						}*@
+
+					</div>
+				</div>
+			</div>
+
+			
+		</div>
+	</div>
+</div>
+
+@section scripts{
+    <script src="~/lib/jSignature/jSignature.min.js"></script>
+	<script>
+        var app;
+        config.ready = function () {
+            layui.form.on("select(Language)", function (data) {
+                var languageName = data.value;
+                top.location.href = '/AbpLocalization/ChangeCulture?cultureName=' + languageName + '&returnUrl=/';
+            });
+            layui.form.on('submit', function () {
+                
+
+            });
+            app = new Vue({
+                el: '#app',
+                data: {
+					currentItem: { user: { departNames: [], roleDisplayNames: [] } },
+                    providers: [],
+                    a:[1,2],
+                    language: { languageInfos:[]}
+				},
+				computed: {
+					departName: function () {
+						return this.currentItem.user.departNames.join(',');
+					},
+					roleName: function () {
+						return this.currentItem.user.roleDisplayNames.join(',');
+					}
+				},
+                methods: {
+                    openSign: function () {
+                        var height = $(document).height();
+                        height = height > 600 ? 600 : height< 200 ? 200 : height;
+                        layer.open({
+                            type: 1,
+                            skin: 'layui-layer-molv', //加上边框
+                            area: [height+'px', height*0.8+'px'], //宽高
+                            content: '<div id="signature"></div>',
+                            title: '绘制签名',
+                            btn: ['保存', '重置', '关闭']
+                            , yes: function (index, layero) {
+                                //提交base64的图片，服务器返回{result:{fileName:'',filePath:'xxx.png'}},再次将filePath提交给电子签名
+                                abp.ui.setBusy();
+                                var src = $("#signature .jSignature")[0].toDataURL();
+                                $.post("/File/UploadByBase64", { data: src }, function (res) {
+                                    app.currentItem.user.signature = res.result.filePath;
+                                    abp.services.app.user.setSignature(res.result.filePath).done(res => {
+                                        abp.ui.clearBusy();
+                                        layer.closeAll();
+                                    })
+                                    
+                                }, 'json');
+                            }
+                            , btn2: function (index, layero) {
+                                $("#signature").jSignature("reset");
+                                return false;
+                            }
+                            , btn3: function (index, layero) {
+                            }
+                        });
+
+                        $("#signature").jSignature({ color: "#00f", lineWidth: 5, width: height-20, height: height * 0.8-110 });
+                    },
+					isBinded: function (provider) {
+						return this.providers.indexOf(provider) >= 0;
+					},
+					updateLoginProvider: function () {
+						var that = this;
+						abp.services.app.user.getBindedLoginProviders().done(function (data) {
+							that.providers = data;
+						})
+					},
+					loadUserInfo: function () {
+						var that = this;
+						func.runAsync(abp.services.app.session.getCurrentLoginInformations().done(function (data) {
+                            that.currentItem = data;
+                            abp.services.app.language.get().done(function (data) {
+                                that.language = data;
+                                Vue.nextTick(function () {
+                                    layui.form.render();
+                                })
+                            })
+							//获取已绑定的第三方登录
+							//that.updateLoginProvider();
+							$("#app").removeClass("layui-hide");
+						}));
+					}
+
+                },
+				mounted: function () {
+					this.loadUserInfo();
+                    
+                    
+
+                }
+
+            });
+
+		}
+
+		function bindLogin(obj) {
+			layer.open({
+				type: 2,
+				title: '绑定登录',
+				shade: 0.8,
+				area: ['400px', '400px'],
+				content: $(obj).attr("bindurl")
+			}); 
+		}
+		function unBindLogin(provider) {
+			abp.message.confirm("确认解除绑定?", function () {
+				func.runAsync(abp.services.app.user.unBindLogin(provider).done(function () {
+					layer.msg("提交成功");
+					app.updateLoginProvider();
+				}))
+			})
+		}
+		function bindRefresh(provider) {
+			layer.closeAll("iframe");
+			app.updateLoginProvider();
+
+		}
+	</script>
+
+}

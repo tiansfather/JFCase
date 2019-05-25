@@ -1,0 +1,1135 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@using Master.Module
+@{
+    //加工过程卡
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+@section styles{
+    <link href="/Views/MES/CSS/navX.css" rel="stylesheet" />
+    <style>
+        body {
+            overflow: hidden;
+        }
+
+        div {
+            box-sizing: border-box;
+        }
+        
+        .layui-form-switch {
+            box-sizing: content-box;
+        }
+
+        td {
+            width: 100%;
+            word-break: keep-all;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .layui-anim {
+            padding: 0 !important;
+        }
+
+        header .layui-unselect {
+            margin-bottom: 8px;
+        }
+
+        .layui-table[lay-size=sm] td, .layui-table[lay-size=sm] th {
+            font-size: 13px;
+        }
+
+        .layui-btn .layui-icon {
+            margin-right: 0;
+        }
+        /*.layui-table td, .layui-table th{
+            padding:5px;
+        }
+        .layui-table td, .layui-table th {
+            font-size:13px;
+        }*/
+        .operate-td .layui-btn + .layui-btn {
+            margin-left: 4px;
+        }
+
+        .table-wrap .layui-table td.operate-td {
+            width: 120px;
+        }
+
+        .layui-table td {
+            width: 250px;
+        }
+        /*----重置样式*/
+        header {
+            float: left;
+            width: calc(100% - 100px);
+            height: 100px;
+            padding: 14px;
+            box-sizing: border-box;
+        }
+
+            header .hed-autoCheck, header .hed-btn {
+                display: flex;
+                align-items: center;
+            }
+
+            header .hed-btn {
+                justify-content: space-between;
+                padding: 0 5px;
+            }
+
+            header .hed-autoCheck span {
+                font-size: 12px;
+                color: red;
+            }
+        /*---------------头部非主要展示内容-----------------*/
+        .table-wrap {
+            overflow: auto;
+            border: 1px solid #ccc;
+        }
+
+        .main {
+            overflow: hidden;
+        }
+
+        nav {
+            float: left;
+            width: 90px;
+            height: 80px;
+            position: relative;
+            top: 0;
+        }
+
+        .nav__btn {
+            z-index: 999;
+            background: #fff;
+        }
+        /*.layui-table {
+            margin-top: 50px;
+        }*/
+        .head {
+            transition: all 1s cubic-bezier(0.48, 0.43, 0.29, 1.3), background-color 0.3s, -webkit-transform 1s cubic-bezier(0.48, 0.43, 0.29, 1.3);
+            width: 0;
+            overflow: hidden;
+            box-sizing: border-box;
+            background: rgba(147, 147, 147, 0.9);
+            /*width: 100%;*/
+            z-index: 99;
+            position: absolute;
+            display: flex;
+            /*padding: 20px 250px 20px 20px;*/
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            margin-left: 100px;
+        }
+
+        #codeImg {
+            border-right: 1px solid #ddd;
+        }
+
+        .msg-wrap {
+            margin: 20px 40px;
+        }
+
+        .msg-img {
+            margin: 0 35px;
+        }
+
+            .msg-img button {
+                margin-left: 20px;
+            }
+
+        .msg {
+            font-size: 20px;
+            line-height: 1.5;
+            display: inline-block;
+            padding-left: 20px;
+        }
+
+        b {
+            font-size: 22px;
+        }
+
+        .layui-table td {
+            max-width: 250px;
+        }
+
+        .running td {
+            background: #fffed4;
+        }
+        /*-----------操作--------------------------*/
+        .sign-div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sign-td .layui-badge {
+            margin-left: 5px;
+            height: 22px;
+            line-height: 22px;
+        }
+
+        .open-sign {
+            height: 300px;
+        }
+
+            .open-sign p {
+                text-align: center;
+                padding: 15px;
+                font-size: 18px;
+            }
+        /*---------------移动---------------------------*/
+        .dom-move-td {
+            cursor: move;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80%;
+            max-width: 1500px;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+            .dom-move-td .layui-table {
+                margin: 0 !important;
+                color: #000;
+                background: #f2f2f2;
+            }
+
+            .dom-move-td tr {
+                border-top: 1px solid #ccc;
+            }
+
+            .dom-move-td tr {
+                width: 150px;
+            }
+
+        .moveFlag {
+            border: 1px dashed;
+        }
+
+            .moveFlag td {
+                border: none !important;
+            }
+
+            .moveFlag td {
+                opacity: 0.1;
+            }
+        /*-----------选择工序--------------*/
+        .my-wrap {
+            height: calc(100% - 75px);
+            margin: 0 auto;
+            margin-bottom: 50px;
+            margin-top: 25px;
+            width: 420px;
+        }
+
+        .item {
+            color: black;
+            width: 120px;
+            height: 40px;
+            line-height: 40px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px;
+            float: left;
+            border: 1px solid #ccc;
+            background: #b6ff00;
+            cursor: pointer;
+        }
+
+        .add-item {
+            background: #009688;
+            color: #fff;
+            font-size: 24px;
+        }
+/*--------模板列表-------*/
+
+        .my-sider1-li {
+            position: relative;
+            padding-left: 20px;
+            white-space: nowrap;
+            height: 36px;
+            line-height: 36px;
+        }
+
+            .my-sider1-li:hover {
+                cursor: pointer;
+                background-color: #e4f1ff;
+                color: black;
+            }
+
+                .my-sider1-li:hover .shancumuban {
+                    display: block;
+                }
+
+        .shancumuban {
+            display: none;
+            top: 5px;
+            line-height: 24px;
+            width: 24px;
+            position: absolute;
+            right: 1px;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            text-align: center;
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(255,255,255,.5);
+            color: black;
+        }
+    </style>
+
+}
+<div class="layui-fluid">
+    <div id="app" class="disnone">
+        <div class="head">
+            <div class="msg-wrap">
+                <img id="codeImg" :src="qrCode" width="250" />
+                <p class="msg">
+                    零件名:<b>{{part.partName}}</b>&nbsp;({{part.partSN}})<br>
+                    规格:{{part.partSpecification}}&emsp;&emsp;数量:{{part.partNum}}<br>
+                    编号:{{part.projectSN}}
+                </p>
+            </div>
+            <div class="msg-img">
+                <img v-if="part.partImg" :src="part.partImg+ '?w=250'" :alt="part.partName" title="查看大图" @@click="layerImg()" />
+                <button class="layui-btn  layui-btn-sm picupload" tips="单击上传">
+                    上传零件图片
+                </button>
+            </div>
+
+            @*<img :src="part.partImg+'?w=250'" :alt="part.partName" @@click="layerImg()" />*@
+        </div>
+        <div style="overflow:hidden">
+            <nav>
+                <input type="checkbox" class="nav__cb" id="menu-cb">
+                @*<div class="nav__content"></div>*@
+                <label class="nav__btn" for="menu-cb"></label>
+            </nav>
+            <header class="layui-form">
+
+                <div class="hed-btn" style="">
+                    <div>
+                        <button class="layui-btn layui-btn-xs" @@click="addProcess"><i class="iconfont icon-jiahao" title="添加工序"></i></button>
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;添加工序</span>
+                    </div>
+                    <div>
+                        <button type="button" class="layui-btn layui-btn-radius layui-btn-primary" @@click="getTemplet($event,'finished')">
+                            经验模板
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-radius layui-btn-primary" @@click="getTemplet($event,'plan')">
+                            计划模板
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-radius layui-btn-primary" @@click="saveData">
+                            保存
+                        </button>
+                    </div>
+                </div>
+                <div class="hed-autoCheck">
+                    <input type="checkbox" name="open" lay-skin="switch" lay-filter="auto" lay-text="ON|OFF">
+                    <span>&nbsp;启用自动计划(启用后会根据上一道工序的日期自动计算其它工序的计划日期)</span>
+                </div>
+            </header>
+        </div>
+        <div class="main">
+            <div class="table-wrap">
+                <table class="layui-table " lay-size="sm" lay-even>
+                    <thead>
+                        <tr>
+                            <td>@L("操作")</td>
+                            <td class="dom-process-width">@L("序号")</td>
+                            <td>@L("工序")</td>
+                            <td>@L("工艺要求")</td>
+                            <td>@L("预计天数/天")</td>
+                            <td>@L("计划上机时间")</td>
+                            <td>@L("计划下机时间")</td>
+                            <td>@L("预计工时/小时")</td>
+                            <td>@L("安排上机时间")</td>
+                            <td>@L("安排下机时间")</td>
+                            <td>@L("实际上机时间")</td>
+                            <td>@L("实际下机时间")</td>
+                            <td>@L("标记")</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item,index) in part.tasks" :class="{running:item.processTaskStatus>1,moveFlag:item.moveFlag}">
+                            <td class="operate-td" width="120px">
+                                <button class="layui-btn layui-btn-xs layui-btn-primary  layui-btn-danger" :class="{'layui-btn-disabled':item.processTaskStatus>1}" @@click="deletePro(index)">
+                                    <i class="layui-icon layui-icon-close" style="color:#fff" title="删除"></i>
+                                </button>
+                                <button class="layui-btn layui-btn-xs layui-btn-primary" :class="{'layui-btn-disabled':index==0}" @@click="reorder(index,-1)">
+                                    <i class="layui-icon layui-icon-up" title="上移"></i>
+                                </button>
+                                <button class="layui-btn layui-btn-xs layui-btn-primary" :class="{'layui-btn-disabled':index==part.tasks.length-1}" @@click="reorder(index,1)">
+                                    <i class="layui-icon layui-icon-down" title="下移"></i>
+                                </button>
+                            </td>
+                            <td @@mousedown="moveTR" style="cursor: move;">{{index+1}}</td>
+                            <td v-if="item.processTaskStatus>1">{{item.processTypeName}}</td>
+                            <td v-else @@click="chooseProcess(index)" style="cursor:pointer">{{item.processTypeName}}</td>
+                            @*<td v-else is="edit-td" :value="item.processTypeName" @@input="function(a){item.processTypeName=a;}"></td>*@
+                            <td is="edit-area-td" :editWidth="250" :value="item.taskInfo" @@input="function(a){item.taskInfo=a;}"></td>
+                            <td is="edit-td" :value="item.planDay" @@input="function(a){DomPlanDay(a,index)}"></td>
+                            <td is="edit-date-td" :dataindex="[4,index]" :value="item.planStartDate" @@input="function(a){DomPlanStart(a,index)}"></td>
+                            <td is="edit-date-td" :dataindex="[5,index]" :value="item.planEndDate" @@input="function(a){DomPlanEnd(a,index)}"></td>
+                            <td is="edit-td" :value="item.estimateHours" @@input="function(a){item.estimateHours=a;}"></td>
+                            @*<td>{{item.taskInfo}}</td>
+                                <td>{{getDay(item.estimateHours)}}</td>
+                                <td>{{item.planStartDate}}</td>
+                                <td>{{item.planEndDate}}</td>
+                                <td>{{item.estimateHours}}</td>*@
+                            <td>{{item.arrangeDate}}</td>
+                            <td>{{getArrangeEnd(item.arrangeDate,item.estimateHours)}}</td>
+                            <td>{{item.startDate}}</td>
+                            <td>{{item.endDate}}</td>
+                            <td align="center" class="sign-td">
+                                <div class="sign-div ">
+                                    <button class="layui-btn layui-btn-xs" @@click="fSign(index)">
+                                        <i class="layui-icon layui-icon-note"></i>
+                                    </button>
+                                    <span class="layui-badge layui-bg-red " v-show="item.emergency">急</span>
+                                    <span class="layui-badge layui-bg-blue" v-show="item.inner">内</span>
+                                    <span class="layui-badge layui-bg-orange" v-show="item.cha">插</span>
+                                    <span class="layui-badge " style="background: #6a6800;color: #fff;" v-show="item.xiu">修</span>
+                                    @*<input type="checkbox" name="inner" lay-skin="switch" lay-filter="inner" lay-text="厂内|否">
+                                        <input type="checkbox" name="emergency" lay-skin="switch" lay-filter="emergency" lay-text="加急|否">*@
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="dom-move-td  disnone">
+            <table class="layui-table " lay-size="sm">
+                <tbody>
+                    <tr>
+                        <td style="width:70px;">{{showObj.index+1}}</td>
+                        <td>{{showObj.processTypeName}}</td>
+                        <td>{{showObj.taskInfo}}</td>
+                        <td>{{showObj.planDay}}</td>
+                        <td>{{showObj.planStartDate}}</td>
+                        <td>{{showObj.planEndDate}}</td>
+                        <td>{{showObj.estimateHours}}</td>
+                        <td>{{showObj.arrangeDate}}</td>
+                        <td>{{getArrangeEnd(showObj.arrangeDate,showObj.estimateHours)}}</td>
+                        <td>{{showObj.startDate}}</td>
+                        <td>{{showObj.endDate}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+
+    <script type="text/html" id="processTypeChoose">
+        <div class="layui-form-item my-wrap">
+            <div class="item add-item" onclick="addProcessType()">
+                <i class="layui-icon layui-icon-add-1"></i>
+            </div>
+
+            {{#  layui.each(d, function(index, item){ }}
+            <div class="item" onclick="chooseProcessObj.fChoose('{{item.id}}','{{item.processTypeName}}')">{{item.processTypeName}}</div>
+            {{#  }) }}
+        </div>
+    </script>
+    <script type="text/html" id="openSign">
+        <div class="open-sign layui-form">
+            <p>工序:{{d.processTypeName}}</p>
+            <div class="open-input-wrap">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">厂内</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="inner" lay-skin="switch" lay-filter="inner" {{ d.inner?'checked':'' }}>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">加急</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="emergency" lay-skin="switch" lay-filter="emergency" {{ d.emergency?'checked':'' }}>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">插单</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="cha" lay-skin="switch" lay-filter="cha" {{ d.cha?'checked':'' }}>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">修模</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="xiu" lay-skin="switch" lay-filter="xiu" {{ d.xiu?'checked':'' }}>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="text/x-template" id="editTd">
+        <td @@click="tableEdit">
+            <input v-show="inputShow"
+                   class="layui-input layui-table-edit"
+                   type="text"
+                   :value="value"
+                   @@blur="updateVal"
+                   @@keydown.esc="cancelUpdate"
+                   v-focus="inputShow" />
+            {{ value }}
+        </td>
+    </script>
+    <script type="text/x-template" id="editAreaTd">
+        <td @@click="tableEdit">
+            <textarea v-show="inputShow"
+                      class="layui-textarea"
+                      type=""
+                      :value="value"
+                      @@blur="updateVal"
+                      @@keydown.esc="cancelUpdate"
+                      v-focus="inputShow"
+                      :style="{width:editWidth+'px'}">
+            </textarea>
+            <span v-show="!inputShow"> {{ value }}</span>
+        </td>
+    </script>
+    <script type="text/x-template" id="editDateTd">
+        <td @@click.stop="tableEdit"
+            :class="[indexClass[0]]">
+            <input v-show="inputShow"
+                   :class="[inputShow?indexClass[1]:'']"
+                   class="layui-input layui-table-edit"
+                   type="text"
+                   @@keydown.enter="updateVal"
+                   @@keydown.esc="cancelUpdate"
+                   v-focus="inputShow" />
+            {{ value }}
+        </td>
+    </script>
+    <script type="text/html" id="setTemplet">
+        <div>
+            <ul>
+                {{# layui.each(d, function(index, item){ }}
+                <li onclick="templetObj.setTemData({{index}})" class="my-sider1-li ">
+                    <span>
+                        {{ item.templateName }}
+                    </span>
+                    <i class="iconfont icon-shanchu shancumuban" onclick="templetObj.delTemplet({{item.id}})"></i>
+                </li>
+                {{# }); }}
+
+            </ul>
+        </div>
+    </script>
+    <script>
+        var templetObj = {
+            //删除模板
+            delTemplet: function (id) {
+                abp.message.confirm('确定删除模板吗？', ()=> {
+                    abp.services.app.template.delTemplate(id).done(res => layer.msg('删除模板成功'))
+                })
+                window.event ? window.event.cancelBubble = true : event.stopPropagation();
+                return false;
+            },
+        //根据模板内的值设置part.tasks
+            setTemData: function (index) {
+                app.part.tasks = JSON.parse(this.templets[index].templateContent);
+                layer.closeAll();
+                layer.prompt({
+                    title: '第一步工序计划上机时间', value: new Date().pattern('yyyy-MM-dd')
+                }, function (value, index, elem) {
+                    if (new Date(value).pattern('yyyy-MM-dd') ===value) {
+                        Vue.set(app.part.tasks[0], 'planStartDate', value)
+                        fAutoSort(0)
+
+                    } else {
+                        layer.msg('初始时间格式不正确')
+                    }
+                    layer.close(index);
+                });
+
+            },
+            templets:[]
+        }
+
+
+        var fullHeight = 110;
+
+        //添加工序
+        var processTypeChooseData;
+        function addProcessType() {
+            layer.prompt({ title: '请输入新增工艺' }, function (value, index, elem) {
+                func.runAsync(abp.services.app.processType.addProcessType(value).done(function (data) {
+                    app.processTypes.splice(0, 0, data);
+                    layer.close(index);
+                }))
+            });
+        }
+        var chooseProcessObj = {
+            fChoose: function (id, processTypeName) {
+                //function fSetProcessByOpen(id, processTypeName, index) {
+                //}
+                //fSetProcessByOpen(id, processTypeName, this.index)
+                var index = this.index;
+                app.part.tasks[index].processTypeName = processTypeName;
+                app.part.tasks[index].processTypeId = id;
+                var task = app.part.tasks[index];
+                app.part.tasks.splice(index, 1, task)
+                layui.layer.closeAll();
+            }
+            , index: -1
+        }
+
+        Vue.directive('focus', {
+            // 当被绑定的元素更新到 DOM 中时……
+            update: function (el, binding) {
+                // 聚焦元素
+                if (binding.value) {
+                    el.focus()
+                }
+
+            }
+        })
+        Vue.component('edit-date-td', {
+            data: function () {
+                return { inputShow: false }
+            },
+            props: ['value', 'dataindex'],
+            template: '#editDateTd',
+            computed: {
+                indexClass: function () {
+                    return ['tdes' + this.dataindex[0] + '-' + this.dataindex[1], 'tddate' + this.dataindex[0] + '-' + this.dataindex[1]];
+                }
+            },
+            methods: {
+                renderDate: function () {
+                    var that = this;
+                    setTimeout(reD, 0)
+                    function reD() {
+                        layui.laydate.render({
+                            elem: '.' + that.indexClass[1],
+                            value: that.value,
+                            show: true,//直接显示
+                            done: function (value) {
+                                that.$emit('input', value)
+                                that.inputShow = false;
+                                console.log(value, that.inputShow)
+                            },
+                            closeStop: '.' + that.indexClass[0]//点击  所在元素阻止关闭事件冒泡。如果不设定，则无法弹出控件
+                        });
+                    }
+
+                    function fRemoveLock(e) {
+                        var e = e || window.event; //浏览器兼容性
+                        var elem = e.target || e.srcElement;
+                        var b = $(elem).parents('.layui-laydate').length != 1 && !$(elem).hasClass('.' + that.indexClass[1]) && !$(elem).hasClass('.' + that.indexClass[0]);
+                        if (b) {
+                            console.log('移除');
+                            $(document).off('click', fRemoveLock);
+                            that.inputShow = false;
+                        }
+                    }
+                    console.log('1')
+                    $(document).on('click', fRemoveLock);
+                },
+                updateVal: function (event) {
+                    this.$emit('input', event.target.value)
+                    this.inputShow = false;
+                },
+                cancelUpdate: function () {
+                    this.inputShow = false;
+                },
+                tableEdit: function (event) {
+                    this.inputShow = true;
+                    this.$nextTick(this.renderDate())
+                }
+            }
+        })
+        Vue.component('edit-td', {
+            data: function () {
+                return { inputShow: false }
+            },
+            props: ['value'],
+            template: '#editTd',
+            methods: {
+                updateVal: function (event) {
+                    this.$emit('input', event.target.value)
+                    this.inputShow = false;
+                },
+                cancelUpdate: function () {
+                    this.inputShow = false;
+                },
+                tableEdit: function (event) {
+                    this.inputShow = true;
+                }
+            }
+        })
+        Vue.component('edit-area-td', {
+            data: function () {
+                return { inputShow: false }
+            },
+            props: {
+                value: [String, Number],
+                editWidth: { type: Number, default: 250 }
+            },
+            template: '#editAreaTd',
+            methods: {
+                updateVal: function (event) {
+                    this.$emit('input', event.target.value)
+                    this.inputShow = false;
+                },
+                cancelUpdate: function () {
+                    this.inputShow = false;
+                },
+                tableEdit: function (event) {
+                    this.inputShow = true;
+                }
+            }
+        })
+
+        function navChecked() {
+            if ($('#menu-cb').is(':checked')) {
+                $('.head').attr('style', 'width:80%;')
+            } else {
+                $('.head').attr('style', 'width:0;')
+            }
+        }
+        //自动排序
+        function fAutoSort(first) {
+            var flag = false;
+            for (var y = first; y < app.part.tasks.length; y++) {
+                if (app.part.tasks[y].planStartDate) {
+                    flag = true;
+                }
+                if (flag) {
+                    app.Day2End(y)
+                    if (y < app.part.tasks.length - 1) {
+                        app.part.tasks[y + 1].planStartDate = app.addDay(new Date(app.part.tasks[y].planEndDate), 1);
+                    }
+                }
+
+            }
+        }
+
+        var app;
+        config.ready = function () {
+            $('.table-wrap').height($(document).height() - fullHeight);
+
+
+            //监听自动排序模式按钮
+            layui.form.on('switch(auto)', function (data) {
+                app.autoState = data.elem.checked;
+                if (data.elem.checked) {
+                    fAutoSort(0);
+                }
+            });
+
+            var dataId = $.getUrlParam("data");
+            app = new Vue({
+                el: '#app',
+                data: {
+                    part: {},
+                    autoState: false,
+                    showObj: {}
+                },
+                computed: {
+                    qrCode: function () {
+                        return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/PartTasks?id=" + dataId);
+                    }
+                },
+                methods: {
+                    getTemplet: function (event,type) {
+                        var that = this;
+                        var offset = $(event.target).offset();
+                        var string;
+                        var getTpl = $('#setTemplet')[0].innerHTML;
+
+                        abp.services.app.template.getTemplates('PartSetting-' + type).done(res => {
+                            console.log(res);
+                            templetObj.templets = res;
+                            layui.laytpl(getTpl).render(res, function (html) {
+                                string = html;
+                                open();
+                            });
+                        })
+                        function open() {
+                            layer.open({
+                                title: "模板",
+                                shade: 0.1,
+                                shadeClose: true,
+                                offset: [offset.top + 38 + 'px', offset.left - 250 + "px"],
+                                anim: -1,
+                                id: "LAY_adminNote",
+                                skin: "layadmin-note layui-anim layui-anim-upbit",
+                                content: string,
+                                btn: ['另存为模板', '关闭']
+                                , area: ['300px', '300px']
+                                , yes: function (index, layero) {
+                                    layer.close(index);
+                                    that.addTemplate(type);
+                                }
+                            })
+                        }
+
+                    },
+                    addTemplate: function (type) {
+                        var partTasks, noData;
+                        if (type == 'finished') {
+                            partTasks = app.part.tasks.map((elm, index) => {
+                                if (elm.startDate && elm.endDate) {
+                                    var finishedEstimateHours = (+new Date(elm.endDate) - +new Date(elm.startDate)) / (60 * 60 * 1000);
+                                    return {
+                                        processTypeName: elm.processTypeName,
+                                        processTypeId: elm.processTypeId,
+                                        taskInfo: elm.taskInfo,
+                                        planDay: Math.ceil(finishedEstimateHours / 24),
+                                        estimateHours: Math.ceil(finishedEstimateHours),
+                                    }
+                                } else {
+                                    noData = true;
+                                }
+                            })
+                        } else {
+                            partTasks = app.part.tasks.map((elm, index) => {
+                                return {
+                                    processTypeName: elm.processTypeName,
+                                    processTypeId: elm.processTypeId,
+                                    taskInfo: elm.taskInfo,
+                                    planDay: elm.planDay,
+                                    estimateHours: elm.estimateHours,
+                                }
+                            })
+                        }
+                        if (noData) {
+                            abp.message.error('实际上下机数据不全，无法保存为经验模板')
+                            return;
+                        }
+                        layer.prompt({
+                            title: '模板名称', value: ''
+                        }, function (value, index, elem) {
+                            addTemplate(value)
+                            layer.close(index);
+                        });
+                        function addTemplate(name) {
+                            var data = {
+                                TemplateType: 'PartSetting-' + type,
+                                TemplateName: name,
+                                TemplateContent: JSON.stringify(partTasks)
+                            }
+                            abp.services.app.template.addTemplate(data).done(res => {
+                                layer.msg('添加模板成功')
+                            })
+                        }
+                    },
+                    saveData: function () {
+                        var processTypeNameHad = true;
+                        app.part.tasks.map(function (n, i) {
+                            n.sort = i;
+                            if (!n.processTypeName) {
+                                processTypeNameHad = false;
+                            }
+                        })
+                        if (processTypeNameHad) {
+                            func.runAsync(abp.services.app.part.savePartTaskInfo(this.part).done(function (data) {
+                                console.log(data)
+                                parent.layer.closeAll();
+                                parent.layuiExt.reRender('PartTask');
+                            }));
+                        } else {
+                            alert('请注意检查填写工序名，若未填写无法保存')
+                        }
+
+                    },
+                    DomPlanEnd: function (a, i) {
+                        var that = this;
+                        //this.part.tasks[i].planEndDate = a;
+                        Vue.set(this.part.tasks[i], 'planEndDate', a)
+                        if (this.autoState) {
+                            that.Day2Start(i)
+                            if (i < that.part.tasks.length) {
+                                if (i < that.part.tasks.length - 1) {
+                                    that.part.tasks[i + 1].planStartDate = that.addDay(new Date(that.part.tasks[i].planEndDate), 1);
+                                }
+                                fAutoSort(i + 1)
+                            }
+                        } else {
+                            that.Day2Start(i)
+                        }
+                    },
+                    DomPlanStart: function (a, i) {
+                        var that = this;
+                        //this.part.tasks[i].planStartDate = a;
+                        Vue.set(this.part.tasks[i], 'planStartDate', a)
+                        if (this.autoState) {
+                            fAutoSort(i)
+                        } else {
+                            that.Day2End(i)
+                        }
+                    },
+                    DomPlanDay: function (a, i) {
+                        var that = this;
+                        this.part.tasks[i].planDay = Number(a);
+                        var linshi = this.part.tasks[i];
+                        this.part.tasks.splice(i, 1, linshi)
+                        //this.$set(that.part.tasks[i], 'planDay', Number(a));
+                        //this.part.tasks[i].planDay =Number( a);
+                        if (this.autoState) {
+                            fAutoSort(i)
+                        } else {
+                            if (that.part.tasks[i].planStartDate) {
+                                that.Day2End(i)
+                            }
+                        }
+                    },
+                    layerImg: function () {
+                        layuiExt.fLayerImg('', this.part.partImg)
+                    },
+                    getArrangeEnd: function (aDate, eHours) {
+                        if (aDate && eHours) {
+                            var ms = new Date(aDate).getTime() + eHours * 60 * 60 * 1000;
+                            return func.formatDate(new Date(ms), { type: 'M' });
+                        } else {
+                            return '';
+                        }
+                    },
+                    getDay: function (s, e) {
+                        if (s && e) {
+                            return (new Date(e).getTime() - new Date(s).getTime()) / (1000 * 60 * 60 * 24)
+                        } else {
+                            return 1
+                        }
+                    },
+                    addDay: function (start, day) {
+                        var ms = new Date(start).getTime() + day * 24 * 60 * 60 * 1000;
+                        return func.formatDate(new Date(ms), { type: 'Day' });
+                    },
+                    Day2End: function (index) {
+                        var startD = this.part.tasks[index].planStartDate;
+                        var day = this.part.tasks[index].planDay;
+                        Vue.set(this.part.tasks[index], 'planEndDate', this.addDay(startD, day - 1))
+                        //this.part.tasks[index].planEndDate = this.addDay(startD, day - 1)
+                    },
+                    Day2Start: function (index) {
+                        var endD = this.part.tasks[index].planEndDate;
+                        var day = this.part.tasks[index].planDay;
+                        Vue.set(this.part.tasks[index], 'planStartDate', this.addDay(endD, 1 - Number(day)))
+                        //this.part.tasks[index].planStartDate = this.addDay(endD, 1 - Number(day));
+                    },
+                    addProcess: function () {
+                        var sort = this.part.tasks.length > 0 ? this.part.tasks[this.part.tasks.length - 1].sort + 1 : 0;
+                        this.part.tasks.push({
+                            arrangeDate: null,
+                            emergency: false,
+                            endDate: null,
+                            estimateHours: null,
+                            id: 0,
+                            inner: abp.setting.getBoolean("MES.DefaultSourceInner"),
+                            planDay: 1,
+                            planEndDate: null,
+                            planStartDate: null,
+                            processSN: null,
+                            processTaskStatus: 0,
+                            processTypeName: "",
+                            progress: 0,
+                            sort: sort,
+                            startDate: null,
+                            taskInfo: "参考附件"
+                        })
+                        if (this.autoState) {
+                            fAutoSort(this.part.tasks.length - 2);
+                        }
+                    },
+                    deletePro: function (i) {
+                        if (this.part.tasks[i].processTaskStatus < 2) {
+                            this.part.tasks.splice(i, 1);
+                        }
+                    },
+                    setArr: function (index, newV) {
+                        this.part.tasks.splice(index, 1, newV)
+                    },
+                    reorder: function (i, sum) {
+                        if ((i > 0 && sum < 0) || (sum > 0 && i < this.part.tasks.length - 1)) {
+                            var obj = this.part.tasks[i + sum];
+                            this.setArr(i + sum, this.part.tasks[i])
+                            this.setArr(i, obj)
+                            if (this.autoState) {
+                                fAutoSort(0)
+                            }
+
+                        }
+                    },
+                    moveTR: function (ev) {
+                        var that = this,
+                            oEvent = ev || event,
+                            oDiv = $(oEvent.target),
+                            bLeft = oDiv.offset().left, bTop = oDiv.offset().top,
+                            setLeft = $('.dom-process-width')[0].offsetWidth,
+                            disX = oEvent.clientX,
+                            disY = oEvent.clientY - bTop;
+                        //让被拖拽的元素赋值展现
+                        var nowIndex = oDiv.closest('tr').index();
+                        this.showObj = this.part.tasks[nowIndex];
+                        this.showObj.index = nowIndex;
+                        $('.dom-move-td').show();
+                        $('.dom-move-td').offset({ left: disX + 10, top: bTop })
+                        this.part.tasks[nowIndex].moveFlag = true;
+                        function trmouseEnter(ev) {
+                            var moveToIndex = $(this).index();
+                            that.reorder(nowIndex, moveToIndex - nowIndex);
+                            that.showObj.index = nowIndex = moveToIndex;
+                            console.log($(this).index())
+                        }
+                        $('.main tbody tr').on('mouseenter', trmouseEnter)
+                        document.onmousemove = function (ev) {
+                            var oEvent = ev || event;
+                            var l = oEvent.clientX;
+                            var t = oEvent.clientY - disY;
+                            console.log(l, oEvent.clientX, disX, setLeft)
+                            var distance = 33;
+                            if (l < 0) {
+                                l = 0;
+                            }
+                            else if (l > $('.layui-fluid').width() - 100) {
+                                l = $('.layui-fluid').width() - 100
+                            }
+
+                            if (t < 0) {
+                                t = 0;
+                            }
+                            else if (t > $('.layui-fluid').height() - 40) {
+                                t = $('.layui-fluid').height() - 40
+                            }
+
+                            $('.dom-move-td').offset({ left: l + 10, top: t });
+                        };
+
+                        document.onmouseup = function () {
+                            document.onmousemove = null;
+                            document.onmouseup = null;
+                            $('.main tbody tr').off('mouseenter', trmouseEnter)
+                            $('.dom-move-td').hide();
+                            that.part.tasks[nowIndex].moveFlag = false;
+                            var task = app.part.tasks[nowIndex];
+                            app.part.tasks.splice(nowIndex, 1, task)
+                        };
+
+                        event.preventDefault();
+                        return false;
+                    },
+                    fSign: function (i) {
+                        var that = this;
+                        var content;
+                        var task = this.part.tasks[i]
+                        var data = { processTypeName: task.processTypeName, inner: task.inner, emergency: task.emergency, xiu: task.xiu, cha: task.cha }
+                        var getTpl = openSign.innerHTML
+                        layui.laytpl(getTpl).render(data, function (html) {
+                            content = html;
+                        });
+                        layer.open({
+                            type: 1,
+                            skin: 'layui-layer-demo', //样式类名
+                            anim: 2,
+                            area:['360px','350px'],
+                            shadeClose: true, //开启遮罩关闭
+                            content: content,
+                            title: '标记'
+                        });
+                        var form = layui.form;
+                        form.render('checkbox');
+                        form.on('switch(inner)', function (data) {
+                            task.inner = data.elem.checked;
+                            console.log(task.inner, data.elem.checked, that.part.tasks[i].inner)
+                        });
+                        form.on('switch(emergency)', function (data) {
+                            task.emergency = data.elem.checked;
+                            console.log(task.emergency, data.elem.checked, that.part.tasks[i].emergency)
+                        });
+                        form.on('switch(cha)', function (data) {
+                            Vue.set(task, 'cha', data.elem.checked);
+                            //task.insert = data.elem.checked;
+                            console.log(task.emergency, data.elem.checked, that.part.tasks[i].emergency)
+                        });
+                        form.on('switch(xiu)', function (data) {
+                            Vue.set(task, 'xiu', data.elem.checked);
+                            console.log(task.emergency, data.elem.checked, that.part.tasks[i].emergency)
+                        });
+                    },
+                    //chooseProcess1: function (index) {
+                    //    var that = this;
+                    //    layer.open({
+                    //        type: 2,
+                    //        title: "选择工序",
+                    //        shadeClose: false,
+                    //        shade: 0.8,
+                    //        area: '550px',
+                    //        content: "/Home/Show?name=../MES/ProcessTypeChoose&partId=" + that.part.id + '&partsetting=' + index,
+                    //        btn: false
+                    //    });
+                    //},
+                    chooseProcess: function (index) {
+                        chooseProcessObj.index = index;
+                        function SetLaytpl() {
+                            var getTpl = processTypeChoose.innerHTML;
+                            layui.laytpl(getTpl).render(processTypeChooseData, function (html) {
+                                var h = $(document).height() - 200;
+                                h = h > 550 ? '550px' : h + 'px';
+                                layer.open({
+                                    type: 1,
+                                    title: "选择工序",
+                                    shadeClose: false,
+                                    shade: 0.8,
+                                    area: ['500px', h],
+                                    content: html,
+                                    btn: false
+                                });
+                            });
+                        }
+                        if (processTypeChooseData) {
+                            SetLaytpl();
+                        } else {
+                            func.runAsync(abp.services.app.processType.getAll().done(function (data) {
+                                processTypeChooseData = data;
+                                SetLaytpl();
+                            }));
+                        }
+
+                    }
+                },
+                created: function () {
+                    var that = this;
+                    func.runAsync(abp.services.app.part.getPartTaskInfo(dataId).done(function (data) {
+                        console.log(data)
+                        that.part = data;
+                        that.part.tasks.sort(function (o1, o2) {
+                            return o1.sort - o2.sort;
+                        });
+                        that.part.tasks.map(function (o, index) {
+                            o.planDay = that.getDay(o.planStartDate, o.planEndDate) + 1
+                        })
+                        $('#app').show();
+                        refresh();
+                    }));
+                }
+            })
+        }
+        func.renderUpload('.picupload', {
+            trigger: 'click', callback: function (res) {
+                //var item = $(upload.element);
+                func.runAsync(abp.services.app.part.setPartImg(app.part.id, res.filePath).done(function () {
+                    app.part.partImg = res.filePath;
+                    //item.find('img').attr('src', res.filePath)
+                }));
+            }
+        })
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+            })
+            $('#menu-cb').on('click', navChecked)
+
+        }
+    </script>
+}

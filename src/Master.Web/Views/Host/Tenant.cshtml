@@ -1,0 +1,156 @@
+﻿@using Master.Web.Components
+@using Master.Application.Editions
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@*@inject EditionManager EditionManager*@
+@{
+    //这是Host管理企业信息
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                <div id="app">
+                    <select name="edition">
+                        <option value="">版本</option>
+                        <option v-for="(item,index) in editions" :value="item.id">{{item.displayName}}</option>
+                    </select>
+                    <div style="display:inline-block">
+                        <search-toolbar-input :attr="attr" @@search-click="doSearch"></search-toolbar-input>
+                    </div>
+                    @*<div class="layui-input-inline">
+                            <input type="text" name="searchinput" class="layui-input" style="height:30px;">
+                        </div>
+                        <button class="layui-btn  layui-btn-sm " type="button" onclick="doSearch()">查询</button>*@
+                    <button class="layui-btn  layui-btn-sm layui-btn-danger" type="button" buttonname="模块初始化" modulekey="Tenant" params="" lay-event="Dimission" confirmmsg="确认对这些账套初始化模块?原有模块信息将丢失" buttonactiontype="Ajax" buttonactionurl="abp.services.app.tenant.initModule" onclick="func.callModuleButtonEvent()">模块初始化</button>
+                </div>
+
+
+            </div>
+            <table id="Tenant" lay-filter="Tenant" class="layui-table "></table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+
+    <script type="text/html" id="toolbar">
+        <a dataid="{{d.id}}" buttonname="模块初始化" modulekey="Tenant" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="Edit" confirmmsg="确认对此账套初始化模块?原有模块信息将丢失" buttonactiontype="Ajax" buttonactionurl="abp.services.app.tenant.initModule" onclick="func.callModuleButtonEvent()">模块初始化</a>
+        <a dataid="{{d.id}}" buttonname="模拟登录" modulekey="Tenant" class="layui-btn layui-btn-xs layui-btn-normal" lay-event="Edit" confirmmsg="确认模拟此账套登录" buttonactiontype="Ajax" buttonactionurl="abp.services.app.tokenAuth.simulateAuthenicate" onclick="func.callModuleButtonEvent()" callback="simulateLoginCallback">模拟登录</a>
+    </script>
+    <script type="text/html" id="resetRoleTpl">
+        <a dataid="{{d.id}}" buttonname="重置管理员权限" modulekey="Tenant" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="Edit" confirmmsg="确认重置账套管理员权限?" buttonactiontype="Ajax" buttonactionurl="abp.services.app.tenant.initAdminRole" onclick="func.callModuleButtonEvent()">重置</a>
+    </script>
+    
+    <script type="text/html" id="editionTpl">
+        <span class="layui-badge layui-bg-blue" dataid="{{d.id}}" buttonname="版本设置" modulekey="Tenant" lay-event="Edit" params="{&quot;area&quot;: [&quot;40%&quot;, &quot;40%&quot;]}" buttonactiontype="Form" buttonactionurl="/Tenant/SetEdition" onclick="func.callModuleButtonEvent()" style="cursor:pointer">{{d.edition?d.edition:'未设置'}}</span>
+    </script>
+    <script type="text/html" id="test-table-toolbar-toolbarDemo">
+
+
+    </script>
+    <script type="text/html" id="switchTpl">
+        <input type="checkbox" name="isActive" value="{{d.id}}" lay-skin="switch" lay-text="激活|未激活" lay-filter="isActive" {{ d.isActive ? 'checked' : '' }}>
+    </script>
+    <script>
+        var app;
+        window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: "", whereFilter: '' };
+        var currentFilter = {};
+        config.ready = function () {
+            app = new Vue({
+                el: '#app',
+                data: {
+                    editions: [],
+                    attr: { id: 'defaultname', placeholder: '账套名称/企业名称' }
+                },
+                mounted: function () {
+                    var that = this;
+                    abp.services.app.edition.getAll().done(function (data) {
+                        that.editions = data;
+                    })
+                },
+                methods: {
+                    doSearch: function (inputText) {
+                        //var inputVal = $('[name="searchinput"]').val();
+                        var where = "1=1";
+                        var editionId = $("[name='edition']").val();
+                        if (editionId) {
+                            where += " and editionId=" + editionId;
+                        }
+                        if (inputText) {
+                            where += 'and( name.contains("' + inputText + '")or tenancyName.contains("' + inputText + '"))'
+                        }
+                        layui.table.reload('Tenant', {
+                            where: { where: where },
+                            page: 1
+
+                        })
+                        return false;
+                    }
+                }
+            });
+            layui.form.on('switch(isActive)', function (obj) {
+                func.runAsync(abp.services.app.tenant.setActive(this.value, obj.elem.checked).done(function () {
+                    layer.msg("提交成功");
+                }))
+            });
+            layui.table.on('edit(Tenant)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                //layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+                if (!value.trim()) {
+                    layer.msg("输入不能为空", { icon: 5, anim: 6 });
+                    return false;
+                }
+                abp.message.confirm(L('确认修改?'), function () {
+                    func.runAsync(abp.services.app.tenant.updateField(data.id, field, value, {
+                        error: function () {
+                            layui.table.reload('Tenant');
+                        }
+                    }).done(function () {
+                        layer.msg('更新成功');
+                    }));
+                })
+
+            });
+            window.Tenant = [{
+                elem: '#Tenant',
+                defaultToolbar: ['filter', 'print', 'exports'],
+                cellMinWidth: '120',
+                height: 'full-91',
+                url: '/api/services/app/tenant/GetPageResult',
+                page: true,
+                limit: 20,
+                id: 'Tenant',
+                where: { where:''},
+                even: true,
+                done: config.onTableDone,
+                initSort: { field: 'Id', type: 'desc' }
+            }, [[
+                { align: 'center', type: 'checkbox', fixed: 'left', fixed: 'left', gudinglie: false },
+                { align: 'center', field: 'isActive', title: '激活', fixed: 'left', templet: '#switchTpl' },
+                { align: 'center', field: 'name', title: '账套名称', edit: 'text' },
+                { align: 'center', field: 'tenancyName', title: '显示名称', edit: 'text' },
+                { align: 'center', field: 'edition', title: '版本', templet: '#editionTpl' },
+                { align: 'center', field: 'password', title: '密码', edit: 'text' },
+                { align: 'center', field: 'creationTime', title: '建立时间' },
+                { align: 'center', field: 'lastLoginTime', title: '最后登录' },
+
+                { align: 'center', title: '权限', templet: '#resetRoleTpl' },
+                { align: 'center', toolbar: '#toolbar', title: '操作', fixed: 'right', width: '250' }
+            ]]
+            ]
+            layuiExt.reRender('Tenant');
+        };
+        config.reload = function () {
+            layui.table.reload('Tenant');
+        }
+        function simulateLoginCallback(data) {
+            $.cookie("token", data.encryptedAccessToken, { path: '/' });
+            top.location.reload();
+        }
+    </script>
+
+}

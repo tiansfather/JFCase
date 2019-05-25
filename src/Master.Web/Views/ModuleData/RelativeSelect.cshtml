@@ -1,0 +1,19 @@
+﻿@using Master.Web.Components
+@model Master.Module.ModuleInfo
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                <vc:module-button module-key="@Model.ModuleKey"></vc:module-button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="func.bringBack('@Model.ModuleKey');">@L("选择")</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="func.bringBack('@Model.ModuleKey',true);">@L("选择并返回")</button>
+            </div>
+            <vc:module-table param="@(new ModuleTableViewParam() {ID=Model.ModuleKey,ModuleKey=Model.ModuleKey,Height="full-100" })"></vc:module-table>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,217 @@
+img{
+    cursor: pointer;
+}
+.f-l{
+    float:left;
+}
+.f-r{
+    float:right;
+}
+.f-t{
+    float:top;
+}
+.f-b{
+    float:bottom;
+}
+/**默认链接颜色*/
+.a-link{
+    color: #2991D9;
+    cursor: pointer;
+}
+
+.a-link:hover{
+    color: #47b3ff;
+}
+
+/**可点击样式*/
+.click-span{
+    color: #771bff;
+    cursor: pointer;
+    text-decoration:underline
+}
+
+.click-span:hover{
+    color: #a53aff;
+}
+
+/**字体颜色*/
+/* 蓝色 */
+.ft-blue {
+    color: #1E9FFF;
+}
+
+/* 警告 */
+.ft-warm {
+    color: #FFB800;
+}
+
+/* 强调 */
+.ft-red {
+    color: #ff1d33;
+}
+/* 绿色 */
+.ft-green {
+    color: #009688;
+}/* 绿色 */
+.ft-gray {
+    color: #938996;
+}
+.ft-10{font-size: 10px}
+.ft-12{font-size: 12px}
+.ft-14{font-size: 14px}
+.ft-16{font-size: 16px}
+.ft-18{font-size: 18px}
+.ft-20{font-size: 20px}
+.ft-22{font-size: 22px}
+.ft-24{font-size: 24px}
+.ft-26{font-size: 26px}
+.ft-28{font-size: 28px}
+.ft-30{font-size: 30px}
+.width300{
+    width:300px!important;
+}
+.center{
+    text-align: center;
+}
+/*字体加粗*/
+.ft-normal{
+    font-weight: normal;
+}
+
+.ft-bold{
+    font-weight: bold;
+}
+/**表单左侧label宽度*/
+.label-120 {
+    float: left;
+    display: block;
+    padding: 9px 15px;
+    width: 120px;
+    font-weight: 400;
+    text-align: right
+}
+.label-150 {
+    float: left;
+    display: block;
+    padding: 9px 15px;
+    width: 150px;
+    font-weight: 400;
+    text-align: right
+}.label-180 {
+     float: left;
+     display: block;
+     padding: 9px 15px;
+     width: 180px;
+     font-weight: 400;
+     text-align: right
+ }
+.layui-label-left {
+    float: left;
+    display: block;
+    padding: 9px 15px;
+    width: 150px;
+    height: 16px;
+    line-height: 16px;
+    font-weight: 400;
+    text-align: right
+}
+
+.layui-label-right {
+    float: left;
+    display: block;
+    padding: 9px 15px;
+    width: 200px;
+    height: 16px;
+    line-height: 16px;
+    font-weight: 400;
+    text-align: left
+}
+/*底部*/
+#footer, .footer {
+    color: #6e6e6e;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    font-size: 12px;
+    bottom: 10px;
+    width: 100%;
+}
+
+/*按钮颜色*/
+.layui-btn-blue {
+    background-color: #1E9FFF;
+}
+
+.layui-btn-delete {
+    background-color: #ff1d33;
+}
+
+.layui-btn-green {
+    background-color: #009688;
+}
+.layui-btn-enable{
+    background-color: #5FB878;
+}
+
+/*table表单*/
+.form-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.input-auto-div {
+    padding-right: 6px;
+    margin-top: 6px;
+}
+
+.layui-layer-btn1{
+    color:white!important;
+    background: #009f95!important;
+    border-color: #009f95!important;
+}
+
+.layui-input-normal {
+    float: left;
+    width: 370px;
+    margin-right: 10px
+}
+
+.layui-input-normal {
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+}
+/*两个inline之间用-链接*/
+.inline-line{
+    position: absolute;
+    top: 10px;
+    left: 193px;
+}
+button[lay-filter="moreSearch"] {
+    margin-left: 5px;
+}
+/**表单响应式*/
+@media screen and (max-width: 699px) {
+    .cy-hide-xs {
+        display: none !important;
+    }
+    .cy-show-xs-block {
+        display: block !important
+    }
+
+    .cy-show-xs-inline {
+        display: inline !important
+    }
+
+    .cy-show-xs-inline-block {
+        display: inline-block !important
+    }
+    .layui-input-normal{
+        width:100%!important
+    }
+    .layui-btn-group .layui-btn{
+        margin-bottom: 5px!important
+    }
+    .search-btn-group{
+        text-align: right;
+    }
+}

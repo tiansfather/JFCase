@@ -1,0 +1,428 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@section styles{
+	<style>
+        html{
+            background:#fff;
+        }
+        #LAY-app-message {
+            padding: 20px;
+        }
+
+		.my-card-body {
+			padding: 0;
+		}
+
+		.my-tab-content {
+			padding: 0 15px;
+			padding-top: 5px;
+		}
+        .upload-img-wrap,.fileUl,.fileUl-li,.fileUl-img-wrap{
+            box-sizing:border-box;
+        }
+
+        .upload-img-wrap {
+            /*min-height:450px;*/
+            /*margin-top:20px;*/
+            display: flex;
+            justify-content: center;
+        }
+        .fileUl {
+            width: 1000px;
+            overflow: hidden;
+            max-width: 100%;
+            padding: 0;
+        }
+        .fileUl-li {
+            position:relative;
+            border-bottom:1px solid #f7f7f7;
+            display: inline-block;
+            vertical-align: top;
+            width: 25%;
+            padding: 20px;
+        }
+        .fileUl-img-wrap {
+            display: inline-block;
+            width: 100%;
+            height: 0;
+            position: relative;
+            background-color: #e6e6e6;
+            padding-bottom: 100%;
+        }
+        .fileUl-li img {
+            -moz-background-size: cover;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            vertical-align: top;
+            -o-object-fit: cover;
+            object-fit: cover;
+        }
+
+        .verified-span{
+            height:30px;
+            line-height:30px;
+        }
+        .upload-button{
+            padding-top:20px;
+        }
+        .my-file-wrap {
+            padding-top:25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .my-file-icon {
+            font-size: 80px;
+            height: 80px;
+            line-height: 80px;
+        }
+        .my-file-p {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 25px;
+            font-size: 14px;
+        }
+        .my-li-delete{
+            display:none;
+        }
+        li:hover .my-li-delete {
+            display:block;
+            line-height: 40px;
+            background: rgba(76, 72, 72, 0.5);
+            top: 25px;
+            position: absolute;
+            font-size: 32px;
+            right: 25px;
+            height: 40px;
+            width: 40px;
+            cursor: Pointer;
+            color: #0c0d29;
+            text-align: center;
+            border-radius: 3px;
+        }
+        .rate-div_wrap{
+            display:inline-block;
+        }
+        .rate-div_wrap span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            font-size: 0;
+            vertical-align: middle;
+        }
+
+        .rate-div_wrap .layui-icon {
+            display: inline-block;
+            position: relative;
+            font-size: 18px;
+            margin-right: 6px;
+            color: #c0c4cc;
+            transition: .3s;
+            top:4px;
+        }
+        .rate-div_wrap .layui-icon.layui-icon-rate-solid {
+            color:rgb(247, 186, 42);
+        }
+        .gongshi-p {
+            font-size: 18px;
+            /*height: 39px;*/
+            color: #868686;
+            line-height: 39px;
+            border-width: 0 0 0 1px;
+        }
+        .my-input-inline {
+            display: inline-block;
+            vertical-align: middle;
+            float: left;
+            width: 190px;
+            margin-right: 10px;
+            line-height:38px;
+        }
+        .processor-msg {
+            line-height: 2;
+            font-size: 16px;
+            margin: 0 40px;
+        }
+        .processor-msg p {
+            display: inline-block;
+            color: #000;
+        }
+        .processor-img li {
+            display: inline-block;
+            margin: 10px;
+        }
+        .processor-img li img{
+            height:50px;
+        }
+/*-----------覆盖原有------------*/
+        .layui-form-item, .layui-form-item .layui-inline {
+            width: 100%;
+        }
+	</style>
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		@*<div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>任务详情</div>*@
+        <div class="layui-card-body my-card-body layui-hide" id="app" v-cloak>
+            <form class="layui-form" action="" onsubmit="return doVerify();">
+                <div style="display:flex;">
+                    <div style="flex:2;">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span class="">*</span>@L("加工金额")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" autocomplete="off" class="layui-input" style="border-color: #a0a0a0;" v-model="task.fee" lay-verify="number" placeholder="请输入数字">
+                            </div>
+                        </div>
+                        <div class="layui-inline" style="vertical-align:top;">
+                            <label class="layui-form-label">@L("加工品质")</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="quality" value="0" title="未检" v-model="task.quanlityType" lay-filter="quality">
+                                <input type="radio" name="quality" value="1" title="合格" v-model="task.quanlityType" lay-filter="quality">
+                                <input type="radio" name="quality" value="2" title="不合格" v-model="task.quanlityType" lay-filter="quality">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("加工评语")</label>
+                            <div class="layui-input-block" style="min-width:180px;max-width:400px;border-bottom:1px solid #ccc;">
+                                <textarea placeholder="请输入内容" class="layui-textarea" v-model="task.rateInfo"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("加工评级")</label>
+                            <div class="layui-input-block">
+                                <div class="rate-div_wrap">
+                                    <span @@mouseover="rateIndex=i" @@mouseout="rateIndex=0" @@click="fRateClick(i)" v-for="i in 5">
+                                        <i class="layui-icon" 
+                                           :class="{'layui-icon-rate':i>rateIndex&&i>task.rate,'layui-icon-rate-solid':i<=rateIndex||i<=task.rate}"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-inline" style="margin-left:38px;">
+                            <input type="button" class="layui-btn upload layui-btn-sm" value="上传回单图片" callback="uploadCallback" rel="returnFiles" />
+                        </div>
+                        <div style="float:right;margin-bottom:20px;">
+                            <input type="button" lay-submit="" class="layui-btn layui-btn-sm layui-btn-danger" value="确认审核" onclick="doVerify()" />
+                        </div>
+                    </div>
+                    <div style="flex:2;" v-if="task.submitFeeFromProcessor" class="processor-msg">
+                        <ul>
+                            <li>
+                                <b>回单费用：</b>
+                                <p>{{task.submitFeeFromProcessor|emptyObj('fee')}}</p>
+                            </li>
+                            <li>
+                                <b>回单单价：</b>
+                                <p>{{task.submitFeeFromProcessor|emptyObj('price')}}</p>
+                            </li>
+                            <li>
+                                <b>回单数量：</b>
+                                <p>{{task.submitFeeFromProcessor|emptyObj('num')}}</p>
+                            </li>
+                            <li>
+                                <b>回单备注：</b>
+                                <p>{{task.submitFeeFromProcessor|emptyObj('info')}}</p>
+                            </li>
+                            <li>
+                                <b>工时情况：</b>
+                                <p :style="{color:re2endDate.color}" v-html="re2endDate.content"></p>
+                            </li>
+                        </ul>
+                    </div>
+                    <p v-else style="flex:1;color:red;">加工点未回单</p>
+                    <div style="flex:1;" v-if="task.submitFeeFromProcessor&&task.submitFeeFromProcessor.files" class="processor-img">
+                        <p>回单图片</p>
+                        <ul>
+                            <li v-for="file in task.submitFeeFromProcessor.files" style="margin:10px 0;">
+                                <img :src="file.filePath+'?h=100&gap=false'"  @@click="fLayerImg('',file.filePath)">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+            <div style="width:80%" v-if="task.verified&&task.rateFeeInfos.length">
+                <multi-data-add :items="items" :parts="task.rateFeeInfos" :readonly="true"></multi-data-add>
+            </div>
+            <div class="upload-img-wrap">
+                <ul class="fileUl">
+                    <li class="fileUl-li" v-for="(item,index) in task.returnFiles">
+                        <div class="fileUl-img-wrap">
+                            <div v-if="judgeType(item.fileName).type=='jpg'">
+                                <img :src="item.filePath+'?w=210'" @@click="fLayerImg('',item.filePath)" />
+                            </div>
+                            <div v-else class="my-file-wrap">
+                                <i class="my-file-icon" :class="judgeType(item.fileName).iconfont" :style="{color:judgeType(item.fileName).color}"></i>
+                                <a :href="item.filePath" target="_blank" class="my-file-p">{{item.fileName}}</a>
+                            </div>
+                        </div>
+                        <i class="iconfont icon-qingkong1 my-li-delete" @@click="removeFile('returnFiles',index)"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		var app, taskid;
+		config.ready = function () {
+            var form = layui.form;
+            form.on('radio(quality)', function (data) {
+                console.log(data.value); //被点击的radio的value值
+                app.task.quanlityType =data.value;
+            });  
+			app = new Vue({
+				el: '#app',
+				data: {
+					reports: [],
+					task: {},
+                    rateIndex: 0,
+                    //rateClickRep: 0,
+                    items: [
+                        { type: 'readonly', title: '金额', verify: '', key: 'fee' },
+                        { type: 'select', title: '品质', verify: '', key: 'quanlityType', options: [{ value: 0, text: '未检' }, { value: 1, text: '合格' },{ value: 2, text: '不合格' }] },
+                        { type: 'readonly', title: '评级', verify: '', key: 'rate' },
+                        { type: 'readonly', title: '评语', verify: '', key: 'rateInfo' },
+                        { type: 'readonly', title: '审核人', verify: '', key: 'verifier' },
+                        { type: 'readonly', title: '审核时间', verify: '', key: 'verifyTime' },
+                    ]
+                },
+                computed: {
+                    re2endDate: function () {
+                        var d = '', that = this,color="#868686";
+                        if (this.task.endDate) {
+                            if (this.task.requireDate) {
+                                var re = this.task.requireDate;
+                                var end = this.task.endDate.split(' ')[0];
+                                var date = ((new Date(re) - new Date(end) )/ 86400000).toFixed(0);
+                                if (date == 0) {
+                                    d = '正常完成';
+                                    color = "#000";
+                                } else if (date > 0) {
+                                    d = "提前" + date + "天完成";
+                                    color = "#75d239";
+                                } else if (date < 0) {
+                                    d = "延期" + (-date) + "天完成";
+                                    color = "#fa763b";
+                                }
+                            } else {
+                                var actualHours= this.task.actualHours;
+                                d = '未填写要求完成时间<br><small>实际工时:' + (actualHours ? actualHours.toFixed(1):'')+'</small>';
+                                color = "#868686";
+                            }
+                        } else {
+                            d = '未下机'; 
+                            color = "#868686";
+                        }
+                        return {color:color,content:d};
+                    }
+                },
+                methods: {
+                    fRateClick: function (i) {
+                        if (i ==this.rateClickRep) {
+                            this.task.rate = 0
+                        } else {
+                            this.task.rate = i
+                        }
+                    },
+                    judgeType: function (file) {
+                        var arr = file.split('.');
+                        var s = arr[arr.length - 1];
+                        return this.judgeFileType(s);
+                    },
+                    judgeFileType: function (fileSuffix ) {
+                        return func.judgeFileType(fileSuffix );
+                    },
+                    removeFile: function (name,index) {
+                        var removeData = { taskId: this.task.id, filePath: this.task[name][index].filePath, rel: name };
+                        console.log(removeData)
+                        var that = this;
+                        layer.confirm('您确定删除此文件吗？', {
+                            btn: ['确定', '取消'] 
+                        }, function () {
+                            abp.services.app.processTask.removeAttachFile(that.task.id, that.task[name][index].filePath, name).done(function () {
+                                that.task[name].splice(index, 1);
+                                layer.msg('删除成功');
+                            })
+                        }, function () {
+                            
+                        });
+                        
+                    },
+                    fLayerImg: function (m,n) {
+                        layuiExt.fLayerImg(m, n);
+                    }
+				},
+				mounted: function () {
+					taskid = $.getUrlParam("data");
+					var that = this;
+					//获取任务详情
+                    abp.services.app.processTask.getTaskInfoById(taskid).done(function (data) {
+                        
+                        that.task = data;
+                        that.$nextTick(function () {
+                            layui.form.render();
+                        })
+                        $("#app").removeClass("layui-hide");
+					})
+
+                },
+                filters: {
+                    emptyObj: function (value,str) {
+                        return value?value[str]:''
+                    }
+                }
+
+			});
+
+			//配置上传
+			func.renderUpload(".upload", { trigger: "click" });
+
+		}
+        function doVerify() {
+            if (!app.task.fee) return;
+            var params = [{ id: app.task.id, fee: app.task.fee, rate: app.task.rate, rateInfo: app.task.rateInfo, quanlityType: app.task.quanlityType||0,}];
+            abp.message.confirm(L('确认进行回单审核?'), function () {
+                func.runAsync(abp.services.app.processTask.verifyFee(params).done(function () {
+                    //app.task.rate = app.rateClickRep;
+                    //app.task.verified = true;
+                    parent.layer.closeAll();
+                    parent.layer.msg(L("提交成功"));
+                }))
+            })
+        }
+        function uploadCallback(data) {
+            console.log(data);
+			var elem = $(window.upload.element);//调用上传的元素
+			var rel = elem.attr("rel");
+			abp.services.app.processTask.attachFile(taskid, data, rel).done(function () {
+				app.task[rel].push(data);
+			});
+			//func.runAsync(abp.services.app.processTask.attachFile(taskid, data.filePath, rel).done(function () {
+			//	app.task[rel].push({ filePath: data.filePath });
+			//}));
+
+		}
+
+                    //fGetQuan: function (type,b) {
+                    //    var oType = { 0: '未检', 1: '合格', 2: '不合格' };
+                    //    if (b) {
+                    //        return oType[type]
+                    //    } else {
+                    //        for (i in oType) {
+                    //            if (oType[i] == type) {
+                    //                return i;
+                    //            }
+                    //        }
+                    //    }
+                    //},
+	</script>
+
+}

@@ -1,0 +1,549 @@
+﻿ 
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+    @{
+    @section styles{
+   
+    <style>
+        html {
+            width: 100%;
+        }
+
+        .weui-tab {
+            width: 100%;
+        }
+
+        .weui-navbar {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            position: fixed;
+            z-index: 500;
+            top: 0;
+            width: 100%;
+            background-color: #fafafa;
+        }
+
+        .weui-navbar__item.weui-bar__item--on {
+            color: #666;
+            background-color: #f1f1f1;
+        }
+
+        .weui-navbar__item {
+            color: #888;
+        }
+
+        .weui-navbar__item {
+            position: relative;
+            display: block;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+            padding: 13px 0;
+            text-align: center;
+            font-size: 15px;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+
+        a {
+            text-decoration: none;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+
+        .layui-anim-upbit {
+            animation-name: layui;
+            -webkit-animation-name: layui;
+        }
+    </style>
+    <style>
+        /*来自原来的rcss样式 */
+        .layui-card-body {
+            padding: 0;
+        }
+
+        .grid-item {
+            min-width: 280px;
+            margin-bottom: 10px;
+        }
+
+        .my-grid {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .flow-wrap {
+            padding: 20px;
+        }
+
+        .disnone {
+            display: none;
+        }
+
+        .disblock {
+            display: block;
+        }
+
+        .error-div {
+            box-sizing: border-box;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #939393;
+        }
+
+        .over-time-div {
+            box-sizing: border-box;
+            border: 2px solid red;
+            width: 70px;
+        }
+
+        .append-btn-wrap {
+            text-align: center;
+            height: 350px;
+            line-height: 250px;
+        }
+
+        .c-card__name-span {
+            font-size: 12px;
+            float: right;
+            margin-right: 15px;
+            border: 1px solid;
+            padding: 0 3px;
+            line-height: 23px;
+        }
+        /*---------------------------------------------------*/
+        .my-search {
+            display: flex;
+            align-items: center;
+        }
+
+        .my-switch-mode_wrap {
+            position: fixed;
+            top: 25px;
+            right: 100px;
+            z-index: 9999;
+            transition: all .3s;
+        }
+
+            .my-switch-mode_wrap:hover {
+                top: 22px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+
+        .c-card {
+            background-color: white;
+            border-radius: 2px;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.12);
+            height: auto;
+            margin-top: 20px;
+            min-height: 50px;
+            min-width: 340px;
+        }
+
+        .img-wrap {
+            float: left;
+        }
+
+        .text-wrap {
+            float: right;
+        }
+
+        .c-card__thumbnail {
+            padding-bottom: 10px;
+        }
+
+        .c-card .c-card__name {
+            color: #717171;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 27px;
+            padding: 5px 0 0 20px;
+        }
+
+        .c-card .c-card__location {
+            color: #acaaaa;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 27px;
+            padding-left: 18px;
+        }
+
+        .c-card .c-card__description {
+            color: #acaaaa;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 16px;
+            padding: 10px 0 20px 20px;
+        }
+
+        .c-card .c-card__rating {
+            padding: 0 0 15px 15px;
+        }
+
+        .c-unit {
+            padding-left: 18px;
+            color: #989898;
+            font-size: 12px;
+            line-height: 18px;
+        }
+
+            .c-unit p {
+                line-height: 18px;
+                white-space: nowrap;
+                display: inline-block;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+
+        .c-unit-p1 {
+            width: 71%;
+        }
+
+        .c-unit-p2 {
+            width: 25%;
+        }
+
+        .yanqi-msg {
+            display: none;
+        }
+
+            .yanqi-msg div {
+                border: 2px solid red;
+                box-sizing: border-box;
+                width: 30px;
+                height: 24px;
+                margin-right: 5px;
+                margin-left: 10px;
+                float: left;
+            }
+
+            .yanqi-msg span {
+                font-size: 10px;
+            }
+
+        .receiptaudit-wrap {
+            cursor: pointer;
+            background: rgba(191, 191, 191, 0.1);
+        }
+
+
+        .gobackhome {
+            position: fixed;
+            display: flex;
+            top: 20px;
+            left: 10px;
+            font-size: 20px;
+            z-index: 999;
+        }
+    </style>
+    <link rel="stylesheet" href="/lib/iconfont/wechaticon.css" asp-append-version="true">
+    }
+    }
+
+    <div class="weui-tab">
+        <div class="weui-navbar">
+            <a class="weui-navbar__item weui-bar__item--on" href="javascript:;">全部</a>
+            <a class="weui-navbar__item" href="javascript:;">未上机</a>
+            <a class="weui-navbar__item" href="javascript:;">已上机</a>
+            <a class="weui-navbar__item" href="javascript:;">已下机</a>
+
+        </div>
+    </div>
+    @*<div class="weui-tab__bd">
+        <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+            *@
+
+            <div class="layui-fluid" id="LAY-app-message" style="padding-top: 50px;">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="LAY-app-message-btns">
+                            <form class="layui-form layui-form-pane " onsubmit="doSearch(); return false;">
+                                <div class="my-search">
+
+                                    <div class="my-inline-block">
+                                        <div class="layui-input-inline">
+                                            <input type="text" id="projectSNSearch" autocomplete="off" class="layui-input" placeholder="模具编号/单号">
+                                        </div>
+                                        <button class="layui-btn  layui-btn-sm" type="button" onclick="doSearch()">查询</button>
+                                    </div>
+
+                                </div>
+                            </form>
+
+                        </div>
+
+
+                        <div class="disnone flow-wrap">
+                            <div class="grid my-grid" style="">
+                            </div>
+                            <div class="append-btn-wrap">
+                                <i style="font-size:30px;" class="dom-append-i layui-icon layui-icon-loading-1 layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+                                <span class="dom-append-span" style="display:none">已无更多内容</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*
+        </div>
+    </div>*@
+    @section scripts{
+    <script src="~/lib/masonry/masonry.min.js"></script>
+    <script src="~/lib/masonry/imagesLoaded.min.js"></script>
+
+    <script type="text/html" id="exhibition">
+        {{#
+            layui.each(d, function(index, item){
+            var date;
+            item.startDate?item.startDate:'未报工'
+        }}
+        <a dataid="{{item.id}}" buttonname="任务详情" modulekey="ProcessTask" class="receiptaudit-wrap" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;101%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/ShowTask" onclick="func.callModuleButtonEvent($(this))">
+            <div class="grid-item">
+                <div class="c-card">
+                    <div class="img-wrap">
+                        {{# if(item.overtime){ }}
+                        <div class="over-time-div">
+                            {{# }else{  }}
+                            <div>
+                                {{# } }}
+                                <img src="{{item.file}}?w=100" width="100" />
+                            </div>
+                        </div>
+                        <div class="text-wrap">
+                            <p>{{item.partName}}</p>
+                            <p> {{item.processTypeName}}</p>
+                            <p>{{item.startDate?item.startDate:'未报工'}}{{item.startDate?'-'+item.startDate:'未报工'}}</p>
+
+                            <div class="c-unit">
+                                <p class="c-unit-p1" title="{{item.startDate}}">
+                                    {{#if(item.startDate){}}
+                                    <span>{{item.startDate}}</span>
+                                    {{#}else{}}
+                                    <div style="">未报工</div>
+                                    {{#}}}
+                                </p>
+                                <p class="c-unit-p2" title=""></p>
+                            </div>
+                            <div class="c-unit">
+                                <p class="c-unit-p1" title="{{item.endDate}}">
+                                    {{#if(item.endDate){}}
+                                    <span>{{item.endDate}}</span>
+                                    {{#}else{}}
+                                    <div style="">未报工</div>
+                                    {{#}}}
+                                </p>
+                                <p class="c-unit-p2" title=""></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+        </a>
+        {{#  }); }}
+    </script>
+    <script>
+
+        var reportType = "";
+        $("div.weui-navbar").on("click", "a.weui-navbar__item", function (e) {
+            reportType = $(this).html();
+            $(".weui-bar__item--on").removeClass("weui-bar__item--on");
+            $(this).addClass("weui-bar__item--on");
+            if (reportType == "全部") {
+                reportType = "";
+            }
+            doSearch();
+        })
+        //高级查询设置
+        var SearchData = [];
+
+        var andWhereStr = "";
+
+        var page = 1;//当前打开页
+        var PageCount;//共有n页
+        var getHtml;
+        var $grid;
+        var firstSwitchFlag = true;
+        var searchFlag = false;
+
+        var addEd = false;
+
+        var manyState = layui.data('manyState');
+        if (manyState && manyState.reportState) {
+            switchMode();
+            //layui.data('manyState', {key: 'reportState', value: true });
+        } else {
+            layui.data('manyState', {
+                key: 'reportState'
+                , value: false
+            });
+        }
+
+        function getData(fn, searchVal) {
+            var where = "";
+            if (searchVal) {
+                //var where = ' ProcessTask.Part.Project.ProjectSN.Contains("' + searchVal + '")';
+                where = "(ProcessTask.Part.Project.ProjectSN.Contains(\"" + searchVal + "\") or ProcessTask.ProcessSN.Contains(\"" + searchVal + "\") )";
+
+            } else {
+                where = '1=1'
+            }
+            if (reportType != "") {
+                if (reportType == "未上机") {
+                    where += " and  (processTaskStatus =1 or processTaskStatus=2 ) ";
+                } else if (reportType == "已上机") {
+                    where += " and  (processTaskStatus =3 or processTaskStatus=5 ) ";
+                } else if (reportType == "已下机") {
+                    where += " and  processTaskStatus =4 ";
+                }
+
+            }
+            var options = { limit: 11, page: page, where: where };
+            page++;
+            abp.services.app.processTask.getPageResult(options).done(function (data) {
+                if (!PageCount) {
+                    PageCount = Math.ceil(data.count / options.limit);
+                }
+                console.log(data);
+                var aExhibition = [];
+
+                data.data.forEach(function (n) {
+                    aExhibition.push({
+                        file: n.files == null ? "" : n.files[0].filePath,
+                        processSN: n.processSN,
+                        partName: n.partName + '(' + n.partSN + ')',
+
+                        processTypeName: n.processTypeName,
+                        startDate: n.startDate,
+                        endDate: n.endDate,
+                        actualHours: n.actualHours,
+                        remarks: n.remarks,
+                        id: n.id,
+                        taskId: n.taskId
+
+                    })
+                })
+                var getTpl = exhibition.innerHTML;
+                layui.laytpl(getTpl).render(aExhibition, function (html) {
+                    getHtml = html;
+                    if (typeof fn == 'function') {
+                        fn();
+                    }
+                    //
+                });
+            });
+        };
+        function fImgError() {
+            $("img").error(function () {
+                console.log('error')
+                $(this).parent().addClass('error-div')
+                $(this).hide();
+            });
+        }
+
+        function addMore(searchVal) {
+            if (searchVal) {
+                getData(sclBotCallBack, searchVal);
+            } else {
+                getData(sclBotCallBack);
+            }
+            function sclBotCallBack() {
+                var $items = $(getHtml);
+                $grid.append($items);
+                fImgError();
+                $grid.imagesLoaded(function () {
+                    $grid.masonry('appended', $items);
+                    addEd = false;
+                });
+            }
+        }
+        var judiNum = 200;
+        $(function () {
+            switchMode();
+        })
+        function switchMode() {
+
+
+            if (firstSwitchFlag) {
+                $('.flow-wrap').toggle();
+                $('.yanqi-msg').toggle();
+                getData(configCallBack);
+                function configCallBack() {
+                    $('.grid').append(getHtml);
+                    fImgError();
+                    $grid = $('.grid').imagesLoaded(function () {
+                        $('.grid').masonry({
+                            itemSelector: '.grid-item',
+                            columnWidth: 280
+                        });
+                    });
+                }
+                firstSwitchFlag = false;
+            }
+
+
+            function fWindowScroll() {
+                if ($(document).scrollTop() <= 0) {
+                    //console.log("滚动条已经到达顶部为0");
+                }
+                if ($(document).scrollTop() >= $(document).height() - $(window).height() - judiNum) {
+                    if (page < PageCount) {
+                        if (!addEd) {
+                            if (searchFlag) {
+                                addMore($('#projectSNSearch').val());
+                            } else {
+                                addMore();
+                            }
+                            addEd = true;
+                        }
+                        setTimeout(function () { }, 2000);
+
+                    } else {
+                        clearTimeout();
+                        function fUnHad() {
+                            $('.dom-append-i').hide(100);
+                            $('.dom-append-span').show(100);
+                        }
+                        var a = setTimeout(fUnHad, 2000)
+
+                    }
+                }
+            }
+            $(window).scroll(fWindowScroll);
+
+
+        }
+
+
+        var tenantId = $.getUrlParam("tenantId");
+        var oriWhereStr = tenantId ? "tenantId=" + tenantId : "1=1";
+
+        window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhereStr, whereFilter: oriWhereStr };
+        var currentFilter = {};
+
+
+
+        function doSearch() {
+            var projectsn = $('#projectSNSearch').val();//搜索框内容
+            var repoType = reportType;
+
+            //if (projectsn != null && projectsn != "") {
+            //    layer.msg('展示模具编号为"' + projectsn + '"的报工信息');
+            //}
+            page = 1;
+            firstSwitchFlag = true;
+            searchFlag = true;
+            PageCount = false;
+            $('.dom-append-i').show(100);
+            $('.dom-append-span').hide(100);
+
+            $('.grid .grid-item').remove();
+            addMore(projectsn);
+
+            $grid.masonry('layout');
+
+
+
+        }
+
+
+    </script>
+
+    }

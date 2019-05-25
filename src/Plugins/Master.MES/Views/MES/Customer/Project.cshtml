@@ -1,0 +1,41 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@{
+	ViewData["Title"] = "Index";
+}
+
+
+@section scripts{
+	<script>
+		//layui加载完成后调用此方法，
+		config.ready = function () {
+			var element = layui.element;
+
+			config.refresh();
+		}
+		//当检索窗体提交后会调用此方法
+		config.reloadTable = function () {
+			layui.table.reload('Project', {
+				where: getWhere()
+
+			})
+		}
+		config.onTableDone = function () {
+
+		}
+		//当编辑或删除或添加表单提交后会调用此方法
+        config.refresh = function () {
+            
+		}
+		function getWhere() {
+			var where = {where:''};
+            $('#name-input').val()&&(where.where += " ProjectSN.Contains(\"" + $('#name-input').val() + "\")")
+			where.searchCondition = func.buildSearchCondition('Project');
+
+			return where;
+
+		}
+	</script>
+}

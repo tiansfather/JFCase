@@ -1,0 +1,209 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+	@section styles{
+		@*<link href="/Views/MES/Rcss.css" rel="stylesheet" />*@
+		<style>
+			/*来自原来的rcss样式 --------------------云设备-------------------*/
+			.layui-card-body {
+				padding: 0;
+			}
+
+			.my-search-btn {
+				border-radius: 8px;
+				height: 26px;
+				line-height: 26px;
+			}
+
+			/*-----------------------------------------------------------*/
+			.layui-form-pane .layui-input {
+				border-radius: 4px;
+			}
+
+			.layui-table-tool {
+				background: white;
+			}
+
+			.layui-table thead tr {
+				background-color: #e8e8e8;
+				color: #000;
+			}
+
+				.layui-table thead tr span {
+					/*font-weight: bold;*/
+				}
+
+			.layui-table[lay-even] tr:nth-child(2n) {
+				background-color: #fafafa;
+			}
+
+			.layui-table td, .layui-table th {
+				border-width: 0 1px 0 1px;
+				border-bottom: 1px solid #ccc;
+				border-color: #ccc;
+			}
+
+			.layui-table-header {
+				border: none;
+			}
+
+				.layui-table-header .layui-table {
+					margin: 0;
+				}
+
+			.layui-layer-btn.layui-layer-btn-l, .layui-layer-title {
+				display: none;
+			}
+
+			.layui-layer-content, .layui-layer-iframe iframe {
+				height: 100% !important;
+			}
+
+			.layui-layer.layui-layer-setwin {
+				right: 30px;
+				top: 20px;
+			}
+		</style>
+	}
+}
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<form class="layui-form layui-form-pane" onsubmit="return doSearch();">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">公司编号</label>
+						<div class="layui-input-inline">
+							<input type="text" name="companysn" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-label">公司名称</label>
+						<div class="layui-input-inline">
+							<input type="text" name="companyname" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-label">品牌</label>
+						<div class="layui-input-inline">
+							<input type="text" name="brand" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-label">特长</label>
+						<div class="layui-input-inline">
+							<input type="text" name="speciality" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-label">地址</label>
+						<div class="layui-input-inline">
+							<input type="text" name="address" autocomplete="off" class="layui-input">
+						</div>
+						<button class="layui-btn layui-btn-primary" type="button" onclick="doSearch()">查询</button>
+					</div>
+				</div>
+			</form>
+			<table id="CloudEquipment" lay-filter="CloudEquipment" class="layui-table "></table>
+		</div>
+	</div>
+</div>
+
+@section scripts{
+
+	<script type="text/html" id="equipmentPicTpl">
+		{{# var imgPath=`http://mes.imould.me/thumb.ashx?fileid=${d.equipmentPic}&default=/images/equipmentdefault.jpg`}}
+		<img src="{{imgPath}}&w=38" style="max-height:30px;max-width:60px" tips="<img src='{{imgPath}}&w=260'/>" lay-background="#fff" lay-direction="4" lay-area="280" onclick="layuiExt.fLayerImg(this,'{{imgPath}}&')" />
+	</script>
+    <script type="text/html" id="CloudMsg">
+        <a dataid="1" buttonname="云设备" class="templet-a" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;],&quot;btn&quot;:[]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="http://mes.imould.me/CompanyIndex.html?CompanySN={{d.companySN}}" onclick="func.callModuleButtonEvent()">{{d.companyName}}</a>
+        @*<a dataid="1" class="layui-btn layui-btn-xs" buttonname="邀请加入" params="{&quot;area&quot;: [&quot;500px&quot;, &quot;500px&quot;],&quot;btn&quot;:[]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/Invite&companyName={{d.companyName}}&inviter=@AbpSession.TenantId.Value" onclick="func.callModuleButtonEvent()">邀请加入</a>*@
+        <button class="layui-btn layui-btn-xs" type="button"  onclick="inviteJion('{{d.companyName}}')">邀请加入</button>
+    </script>
+	<script type="text/html" id="baogongToobar">
+		{{#
+            var ram=Number(d.mobile.slice(9))+50;
+            ram=ram>100?'100%':ram+'%';
+		}}
+		<span>{{ram}}</span>
+	</script>
+	<script type="text/html" id="freeDayTpl">
+		{{#if(d.freeDay==0){}}
+		<span class="layui-badge layui-bg-green">有空</span>
+		{{#}else{}}
+		<span class="layui-badge layui-bg-gray">没空</span>
+		{{#}}}
+	</script>
+    <script>
+        function inviteJion(companyName) {
+            var inviter = @AbpSession.TenantId.Value;
+            var imgSrc  = '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Register?inviter=" + inviter + "&companyName=" + encodeURIComponent(companyName));
+            layer.open({
+                type: 0,
+                offset: '20px',
+                anim: 0,
+                shade: 0.3,
+                btn: [],
+                title: false,
+                content: `<div style="">
+                            <img src="${imgSrc}">
+                            <p style="text-align: center;">将此二维码发给对方进行注册</p>
+                        </div>`,
+            });
+        }
+		window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: "ProcessTaskStatus!=0", whereFilter: 'ProcessTaskStatus!=0' };
+		var currentFilter = {};
+		config.ready = function () {
+			window.CloudEquipment = [{
+				elem: '#CloudEquipment',
+				cellMinWidth: '80',
+				height: 'full-100',
+				url: '/api/services/app/CloudEquipment/GetPageResult',
+				page: { limit: 100, limits: [100, 200, 500, 1000] },
+				id: 'CloudEquipment',
+				even: true,
+				done: config.onTableDone,
+				initSort: { field: 'Id', type: 'desc' }
+			}, [[
+				{ align: 'center', field: 'companyName', templet: '#CloudMsg', title: '企业名称', sort: true, width: 270 },
+				{ align: 'center', toolbar: '#baogongToobar', title: '报工率' },
+				{ align: 'center', field: 'speciality', title: '特长', sort: true },
+				{ align: 'center', field: 'equipmentType', title: '设备类型', sort: true },
+				{ align: 'center', field: 'equipmentPic', templet: '#equipmentPicTpl', title: '设备图片' },
+				{ align: 'center', field: 'address', title: '地址', sort: true, width: 200 },
+				{ align: 'center', field: 'brand', title: '品牌', sort: true },
+				{ align: 'center', field: 'rang', title: '行程', sort: true },
+				{ align: 'center', field: 'buyYear', title: '购置时间', sort: true },
+				{ align: 'center', field: 'processPrice', title: '加工单价', sort: true },
+				{ align: 'center', field: 'cost', title: '购置金额', sort: true },
+				{ align: 'center', field: 'freeDay', templet: '#freeDayTpl', title: '是否有空', sort: true },
+				{ align: 'center', field: 'mobile', title: '电话', sort: true, width: 160 }
+			]]]
+			layuiExt.reRender('CloudEquipment')
+
+		}
+
+		function doSearch() {
+			var where = "";
+			var companysn = $("input[name='companysn']").val();
+			if (companysn) {
+				where += "&companysn=" + companysn;
+			}
+			var companyname = $("input[name='companyname']").val();
+			if (companyname) {
+				where += "&companyname=" + companyname;
+			}
+			var brand = $("input[name='brand']").val();
+			if (brand) {
+				where += "&brand=" + brand;
+			}
+			var speciality = $("input[name='speciality']").val();
+			if (speciality) {
+				where += "&speciality=" + speciality;
+			}
+			var address = $("input[name='address']").val();
+			if (address) {
+				where += "&address=" + address;
+			}
+			layui.table.reload('CloudEquipment', {
+				where: { where: (where) }
+
+			})
+
+			return false;
+
+		}
+    </script>
+
+}

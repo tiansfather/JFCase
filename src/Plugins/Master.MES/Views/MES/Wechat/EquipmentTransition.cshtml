@@ -1,0 +1,95 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@using Master.Configuration;
+@using Master.MES
+@model Equipment
+@{
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "设备交接";
+}
+@section styles{
+    <style>
+        .weui-cell__bd {
+            text-align: left;
+        }
+        .loading {
+            text-align: center;
+            font-size: 14px;
+            line-height: 50px;
+        }
+    </style>
+}
+
+<div class="weui-msg" id="app">
+    <div class="weui-msg__icon-area"><i class="weui-icon-waiting weui-icon_msg"></i></div>
+    <div class="weui-msg__text-area">
+        <h2 class="weui-msg__title">交接设备</h2>
+        @*<p class="weui-msg__desc">确认绑定设备@(Model.EquipmentSN)?目前操作人员:@(Model.Operator==null?"无":Model.Operator.Name)</p>*@
+    </div>
+    <div class="weui-cells weui-cells_checkbox">
+        <div v-if="equipments.length">
+            <label class="weui-cell weui-check__label" :for="'eq'+index" v-for="(equ,index) in equipments" :key="equ.id">
+                <div class="weui-cell__hd">
+                    <input type="checkbox" class="weui-check" name="checkbox1" :id="'eq'+index" v-model="checkedIds" :value="equ.id">
+                    <i class="weui-icon-checked"></i>
+                </div>
+                <div class="weui-cell__bd">
+                    <p>{{equ.equipmentSN}}</p>
+                </div>
+            </label>
+        </div>
+        <div v-else-if="noMore" class="loading">
+            暂无设备可以交接
+        </div>
+        <div v-else class="loading">
+            <i class="weui-loading"></i>加载中
+        </div>
+    </div>
+    <div class="weui-msg__opr-area" v-if="!noMore">
+        <p class="weui-btn-area">
+            <a href="javascript:;" class="weui-btn weui-btn_primary" @@click="doSubmit()">确认交接</a>
+        </p>
+    </div>
+    <div class="weui-msg__extra-area">
+        <div class="weui-footer">
+            <p class="weui-footer__text">模来模往 © 2008-2019 </p>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var operatorId = $.getUrlParam("operatorId");
+
+        app=new Vue({
+            el: "#app",
+            data: {
+                equipments: [],
+                noMore: false,
+                checkedIds:[]
+            },
+            methods: {
+                doSubmit: function () {
+                    if (app.checkedIds.length) {//没有选中不许上传
+                        func.runAsync(abp.services.app.equipment.bindUser(app.checkedIds).done(function () {
+                            location.href = "/weixin/success?msg=" + encodeURIComponent("绑定成功");
+                        }))
+                    } else {
+                        $.toptip('未选中设备，请注意检查')
+                    }
+                }
+            },
+            created: function () {
+                var that = this;
+                abp.services.app.equipment.getByOperatorId(operatorId).done(function (data) {
+                    if (data.length == 0) {
+                        that.noMore = true;
+                    }
+                    that.checkedIds= data.map(function (n) {//所有input默认选中
+                        return n.id;
+                    })
+                    that.equipments = data
+                })
+            }
+        })
+    </script>
+}

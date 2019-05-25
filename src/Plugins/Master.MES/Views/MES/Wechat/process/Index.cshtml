@@ -1,0 +1,121 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "加工点主页-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+   
+}
+
+<div id="app" style="height:100%;display:none;">
+    <div class="logo-wrap"><img src="/assets/images/master-logo.png" alt="" class="logo-img"></div>
+    <!-- 容器 -->
+    <div class="weui-tab">
+        <div class="weui-tab__bd">
+            <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+                <div class="content">
+                    <p class="my--tabbar__label">加工任务</p>
+                    <ul>
+                        <li v-for="item in reportUrl">
+                            <div class="content-daohang" :style="{background:item.bcolor}" @@click="toNewTag(item.url)">
+                                <i class="iconfont" :class="item.icon"></i>
+                                <span>{{item.name}}</span>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="tab2" class="weui-tab__bd-item">
+                <div class="content">
+                    <p class="my--tabbar__label">我的管理</p>
+                    <ul>
+                        <li v-for="item in scentUrl">
+                            <div class="content-daohang" :style="{background:item.bcolor}" @@click="toNewTag(item.url)">
+                                <i class="iconfont" :class="item.icon"></i>
+                                <span>{{item.name}}</span>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="weui-tabbar">
+            <a href="#tab1" class="weui-tabbar__item weui-bar__item--on">
+                <div class="weui-tabbar__icon">
+
+                </div>
+                <p class="weui-tabbar__label">加工任务</p>
+            </a>
+            <a href="#tab2" class="weui-tabbar__item">
+                <div class="weui-tabbar__icon">
+
+                </div>
+                <p class="weui-tabbar__label">我的管理</p>
+            </a>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+
+@section scripts{
+
+
+    <script>
+        //移动端初始化，以iphone6为基础设计
+        var scale = 1 / window.devicePixelRatio;
+        document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width,initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+        document.documentElement.style.fontSize = document.documentElement.clientWidth / 7.5 + 'px';
+
+
+        var reportUrl = [
+            { name: "生产任务", url: "/MES/ProcessorTask", icon: "icon-renwu", bcolor: "#5677FC" },
+            { name: "报工记录", url: "/MES/ProcessorReport", icon: "icon-baogong-", bcolor: "#5677FC" },
+            { name: "任务大厅", url: "/MES/ProcessQuoteProcessor", icon: "icon-chengben", bcolor: "#5677FC" },
+            //{ name: "任务大厅", url: "/MES/ProcessTask/process", icon: "icon-renwuzhongxin", bcolor: "#ccc" },
+            //{ name: "加工对账", url: "", icon: "icon-duizhangdan", bcolor: "#ccc" },
+        ];
+        var scentUrl = [
+            { name: "设备管理", url: "/MES/Equipment", icon: "icon-shebei", bcolor: "#ccc" },
+            { name: "客户管理", url: "", icon: "icon-jiaoseguanli1 ", bcolor: "#ccc" },
+        ];
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                reportUrl: reportUrl,
+                scentUrl: scentUrl
+            },
+            methods: {
+                iconurl: function (url) {
+
+                    return ['icon-shenhe', '#cb732b'];
+
+                },
+                toNewTag: function (url) {
+                    window.location.href = url;
+                    return false;
+                }
+            },
+            created: function () {
+
+
+            },
+            mounted: function () {
+                $("#app").css("display", "block");
+
+            }
+        })
+    </script>
+
+}

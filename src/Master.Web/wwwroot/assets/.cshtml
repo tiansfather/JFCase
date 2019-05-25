@@ -1,0 +1,606 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+
+@section styles{
+    <style>
+        #app {
+            justify-content: space-between;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .disnone {
+            display: none !important;
+        }
+
+        .layui-table tbody tr:hover, .layui-table thead tr, .layui-table-click, .layui-table-header, .layui-table-hover, .layui-table-mend, .layui-table-patch, .layui-table-tool, .layui-table-total, .layui-table-total tr, .layui-table[lay-even] tr:nth-child(even) {
+            background: #322a76 !important;
+        }
+
+        .layui-table, .layui-table-view {
+            margin: 0;
+        }
+
+        .layuiadmin-order-progress {
+            top: 0;
+        }
+
+        html, table tr th, table {
+            background: #0e055e !important;
+            color: #fff !important;
+        }
+
+        html, body, .layui-anim, #app {
+            height: 100%;
+        }
+
+        .article-wrap, .content, article {
+            box-sizing: border-box;
+        }
+
+        header {
+            position: relative;
+        }
+
+            header h1 {
+                text-align: center;
+                line-height: 1.5;
+                font-size: 1rem;
+            }
+
+        thead {
+            border-top: 1px solid #ccc;
+        }
+
+        th {
+            width: 10%;
+        }
+
+        .danger {
+            color: #FF5722
+        }
+
+        .content {
+            padding: 0 0.8rem;
+            margin-bottom: 30px;
+        }
+
+        .article {
+            height: 100%;
+        }
+
+        .report-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: calc(100% - 30px);
+        }
+
+        .article-wrap {
+            height: 38%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0.8rem;
+            padding-bottom: 0.4rem;
+        }
+
+        .report {
+            width: 270px;
+            background: #fff;
+            padding: 10px 20px;
+            background: #f2f2f2 !important;
+            color: #000 !important;
+        }
+
+            .report div p {
+                line-height: 1.5;
+            }
+
+            .report > p {
+                line-height: 24px;
+                text-align: center;
+                font-size: 18px;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .report img {
+                /*padding-right: 15px;*/
+                max-width: 100%;
+                object-fit: cover;
+                max-height: 100%;
+            }
+
+        .report-img-wrap {
+            text-align: center;
+            box-sizing: border-box;
+            /*padding:0.1rem;*/
+            width: 70%;
+            height: 100%;
+            background: #eae9e9;
+        }
+
+        .report-wrap .report-p {
+            width: 29%;
+        }
+
+        .equipment {
+            width: 45%;
+            position: relative;
+        }
+
+        .report {
+            width: 30%;
+        }
+
+        .time {
+            width: 20%;
+            /*background: #f2f2f2 !important;*/
+            padding: 3px 20px;
+        }
+
+        .equipment, .equipment table {
+            background: #322a76 !important;
+        }
+
+            .equipment table {
+                position: absolute;
+                bottom: 10px;
+            }
+
+            .equipment table, .equipment tr {
+                width: 100%;
+                height: 80%;
+            }
+
+            .equipment td {
+                width: 14%;
+                text-align: center;
+            }
+
+        .eq-title > p {
+            text-align: right;
+            /* padding: 0 20px 10px 0; */
+            font-size: 0.4rem;
+            /* line-height: 1; */
+            position: absolute;
+            right: 0.8rem;
+            top: 0.3rem;
+        }
+
+        .bar {
+            margin: 0 auto;
+            position: relative;
+            width: 50%;
+            background: #ccc;
+            height: 90%;
+        }
+
+            .bar p {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+            }
+
+        .bar-fill {
+            position: absolute;
+            background: green;
+            /*height: 15px;*/
+            bottom: 0;
+            width: 100%;
+        }
+
+        #ifa {
+            margin-top: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        #clock {
+            margin: 0 auto;
+            margin-top: 0.5rem;
+        }
+
+        @@media only screen and (min-width: 2000px) {
+            thead {
+                border-top: 0.05rem solid #ccc;
+            }
+
+            .layui-table td, .layui-table th {
+                line-height: 1rem;
+                font-size: 0.5rem;
+                border-width: 0 0.05rem 0 0.05rem;
+                border-bottom: 0.05rem solid #ccc;
+                padding: 0.06rem 0.2rem;
+            }
+
+            .equipment table, .equipment tr {
+                font-size: 0.5rem;
+            }
+
+            .report > p, h2 {
+                line-height: 1.5;
+                font-size: 0.6rem;
+            }
+
+            .eq-title > p, p {
+                font-size: 0.4rem;
+            }
+
+            .layui-progress {
+                height: 0.2rem;
+            }
+
+            .time p {
+                font-size: 0.6rem;
+            }
+
+            .report-wrap {
+                height: calc(100% - 0.9rem);
+            }
+        }
+    </style>
+}
+@section MainBody{
+
+}
+<div id="app">
+    <header>
+        <h1 @@click="quanping">博森现场管理看板</h1>
+    </header>
+    <div class="content disnone">
+        <table class="layui-table">
+            <thead>
+                <tr>
+                    <th>加工单号</th>
+                    <th style="width:15%;">零件名</th>
+                    <th style="width:13%;">模具编号</th>
+                    <th>模具组长</th>
+                    <th>设备</th>
+                    <th>进度</th>
+                    <th style="width:12%;">状态</th>
+                    <th>距T0天数</th>
+                    <th>操作工</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item,index) in showArr">
+                    <td>{{item.processSN}}</td>
+                    <td>
+                        {{item.partName}}({{item.partSN}})
+                    </td>
+                    <td>
+                        {{item.projectSN}}
+                    </td>
+                    <td>
+                        {{item.projectCharger}}
+                    </td>
+                    <td>
+                        {{item.equipmentSN}}
+                    </td>
+                    <td>
+
+                        <div class="layui-progress layuiadmin-order-progress">
+                            <div class="layui-progress-bar" :style="{width: getProgress(item).progress+'%',background:getProgress(item).color}"></div>
+                        </div>
+                        @*{{item.progress}}*@
+                    </td>
+                    <td :class="{danger:item.processTaskStatus==5}">
+                        {{func.getProcessTaskStatusColor(item.processTaskStatus).name}}
+                    </td>
+                    <td style="text-align:center;">{{item.t0Date?Math.ceil((new Date(item.t0Date)-new Date())/(24*60*60*1000)):''}}</td>
+                    <td></td>
+                    @*<td>
+                            {{item.processTypeName}}
+                        </td>*@
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="article-wrap disnone">
+        <article class="equipment ">
+            <div class="eq-title" style="height:20%">
+                <h2 style="text-align:center;">设备负荷</h2>
+                <p>今天 &emsp;明天&emsp; 后天 </p>
+            </div>
+            <table>
+                <tr>
+                    @*<td></td>*@
+                    <td v-for="item in eq">
+                        <div class="bar">
+                            <div class="bar-fill"></div>
+                            <p>{{item.fill}}%</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    @*<td style="width:16%">工序</td>*@
+                    <td>线切割</td>
+                    <td>数控铣</td>
+                    <td>高速铣</td>
+                    <td>深孔钻</td>
+                    <td>精雕</td>
+                    <td>电火花</td>
+                </tr>
+                <tr>
+                    @*<td>日产能</td>*@
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+            </table>
+        </article>
+        <article class="report ">
+            <p>最新加工动态</p>
+            <div class="report-wrap" v-show="index==showReportIndex" v-for="(item,index) in reportData">
+                <div class="report-img-wrap">
+                    <img :src="item.files[0].filePath" alt="报工图片" />
+                </div>
+                <div class="report-p">
+                    <p>模号:<b>&nbsp;{{item.projectSN}}</b></p>
+                    <p>组长:<b>&nbsp;{{item.projectCharger}}</b></p>
+                    <p>零件:<b>&nbsp;{{item.partName}}</b></p>
+                    <p>状态:<b>&nbsp;{{item.reportType}}</b></p>
+                    <p>时间:&nbsp;{{item.reportTime.split(' ')[1]}}</p>
+                    <p>报工人:{{item.reporterName}}</p>
+                </div>
+            </div>
+        </article>
+        <div class="time">
+            @*<p>{{time.date}}</p>
+                <p>{{time.time}}&emsp;&emsp;{{time.week}}</p>
+                <p>晴</p>*@
+            <div id="clock"></div>
+            <iframe scrolling="no" src="" frameborder="0" width="100%" height="100" allowtransparency="true" id="ifa"></iframe>
+        </div>
+
+    </div>
+    @*<ul>
+            <li v-for="(item,index) in showArr">
+                {{item.processSN}}
+                {{item.partName}}
+                {{item.projectSN}}
+                {{item.projectCharger}}
+                {{item.equipmentSN}}
+                {{item.progress}}
+                {{item.processTaskStatus}}
+                {{item.processTypeName}}
+            </li>
+        </ul>*@
+</div>
+
+@section scripts{
+    <script src="~/lib/analogClock/analogClock.js"></script>
+    <script>
+        var full = {
+            state: false,
+            fullScreen: function () {
+                var el = document.documentElement,
+                    rfs = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullScreen,
+                    wscript;
+
+                if (typeof rfs != "undefined" && rfs) {
+                    rfs.call(el);
+                    return;
+                }
+
+                if (typeof window.ActiveXObject != "undefined") {
+                    wscript = new ActiveXObject("WScript.Shell");
+                    if (wscript) {
+                        wscript.SendKeys("{F11}");
+                    }
+                }
+            },
+            exitFullScreen: function () {
+                var el = document,
+                    cfs = el.cancelFullScreen || el.webkitCancelFullScreen || el.mozCancelFullScreen || el.exitFullScreen,
+                    wscript;
+
+                if (typeof cfs != "undefined" && cfs) {
+                    cfs.call(el);
+                    return;
+                }
+
+                if (typeof window.ActiveXObject != "undefined") {
+                    wscript = new ActiveXObject("WScript.Shell");
+                    if (wscript != null) {
+                        wscript.SendKeys("{F11}");
+                    }
+                }
+            }
+        }
+
+        function modelInit() {
+            var docFontSize = document.documentElement.clientWidth / 38.4;
+            document.documentElement.style.fontSize = document.documentElement.clientWidth / 38.4 + 'px';
+            var cssText = $("html").attr("style") + ";font-size:" + docFontSize + "px !important;";
+            $("html").css("cssText", cssText);
+            if (docFontSize > 50) {
+                AnalogClock("clock", { width: docFontSize * 5.5, });
+                $('#clock').width(docFontSize * 5.5)
+            } else {
+                console.log('小屏幕')
+                AnalogClock("clock", { width: docFontSize * 4 });
+                $('#clock').width(docFontSize * 4)
+
+            }
+            $('#ifa').attr('src', 'https://tianqiapi.com/api.php?style=te&skin=pitaya&color=ffffff&fontsize=' + docFontSize * 0.6)
+            $('#ifa').attr('height', docFontSize)
+            app.setShowPage();
+        }
+        //modelInit();
+        var backColor = '#0e055e';
+        var IntervalClock, IntervalReportClock;
+        var app = new Vue({
+            el: '#app',
+            data: {
+                numPerPage: 8,//一页显示几条
+                showIndex: 0,//当前显示页
+                loopTime: 60,//轮询显示变化时间，单位秒
+                allArr: [],
+                limit: 200,//一次请求数据总数
+                nowPage: 1,//当前请求页面
+                count: 1,
+                reportNum:5,//报工请求条数
+                reportData: [],//报工数据
+                showReportIndex: 0,
+                eq: [{ fill: 0 }, { fill: 0 }, { fill: 0 }, { fill: 0 }, { fill: 0 }, { fill: 0 },]
+            },
+            computed: {
+                time: function () {
+                    var D = new Date(),
+                        y = D.getFullYear(),
+                        m = D.getMonth() + 1,
+                        d = D.getDate(),
+                        h = D.getHours(),
+                        min = D.getMinutes();
+                    var weekday = new Array(7)
+                    weekday[0] = "星期日"
+                    weekday[1] = "星期一"
+                    weekday[2] = "星期二"
+                    weekday[3] = "星期三"
+                    weekday[4] = "星期四"
+                    weekday[5] = "星期五"
+                    weekday[6] = "星期六"
+                    var weekD = weekday[D.getDay()]
+                    return { date: y + '年' + m + '月' + d + '日', time: h + ':' + min, week: weekD }
+                },
+                showArr: function () {
+                    var numPerPage = this.numPerPage;
+                    if (this.allArr.length) {
+                        console.log(numPerPage * this.showIndex - this.showIndex, numPerPage * (this.showIndex + 1) - this.showIndex)
+                        return this.allArr.slice(numPerPage * this.showIndex - this.showIndex, numPerPage * (this.showIndex + 1) - this.showIndex);
+                    }
+                },
+
+            },
+            methods: {
+                setShowPage: function () {
+                    var H = document.documentElement.clientHeight / 2 - 35;
+                    if (document.documentElement.clientWidth > 2000) {
+                        var tdH = document.documentElement.clientWidth / 38.4 * 0.68
+                        this.numPerPage = Math.floor((H - 20) / tdH)
+                    } else {
+                        this.numPerPage = Math.floor(H / 40)
+                    }
+                },
+                quanping: function () {
+                    if (full.state) {
+                        full.exitFullScreen();
+                        full.state = false;
+                    } else {
+                        full.fullScreen()
+                        full.state = true;
+
+                    }
+                },
+                getProgress: function (d) {
+                    //var progress = item.progress, startDate = item.startDate, estimateHours = item.estimateHours, processTaskStatus = item.processTaskStatus;
+                    var color = '#01AAED'; var progress = 0;
+                    if (d.progress) {
+                        color = '#5FB878';
+                        progress = d.progress;
+                    } else if (d.processTaskStatus == 3) {
+                        if (d.startDate && d.estimateHours) {
+                            var D = new Date();
+                            var S = new Date(d.startDate);
+                            S.setFullYear(D.getFullYear());
+                            var spendTime = (D - S) / (1000 * 60 * 60);
+                            progress = spendTime / d.estimateHours;
+                            console.log(d.estimateHours, spendTime);
+                            if (progress > 1) {
+                                color = '#FFB800';
+                            }
+                        }
+                    }
+                    return { color: color, progress: progress * 100 }
+
+                    //var P = 0;
+                    //if (progress) {
+                    //    P = progress;
+                    //} else if (processTaskStatus == 3) {
+                    //    if (startDate && estimateHours) {
+                    //        var D = new Date();
+                    //        var S = new Date(startDate);
+                    //        S.setFullYear(D.getFullYear());
+                    //        var spendTime = (D - S) / (1000 * 60 * 60);
+                    //        P = spendTime / estimateHours
+                    //    }
+                    //}
+                    //return P
+                },
+                getProcessTaskData: function () {
+                    var that = this;
+                    if (this.nowPage) {
+                        abp.services.app.processTask.getPageResult({ limit: this.limit, page: this.nowPage, where: 'ProcessTaskStatus!=0 and ((Status!=null and Status.Object.Contains("Inner")) or (supplier.unitName="厂内")) and (processTaskStatus=2 or processTaskStatus=3 or processTaskStatus=5 or (processTaskStatus=1 and appointdate<DateTime.Now))' }).done(function (res) {
+                            !that.count && (that.count = res.count)
+                            res.data && (that.allArr = that.allArr.concat(res.data));
+                            //console.log('请求到数据',that.allArr.length,res.data)
+                            //if ((that.nowPage++) * that.limit >= res.count) {
+                            that.nowPage++
+                            if (res.data.length == 0) {
+                                //console.log('到头了')
+                                that.nowPage = false;
+                            }
+                            if ($('.disnone:hidden').length > 0) {
+                                $('.disnone').removeClass('disnone')
+                                modelInit();
+                            }
+                        })
+                    }
+                },
+                getReportData: function () {
+                    var that = this;
+                    abp.services.app.processTaskReport.getPageResult({ limit: that.reportNum, page: 1 }).done(function (res) {
+                        that.reportData = res.data;
+                    })
+                }
+            },
+            watch: {
+                showIndex: function (newV, oldV) {
+                    //判断是不是最后一个组
+                    //去请求新的
+                    //总数组的长度-1是由于显示，是从0开始算的
+
+                    //newV+1是指在最后一页去执行加载下一组数据的动作
+                    if ((newV + 1) * this.numPerPage >= (this.allArr.length - 1)) {
+                        if (this.nowPage) {
+                            this.getProcessTaskData();
+                        }
+                    }
+                    //当index++时，会进去到这里，当是最后一组index时，如果上次未请求回来，将thisnowPage不改为false,将会出现空页面，但只要轮询时间大于请求时间可以不出现这个问题
+                    //等最后一次改变时，进入下一次时，变成0
+                    if (newV * this.numPerPage >= (this.allArr.length - 1) && !this.nowPage) {
+                        this.showIndex = 0;
+                    }
+                },
+                //allArr: {
+                //    handler: function (val, oldVal) { console.log('进来')},
+                //    deep: true
+                //}
+            },
+            created: function () {
+                var that = this;
+                this.getProcessTaskData();
+                IntervalClock = setInterval(function () {
+                    that.showIndex++;
+                    //console.log(that.showIndex , that.numPerPage,'定时器')
+                }, this.loopTime * 1000)
+                IntervalReportClock = setInterval(function () {
+                    if (that.showReportIndex < that.reportNum-1) {
+                        that.showReportIndex++;
+                    } else {
+                        that.showReportIndex = 0;
+                    }
+                    that.getReportData();
+                }, this.loopTime * 50)
+                this.getReportData();
+                window.reloadInterval = setInterval(function () {
+                    location.reload();
+                },24*60*60*1000)
+            }
+        })
+    </script>
+
+}

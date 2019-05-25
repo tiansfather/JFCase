@@ -1,0 +1,130 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card" id="app">
+        <blockquote class="layui-elem-quote" style="padding:5px;margin-bottom:0">
+            @L("加工单模板设置")
+            <button type="button" class="layui-btn layui-btn-sm" @@click="addTemplate">@L("添加模板")</button>
+            <span>名称为"加工单"的模板将会替换默认加工模板</span>
+        </blockquote>
+        <table class="layui-hide" id="template" lay-filter="template"></table>
+        @*<div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("加工单模板")</div>
+            <div class="layui-card-body layui-form layui-form-pane " id="app">
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">模板内容</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入加工单内容" class="layui-textarea" v-model="content" style="height:350px"></textarea>
+                    </div>
+                </div>
+            </div>*@
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn  layui-btn-xs" lay-event="template">模板</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script>
+		var tenantId = $.getUrlParam("data");
+		var app;
+		config.ready = function () {
+            var table = layui.table;
+			app = new Vue({
+				el: '#app',
+				data: {
+					templates:[]
+
+				},
+                methods: {
+                    loadTable: function () {
+                        if (typeof (tableIns) == "undefined") {
+                            window.tableIns = table.render({
+                                elem: '#template'
+                                , cols: [[ //标题栏
+                                    { field: 'templateName', title: '@L("模板名称")', edit: 'text' }
+                                    , { field: 'operation', title: '操作', toolbar: '#toolbar' }
+                                ]]
+                                ,limit:1000
+                                , data: this.templates
+                                //,skin: 'line' //表格风格
+                                , even: true
+                                //,page: true //是否显示分页
+                                //,limits: [5, 7, 10]
+                                //,limit: 5 //每页默认显示的数量
+                            });
+                            //监听工具条
+                            table.on('tool(template)', function (obj) {
+                                var data = obj.data;
+                                if (obj.event === 'template') {
+                                    layer.prompt({ title: '设置模板内容', formType: 2, value: data.templateContent, area: ['400px', '300px'] ,maxlength:100000 }, function (value, index, elem) {
+                                        func.runAsync(abp.services.app.mesTenancy.setTaskTemplate({ tenantId: tenantId, id: data.id, templateContent: value }).done(function () {
+                                            layer.msg(L("提交成功"));
+                                            app.loadData();
+                                        }));
+                                        layer.close(index);
+                                    });
+                                } else if (obj.event === 'del') {
+                                    layer.confirm(L('确定删除模板?'), function (index) {
+                                        func.runAsync(abp.services.app.mesTenancy.delTaskTemplate(tenantId,obj.data.id).done(function () {
+                                            obj.del();
+                                            layer.close(index);
+                                        }));
+
+                                    });
+                                }
+                            });
+                            table.on('edit(template)', function (obj) {
+                                if (obj.field=="templateName" && obj.value) {
+                                    func.runAsync(abp.services.app.mesTenancy.setTaskTemplateName(tenantId, obj.data.id, obj.value).done(function () {
+                                        layer.msg(L("提交成功"));
+                                    }));
+                                }
+                            })
+                        } else {
+                            tableIns.reload({ data: this.templates });
+                        }
+
+                    },
+                    loadData: function () {
+                        var that = this;
+                        abp.services.app.mesTenancy.getTaskTemplates(tenantId).done(function (data) {
+                            that.templates = data;
+                            that.loadTable();
+                        })
+                    },
+                    addTemplate: function () {
+                        var that = this;
+                        layer.prompt({title:'请输入模板名称'},function (value, index, elem) {
+                            if (value) {
+                                func.runAsync(abp.services.app.mesTenancy.addTaskTemplate(tenantId, value).done(function () {
+                                    that.loadData();
+                                }));
+
+                            }
+                            layer.close(index);
+                        });
+                    }
+				},
+                mounted: function () {
+                    this.loadData();
+
+				}
+
+			});
+
+		}
+
+		@*function submit() {
+			func.runAsync(abp.services.app.mesTenancy.setTaskTemplate({ tenantId: tenantId,templateContent: app.content }).done(function () {
+				parent.layer.msg("@L("提交成功")");
+				parent.layer.closeAll('iframe');
+			}));
+		}*@
+    </script>
+
+}

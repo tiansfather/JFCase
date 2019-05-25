@@ -1,0 +1,97 @@
+﻿
+@{
+    Layout = "_LayoutDialog";
+}
+
+@section styles{
+<style>
+    #editor .w-e-text-container{
+        height:400px;
+    }
+
+    </style>
+}
+<div id="app" class="layui-hide layui-form layui-form-pane" style="padding:20px">
+    <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-block">
+            <input type="text" name="" autocomplete="off" class="layui-input" lay-verify="required" v-model="currentItem.helpTitle">
+        </div>
+    </div>
+
+    <input type="button" lay-submit id="submitBtn" style="display:none" />
+
+
+</div>
+<div id="editor">
+</div>
+
+
+@section scripts{
+
+    <script src="~/lib/wangEditor/wangEditor.js"></script>
+    <script>
+        var editor = new wangEditor('#editor')
+        editor.customConfig.uploadImgShowBase64 = true;
+        editor.customConfig.linkImgCallback = function (url) {
+            console.log(url) // url 即插入图片的地址
+        }
+        editor.create();
+        var app;
+        config.ready = function () {
+            $("#editor .w-e-text-container").height(($(window).height() - 200) + "px");
+            layui.form.on("submit", function () {
+                app.currentItem.helpContent = editor.txt.html();
+                func.runAsync(abp.services.app.mESHelps.editHelps(app.currentItem)
+                    .done(function (data) {
+                        layer.msg("提交成功");
+                        parent.config.reloadTable();
+                        parent.layer.closeAll("iframe");
+                    }));
+            });
+            app = new Vue({
+                el: '#app',
+                data: {
+                    currentItem: {
+                        helpContent:'',
+                    }
+                },
+                methods: {
+                    loadItem: function (id) {
+                        var that = this;
+                        if (id) {
+                            abp.services.app.mESHelps.getHelpInfo(id).done(function (data) {
+                                that.currentItem = data;
+                                $("#app").removeClass("layui-hide");
+                                editor.txt.html(data.helpContent);
+                                refresh();
+                            });
+                            return;
+                        }
+                        $("#app").removeClass("layui-hide");
+                        refresh();
+
+                    }
+
+                },
+                mounted: function () {
+                    var id = $.getUrlParam("data");
+                    this.loadItem(id);
+
+                }
+            })
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+
+            })
+
+        }
+
+        function submit() {
+            $("#submitBtn").trigger("click");
+        }
+    </script>
+}

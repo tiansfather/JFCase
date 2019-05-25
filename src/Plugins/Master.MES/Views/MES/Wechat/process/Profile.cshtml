@@ -1,0 +1,184 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    //微信端加工点查看加工任务页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "我的基本信息";
+}
+@section styles{
+    <style>
+        .verify-span {
+            color: red;
+            font-size: 18px;
+        }
+    </style>
+}
+<div id="app">
+    <div class="weui-cells__title">基本信息</div>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">联系人<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" v-model="info.charger" id="cha">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">联系方式<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="number" pattern="[0-9]*" placeholder="请输入联系方式" v-model="info.contactInfo">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">加工工艺<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <weui-select v-model="info.processTypes" key="ProcessTypes" :items="processTypes" :multi="true" title="选择工艺"></weui-select>
+            </div>
+        </div>
+
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">地址<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" v-model="info.location">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">从业年份<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <weui-select v-model="info.jobStartYear" key="jobStartYear" :items="years" title="选择从业年份"></weui-select>
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">员工数量<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <weui-select v-model="info.employeeNumber" key="EmployeeNumber" :items="['<10人','10-20人','20-50人','>50人']" title="选择员工数量"></weui-select>
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">开票税率<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <weui-select v-model="info.invoiceTax" key="InvoiceTax" :items="['3%','6%','13%','16%']" title="选择开票税率"></weui-select>
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">产值规模<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <weui-select v-model="info.outputValue" key="OutputValue" :items="['<100万','100-500万','500-1000万','>1000万']" title="选择产值规模"></weui-select>
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">编程软件<span class="verify-span">*</span></label></div>
+            <div class="weui-cell__bd">
+                <weui-select v-model="info.usingSoftwares" key="InvoiceTax" :items="['powermill','catia','tebis','solidwork','UG','pro/E','其他']" title="选择编程软件" :options="{multi:true}"></weui-select>
+            </div>
+        </div>
+    </div>
+    <div class="weui-cells__title">加工工艺特色照片</div>
+    <div class="weui-cells weui-cells_form" style="margin-bottom: 45px;">
+        <wx-uploader-img v-model="imgArr" :files="files"></wx-uploader-img>
+    </div>
+    <weui-submit :submit="doSubmit"></weui-submit>
+</div>
+
+@section scripts{
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+        wx.error(function (res) {
+			console.log(res);
+			alert('验证失败:' + JSON.stringify(res));
+        });
+
+         wx.ready(function () {
+
+            });
+    </script>
+    <script>
+
+
+        app = new Vue({
+            el: '#app',
+            data: {
+                processTypes: ["数控铣", "深孔钻", "高速铣", "电火花", "精雕", "线切割", "高速精雕", "钻床", "磨床", "飞刀", "精飞", "镗床", "石墨精雕", "锯床", "激光焊", "中走丝", "慢走丝", "大型卧铣", "车床", "电炉", "调质", "电镀", "石墨", "抛光", "热处理", "氮化", "冲床", "模流分析", "热流道", "快速成型", "激光雕刻", "其他"],
+                info: {},
+                imgArr: [],
+                files: []
+            },
+            computed: {
+                years: function () {
+                    arr = [];
+                    for (i = new Date().getFullYear(); i > 1978; i--) {
+                        arr.push(String(i))
+                    }
+                    return arr;
+                }
+            },
+            methods: {
+                doSubmit: function () {
+                    if (!this.checkForm()) {
+                        return false;
+                    }
+                    console.log(this.info)
+                },
+                checkForm: function (e) {
+                    var errors = [];
+                    $('.weui-cell').each(function (i, elm) {
+                        elm = $(elm);
+                        if (!elm.find('input').val()) {
+                            //elm.find('input').addClass('warn')
+                            errors.push(elm.find('label').text().replace('*', ''))
+                        }
+                    })
+                    if (errors.length) {
+                        $.toptip('请检查' + errors[0])
+                        return false
+                    }
+                    return true
+                },
+            }
+        })
+    </script>
+}

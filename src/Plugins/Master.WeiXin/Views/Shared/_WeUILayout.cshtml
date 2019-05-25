@@ -1,0 +1,75 @@
+﻿@using System.Globalization
+@using Abp.Configuration
+@using Abp.Configuration.Startup
+@using Abp.Web.Security.AntiForgery
+@using Master
+@using Master.Configuration
+@inherits Master.Web.Views.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@inject Master.Timing.AppTimes AppTimes
+@inject IAbpAntiForgeryManager AbpAntiForgeryManager
+@{
+    Layout = null;
+    AbpAntiForgeryManager.SetCookie(Context);
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>@ViewBag.Title</title>
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="~/view-resources/Views/_Bundles/wechatbase.min.css" rel="stylesheet" asp-append-version="true" />
+
+    @*<link rel="stylesheet" href="/lib/jqueryweui/lib/weui.min.css" asp-append-version="true">
+        <link rel="stylesheet" href="/lib/jqueryweui/css/jquery-weui.min.css" asp-append-version="true">
+        <link rel="stylesheet" href="/assets/layuiadmin/layui/css/layui.css" media="all" asp-append-version="true">
+        <link rel="stylesheet" href="/lib/iconfont/wechaticon.css" asp-append-version="true">
+        <link rel="stylesheet" href="/lib/iconfont/iconfont.css" asp-append-version="true">
+        <link rel="stylesheet" href="/assets/css/wechatcommon.css" asp-append-version="true">*@
+    <!-- View specific styles -->
+    @RenderSection("styles", required: false)
+    <script type="text/javascript">
+        // This is used to get the application's root path from javascript. It's useful if you're running application in a virtual directory under IIS.
+        var abp = abp || {};
+        abp.appPath = '@ApplicationPath';
+    </script>
+    <script src="/assets/layuiadmin/layui/layui.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/_Bundles/base.min.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
+    <script src="~/assets/js/global.js" asp-append-version="true"></script>
+    <script>
+        layui.config({
+            base: config.layuiBase //静态资源所在路径
+            , version: 181006
+        }).extend($.extend({
+            index: config.layuiIndex //主入口模块
+        }, config.layuiExtends));
+
+
+    </script>
+</head>
+<body>
+    @RenderBody()
+    <!-- 全局js -->
+    <script src="/lib/jqueryweui/js/jquery-weui.min.js"></script>
+    <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
+    <script src="~/scripts/GetAll.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    @*<script src="~/AbpServiceProxies/GetAll?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
+    <script src="~/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    @await Html.PartialAsync("/Views/Shared/_WeUICommon.cshtml")
+    @RenderSection("scripts", required: false)
+    <script>
+        layui.use(['layer'], function () {
+            //调用layui加载完事件
+            config.ready();
+        })
+    </script>
+</body>
+</html>

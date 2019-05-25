@@ -1,0 +1,715 @@
+﻿@{
+    @section styles{
+        <style>
+            .span-total-col {
+                color: #000;
+                font-weight: 600;
+                font-size: 16px;
+                display: block;
+            }
+
+            .my-table-tool {
+                position: relative;
+                z-index: 890;
+                width: 100%;
+                line-height: 30px;
+                padding: 10px 15px 20px 15px;
+                box-sizing: border-box;
+            }
+
+            .layui-card-body .layui-table {
+                margin: 0;
+            }
+
+            .high-light {
+                background: #ccc;
+                color: red;
+                font-size: 16px;
+            }
+
+            .disblock {
+                display: block;
+            }
+
+            .disnone {
+                display: none;
+            }
+
+            .btn-fee_precent {
+                background: #1E9FFF;
+            }
+            /*---------------表格filter---------------*/
+            .my-layui-table-tool-panel {
+                left: auto;
+                right: -1px;
+                position: absolute;
+                top: 29px;
+                min-width: 150px;
+                min-height: 40px;
+                text-align: left;
+                background-color: rgb(255, 255, 255);
+                box-shadow: rgba(0, 0, 0, 0.12) 0px 2px 4px;
+                padding: 5px 0px;
+                border-width: 1px;
+                border-style: solid;
+                border-color: rgb(210, 210, 210);
+                border-image: initial;
+            }
+
+                .my-layui-table-tool-panel li:hover {
+                    background-color: #f2f2f2;
+                }
+
+                .my-layui-table-tool-panel li {
+                    padding: 0 10px;
+                    line-height: 30px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    -webkit-transition: .5s all;
+                    transition: .5s all;
+                }
+
+                    .my-layui-table-tool-panel li .layui-form-checkbox[lay-skin=primary] {
+                        width: 100%;
+                        padding-left: 28px;
+                    }
+
+            .my-time-switch .layui-form-checked[lay-skin=primary] i {
+                border-color: #d2d2d2;
+                background-color: #fff;
+                color: #fff;
+            }
+
+            .my-time-switch .my-layui-form-checked[lay-skin=primary] i {
+                border-color: #5FB878;
+                background-color: #5FB878;
+                color: #fff;
+            }
+            /*-搜索-*/
+            #searchInput {
+                position: absolute;
+                z-index: 999;
+                top: 17px;
+                left: 25px;
+            }
+        </style>
+    }
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-body part-table">
+            <div id="searchInput">
+                <div class="my-inline-block">
+                    @*<button class="layui-btn  my-search-btn" type="button" tips="高级查询" onclick="fReportSearch()">查询</button>*@
+                    <button fornonerow="1" buttonname="高级查询" class="layui-btn layui-btn-sm" type="button" tips="高级查询" :params="params" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/ReportSearch&modelname=MESProject&pagename=MESProject" onclick="func.callModuleButtonEvent()">
+                        高级查询
+                    </button>
+                </div>
+                <div class="my-inline-block">
+                    <search-toolbar-input :attr="attr" @@search-click="doSearch"></search-toolbar-input>
+                </div>
+                <div class="my-inline-block">
+                    <button class="layui-btn  layui-btn-sm btn-fee btn-fee_precent" type="button" onclick="switchPrecentMode('fee')">比例分析</button>
+                    <button class="layui-btn  layui-btn-sm btn-ng" type="button" onclick="switchPrecentMode('ng')">合格率</button>
+                    <button class="layui-btn  layui-btn-sm btn-hours" type="button" onclick="switchPrecentMode('hours')">工时统计</button>
+                </div>
+            </div>
+            <div>
+                <table id="ProcessReportForm" lay-filter="ProcessReportForm" class="layui-table "></table>
+            </div>
+        </div>
+        <div class="layui-card-body part-chart disnone">
+            <button class="layui-btn  layui-btn-sm" type="button" onclick="fTogglePart()" style="margin:6px 10px;">切换模式</button>
+            <div id="main" style="width: 600px;height:400px;"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/lib/echarts/echarts.min.js"></script>
+    <script type="text/html" id="switchModeBtnS">
+
+        <div class="my-table-tool">
+        </div>
+    </script>
+
+    <script>
+        var SearchData = [];
+        function GJSearch() {
+            andWhereStr = func.makeQuery(SearchData);
+            var where = { where: filterObject.oriWhere + andWhereStr, tableFilter: JSON.stringify(filterObject.tableFilter) };
+            console.log(SearchData, andWhereStr, where)
+            ProcessReportForm[0].where = where;
+            layuiExt.reRender('ProcessReportForm')
+        }
+
+        var colsDataFee, colsDataNG, colsDataHours;
+        var oPrecentRow = {};
+        var mode = 'fee';
+        var msgNum = 2;//信息条数
+
+        function getClickDadMssg(ev) {
+            var process;
+            var Inner;
+            var tdData = $(ev).closest('td').attr('data-field');
+            if (tdData.indexOf('Total') != -1) {//outerFeeTotal,innerFeeTotal,feeTotal
+                tdData = tdData.split('Total');
+                process = '';
+                Inner = tdData[0];
+
+            } else {
+                tdData = tdData.split('_');//"processType_1_InnerFee"
+                process = tdData[1];
+                Inner = tdData[2];
+            }
+
+            var projectsn = $(ev).closest('tr').find('td:first .layui-table-cell').text();//获得模具编号
+
+            return { process: process, projectsn: projectsn, Inner: Inner.toLowerCase() };
+        }
+
+        //进入开单任务页
+        function editSheet(ev) {
+            var msg = getClickDadMssg(ev);
+            console.log(msg)
+            var innerStatus = '';
+            if (msg.Inner == 'innerfee') {
+                innerStatus = 'and equipmentid!=null';
+                msg.Inner = '厂内'
+            } else if (msg.Inner == 'outerfee') {
+                innerStatus = 'and supplierid!=null';
+                msg.Inner = '厂外';
+            } else {
+                msg.Inner = '';
+            }
+
+            var processWhere = msg.process ? ` and processTypeid= ${msg.process}` : '';
+
+            var where = ` part.project.projectsn="${msg.projectsn}" ${processWhere} ${innerStatus}`;
+            console.log(where);
+            var title = [msg.projectsn];
+            var titleObj = { projectsn: msg.projectsn, inner: msg.Inner }
+            if (msg.process) {
+                processTypeArr.forEach(function (n) {
+                    if (n.id == msg.process) {
+                        title.push(n.processTypeName)
+                        titleObj.processtypename = n.processTypeName
+                    }
+                })
+            }
+            if (msg.Inner) {
+                title.push(msg.Inner)
+            }
+            var title = title.join('/');
+            top.layui.index.openTabsPage('/Home/Show?name=../MES/ProForm2ProTask&prform=' + encodeURIComponent(where) + '&title=' + encodeURIComponent(JSON.stringify(titleObj)), title)
+        }
+
+        function fRenderPrRepForm(arr) {
+            ProcessReportForm[1] = arr;
+            layuiExt.reRender('ProcessReportForm');
+        }
+        //切换三种表格
+        function switchPrecentMode(tMode) {
+
+            function ToFeeOri(m) {
+                mode = m;
+                $('.btn-fee').html('加工费');
+                $('.btn-fee').removeClass('btn-fee_precent');
+            }
+            function feeToPrecent() {
+                $('.btn-fee').html('比例分析');
+                $('.btn-fee').addClass('btn-fee_precent');
+                mode = 'fee';
+            }
+            switch (tMode) {
+                case 'fee':
+                    if (mode == 'precent') {
+                        $('.ori-span').show();
+                        $('.precent-span').hide();
+                        feeToPrecent();
+                    } else if (mode == 'fee') {
+                        $('.ori-span').hide();
+                        $('.precent-span').show();
+                        ToFeeOri(tMode);
+                        mode = 'precent';
+                    } else {
+                        fRenderPrRepForm(colsDataFee);
+                        feeToPrecent();
+                    }
+                    break;
+                case 'hours':
+                    if (!(mode == 'hours')) {
+                        fRenderPrRepForm(colsDataHours);
+                        ToFeeOri(tMode);
+                    }
+                    break;
+                case 'ng':
+                    if (!(mode == 'ng')) {
+                        fRenderPrRepForm(colsDataNG);
+                        ToFeeOri(tMode);
+                    }
+                    break;
+            }
+        }
+        window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: "1=1", whereFilter: '' };
+        var currentFilter = {};
+        function getFeeTemplet(d, tmpField, color) {
+            var nTotal = 0;
+            var num = 0;
+            var maxClass = '';
+            var zifu = tmpField.split('_');
+            zifu = zifu[zifu.length - 1];
+            var max = false;
+            var tmax = false;
+
+            if (d[tmpField] == 0) {
+                d[tmpField] = 0;
+            }
+            for (var item in d) {
+                if (item.split('_')[2] == tmpField.split('_')[2]) {
+                    //console.log(zifu,item)
+                    //求和
+                    nTotal += Number(d[item]);
+                    //求最大值
+
+                    if (d[tmpField] > d[item]) {
+                        max = true;
+                        tmax = true;
+                    } else if (d[tmpField] == d[item]) {
+                        max = true;
+                    } else {
+                        max = false;
+                    }
+                }
+            }
+            if (tmax && max) {
+                maxClass = "high-light"
+            }
+
+            if (nTotal) {
+                num = Number(d[tmpField]) / nTotal * 100;
+            }
+            if (num) {
+                num = Math.round(num) + '%';
+            }
+            return `<div class=" ${maxClass}" >
+                                    <span class="disnone precent-span" style="color:${color}" onclick="editSheet(this)">${num}</span>
+                                    <span class="disblock ori-span" style="color:${color}" onclick="editSheet(this)">${funcToFixed(d[tmpField])}</span>
+                                </div>`;
+        }
+        function getTotalSpan(data) {
+            return `<span class="span-total-col" onclick="editSheet(this)">${funcToFixed(data)}</span>`
+        }
+        function funcToFixed(num, n) {
+            n = n || 1;
+            var a = Number(num);
+            if (a != 0) {
+                a = a.toFixed(n)
+            }
+            return a
+        }
+        config.ready = function () {
+            new Vue({
+                el: '#searchInput',
+                data: { attr: { id: 'form', placeholder: '模号/模具组长' } },
+                computed: {
+                    params: function () {
+                        return JSON.stringify({ area: ["90%", "90%"], btn: ["查询", "关闭"], resize: false })
+                    }
+                },
+                methods: {
+                    doSearch: function (inputText) {
+                        ProcessReportForm[0].where.keyword = inputText;
+                        //ProcessReportForm[0].where.where = 'projectSN.Contains("' + inputText + '") or projectChanger.Contains("'+inputText+'")';
+                        layuiExt.reRender('ProcessReportForm');
+
+                    }
+                }
+            })
+            window.ProcessReportForm = [{
+                elem: '#ProcessReportForm',
+                cellMinWidth: '80',
+                toolbar: '#switchModeBtnS',
+                defaultToolbar: ['print'],
+                height: 'full-55',
+                url: '/api/services/app/mesProject/GetProcessSummaryPageResult',
+                page: { limit: 20, limits: [20, 100, 200, 500, 1000] },
+                id: 'ProcessReportForm',
+                even: true,
+                done: config.onTableDone,
+                initSort: { field: 'Id', type: 'desc' },
+                totalRow: true,
+                where: { where: '1=1' }
+            }, [[
+                {
+                    align: 'center', field: 'projectSN', title: '模具编号', width: 100, sort: true, totalRowText: '合计', templet: function (d) {
+                        return '<span class="templet-a" onclick="InitChart(' + d.id + ')">' + d.projectSN + '</span>'
+                    }
+                },
+                { align: 'center', field: 'projectName', title: '模具名称', width: 100, sort: true },
+                { align: 'center', field: 'projectCharger', title: '模具组长', width: 100, rowspan: 2, sort: true },
+                { align: 'center', title: '合计行' },
+            ]]]
+            abp.services.app.processType.getUsedProcessTypes().done(function (data) {
+                window.processTypeArr = data;
+                colsDataNG = [[//合格率
+                    {
+                        align: 'center', field: 'projectSN', title: '模具编号', width: 100, sort: true, totalRowText: '合计', rowspan: 2, templet: function (d) {
+                            return '<span class="templet-a" onclick="InitChart(' + d.id + ')">' + d.projectSN + '</span>'
+                        }
+                    },
+                    { align: 'center', field: 'projectName', title: '模具名称', width: 100, rowspan: 2, sort: true },
+                    { align: 'center', field: 'projectCharger', title: '模具组长', width: 100, rowspan: 2, sort: true },
+                    { align: 'center', title: '合计行', colspan: 2 }],
+                [{
+                    align: 'center', title: '不合格', field: 'ngNumberTotal', totalRow: true,
+                    templet: function (d) {
+                        if (d.ngNumberTotal > 0) {
+                            return `<span class="span-total-col" style="color:red;" onclick="editSheet(this)">N</span>`;
+                        } else {
+                            return '';
+                        }
+                    }
+                },
+                {
+                    align: 'center', title: '延期总天数', field: 'delayNumberTotal', totalRow: true,
+                    templet: function (d) {
+                        var t = d.delayNumberTotal;
+                        t = t ? Number(t).toFixed(0) : '';
+                        return `<span class="span-total-col" onclick="editSheet(this)">${t}</span>`
+                    }
+                },
+                ]];
+                colsDataHours = [[//工时统计
+                    {
+                        align: 'center', field: 'projectSN', title: '模具编号', width: 100, sort: true, totalRowText: '合计', templet: function (d) {
+                            return '<span class="templet-a" onclick="InitChart(' + d.id + ')">' + d.projectSN + '</span>'
+                        }
+                    },
+                    { align: 'center', field: 'projectName', title: '模具名称', width: 100, sort: true },
+                    { align: 'center', field: 'projectCharger', title: '模具组长', width: 100, rowspan: 2, sort: true },
+                    {
+                        align: 'center', field: 'hoursTotal', title: '合计行(h)', width: 80, totalRow: true,
+                        templet: function (d) {
+                            return getTotalSpan(d.hoursTotal)
+                        }
+                    }]];
+                colsDataFee = [[//加工费
+                    {
+                        align: 'center', field: 'projectSN', title: '模具编号', width: 100, sort: true, totalRowText: '合计', rowspan: 2, templet: function (d) {
+                            return '<span class="templet-a" onclick="InitChart(' + d.id + ')">' + d.projectSN + '</span>'
+                        }
+                    },
+                    { align: 'center', field: 'projectName', title: '模具名称', width: 100, rowspan: 2, sort: true },
+                    { align: 'center', field: 'projectCharger', title: '模具组长', width: 100, rowspan: 2, sort: true },
+                    { align: 'center', title: '合计行(元)', colspan: 3, totalRow: true }
+                ],
+                [{
+                    align: 'center', title: '厂内', field: 'innerFeeTotal', totalRow: true,
+                    templet: function (d) {
+                        return getTotalSpan(d.innerFeeTotal)
+                    }
+                },
+                {
+                    align: 'center', title: '厂外', field: 'outerFeeTotal', totalRow: true,
+                    templet: function (d) {
+                        return getTotalSpan(d.outerFeeTotal)
+                    }
+                },
+                {
+                    align: 'center', title: '全部', field: 'feeTotal', totalRow: true,
+                    templet: function (d) {
+                        return getTotalSpan(d.feeTotal)
+                    }
+                }
+
+                ]];
+                $.each(data, function (i, v) {
+                    colsDataHours[0].push({
+                        align: 'center', field: 'processType_' + v.id + '_ActualHours', title: v.processTypeName, totalRow: true, width: 80, templet: function (d) {
+                            return funcToFixed(d['processType_' + v.id + '_ActualHours'])
+                        }
+                    });
+
+                    colsDataFee[0].push({ align: 'center', title: v.processTypeName, colspan: 3 });
+                    colsDataFee[1].push({
+                        align: 'center', title: '厂内', field: 'processType_' + v.id + '_InnerFee', totalRow: true,
+                        templet: function (d) {
+                            return getFeeTemplet(d, 'processType_' + v.id + '_InnerFee', 'black');
+                        }
+                    });
+                    colsDataFee[1].push({
+                        align: 'center', title: '厂外', field: 'processType_' + v.id + '_OuterFee', totalRow: true,
+                        templet: function (d) {
+                            return getFeeTemplet(d, 'processType_' + v.id + '_OuterFee', 'red');
+                        }
+                    });
+                    colsDataFee[1].push({
+                        align: 'center', title: '全部', field: 'processType_' + v.id + '_Fee', totalRow: true,
+                        templet: function (d) {
+                            return getFeeTemplet(d, 'processType_' + v.id + '_Fee', 'black');
+                        }
+                    });
+
+                    colsDataNG[0].push({ align: 'center', title: v.processTypeName, colspan: 2 });
+                    colsDataNG[1].push({
+                        align: 'center', title: '不合格', field: 'processType_' + v.id + '_NGNumber', templet: function (d) {
+                            if (Number(d['processType_' + v.id + '_NGNumber']) > 0) {
+                                return '<span class="" style="color:red;font-size:18px;">N</span>'
+                            } else {
+                                return '<p style="display:none;">' + d['processType_' + v.id + '_NGNumber'] + '</p>'
+                            }
+                        }
+                    });
+                    colsDataNG[1].push({ align: 'center', title: '延期天数', field: 'processType_' + v.id + '_DelayNumber', totalRow: true });
+                })
+                //fRenderPrRepForm(colsDataFee);
+                var laydata = layui.data('filterExtend').processRepFormIsInner;
+                if (typeof layui.data('filterExtend').processRepFormIsInner != "undefined") {
+                    if (laydata != 'all') {
+                        switchInner();
+                    }
+                    switchInner(layui.data('filterExtend').processRepFormIsInner)
+                } else {
+                    switchInner();
+                    layui.data('filterExtend', {
+                        key: 'processRepFormIsInner'
+                        , value: 'all'
+                    });
+                }
+            })
+        }
+
+        config.onTableDone = function (res, curr, count) {
+            console.log(res, curr, count)
+            var checkedArr = [];
+            var i = layui.data('filterExtend').processRepFormIsInner;
+            if (!isNaN(i)) {
+                checkedArr[i] = 'my-layui-form-checked '
+            }
+
+            //if (tbScrTop) {
+            //    $('.layui-table-body.layui-table-main').scrollTop(tbScrTop);
+            //}
+            if (!$('.my-time-switch').length) {
+                $('[lay-event="LAYTABLE_PRINT"]').before(`<div class="layui-inline my-time-switch" title="时间显示" lay-event="SWITCH"><i class="iconfont icon-tiaozheng" onclick="showToolPanel()"></i>    <ul class="my-layui-table-tool-panel" style="display:none;">
+                                                <li onclick="checkSwitch(this)" data-type="onlyin">
+                                                    <input type="checkbox" name="a" data-parentkey="" lay-skin="primary" checked="" title="只显示厂内">
+                                                    <div class="layui-unselect layui-form-checkbox ${checkedArr[0] || ''}" lay-skin="primary">
+                                                    <span>只显示厂内</span><i class="layui-icon layui-icon-ok"></i>
+                                                    </div>
+                                                </li>
+                                                <li onclick="checkSwitch(this)" data-type="onlyout">
+                                                    <input type="checkbox" name="d" data-parentkey="" lay-skin="primary" checked="" title="只显示厂外">
+                                                    <div class="layui-unselect layui-form-checkbox ${checkedArr[1] || ''}" lay-skin="primary">
+                                                    <span>只显示厂外</span><i class="layui-icon layui-icon-ok"></i>
+                                                    </div>
+                                                </li>
+                                                <li  onclick="checkSwitch(this)" data-type="onlyall">
+                                                    <input type="checkbox" name="b" data-parentkey="" lay-skin="primary" checked="" title="只显示全部">
+                                                    <div class="layui-unselect layui-form-checkbox ${checkedArr[2] || ''}" lay-skin="primary">
+                                                        <span>只显示全部</span><i class="layui-icon layui-icon-ok"></i>
+                                                    </div>
+                                                </li>
+                                            </ul></div>`)
+            }
+
+
+        }
+
+        function checkSwitch(ev) {
+            var checkSwitchObj = { onlyin: 0, onlyout: 1, onlyall: 2 };
+            var localStargeD;
+            var dataType = $(ev).attr('data-type');
+            console.log(dataType)
+            if ($(ev).find('.my-layui-form-checked').length > 0) {
+                switchInner();
+                $(ev).find('.layui-form-checkbox').removeClass('my-layui-form-checked');
+                $(ev).siblings().find('.layui-form-checkbox').removeClass('my-layui-form-checked');
+                localStargeD = 'all';
+            } else {
+                switchInner(checkSwitchObj[dataType]);
+                $(ev).find('.layui-form-checkbox').addClass('my-layui-form-checked')
+                $(ev).siblings().find('.layui-form-checkbox').removeClass('my-layui-form-checked');
+                localStargeD = checkSwitchObj[dataType];
+            }
+            $('.my-layui-table-tool-panel').hide();
+            layui.data('filterExtend', {
+                key: 'processRepFormIsInner'
+                , value: localStargeD
+            });
+        }
+        function showToolPanel() {
+            $('.my-layui-table-tool-panel').show();
+            function fHidePanel() {
+                $('.my-layui-table-tool-panel').hide();
+            }
+            function fRemovePanel(e) {
+                var e = e || window.event; //浏览器兼容性
+                var elem = e.target || e.srcElement;
+                if ($(elem).parents('.my-time-switch').length != 1) {
+                    console.log('移除');
+                }
+                $(document).off('click', fRemovePanel);
+                fHidePanel();
+            }
+            $(document).on('click', fRemovePanel);
+
+        }
+        function switchInner(i) {
+            rArr = [[], []];
+            if (!isNaN(i)) {
+                colsDataFee[0].forEach(function (elem, index) {
+                    var obj = {};
+                    $.extend(obj, elem);
+                    obj.colspan = 1
+                    rArr[0].push(obj)
+                })
+                colsDataFee[1].forEach(function (elem, index) {
+                    if (index % 3 == i) {
+                        rArr[1].push(elem)
+                    }
+                })
+                ProcessReportForm[0].cellMinWidth = 102;
+            } else {
+                ProcessReportForm[0].cellMinWidth = 80;
+                rArr = colsDataFee;
+            }
+
+            fRenderPrRepForm(rArr)
+        }
+        function fTogglePart() {
+            $('.part-table').toggle();
+            $('.part-chart').toggle();
+        }
+
+        function InitChart(id) {
+            var data = layui.table.cache.ProcessReportForm.filter(function (elm) {
+                return elm.id == id
+            })[0];
+            var processTypeArr;
+            func.runAsync( abp.services.app.processType.getUsedProcessTypes(id).done(function (res) {
+                if (!res.length) {
+                    abp.message.error(data.projectSN+'模具未开过单');
+                    return;
+                }
+                processTypeArr = res;
+                goahead();
+            }))
+            function goahead() {
+                fTogglePart();
+                $('#main').width($(document).width() * 0.8);
+                $('#main').height($(document).height() - 120);
+
+                function getSeriesData(type) {//Fee,InnerFee,OuterFee
+                    var repArr = [];
+                    for (var i in data) {
+                        var typeD = /processType_(\d+)_(\w*)/.exec(i);//通过正则获得例如["processType_1_ActualHours","1","ActualHours"]
+                        if (typeD && typeD.length == 3) {
+                            var obj = processTypeArr.filter(function (n) {
+                                return n.id == typeD[1]
+                            })
+                            if (typeD[2] == type) {//在每次配置时调用，并把想要厂内还是厂外还是全部放在type中丢进来
+                                //console.log(obj)
+                                if (obj.length) {
+                                    repArr.push({ name: obj[0].processTypeName, value: data[i], id: typeD[1] })
+                                }
+                            }
+                        }
+                    }
+                    return repArr;
+                }
+
+
+                var myChart = echarts.init(document.getElementById('main'));
+                var option = {
+                    legend: {
+                        x: 'center',
+                        y: 'bottom',
+                        data: processTypeArr.map(function (n, i) { return n.processTypeName })
+                    },
+                    title: [{
+                        text: data.projectSN,
+                        left: 'center',
+                        top: 20,
+                        textStyle: {
+                            color: '#000'
+                        }
+                    },{
+                        text:"厂内",
+                        left: '15%',
+                        top: '50%',
+                        textStyle: {
+                            color: '#000'
+                        }
+                    },{
+                        text: "厂外",
+                        left: '50%',
+                        top: '50%',
+                        textStyle: {
+                            color: '#000'
+                        }
+                    },{
+                        text: "全部",
+                        left: '85%',
+                        top: '50%',
+                        textStyle: {
+                            color: '#000'
+                        }
+                    }],
+
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: { show: true },
+                            dataView: { show: true, readOnly: false },
+                            magicType: {
+                                show: true,
+                                type: ['pie', 'funnel']
+                            },
+                            restore: { show: true },
+                            saveAsImage: { show: true }
+                        }
+                    },
+                    calculable: true,
+                    series: [
+                        {
+                            name: '厂内成本',
+                            type: 'pie',
+                            radius: '30%',
+                            center: ['15%', '30%'],
+                            data: getSeriesData('InnerFee').sort(function (a, b) { return a.value - b.value; }),
+                            roseType: 'radius',
+                        },
+                        {
+                            name: '厂外成本',
+                            type: 'pie',
+                            radius: '30%',
+                            center: ['50%', '30%'],
+                            data: getSeriesData('OuterFee').sort(function (a, b) { return a.value - b.value; }),
+                            roseType: 'radius',
+                        },
+                        {
+                            name: '全部成本',
+                            type: 'pie',
+                            radius: '30%',
+                            center: ['85%', '30%'],
+                            data: getSeriesData('Fee').sort(function (a, b) { return a.value - b.value; }),
+                            roseType: 'radius',
+                        },
+                    ]
+                };
+
+                myChart.setOption(option);
+            }
+            
+        }
+    </script>
+
+}

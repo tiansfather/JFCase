@@ -1,0 +1,289 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@using Master.Module
+@{
+    @section styles{
+        <style>
+            html {
+                background: #fff;
+            }
+
+            #app {
+                padding: 30px;
+            }
+
+            .layui-table td {
+                color: black;
+            }
+
+            .verify-span {
+                font-size: 20px;
+                color: red;
+            }
+
+            .site-title {
+                margin: 30px 0 20px;
+            }
+
+                .site-title fieldset {
+                    border: none;
+                    padding: 0;
+                    border-top: 1px solid #c0c0c0;
+                }
+
+                    .site-title fieldset legend {
+                        margin-left: 20px;
+                        padding: 0 10px;
+                        font-size: 22px;
+                        font-weight: 300;
+                    }
+
+            .header-title {
+                margin: 30px 20px 20px 0;
+            }
+
+                .header-title li {
+                    min-width: 200px;
+                }
+
+                    .header-title li p {
+                        line-height: 2em;
+                        font-size: 15px;
+                        color: black;
+                    }
+
+                    .header-title li strong {
+                        font-size: 18px;
+                    }
+
+            thead .feetype {
+                width: 120px;
+            }
+
+            thead .processtaskid {
+                width: 150px;
+            }
+
+            thead .partspecification {
+                width: 150px;
+            }
+        </style>
+    }
+}
+
+<div id="app" v-cloak>
+    <div style="display:flex;">
+        <div class="header-title">
+            <ul>
+                <li><p>询价名称: <strong>{{currentItem.quoteName}}</strong></p></li>
+                <li><p>询价类型: {{[null,'邀请投标','公开投标'][currentItem.quoteScope]}} </p></li>
+                <li><p>付款方式: {{[null,'协议','现金'][currentItem.quotePayType]}}</p></li>
+                <li><p>截止日期: {{currentItem.expireDate}}</p></li>
+            </ul>
+        </div>
+        <div>
+            <div class="site-title">
+                <fieldset><legend><a name="card">邀请投标企业</a></legend></fieldset>
+            </div>
+            <div>
+                <table id="unitIds" lay-filter="unitIds"></table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="site-title">
+        <fieldset><legend><a name="card">询价明细</a></legend></fieldset>
+        <blockquote class="layui-elem-quote" style="padding:0 10px; margin-bottom: 0px;line-height:2.5;">
+            先排工艺后询价：选择的【任务】是【生产任务】中的未开单任务，可以对项目名称/零件名称等进行编辑说明，但说明在选择中标单位后开单时不会影响原有任务。
+            <br />
+            先询价后开单：直接输入项目名称/零件名称等信息，不需要选择任务。
+        </blockquote>
+    </div>
+
+    <div>
+        <multi-data-add :readonly="true" :items="items" :parts="currentItem.processQuoteTasks">
+            <template #process-task-id="{part,item}">
+                <div v-if="part.processTaskId">
+                    <a href="javascript:;" class="templet-a" v-if="part.processSN" @@click="goJGKD(part.processTaskId)">{{part.processSN}}</a>
+                    <a href="javascript:;" class="templet-a" v-else @@click="goJGKD(part.processTaskId)">已绑定加工任务</a>
+                    @*<span v-else>已绑定加工任务</span>*@
+                </div>
+                <span v-else></span>
+            </template>
+        </multi-data-add>
+    </div>
+
+    <div class="site-title">
+        <fieldset><legend><a name="card">备注及附件</a></legend></fieldset>
+    </div>
+    <div style="display:flex;" class="layui-form layui-form-pane">
+        <div class="layui-form-item layui-form-text" style="width:500px;margin-right:50px;">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea v-model="currentItem.remarks" placeholder="请输入内容" class="layui-textarea" readonly></textarea>
+            </div>
+        </div>
+        <div style="flex:1;">
+            <hr />
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th style="width:30%">文件名称</th>
+                        <th style="width:70%">数据路径</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item,index) in currentItem.files" :data="item">
+                        <td ><a :href="item.filePath" target="_blank" style="color:blue;text-decoration:underline; ">{{item.fileName}}</a></td>
+                        <td>{{item.filePath}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/html" id="quoteBidStatus">
+        <span class="layui-badge {{quoteBidStatusObj[d.quoteBidStatus].class}}">{{quoteBidStatusObj[d.quoteBidStatus].txt}}</span>
+    </script>
+    <script type="text/html" id="edit">
+        {{# if(app.currentItem.quoteStatus==1){ }}
+        <button class="layui-btn layui-btn-xs layui-btn-normal" onclick="app.chooseBid({{d.id}},'{{d.unitUnitName}}')">中标</button>
+        {{#} }}
+    </script>
+    <script>
+        window.quoteBidStatusObj = {
+            '-1': { class: '', txt: '未加入' },
+            '0': { class: 'layui-bg-orange', txt: '未发送' },
+            '1': { class: 'layui-bg-cyan', txt: '待投标' },
+            '2': { class: 'layui-bg-blue', txt: '已投标' },
+            '3': { class: 'layui-bg-balck', txt: '已放弃' },
+            '4': { class: 'layui-bg-green', txt: '未中标' },
+            '5': { class: 'layui-bg-gray', txt: '已中标' },
+        }
+        config.ready = function () {
+
+            window.app = new Vue({
+                el: '#app',
+                data: function () {
+                    var items = [
+                        //{
+                        //    type: 'tableSelect', title: '任务单号', info: {
+                        //        ColumnKey: 'ProcessTask',
+                        //        ReferenceSearchWhere: { where: "1=1 and ProcessTaskStatus=0 and !status.contains(\"inner\")" },
+                        //        placeholder: '',
+                        //        SearchPlaceholder: '搜索模具编号/零件/工序',
+                        //        RelativeDataType: 'Url',
+                        //        RelativeDataString: '/api/services/app/ProcessTask/GetPageResult',
+                        //        ReferenceItemTpl: 'id',
+                        //        ReferenceSearchColumns: [{ field: "projectSN", title: "模具编号", width: 100 },
+                        //        { field: "partName", title: "零件", width: 80 },
+                        //        { field: "partSN", title: "零件编号", width: 100 },
+                        //        { field: "processTypeName", title: "工序" },
+                        //        { field: "partSpecification", title: "规格", width: 100 },
+                        //        { field: "partNum", title: "数量" }
+                        //        ],
+                        //    }, verify: '', key: 'processTaskId', onChange: function (newV, partIndex) {
+                        //    }
+                        //},
+                        { type: 'slot', title: '任务单号', key: 'processTaskId', slot:'process-task-id'},
+                        { type: 'text', title: '项目名称', verify: '', key: 'projectName' },
+                        { type: 'text', title: '零件名称', verify: '', key: 'partName' },
+                        { type: 'text', title: '加工工艺', verify: '', key: 'processTypeName' },
+                        { type: 'text', title: '规格', verify: '', key: 'partSpecification' },
+                        { type: 'number', title: '数量', verify: '', key: 'partNum' },
+                        { type: 'date', title: '要求完成日期', verify: '', key: 'requireDate' },
+                        //{ type: 'text', title: '预计工时', verify: '', key: 'estimateHours' },
+                        {
+                            type: 'select', title: '计价方式', verify: '', key: 'feeType',
+                            options: [{ text: '承包', value: 0 }, { text: '按时间', value: 1 }, { text: '按平方', value: 2 }, { text: '按长度', value: 3 }, { text: '按重量', value: 4 }, { text: '按数量', value: 5 }], onChange: function (newVal, partIndex) {
+                                console.log(newVal, partIndex)
+                            }
+                        },
+                        { type: 'number', title: '时间/长度/重量/平方', verify: '', key: 'feeFactor' },
+                        { type: 'text', title: '工艺要求', verify: '', key: 'taskInfo' },
+                    ]
+                    return {
+                        items: items,
+                        currentItem: {
+                            id: $.getUrlParam('data') || 0,
+                            quoteName: '',
+                            quoteScope: 1,
+                            quotePayType: 1,
+                            expireDate: new Date().pattern('yyyy-MM-dd HH:mm:ss'),
+                            unitIds: [{}],
+                            processQuoteTasks: [{}],
+                            files: [],
+                            quoteStatus: 1
+                        }
+                    }
+                },
+                methods: {
+                    goJGKD: function (id) {
+                        top.layui.index.openTabsPage('/Home/Show?name=../MES/JGKD&taskid=' + id, '加工开单')
+                    },
+                    chooseBid: function (bidId, unitName) {
+                        var that = this;
+                        abp.message.confirm('确定选择<b>【' + unitName + '】</b>为中标单位吗？<br/><em>来自生产任务的询价明细将自动开单</em>', function () {
+                            func.runAsync(abp.services.app.processQuote.chooseBid(that.currentItem.id, bidId).done(function () {
+                                parent.config.reloadTable();
+                                parent.layer.closeAll();
+                                parent.layer.msg('选择成功')
+                            }))
+                        })
+                    },
+                    layuiRender: function () {
+                        var laydate = layui.laydate, form = layui.form, table = layui.table;
+                        table.render({
+                            elem: '#unitIds'
+                            , cellMinWidth: 100
+                            , data: this.currentItem.unitIds
+                            , cols: [[
+                                { align: 'center', width: 135, field: 'unitUnitName', title: '供应商' },
+                                { align: 'center', field: '#quoteBidStatus', templet: '#quoteBidStatus', title: '投标状态' },
+                                { align: 'center', field: 'cost', title: '投标价格', sort: true },
+                                { align: 'center', width: 135, field: 'remarks', title: '投标备注' },
+                                { align: 'center', width: 135, field: 'bidDate', title: '投标日期' },
+                                { align: 'center', templet: '#edit', title: '操作' },]]
+                        });
+                    },
+                    loadItem: function () {
+                        function resetData(res) {
+                            //res.expireDate = new Date(res.expireDate).pattern('yyyy-MM-dd HH:mm:ss');
+
+                            res.processQuoteTasks.forEach(function (elm, index) {
+                                elm.requireDate && (elm.requireDate = new Date(elm.requireDate).pattern('yyyy-MM-dd'));
+                                var TaskId = elm.processTaskId
+                                //elm.processTaskId = { displayValue: TaskId ? (elm.processSN||'已绑定加工任务'):' ', value: TaskId || '' }
+                            })
+                            //res.unitIds = res.processQuoteBids.map(function (elm, index) {
+                            //    elm.remarks = elm.remarks
+                            //    elm.cost = elm.cost;
+                            //    return elm
+                            //})
+                            res.unitIds = res.processQuoteBids
+                            return res
+                        }
+                        var that = this;
+                        abp.services.app.processQuote.getQuoteInfo(this.currentItem.id).done(function (res) {
+                            that.currentItem = resetData(res);
+                            Vue.nextTick(that.layuiRender)
+                        })
+                    }
+                },
+                mounted: function () {
+                    if ($.getUrlParam('data')) {
+                        this.loadItem();
+                    }
+
+                }
+            })
+        }
+        function refresh() {
+            Vue.nextTick(layui.form.render)
+
+        }
+    </script>
+}

@@ -1,0 +1,25 @@
+﻿{
+  "culture": "en",
+  "texts": {
+    "用户信息": "User Profile",
+    "用户名": "UserName",
+    "姓名": "Name",
+    "角色": "Role",
+    "部门": "Depart",
+    "语言": "Language",
+    "电子签名": "Signature",
+    "基本信息": "Base Information",
+    "版本": "Edition",
+    "账套名": "Tenant Name",
+    "企业名称": "Company Name",
+    "到期日期": "Expire Date",
+    "关联账号": "Bind Logins",
+    "微信": "Wechat",
+    "小程序": "Mini Program",
+    "绑定": "Bind",
+    "企业信息": "Company Profile",
+
+    "设置": "Setting",
+    "行政": "Admin"
+  }
+}

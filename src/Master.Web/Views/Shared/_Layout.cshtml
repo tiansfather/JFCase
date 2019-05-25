@@ -1,0 +1,116 @@
+﻿@using System.Globalization
+@using Abp.Configuration
+@using Abp.Configuration.Startup
+@using Abp.Web.Security.AntiForgery
+@using Master
+@using Master.Configuration
+@inject Master.Timing.AppTimes AppTimes
+@inject IAbpAntiForgeryManager AbpAntiForgeryManager
+@inject IMultiTenancyConfig MultiTenancyConfig
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+    Layout = null;
+    AbpAntiForgeryManager.SetCookie(Context);
+    
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>@ViewData["Title"]</title>
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="~/view-resources/Views/_Bundles/base.min.css" rel="stylesheet" asp-append-version="true" />
+    <link rel="stylesheet" href="/assets/layuiadmin/layui/css/layui.css" media="all" asp-append-version="true">
+    <link rel="stylesheet" href="/assets/layuiadmin/style/admin.css" media="all" asp-append-version="true">
+    <link href="~/assets/css/default.css" rel="stylesheet" asp-append-version="true" />
+    <!-- View specific styles -->
+    @RenderSection("styles", required: false)
+    <script type="text/javascript">
+        // This is used to get the application's root path from javascript. It's useful if you're running application in a virtual directory under IIS.
+        var abp = abp || {};
+        abp.appPath = '@ApplicationPath';
+    </script>
+    <script src="/assets/layuiadmin/layui/layui.js" asp-append-version="true"></script>
+    <environment include="Development">
+        <script src="~/view-resources/Views/_Bundles/base.js" asp-append-version="true"></script>
+    </environment>
+    <environment include="Production">
+        <script src="~/view-resources/Views/_Bundles/base.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script src="~/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
+    <script src="~/assets/js/global.js" asp-append-version="true"></script>
+    <!-- 全局js -->
+    <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
+    <script src="~/scripts/GetAll.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    @*<script src="~/scripts/GetScripts.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
+    @*<script src="~/AbpServiceProxies/GetAll?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
+    <script src="~/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    <script>
+        layui.config({
+            base: config.layuiBase //静态资源所在路径
+            , version: 181224
+        }).extend($.extend({
+            index: config.layuiIndex //主入口模块
+        }, config.layuiExtends));
+
+
+    </script>
+</head>
+<body class="gray-bg" @*style="overflow-y:scroll" *@>
+	@RenderSection("MainBody", required: false)
+	<div class="layui-anim layui-anim-upbit" data-anim="layui-anim-upbit">
+		@RenderBody()
+	</div>
+
+
+	<!-- View specific scripts -->
+	@RenderSection("scripts", required: false)
+	<script type="text/html" id="activeTpl">
+		{{#if(d.isActive){}}
+		<span class="layui-badge layui-bg-blue">@L("有效")</span>
+		{{#}else{}}
+		<span class="layui-badge layui-bg-gray">@L("无效")</span>
+		{{#}}}
+	</script>
+
+
+	@foreach (var commonView in WebCoreConfiguration.CommonViews)
+	{
+		await Html.RenderPartialAsync(commonView);
+	}
+
+
+	<script>
+        layui.use(config.layuiModules, function () {
+			//表单初始化
+			func.initForm();
+            //调用layui加载完事件
+            for (fnIndex in config.readyFuncs) {
+                var fn = config.readyFuncs[fnIndex];
+                func.typeof(fn) == 'function' && fn();
+            }
+            config.readyFuncs.hadRun = true;
+            config.ready();
+			if (!parent.$("#LAY_app_tabs").is(":visible")) {
+				if (top.$("#LAY_app_tabsheader li").size() > 1) {
+					parent.$("#LAY_app_tabsheader li").eq(0).remove();
+					parent.$("#LAY_app_body .layadmin-tabsbody-item").eq(0).remove();
+					//var id = parent.$("#LAY_app_tabsheader li").eq(0).attr("lay-id");
+					//console.log(id);
+					//top.layui.element.tabDelete("layadmin-layout-tabs", id);//删除
+				}
+
+
+			}
+		})
+	</script>
+</body>
+</html>
+

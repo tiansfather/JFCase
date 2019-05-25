@@ -1,0 +1,66 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleFormItemViewModel
+@{
+	var column = Model.ColumnInfo;
+
+	var relativeModuleKey = column.RelativeDataString;//关联模块Key
+	object referenceData = new List<object>();
+	if (Model.Data.ContainsKey(column.ColumnKey + "_data"))
+	{
+		referenceData = Model.Data[column.ColumnKey + "_data"];
+	}
+
+	var maxReferenceNumber = column.MaxReferenceNumber;
+	var referenceItemTpl = column.ReferenceItemTpl;
+	var searchColumns = column.ReferenceSearchColumns;
+	if (string.IsNullOrEmpty(maxReferenceNumber)) { maxReferenceNumber = "1"; }//默认引用数量为1
+	if (string.IsNullOrEmpty(referenceItemTpl)) { referenceItemTpl = "Id"; }//默认引用的显示数据
+																			//var searchUrl = column.RelativeDataType == RelativeDataType.Module ? $"/api/services/app/bringback/getModuleData?moduleKey={column.RelativeDataString}&searchColumns={searchColumns}" : column.RelativeDataString;
+
+	var renderer = !string.IsNullOrEmpty(column.Renderer) ? column.Renderer : "lay-tableselect-view";
+}
+
+<div is="@renderer" value="@(Model.Value?.ToString())" :column-Info="{ColumnKey:'@column.ColumnKey',ColumnName:'@column.ColumnName',VerifyRules:'@column.VerifyRules',RelativeDataType:'@column.RelativeDataType',RelativeDataString:'@column.RelativeDataString',MaxReferenceNumber:'@maxReferenceNumber',ReferenceItemTpl:'@referenceItemTpl',ReferenceSearchColumns:'@searchColumns'}" :data='@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(referenceData))'></div>
+
+@*<div class="@(inline?"layui-inline":"layui-form-item")">
+	<input type="hidden" name="@column.ColumnKey" value="@(Model.Value?.ToString())" />
+	<label class="layui-form-label">@column.ColumnName</label>
+	<div class="@(inline?"layui-input-inline":"layui-input-block")">
+		<table class="layui-table" lay-size="sm" lay-skin="line">
+
+			<tbody id="referenceList_@(column.ColumnKey)"></tbody>
+		</table>
+	</div>
+</div>
+<script id="referenceTPL_@column.ColumnKey" type="text/html">
+	{{#  layui.each(d, function(index, item){ }}
+	<tr>
+		<td>@Html.Raw(referenceItemTpl)</td>
+	</tr>
+	{{#  }); }}
+</script>
+<script>
+    layui.use('laytpl', function () {
+        var laytpl = layui.laytpl;
+
+        var columnKey = '@column.ColumnKey';
+        var maxReferenceNumber =@maxReferenceNumber;
+
+        func.referenceDatas[columnKey] =@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(referenceData));
+
+        func.bringBackFuncs[columnKey] = function (data) {
+
+            laytpl($("#referenceTPL_" + columnKey).html()).render(func.referenceDatas[columnKey], function (html) {
+                $("#referenceList_" + columnKey).html(html);
+            })
+
+        }
+        func.bringBackFuncs[columnKey]([]);//页面加载后直接执行
+
+    })
+
+</script>*@

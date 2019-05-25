@@ -1,0 +1,79 @@
+﻿@using Abp.Application.Features
+@using Master.Configuration
+@using Master.Web.Components
+@{
+	Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+	var features = ViewData["Features"] as IReadOnlyList<Feature>;
+	var values = ViewData["Values"] as Dictionary<string, object>;
+}
+@{
+	ViewData["Title"] = "Assign";
+}
+
+
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div id="app" v-cloak>
+            <form class="layui-form">
+                @foreach (var feature in features)
+                {
+                    <vc:module-form-item param="@(new ModuleFormItemViewParam(){ColumnInfo=feature.BuildColumnInfo(),Data=values,FormType=Master.Module.FormType.Edit} )"></vc:module-form-item>
+                }
+                <div v-if="type=='tenant'" class="layui-form-item" style="margin-bottom: 20px;"><div class="layui-input-block">
+                    <button type="button" @@click="resetTenantFeature" class="layui-btn layui-btn-sm layui-btn-danger">重置</button>
+                       </div>
+                </div>
+                <div class="layui-form-item" style="display:none">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" type="button" lay-submit="" id="Feature_Submit">@L("提交")</button>
+                    </div>
+                </div>
+            </form>
+		</div>
+	</div>
+</div>
+
+@section scripts{ 
+	<script>
+		var app;
+		config.ready = function () {
+			var type = $.getUrlParam("type");
+			var data = $.getUrlParam("data");
+			layui.form.on('submit', function (obj) {
+				console.log(obj.field);
+				var dto = { type: type, data: data, values: obj.field };
+				func.runAsync(abp.services.app.feature.submitFeature(dto).done(function () {
+					parent.layer.msg(L("提交成功"));
+					parent.layer.closeAll('iframe');
+					parent.config.reload();
+				}));
+			})
+
+			app=new Vue({
+                el: '#app',
+                data: {
+                    type:type
+                },
+				created: function () {
+					this.$nextTick(function () {
+						layui.form.render();
+					})
+                },
+                methods: {
+                    resetTenantFeature: function () {
+                        abp.message.confirm('确认重置此账套特性?', function () {
+                            func.runAsync(abp.services.app.feature.resetTenantFeature(data).done(function () {
+                                location.reload();
+                            }))
+                        })
+                    }
+                }
+			})
+		}
+
+		function submit() {
+			$("#Feature_Submit").trigger("click");
+		}
+	</script>
+}

@@ -1,0 +1,114 @@
+﻿@*部门选择*@
+<script>
+	Vue.component('lay-departchoose', {
+		template: '#layDepartChoose',
+		props: ['columnInfo', 'value'],
+		mounted: function () {
+			this.$nextTick(function () {
+				$('div[cytype="dropDownTool"]').dropDownTool();
+			})
+
+		}
+	});
+</script>
+<script type="text/x-template" id="layDepartChoose">
+	<div class="layui-form-item layui-form-text">
+		<label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+		<div class="layui-input-block">
+			<div cyType="dropDownTool" cyProps="url:'/api/services/app/Organization/GetTreeJson?maxlevel=5',search:'false',checkbox:'false',key_name:'briefName'"
+				 name="OrganizationId" :value="value" class="layui-input-inline" style="position:relative">
+			</div>
+
+		</div>
+	</div>
+</script>
+@*往来单位分类选择*@
+<script>
+	Vue.component('lay-unittypechoose', {
+		template: '#layUnitTypeChoose',
+		props: ['columnInfo', 'value'],
+		mounted: function () {
+			this.$nextTick(function () {
+				$('div[cytype="dropDownTool"]').dropDownTool();
+			})
+
+		}
+	});
+</script>
+<script type="text/x-template" id="layUnitTypeChoose">
+	<div class="layui-form-item layui-form-text">
+		<label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+		<div class="layui-input-block">
+			<div cyType="dropDownTool" cyProps="url:'/api/services/app/baseTree/GetTreeJson?discriminator=UnitType',search:'false',checkbox:'false',key_name:'briefName'"
+				 :name="columnInfo.ColumnKey" :value="value" class="layui-input-inline" style="position:relative">
+			</div>
+
+		</div>
+	</div>
+</script>
+@*用户绑定*@
+<script>
+	Vue.component('lay-userbindlogin', {
+		template: '#layUserBindLogin',
+		props: ['userId'],
+		data: function () {
+			return {
+				providers: [],
+				bindedProviders:[],
+			}
+		},
+		methods: {
+			isBinded: function (providerName) {
+				return this.bindedProviders.indexOf(providerName) >= 0;
+			},
+			updateBindedLoginProvider: function () {
+				var that = this;
+				abp.services.app.user.getBindedLoginProviders(that.userId).done(function (data) {
+					that.bindedProviders = data;
+				})
+			},
+			unBindLogin: function (providerName) {
+				var that = this;
+				abp.message.confirm("确认解除绑定?", function () {
+					func.runAsync(abp.services.app.user.unBindLogin(providerName, that.userId).done(function () {
+						layer.msg("提交成功");
+						that.updateBindedLoginProvider();
+					}))
+				})
+			},
+			loadProviders: function () {
+				var that = this;
+				abp.services.app.user.getLoginProviders().done(function (data) {
+					that.providers = data;
+					that.updateBindedLoginProvider();
+					console.log(data);
+				})
+			}
+		},
+		mounted: function () {
+			var that = this;
+			this.loadProviders();
+			window.bindRefresh = function () {
+				layer.closeAll("iframe");
+				that.updateBindedLoginProvider();
+			}
+			this.$nextTick(function () {
+				
+			})
+
+		}
+	});
+</script>
+<script type="text/x-template" id="layUserBindLogin">
+	<div>
+		<div class="layui-form-item" v-for="(provider,index) in providers" :provider="provider.name">
+			<label class="layui-form-label">{{provider.data.displayName}}</label>
+			<div class="layui-input-inline">
+				<input type="text" autocomplete="off" class="layui-input" :value="isBinded(provider.name)?'已绑定':'未绑定'" readonly>
+			</div>
+			<input v-if="!isBinded(provider.name)" type="button" class="layui-btn laydialog" value="绑定" :url="provider.bindUrl+'?userid='+userId" title="绑定登录" width="400px" height="400px" />
+			<input v-else type="button" class="layui-btn layui-btn-danger" value="取消绑定" @@click="unBindLogin(provider.name)" />
+		</div>
+	</div>
+	
+</script>

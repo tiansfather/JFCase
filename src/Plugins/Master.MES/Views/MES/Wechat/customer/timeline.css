@@ -1,0 +1,106 @@
+body #reportWrap {
+    background: #f4f4f4;
+    color: #3cc51f;
+    font-size:14px;
+}
+
+#reportWrap li {
+    margin: 20px 0;
+}
+
+.r-timeline-body:before {
+  content: '';
+  position: absolute;
+  left: calc(20% + 32px);
+  top: 80px;
+  z-index:0;
+  width: 3px;
+  height: 100%;
+  background: #b1dbc3;
+}
+
+.r-timeline-body:last-child:before {
+  display: none;
+}
+
+.r-timeline-body {
+  position: relative;
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.r-timeline-body .r-timeline-time {
+  width: 20%;
+  text-align: center;
+}
+
+.r-timeline-body .r-timeline-date {
+  border: 5px solid #b1dbc3;
+  text-align: center;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  background: #26a27e;
+  color: #e4f1e2;
+  z-index:1;
+}
+
+.r-timeline-body .r-timeline-date p {
+  font-size: 16px;
+  padding-top: 9px;
+}
+
+.r-timeline-body .r-timeline-date b {
+  font-size: 21px;
+}
+
+.r-timeline-body .r-timeline-content {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0 10px;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  background: #afb2b9;
+  color: #f2f5ec;
+  width: 100%;
+  border: 5px solid #fff;
+  border-right: none;
+  border-radius: 100px 0 0 100px;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  margin-left: 15px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.r-timeline-body .r-timeline-content .r-content-view {
+  margin-left: 16px;
+}
+
+.r-timeline-body .r-timeline-content .r-content-view p {
+  line-height: 30px;
+}
+
+.r-timeline-body .r-timeline-content .r-content-img {
+  -ms-flex-preferred-size: 100px;
+      flex-basis: 100px;
+      max-width:26vw;
+}
+
+.r-timeline-body .r-timeline-content .r-content-img img {
+  width: 100%;
+  max-height: 100px;
+}
+/*# sourceMappingURL=timeline.css.map */

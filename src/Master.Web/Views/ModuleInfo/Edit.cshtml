@@ -1,0 +1,72 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@model Master.Module.ModuleInfo
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+<form class="layui-form layui-form-pane">
+    <input type="hidden" name="ids" value="@Model.Id" />
+    <div class="layui-form-item">
+        <label class="layui-form-label">@L("模块ID")</label>
+        <div class="layui-input-block">
+            <input type="text" autocomplete="off" class="layui-input" disabled value="@Model.ModuleKey">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">@L("绑定实体")</label>
+        <div class="layui-input-block">
+            <input type="text" autocomplete="off" class="layui-input" disabled value="@Model.EntityFullName">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">@L("模块名称")</label>
+        <div class="layui-input-block">
+            <input type="text" name="ModuleName" autocomplete="off" lay-verify="required" class="layui-input" value="@Model.ModuleName">
+        </div>
+    </div>
+    
+    <div class="layui-form-item">
+        <label class="layui-form-label">@L("可选分页数")</label>
+        <div class="layui-input-block">
+            <input type="text" name="Limits" autocomplete="off" lay-verify="required" class="layui-input" value="@Model.Limits">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">@L("默认分页数")</label>
+        <div class="layui-input-block">
+            <input type="text" name="DefaultLimit" autocomplete="off" lay-verify="required|number" class="layui-input" value="@Model.DefaultLimit">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">@L("排序字段")</label>
+        <div class="layui-input-block">
+            @{
+                var columns = Model.FilterdColumnInfos(FormType.Search);
+            }
+            <select name="SortField" asp-items="@(new SelectList(columns,"ColumnKey","ColumnName",Model.SortField))">
+                <option value="Id">Id</option>
+
+            </select>
+
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">@L("默认排序")</label>
+        <div class="layui-input-block">
+            @{
+                var sortItems = new List<object>() { new { Key = 0, Value = @L("升序") }, new { Key = 1, Value = @L("降序") } };
+
+            }
+            <select name="SortType" asp-items="@(new SelectList(sortItems,"Key","Value",(int)Model.SortType))"></select>
+
+        </div>
+    </div>
+    <div style="display:none">
+        <vc:module-form-submit param="@(new ModuleFormSubmitViewParam() {PluginName="app", ModuleKey="ModuleInfo",ButtonKey="Edit",IsCustomModule=false})"></vc:module-form-submit>
+    </div>
+
+</form>
+
+@section scripts{ 
+
+}

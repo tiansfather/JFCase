@@ -1,0 +1,41 @@
+﻿
+
+@{
+}
+<div style="text-align:center;margin-top:20px" id="app" >
+	<img :src="qrCode"/>
+</div>
+
+@section scripts{ 
+	<script>
+		var userid = "@Html.Raw(ViewBag.UserId)";
+		config.ready = function () {
+			var app = new Vue({
+				el: '#app',
+				computed: {
+					qrCode: function () {
+						var obj = { code: 0, userid: userid };
+						var url = '/api/qrcode?url=' + encodeURIComponent(JSON.stringify(obj));
+						console.log(url);
+						return url;
+					}
+				}
+			});
+			var loopFunc = function () {
+				abp.services.app.weiXin.getBindLoginInfo('MiniProgram',userid).done(function (data) {
+					console.log(data);
+					if (data) {
+
+						//window.clearInterval(loop);
+						parent.bindRefresh('MiniProgram');
+					} else {
+						window.setTimeout(loopFunc, 1000);
+					}
+
+
+				});
+			}
+			loopFunc();
+		}
+	</script>
+}

@@ -1,0 +1,137 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端工件任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "工件详情-模来模往";
+}
+@section styles{
+    <style>
+        body {
+            width: 100%;
+            background-color: #DCDCDC;
+        }
+
+        #app {
+            width: 100%;
+            background-color: #DCDCDC;
+        }
+
+        .my-cells_form {
+        }
+
+        .my-cell {
+            justify-content: space-between;
+            position: relative;
+            text-align: left;
+            display: -webkit-flex;
+            background-color: #fff;
+            margin: 5px 5px;
+            padding: 5px;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #A9A9A9;
+        }
+
+            .my-cell .my-cell__hd {
+                margin: 5px 5px;
+            }
+
+            .my-cell .bd_cg_right {
+                color: #56D8DA;
+                text-align: center;
+                font-size: 28px;
+                margin: 0 auto;
+                position: absolute;
+                top: 0px;
+                right: 0px;
+            }
+
+            .my-cell .my-cells-double {
+                color: #696969;
+                font-weight: bold;
+            }
+
+        .cell__bd_bottom {
+            font-size: 14px;
+            padding-right: 25px;
+        }
+
+        .my-cell .cell__bd_left {
+            font-size: 16px
+        }
+
+        .my-cell .cell__bd_right {
+            font-size: 14px
+        }
+
+        #processSN {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+        }
+    </style>
+}
+
+ 
+<div id="app" class="main-wrap" style="display:none">
+
+    <div class="my-cells_form">
+        <div id="processSN">{{part.partName}}  {{part.partSN}}</div>
+        <a class="my-cell" v-for="(item,index) in part.tasks" :href="'/MES/Report?taskid='+item.id">
+            <div class="my-cell__hd cell__bd_left">
+                <p> {{item.processSN}}</p>
+                 <p> {{item.partName}} </p>
+                <p class="my-cells-double">{{item.processTypeName}}</p>
+
+            </div>
+
+            <div class="my-cell__hd cell__bd_bottom">
+                <p :style="{'color':getColor(item.processTaskStatus).color}">{{getColor(item.processTaskStatus).name}}</p>
+                <p> {{new Date(item.startDate).pattern('MM-dd HH:mm')}} {{new Date(item.endDate).pattern('MM-dd HH:mm')}} </p>
+                <p> {{item.planStartDate}} {{item.planEndDate}} </p>
+
+            </div>
+       
+            <div class="bd_cg_right">〉</div>
+        </a>
+    </div>
+</div>
+@section scripts{
+
+
+    <script>
+
+
+        var app;
+        app = new Vue({
+            el: '#app',
+            data: {
+                part: {}
+            },
+            methods: {
+                loadItem: function (partId) {
+                    var that = this;
+                    func.runAsync(abp.services.app.part.getPartTaskInfo(partId).done(function (data) {
+                        that.part = data;
+                                $("#app").css("display", "block");
+                    }));
+                },
+                getColor: function (status) {
+                    return func.getProcessTaskStatusColor(status)
+                },
+            },
+            created: function () {
+
+
+            },
+            mounted: function () {
+                var partId = $.getUrlParam("id");
+                this.loadItem(partId);
+
+            }
+        });
+    </script>
+
+}

@@ -1,0 +1,48 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("判例库管理")</div>
+        <div class="layui-card-body">
+            <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                <vc:module-button module-key="CaseSource"></vc:module-button>
+            </div>
+            <vc:module-table param="@(new ModuleTableViewParam() {ID="CaseSource",ModuleKey="CaseSource",Height="full-150",Where="" })"></vc:module-table>
+
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var app;
+        var searchKeys = {};
+        
+        config.ready = function () {
+            
+        };
+        config.refresh = function () {
+           
+        };
+        config.reloadTable = function () {
+            layui.table.reload('CaseSource', {
+                where: getWhere()
+            })
+        }
+        function getWhere(index) {
+            var where = { searchKeys: JSON.stringify(searchKeys) };
+            
+            
+            where.searchCondition = func.buildSearchCondition('CaseSource');
+
+            return where;
+
+        }
+    </script>
+}
+

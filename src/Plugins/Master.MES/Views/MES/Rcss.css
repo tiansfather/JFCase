@@ -1,0 +1,269 @@
+.my-search-btn {
+    border-radius: 8px;
+    height: 26px;
+    line-height: 26px;
+}
+
+/*----------------------------------------------------*/
+.my-lidate-span {
+    /*width: 34px;*/
+    /*display: inline-block;
+    float: left;*/
+}
+td .layui-table-cell {
+    height: 95px !important;
+    line-height: 95px !important;
+}
+/*.layui-table{
+                color:#000;
+            }*/
+.my-tasks-ul {
+    position:relative;
+    text-align: left;
+    margin-left: 35px;
+}
+
+.my-tasks-li {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 76px;
+    margin-right: 15px;
+    margin-top: 10px;
+    vertical-align: top;
+}
+.my-tasks_li-lock {
+    top: 20px;
+}
+.my-tasks-add:hover, .my-tasks-lock:hover {
+    color: #353535;
+    /*font-size:30px;*/
+}
+.my-tasks_li-add {
+    top: 55px;
+}
+
+.my-tasks-li_icon {
+    line-height: 34px;
+    height: 34px;
+    display: inline-block;
+    position: absolute;
+}
+.my-tasks-li_icon  .iconfont{
+    font-size: 22px;
+    color: #d6dfec;
+}
+.my-tasks-li_icon .iconfont.icon-lock1 {
+    color: #fa763b;
+}
+.my-tasks_li-add .iconfont {
+    font-size: 22px;
+    color: #d6dfec;
+}
+
+.my-tasks_li-lock .iconfont.icon-lock1 {
+    color: #fa763b;
+}
+
+.my-tasks_li-lock .iconfont {
+    transition: color 0.8s;
+}
+
+.dom-remove_li {
+    position: absolute;
+    z-index: 999;
+}
+
+.dom-dashed_li {
+    border: 2px dashed #9c9c9c;
+}
+.lock-li .my-li-delete {
+    font-size: 18px;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    line-height: 22px;
+    height: 22px;
+    cursor: Pointer;
+    color: #ddd;
+}
+.my-li-quote {
+    font-size: 20px;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    line-height: 22px;
+    height: 22px;
+    cursor: Pointer;
+    color: blue;
+}
+.lock-li .my-tasks-li:hover .my-li-delete,.my-tasks-li:hover .my-li-quote {
+    display: block;
+}
+.lock-li .my-tasks-li:hover .my-icon-jiaji ,.lock-li .my-tasks-li:hover .my-li-quote {
+    display: none;
+}
+
+.my-li-delete, .my-li-quote {
+    display: none;
+}
+
+
+
+.lity-date_wrap {
+    line-height: 14px;
+    padding: 0 3px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #ccc;
+}
+.my-li-typeName {
+    position: relative;
+    /*top:11px;*/
+    border-radius: 7px;
+    border: 2px solid;
+    height: 38px;
+    line-height: 20px !important;
+    text-align: center;
+    color: black;
+}
+
+.my-lity-span {
+    text-align: center;
+    display: inline;
+}
+
+.my-li-date {
+    display: flex;
+    justify-content: space-between;
+    border-radius: 3px;
+    border: 1px solid;
+    position: relative;
+    top: 6px;
+    font-size: 12px;
+    height: auto;
+    flex-wrap: wrap;
+    line-height: 14px;
+}
+.my-partName-show {
+    position: relative;
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+}
+.my-partName-img {
+    height: 75px;
+    width: 75px;
+    background: #eaeaea;
+    position: relative;
+    top: 10px;
+    /*float: left;*/
+    cursor: pointer
+}
+
+.my-partName-img img {
+    width: 75px;
+    vertical-align: inherit;
+}
+
+.my-partName-msg {
+    height: 75px;
+    position: relative;
+    top: 10px;
+    /*float: left;*/
+    left: 20px;
+    line-height: 25px;
+    text-align: left;
+    flex-grow: 1;
+}
+.my-pNameMsg-p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+.anpai-div, .baogong-div {
+    padding: 0 3px;
+    display: flex;
+    height: 15px;
+    width: 100%;
+    justify-content: space-between;
+}
+.anpai-div {
+    color: #2699F7;
+}
+.my-li-date .layui-progress {
+    width: 100%;
+    top: 0;
+    height: 3px;
+}
+.showred {
+    color: red;
+    font-weight: 600;
+}
+.my-icon-sent, .my-icon-out, .my-icon-readed {
+    font-size: 12px;
+    position: absolute;
+    left: 2px;
+    line-height: 12px;
+    top: 2px;
+}
+.my-icon-readed{
+    color:green;
+}
+.my-icon-sent {
+    color: #009688;
+}
+.my-icon-out {
+    color: #FFB800;
+}
+.text-overflow {
+    line-height:1;
+    display: block;
+    max-width: 20em;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.my-icon-print, .my-icon-quoted {
+    font-size: 14px;
+    position: absolute;
+    left: 2px;
+    line-height: 14px;
+    top: 2px;
+    color: blue;
+}
+.my-icon-jiaji {
+    top: 1px;
+    right: 0px;
+    font-size: 15px;
+    position: absolute;
+    line-height: 15px;
+    color: red;
+}
+/*--¡œŒª÷√--*/
+.reached {
+    box-shadow: 0 2px 7px 0 #00fdff, 6px 7px 8px 0 #f2f2f2;
+    border-radius: 7px;
+    background: #fcfff2;
+    border: 1px dashed;
+    height: 81px;
+}
+
+.liao-icon {
+    line-height: 16px;
+    position: absolute;
+    top: -9px;
+    font-size: 16px;
+    right: -13px;
+}
+/*.my-tasks-li .icon-xunjia {
+    line-height: 16px;
+    position: absolute;
+    top: -9px;
+    font-size: 16px;
+    left: -13px;
+}*/

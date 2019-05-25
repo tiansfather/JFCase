@@ -1,0 +1,188 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "设备详情-模来模往";
+}
+@section styles{
+    <style>
+        body {
+            width: 100%;
+            background-color: #DCDCDC;
+        }
+
+        #app {
+            width: 100%;
+            background-color: #DCDCDC;
+        }
+
+        .my-cells_form {
+        }
+
+        .my-cell {
+            /*
+           justify-content: space-between;
+           position: relative;
+           text-align: left;
+           font-size: 14px;
+               */
+            justify-content: space-between;
+            display: -webkit-flex;
+            width: 100%;
+            display: block;
+            background-color: #fff;
+            margin: 5px 5px;
+            padding: 5px;
+            border-radius: 10px;
+            color: #A9A9A9;
+        }
+
+            .my-cell .my-cell__hd {
+                justify-content: space-between;
+                display: -webkit-flex;
+                margin: 5px 5px;
+            }
+
+                .my-cell .my-cell__hd .p2 {
+                    width: 32%;
+                    text-align: left;
+                    /*  margin-right: 15px;*/
+                    font-size: 10px;
+                }
+
+            .my-cell .bd_cg_right {
+                color: #56D8DA;
+                text-align: right;
+                font-size: 28px;
+                margin-top: -50px;
+                display: block;
+                float: right;
+            }
+
+            .my-cell .my-cells-double {
+                color: #696969;
+                font-weight: bold;
+            }
+
+        .cell__bd_bottom {
+            font-size: 13px;
+            padding-right: 25px;
+        }
+
+        .my-cell .cell__bd_top {
+            padding-right: 25px;
+            font-size: 14px
+        }
+
+        .my-cell .cell__bd_right {
+            font-size: 12px
+        }
+
+        .bd_cg_left {
+        }
+
+        #processSN {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+        }
+        .gobackhome {
+            position: fixed;
+            display: flex;
+            top: 20px;
+            left: 10px;
+            font-size: 35px;
+            z-index: 999;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/lib/iconfont/wechaticon.css" asp-append-version="true">
+}
+<a href="~/MES/Index/factory" class="gobackhome">
+    <i class="iconfont icon-fanhui"></i>
+</a>
+
+@*<link href="/equipmentTasks.css" rel="stylesheet" />*@
+<div id="showToast">工序加载中...</div>
+<div id="app" class="main-wrap" style="display:none">
+
+    <div class="my-cells_form">
+        <div id="processSN">{{equipmentInfo.equipmentSN}}</div>
+        <a class="my-cell" v-for="(item,index) in tasks" :href="'/MES/Report?taskid='+item.id">
+            <div class="bd_cg_left">
+                <div class="my-cell__hd cell__bd_top">
+                    <p class="my-cells-double"><span>{{item.partName}}</span>{{item.partSN}} {{item.processTypeName}}</p>
+
+                    <p class="p2"> <span>{{item.arrangeDate!=null && item.arrangeDate!=''? "(安排时间)":""}}</span>{{setDate(item.arrangeDate)}} </p>
+                </div>
+
+                <div class="my-cell__hd cell__bd_bottom">
+                    <p :style="{'color':getColor(item.processTaskStatus).color}">{{getColor(item.processTaskStatus).name}}</p>
+                    <p class="p2"> <span>{{item.appointDate!=null && item.requireDate!=null? "(计划时间)":""}}</span> {{setDate(item.appointDate)}}-{{setDate(item.requireDate)}} </p>
+                </div>
+            </div>
+            <div class="bd_cg_right">〉</div>
+        </a>
+    </div>
+</div>
+
+
+@section scripts{
+
+
+    <script>
+
+
+        var app;
+        app = new Vue({
+            el: '#app',
+            data: {
+                tasks: [],
+                equipmentId: null,
+                equipmentInfo: {}
+            },
+            methods: {
+                loadItem: function (equipmentId) {
+                    var that = this;
+                    func.runAsync(abp.services.app.equipment.getEquipmentInfo(equipmentId).done(function (data) {
+                        that.equipmentInfo = data;
+
+                    }));
+
+                    func.runAsync(abp.services.app.equipment.getUnFinishedTasks(equipmentId).done(function (data) {
+                        that.tasks = data;
+                        // alert(JSON.stringify(data[0])+"");
+                        // var processSN = "";
+
+                        // $("#app #processSN").html(processSN);
+                        $("#showToast").css("display", "none");
+                        $("#app").css("display", "block");
+                        
+                    }));
+                },
+                getColor: function (status) {
+                    return func.getProcessTaskStatusColor(status)
+                },
+                setDate(oldTime) {
+                    var newTime = oldTime;
+                    if (newTime == null || newTime == "") { return ""; }
+                    newTime.split('T')[0];
+                    newTime.replace("-", "/");
+                    return newTime;
+                }
+            },
+            created: function () {
+
+
+            },
+            mounted: function () {
+                this.equipmentId = $.getUrlParam("id");
+                this.loadItem(this.equipmentId);
+
+            }
+        });
+    </script>
+
+}

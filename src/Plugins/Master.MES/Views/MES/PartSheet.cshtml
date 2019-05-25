@@ -1,0 +1,12 @@
+﻿@using Master.Web.Components
+@using Master.MES
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@inject PartManager PartManager
+@using Master.Module
+@{
+    //加工过程卡
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+    var templateContent = await PartManager.GetPartTemplate();
+}
+
+@Html.Raw(templateContent)

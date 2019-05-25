@@ -1,0 +1,193 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    //微信端加工点查看加工任务页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "核算";
+}
+@section styles{
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <style>
+        #canvasDiv {
+            height: 300px;
+            width: 450px;
+            border: 1px solid black;
+        }
+
+        #imgDiv {
+            height: 50px;
+            width: 80px;
+            border: 1px solid black;
+            margin-top: 15px;
+        }
+
+        #btnDiv {
+            height: 100px;
+            width: 400px;
+            margin-top: 15px;
+        }
+
+        .clearBtn {
+            font-size: 22pt;
+            background: #e57727;
+            border: 0;
+            margin-left: 25%;
+        }
+
+        .okBtn {
+            font-size: 22pt;
+            background: #36a5d9;
+            border: 0;
+            margin-left: 15%;
+        }
+        /*.btm-img {
+            width: 100%;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .weui-cell {
+            padding: 8px 10px;
+        }
+
+        .weui-textarea {
+            font-size: 14px;
+        }*/
+    </style>
+}
+@*<script type="text/javascript" src="jquery.min.js"></script>*@
+<script type="text/javascript" src="/Views/MES/js/esign.js"></script>
+
+<div id="btnDiv">
+    @*<a id="sign_clear" class="clearBtn">清除</a>
+        <a id="sign_ok" class="okBtn">确认</a>*@
+    <a id="sign_clear" class="weui-btn weui-btn_primary">清除</a>
+    <a id="sign_ok" class="weui-btn weui-btn_primary">确认</a>
+    <button class="weui-btn weui-btn_primary" style="text-align:center;" onclick="dosave()" id="save">保存</button>
+</div>
+
+    <div id="canvasDiv">
+    <div id="editing_area">
+        <canvas width="450" height="300" id="canvasEdit"></canvas>
+    </div>
+    </div>
+
+<div id="imgDiv">
+    <span id="sign_show">
+       
+    </span>
+</div>
+
+
+    @*<div id="app">
+
+            //<button class="weui-btn weui-btn_primary" style="text-align:center;" onclick="handleCounting(true)" id="confirm">确认</button>
+            //<button class="weui-btn weui-btn_primary" style="text-align:center;" onclick="handleCounting(false)" id="reject">驳回</button>
+
+
+        <img src="@ViewBag.ImgPath" onclick="previewImage('@ViewBag.ImgPath')" class="btm-img" />
+        <div id="taskPic"></div>
+        <div v-for="item in idArray">
+            <img :src="item" @@click="previewImage(item)" class="btm-img"/>
+        </div>
+
+    </div>*@
+
+
+@section scripts{
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+<script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+        wx.error(function (res) {
+			console.log(res);
+			alert('验证失败:' + JSON.stringify(res));
+        });
+
+         wx.ready(function () {
+
+            });
+</script>
+<style>
+    .mobeil-cell-project .iconfont {
+        color: #c74949;
+        margin-right: 10px;
+    }
+</style>
+
+<script>
+    var ids = $.getUrlParam("ids"); 
+    var imgPath = $.getUrlParam("partUrl");
+    var signUrl = $.getUrlParam("singUrl");
+    $(function () {
+        console.log("1:" + ids + "2:" + imgPath + "3:" + signUrl);
+        //初始化动作，根据DOM的ID不同进行自定义，如果不写则内部默认取这四个
+        $().esign("canvasEdit", "sign_show", "sign_clear", "sign_ok");
+    });
+    function dosave() {
+        var imgurl = $("#sign_show").children("img").get(0);
+        var c = imgurl.getAttribute("src");
+        console.log("hand:" + "/wwwroot/sheets/signpic/" + abp.session.tenantId);
+        var data = {
+            Base64: c,
+            ImgPath:  "/wwwroot/sheets/signpic/" + abp.session.tenantId
+        }
+        //abp.services.app.processTask.saveBase64(data);
+        func.runAsync(abp.services.app.processTask.saveBase64(data).done(function (data) {
+            console.log("result:" + data);
+            if (data) {
+                $.alert("提交成功", "成功");
+                window.location.href = location.origin + "/MES/CountingView?ids=" + ids + "&partUrl=" + imgPath + "&signUrl=" + data;
+            }
+            else {
+                $.alert("提交", "cuccess");
+            }
+        })
+        )
+    }
+</script>
+
+}

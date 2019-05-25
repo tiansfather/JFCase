@@ -1,0 +1,160 @@
+﻿
+<style>
+    html{
+        font-size:38px;
+    }
+    body {
+        background: #fff;
+    }
+    #app {
+        position: absolute;
+        width: 679px;
+        height: 501px;
+        border: 1px solid #000000;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+        font-family: SimSun;
+        font-size:14px;
+    }
+    h1{
+        text-align:center;
+    }
+    #btn{
+        margin-left:10px;
+    }
+    .my-btn {
+        width: 26px;
+        padding: 0 5px;
+        overflow: hidden;
+        transition: width 0.3s;
+        -moz-transition: width 0.3s; /* Firefox 4 */
+        -webkit-transition: width 0.3s; /* Safari 和 Chrome */
+        -o-transition: width 0.3s; /* Opera */
+    }
+
+    .my-btn:first-child:hover {
+        width: 60px;
+    }
+    .had-print{
+        background:#ccc;
+    }
+
+    .process-sn {
+        margin-left:1.5rem;
+        color: #C30;
+        letter-spacing: 0;
+        float: right;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .item1 {
+        display: flex;
+        margin-top: 1.5rem;
+    }
+
+    .items{
+        position:relative;
+        height:0.65rem;
+    }
+    .items span{
+        position:absolute;
+    }
+    @media print {
+        #btn,.label{
+            display: none !important;
+        }
+        #app{
+            border:none;
+        }
+    }
+/*------------------*/
+
+</style>
+<div id="app" class="my-zhuti" style="display:none">
+    <h1 class="label">{{currentItem.tenancyName}}外协加工单</h1>
+    <div class="item1">
+        <span class="process-sn">
+            {{currentItem.tenantId}}{{currentItem.processSN}}
+        </span>
+        <div id="btn">
+            <button class="my-btn layui-btn layui-btn-sm" :class="{'had-print':currentItem.printed}" @click="myPrint">
+                <i class="layui-icon layui-icon-print my-i-print"></i> 打印
+            </button>
+        </div>
+    </div>
+    <div class="items">
+        <span style="left:1.1rem" class="label">模具编号</span>
+        <span style="left:3rem">{{currentItem.projectSN}}</span>
+        <span style="left:5.8rem" class="label">加工项目</span>
+        <span style="left:8.2rem">{{currentItem.processTypeName}}</span>
+        <span style="left:10.8rem" class="label">加工单位</span>
+        <span style="left:12.8rem">{{currentItem.unitName}}</span>
+    </div>
+    <div class="items">
+        <span style="left:1.1rem" class="label">零件名称</span>
+        <span style="left:3rem">{{currentItem.partName}}</span>
+        <span style="left:8.2rem">数量:{{currentItem.partName}}</span>
+        <span style="left:10.8rem" class="label">时间</span>
+        <span style="left:13.7rem">{{nowDate.y}}</span>
+        <span style="left:14.5rem">{{nowDate.m}}</span>
+        <span style="left:15.5rem">{{nowDate.d}}</span>
+    </div>
+    <div style="position:relative;">
+        <span  style="position:absolute; left:1.3rem;width:7rem;">&emsp;&emsp;&emsp;&emsp;&emsp;{{currentItem.taskInfo}}</span>
+        <img style="position: absolute;left: 8.5rem;" :src="qrCode" />
+    </div>
+</div>
+
+
+<script>
+    var app;
+    //图片上传
+    layui.use(['layer'], function () {
+
+    })
+    app = new Vue({
+        el: '#app',
+        data: {
+            currentItem: {},
+            taskId: $.getUrlParam("taskid")
+        },
+        methods: {
+            loadItem: function (taskId) {
+                var that = this;
+                func.runAsync(abp.services.app.processTask.getTaskInfoById(taskId).done(function (data) {
+                    that.currentItem = data;
+                    //加载额外添加数据
+                    loadTemplateData(function () {
+                        $("#app").show();
+                        typeof dataLoaded != "undefined"  &&that.$nextTick(dataLoaded);
+                    });
+                }))
+
+            },
+            myPrint: function () {
+                window.print();
+                this.currentItem.printed = true;
+                abp.services.app.processTask.setTaskStatus(this.taskId, 'Print', true)
+            }
+        },
+        computed: {
+            nowDate: function () {
+                
+                var myDate = new Date().pattern('yy/MM/dd').split('/');
+                return { y: myDate[0], m: myDate[1], d: myDate[2]}
+            },
+            qrCode: function () {
+                return '/api/qrcode?pixel=2&url=' + encodeURIComponent(location.origin + "/MES/Report?taskid=" + this.taskId);
+
+            }
+        },
+        mounted: function () {
+            this.loadItem(this.taskId);
+
+        }
+
+    })
+    
+</script>

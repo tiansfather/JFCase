@@ -1,0 +1,264 @@
+﻿@using Master.Web.Configuration
+@model List<UploadProvider>
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+@section styles{
+    <style>
+        .my-center{
+            text-align:center;
+            margin-top:20px;
+        }
+        .my-frame{
+            top: 0;
+            position: absolute;
+            width: 100%;
+            min-height: 290px;
+            transform: scale(0.8);
+            left: 0;
+        }
+    </style>
+}
+<div class="layui-upload-list" id="uploadListContainer" style="padding:0 20px;display:none">
+	<table class="layui-table">
+		<thead>
+			<tr>
+				<th>文件名</th>
+				<th>大小</th>
+				<th>进度</th>
+				<th>状态</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody id="uploadList"></tbody>
+	</table>
+</div>
+
+<div class="layui-tab layui-tab-brief" lay-filter="UploadTab">
+	<ul class="layui-tab-title">
+		<li class="layui-this">@L("文件上传")</li>
+		<li>@L("截图上传")</li>
+		@foreach(var provider in Model)
+		{
+			<li>@provider.ProviderName</li>
+		}
+	</ul>
+	<div class="layui-tab-content">
+		<div class="layui-tab-item layui-show my-center">
+			<div class="layui-upload-drag" id="uploadBtn">
+				<i class="layui-icon"></i>
+				<p>点击上传，或将文件拖拽到此处</p>
+			</div>
+		</div>
+		<div class="layui-tab-item">
+			<div style="border:1px dashed #ccc;width:80%;">
+				<h2>截图粘贴到此处</h2>
+				<img id="pasteImg" />
+			</div>
+		</div>
+		@foreach (var provider in Model)
+		{
+			<div class="layui-tab-item" style="position:relative;">
+				<iframe frameborder="0" src="@provider.ProviderUrl" class="my-frame"></iframe>
+			</div>
+		}
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		config.ready = function () {
+			(function () {
+				var imgReader = function (item) {
+					var blob = item.getAsFile(),
+						reader = new FileReader();
+
+					reader.onload = function (e) {
+						//if (window["clipimgCallback"]) {
+						//	window["clipimgCallback"](e.target.result);
+						//}
+						var src = e.target.result;
+						//显示预览
+						$("#pasteImg").attr("src", src);
+						//提交至服务器
+						$.post("/File/UploadByBase64", { data: src }, function (res) {
+                            console.log(res);
+                            if (JSON.parse($.getUrlParam('multiple'))) {
+                                res.result = [res.result];
+                            }
+							parent.upload.callback(res.result);
+							parent.layer.closeAll('iframe');
+						}, 'json');
+					};
+
+					reader.readAsDataURL(blob);
+				};
+				document.addEventListener('paste', function (e) {
+					console.log(e);
+					var clipboardData = e.clipboardData,
+						i = 0,
+						items, item, types;
+
+					if (clipboardData) {
+						items = clipboardData.items;
+
+						if (!items) {
+							return;
+						}
+
+						item = items[0];
+						types = clipboardData.types || [];
+
+						for (; i < types.length; i++) {
+							if (types[i] === 'Files') {
+								item = items[i];
+								break;
+							}
+						}
+
+						if (item && item.kind === 'file' && item.type.match(/^image\//i)) {
+							imgReader(item);
+						}
+					}
+				});
+			})();
+            layui.upload.render({
+                elem: '#uploadBtn',
+                field: 'file',
+                accept: 'file',
+                multiple: JSON.parse($.getUrlParam('multiple')),
+                number: 10,
+                size: JSON.parse($.getUrlParam('size'))||20480,
+                url: '/file/upload/'
+                , choose: function (obj) {
+                    if (window.isReUpload) { window.isReUpload = false; return; }
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    console.log(this.files);
+                    $("#uploadList").html('');
+                    for (var index in this.files) {
+                        var file = files[index];
+                        var tr = $(['<tr id="upload-' + index + '" index="' + index + '" class="uploaditem" uploaded=0>'
+                            , '<td width="30%">' + file.name + '</td>'
+                            , '<td width="10%">' + (file.size / 1014).toFixed(1) + 'kb</td>'
+                            , '<td width="30%"><div class="layui-progress layui-progress-big" lay-showPercent="true" lay-filter="progress_' + index + '"><div class= "layui-progress-bar" lay-percent="0%" ><span class="layui-progress-text">0%</span></div></div></td>'
+                            , '<td class="status" width="20%"><i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i></td>'
+                            , '<td>'
+                            , '<button class="layui-btn layui-btn-xs demo-reload layui-hide" type="button">重传</button>'
+                            , '</td>'
+                            , '</tr>'].join(''));
+                        tr.data("file", file);
+                        //单个重传
+                        tr.find('.demo-reload').on('click', function () {
+                            window.isReUpload = true;//重传标记
+                            var index = $(this).closest("tr").attr("index");
+                            var file = $(this).closest("tr").data("file");
+                            console.log("重新上传" + index);
+                            $(this).addClass("layui-hide");
+                            $(this).closest("tr").find(".status").html('<i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>');
+                            obj.upload(index, file);
+                        });
+
+                        $("#uploadList").append(tr);
+                    }
+                    window.uploadlistlayer = layer.open({
+                        type: 1,
+                        shade: false,
+                        btn: null,
+                        title: "上传进度",
+                        area: ['80%', '80%'],
+                        content: $('#uploadListContainer'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+                        success: function () {
+
+                        }
+                    });
+                }, xhr: function (index, e) {
+                    var percent = e.loaded / e.total;//计算百分比
+                    percent = Math.round(parseFloat(percent.toFixed(2)) * 100);//解决小数点问题
+                    layui.element.progress('progress_' + index + '', percent + '%');
+                    //console.log(index+"-----" + percent);
+                }
+                , before: function (obj) {
+                    loadLayerIndex = top.layer.msg('正在拼命上传中...', {
+                        icon: 16
+                        , shade: false, time: 0, offset: 't'
+                    });
+                }
+                , done: function (res, index, upload) {
+
+                    //如果上传失败
+                    if (!res.result.success) {
+                        $("#upload-" + index).attr("uploaded", 1).find(".status").html("上传失败:" + res.result.msg);
+                        $("#upload-" + index).find(".demo-reload").removeClass("layui-hide");
+                        layui.element.progress('progress_' + index + '', '0%');
+                        layer.msg(res.result.msg, { icon: 5, anim: 6 });
+                    }
+                    //上传成功
+                    else {
+                        console.log(index + "上传成功");
+                        $("#upload-" + index).attr("uploaded", 1).find(".status").html("上传完成");
+                        $("#upload-" + index).hide();
+                        if (JSON.parse($.getUrlParam('multiple'))) {
+                            if (!(this.dataArr instanceof Array)) {
+                                this.dataArr = [];
+                            }
+                            this.dataArr.push(res.result)
+                        } else {
+                            top.layer.close(loadLayerIndex);
+                            parent.upload.callback(res.result);
+                            parent.layer.closeAll('iframe');
+                        }
+                        
+                        //app.currentItem.files.push({ fileName: res.result.fileName, filePath: res.result.filePath, fileType: '' });
+                        delete this.files[index];
+                    }
+                    //已全部上传
+                    if ($(".uploaditem[uploaded=0]").size() == 0) {
+                        top.layer.close(loadLayerIndex);
+                        //全部成功
+                        if (Object.keys(this.files).length == 0) {
+                            layer.close(window.uploadlistlayer);
+                        }
+
+                    }
+                }, error: function (index, upload) {
+                    console.log("error:" + index);
+                    $("#upload-" + index).attr("uploaded", 1).find(".status").html("上传失败:请稍候重试");
+                    $("#upload-" + index).find(".demo-reload").removeClass("layui-hide");
+                    layui.element.progress('progress_' + index + '', '0%');
+                }
+                , allDone: function (res) {
+                    console.log('allDone');
+                    console.log(this.dataArr)
+                    top.layer.close(loadLayerIndex);
+                    parent.upload.callback(this.dataArr);
+                    parent.layer.closeAll('iframe');
+                }
+            });
+			//layui.upload.render({
+			//	elem: '#uploadBtn',
+			//	size: 1024*20,
+			//	accept: 'file',
+			//	url: '/file/upload/'
+			//	, done: function (res, index, upload) {
+			//		//获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意：此乃 layui 2.1.0 新增
+			//		var item = this.item;
+			//		//如果上传失败
+			//		if (!res.result.success) {
+			//			layer.msg(res.result.msg, { icon: 5, anim: 6 });
+			//		}
+			//		//上传成功
+			//		else {
+			//			console.log(res);
+			//			parent.upload.callback(res.result);
+			//			parent.layer.closeAll('iframe');
+
+			//		}
+			//	}
+			//})
+		};
+		window["clipimgCallback"] = function (src) {
+			
+		}
+			
+	</script>
+}

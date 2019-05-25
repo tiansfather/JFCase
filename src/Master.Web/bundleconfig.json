@@ -1,0 +1,72 @@
+[
+  {
+    "outputFileName": "wwwroot/view-resources/Views/_Bundles/base.min.css",
+    "inputFiles": [
+      "wwwroot/lib/animate.css/animate.css",
+      "wwwroot/assets/layuiadmin/layui/icon/icon.css",
+      "wwwroot/lib/iconfont/iconfont.css",
+      "wwwroot/lib/zTree/css/metroStyle/metroStyle.css",
+      "wwwroot/assets/layuiadmin/lib/extend/formselects/formSelects-v4.css",
+      "wwwroot/assets/layuiadmin/lib/extend/soulTable/soulTable.css",
+      "wwwroot/lib/pace/pace-theme-minimal.css",
+      "wwwroot/lib/dropdowntree/css/cyType.css",
+      "wwwroot/lib/dropdowntree/css/cyStyle.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/_Bundles/wechatbase.min.css",
+    "inputFiles": [
+      "wwwroot/lib/jqueryweui/lib/weui.min.css",
+      "wwwroot/lib/animate.css/animate.css",
+      "wwwroot/lib/jqueryweui/css/jquery-weui.min.css",
+      "wwwroot/assets/layuiadmin/layui/css/layui.css",
+      "wwwroot/lib/iconfont/wechaticon.css",
+      "wwwroot/lib/iconfont/iconfont.css",
+      "wwwroot/assets/css/wechatcommon.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/_Bundles/base.min.js",
+    "inputFiles": [
+      "wwwroot/lib/jquery/jquery.min.js",
+      "wwwroot/lib/jquery.cookie/jquery.cookie.js",
+      "wwwroot/lib/vue/vue.min.js",
+      "wwwroot/lib/blockUI/jquery.blockUI.min.js",
+      "wwwroot/lib/spin.js/spin.js",
+      "wwwroot/lib/spin.js/jquery.spin.js",
+      "wwwroot/lib/pinyinjs/dict/pinyin_dict_notone.js",
+      "wwwroot/lib/pinyinjs/pinyinUtil.js",
+      "wwwroot/lib/zTree/js/jquery.ztree.all.js",
+      "wwwroot/lib/dropdowntree/js/dropDownTool.js",
+      "wwwroot/lib/pace/pace.min.js",
+      "wwwroot/lib/vue-router/vue-router.min.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/_Bundles/abp.min.js",
+    "inputFiles": [
+      "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/abp.js",
+      "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/libs/abp.jquery.js",
+      "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/libs/abp.blockui.js",
+      "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/libs/abp.spin.js",
+      "wwwroot/assets/js/abp.layer.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/_Bundles/base.js",
+    "inputFiles": [
+      "wwwroot/lib/jquery/jquery.js",
+      "wwwroot/lib/jquery.cookie/jquery.cookie.js",
+      "wwwroot/lib/vue/vue.min.js",
+      "wwwroot/lib/blockUI/jquery.blockUI.min.js",
+      "wwwroot/lib/spin.js/spin.js",
+      "wwwroot/lib/spin.js/jquery.spin.js",
+      "wwwroot/lib/pinyinjs/dict/pinyin_dict_notone.js",
+      "wwwroot/lib/pinyinjs/pinyinUtil.js",
+      "wwwroot/lib/zTree/js/jquery.ztree.all.js",
+      "wwwroot/lib/dropdowntree/js/dropDownTool.js",
+      "wwwroot/lib/pace/pace.min.js",
+      "wwwroot/lib/vue-router/vue-router.js"
+    ]
+  }
+]

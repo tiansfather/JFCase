@@ -1,0 +1,375 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@* 加工费用 *@
+@section styles{
+    <style>
+        .layui-table, .layui-table-view {
+            margin: 0;
+        }
+
+        .layui-table-view {
+            border: none;
+        }
+
+        .LAY-app-message-btns {
+            position: absolute;
+            top: 10px;
+            z-index: 999;
+        }
+
+        .layui-form-select dl {
+            min-height: 192px;
+        }
+        #summaryFee {
+            font-size: 14px;
+            height: 30px;
+            line-height: 30px;
+            color: #000;
+            white-space: nowrap;
+            float: right;
+            display: flex;
+        }
+    </style>
+    <style>
+        html, body, .layui-anim, .height100, #r-treedrag, #r-treedrag ul {
+            height: 100%;
+            box-sizing: border-box;
+        }
+       
+    </style>
+}
+    @*<div class="layui-row r-treedrag">
+        <div class="r-treedrag-ul dom-tree">
+            <ul id="unitTree" class="ztree" style="padding: 2px; border: 1px solid #ddd; overflow: auto;"></ul>
+        </div>
+        <div id="r-treedrag-width"></div>
+        <div class="r-treedrag-table dom-msg">
+            <div class="r-treedrag-table_wrap">
+
+            </div>
+        </div>
+    </div>*@
+    <div class="height100">
+        <ul id="unitTree" class="ztree" style="padding: 2px; border: 1px solid #ddd; overflow: auto;"></ul>
+        <div id="tablePart">
+            <div class="LAY-app-message-btns">
+                <div class="my-search">
+                    <form class="layui-form layui-form-pane " onsubmit="return doSearch();">
+                        @if (await PermissionChecker.IsGrantedAsync("Module.ProcessCost.Button.Dui"))
+                        {
+                            <div class="my-inline-block">
+                                <button class="layui-btn layui-btn-sm" type="button" buttonname="核算" modulekey="ProcessTask" params="{&quot;area&quot;: [&quot;90%&quot;, &quot;90%&quot;],&quot;btn&quot;:[&quot;核算&quot;,&quot;关闭&quot;],&quot;resize&quot;: false}" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/ProcessCost_Dui" onclick="func.callModuleButtonEvent()">核算</button>
+                            </div>
+                        }
+                        <div class="my-inline-block">
+                            <div class="layui-input-inline">
+                                <input type="text" id="projectSNSearch" autocomplete="off" class="layui-input" placeholder="模具编号/单号">
+                            </div>
+                            <button class="layui-btn layui-btn-sm" type="button" onclick="doSearch()">查询</button>
+                        </div>
+                        <div class="my-inline-block">
+                            <div class="layui-input-inline">
+                                <select lay-filter="processCostStatus">
+                                    <option value="">全部状态</option>
+                                    <option value="1">未核算</option>
+                                    <option value="2">已核算</option>
+                                    <option value="3">未开票</option>
+                                    <option value="4">已开票</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="summaryFee" class="my-inline-block" v-cloak>
+                            <p>已核算总金额:{{summaryFee.checkFee}}</p>&nbsp;
+                            <p>已回单总金额:{{summaryFee.verifyFee}}</p>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            <table id="ProcessTask" lay-filter="ProcessTask" class="layui-table "></table>
+        </div>
+    </div>
+
+@section scripts{
+    <script type="text/html" id="quanlityTypeTem">
+        {{#
+         var arr=['未检','合格','不合格'];
+        }}
+        <span>{{arr[d.quanlityType]}}</span>
+    </script>
+    <script type="text/html" id="operate">
+        {{#if(!d.inner&&abp.auth.isGranted('Module.ProcessTask.Button.Verify')){}}
+        <a dataid="{{d.id}}" buttonname="回单审核" modulekey="ProcessTask" class="layui-btn layui-btn-xs layui-btn-warm" params="{&quot;area&quot;: [&quot;60%&quot;, &quot;80%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/Receiptaudit" onclick="func.callModuleButtonEvent()">
+            回单审核
+            <span class="layui-badge layui-bg-gray" style="border-radius: 50%;">{{d.rateInfoCount}}</span>
+        </a>
+        {{# }}}
+    </script>
+    <script>
+
+        func.splitDrag($('#unitTree'), $('#tablePart'), { key:'costTreeWidth'})
+
+		//初始查询
+		var oriWhere = "ProcessTaskStatus!=0";
+		//是否必须先进行回单审核
+		//todo:如果必须先进行回单审核,需要在页面中进行友好性提示
+		var mustReturnFileBeforeCheck = abp.setting.getBoolean('@Master.Configuration.MESSettingNames.MustReturnFileBeforeCheck');
+		//如果设置了核算前必须先回单审核
+		if (mustReturnFileBeforeCheck) {
+			oriWhere += ' and Status.Contains("@Master.MES.ProcessTask.Status_Verify")';
+		}
+		window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhere, whereFilter: oriWhere };
+        var app;
+        var currentFilter = {};
+        var unitTree = function () {
+            var zTreeObj;
+            var setting = {
+                view: {
+                    selectedMulti: false,//多选
+                    addDiyDom: function (treeId, treeNode) {
+                        console.log(treeNode);
+                        var count = treeNode.unCheckTaskCount;
+                        if (!count) { return;}
+                        var aObj = $("#" + treeNode.tId + "_a");
+                        aObj.append("<span style='color:red'>【"+count+"】</span>");
+                    }
+                },
+                data: {
+                    key: {
+                        name: 'displayName',
+                        title: 'displayName'
+                    },
+                    simpleData: {
+                        enable: true,
+                        idKey: 'id',
+                        pIdKey: 'parentId',
+                        rootPId: 'null'
+                    }
+                },
+                callback: {
+                    onClick: function (event, treeId, treeNode) {
+                        var treeNodeId = treeNode.id;//加工点id
+                        if (treeNode.parentId == 'unit') {
+                            //如果点击加工点分类
+                            switch (treeNodeId) {
+                                case '-1':
+                                    window.ProcessTask[0].where.where = oriWhere + ' and supplierId=null';
+                                    break;
+                                default:
+                                    window.ProcessTask[0].where.where = oriWhere + ' and supplierId=' + treeNodeId;
+                                    app.getSummaryFee(treeNodeId);
+                                // code block
+                            }
+                        } else if (treeNode.parentId == 'poster') {
+                            //如果点击开单人分类
+                            window.ProcessTask[0].where.where = oriWhere + ' and poster=\"' + treeNodeId + '\"';
+                            app.getSummaryFee(null, treeNodeId);
+                        } else {
+                            window.ProcessTask[0].where.where = oriWhere;
+                            app.getSummaryFee();
+                        }
+                        layuiExt.reRender('ProcessTask');
+                    }
+                }
+            };
+            var load = function () {
+                var p1 = new Promise((resolve, reject) => {
+                    abp.services.app.mESUnit.getAllUnitUnCheckCount().done(function (json) { resolve(json) })
+                })
+                var p2 = new Promise((resolve, reject) => {
+                    abp.services.app.processTask.getHistoryPerson("poster").done(json => { resolve(json) })
+                })
+                Promise.all([p1, p2]).then(([json1, json2]) => {
+                    zTreeObj = $.fn.zTree.init($("#unitTree"), setting);
+                    var nodes = [
+                        { displayName: "全部供应商", id: 'unit', parentId: "" },
+                        { displayName: "开单人", id: 'poster', parentId: "" },
+                        { displayName: '未分类', id: -1, parentId: 'unit' }
+                    ];
+                    $.each(json1, function (i, v) {
+                        nodes.push({displayName: v.unitName, id: v.id, unCheckTaskCount: v.unCheckTaskCount, parentId: 'unit' });
+                    });
+                    $.each(json2, function (i, v) {
+                        nodes.push({ displayName: v, id: v, parentId: 'poster' });
+                    });
+                    console.log(nodes)
+                    zTreeObj.addNodes(null, nodes);
+                    zTreeObj.expandAll(true);
+                }).catch(err => { console.log(err)})
+            };
+            load();
+            return {
+                node: {},
+                reload: load
+            }
+        }();
+        function tableFixed2(x ) {
+            if (typeof x == 'number' || typeof x == 'string') {
+                if (x) {
+                    return Number(x).toFixed(2)
+                } else {
+                    return x
+                }
+            } else {
+                return ''
+            }
+        }
+        config.ready = function () {
+            window.app = new Vue({
+                el: '#summaryFee',
+                data: {
+                    summaryFee: {}
+                },
+                methods: {
+                    getSummaryFee: function (...arg) {
+                        //获取已核算总金额，已回单总金额
+                        abp.services.app.processTask.getSummaryFee.apply(null, arg).done( (res)=> {
+                            this.summaryFee = res;
+                        })
+                    }
+                },
+                mounted: function () {
+                    this.getSummaryFee();
+                }
+            });
+
+            window.ProcessTask = [{
+                elem: '#ProcessTask',
+                toolbar: '<div style="display:none"></div>',
+                defaultToolbar: ['filter', 'print', 'exports'],
+                cellMinWidth: '120',
+                height: 'full-59',
+				url: '/api/services/app/ProcessTask/GetPageResult',
+				where: { where: oriWhere },
+                page: { limit: 50, limits: [50,100, 200, 500] },
+                id: 'ProcessTask',
+                even: true,
+                done: config.onTableDone,
+                totalRow: true,
+                initSort: { field: 'Id', type: 'desc' }
+            }, [[
+                    { align: 'center', type: 'checkbox', fixed: 'left', gudinglie: false, totalRowText: '合计'},
+                { align: 'center', field: 'processSN', templet: '#prcSN2JGKD', title: '单号', sort: true, filterField: 'ProcessSN' },
+                { align: 'center', field: 'status', templet: '#IsMakeInvoice', sort: true, title: '状态', width: 180 },
+                //{ align: 'center', toolbar: '#partNameToolbar', title: '零件', sort: true, filterField: 'Part.PartSN' },
+				{ align: 'center', field: 'partName', title: '零件', sort: true, filterField: 'Part.PartName' },
+				{ align: 'center', field: 'partSN', title: '零件编号', sort: true, filterField: 'Part.PartSN' },
+                { align: 'center', field: 'partSpecification', title: '规格', sort: true, filterField: 'Part.PartSpecification' },
+                { align: 'center', field: 'partNum', sort: true, title: '数量', totalRow: true },
+                    { align: 'center', field: 'projectSN', title: '模具编号', sort: true, filterField: 'Part.Project.ProjectSN' },
+                    { align: 'center', width: 135, field: 'reason', title: '备注', sort: true, filterField: 'Reason' },
+                {align: 'center', field: 'rateInfo', title: '评语', sort: true, width: 150},
+                {align: 'center', field: 'rate', title: '星级', sort: true},
+                { align: 'center', field: 'quanlityType', templet: '#quanlityTypeTem', title: '品质', sort: true },
+                {
+                    align: 'center', field: 'submitFeeFromProcessor', title: '回单费用', sort: true, templet: function (d) {
+                        return d.submitFeeFromProcessor ? d.submitFeeFromProcessor.Fee : '';
+                    }
+                },
+                { align: 'center', field: 'projectCharger', title: '模具组长', sort: true, filterField: 'projectCharger' },
+                { align: 'center', field: 'unitName', title: '加工点/单位', sort: true, filterField: 'Supplier.UnitName' },
+                { align: 'center', field: 'processTypeName', title: '工序', sort: true, filterField: 'ProcessType.ProcessTypeName' },
+					{ align: 'center', field: 'estimateHours', title: '预计工时', sort: true, totalRow: true },
+                    {
+                        align: 'center', field: 'checkFee', title: '核算金额', sort: true, totalRow: true, templet: function (d) {
+                            return tableFixed2(d.checkFee)
+                        }
+                    },
+                { align: 'center', field: 'fee', title: '回单审核金额', sort: true, totalRow: true },
+                    {
+                        align: 'center', field: 'jobFee', title: '初始金额', sort: true, totalRow: true, templet: function (d) {
+                            return tableFixed2(d.jobFee)
+                        }},
+                { align: 'center', field: 'feeType', templet: '#feeTypeTolbar', title: '计价方式', sort: true },
+                { align: 'center', field: 'feeFactor', title: '长度/数量/重量/平方', sort: true },
+                { align: 'center', field: 'files', title: '最近报工图片', sort: true, templet: '#filesImg' },
+                { align: 'center', field: 'startDate', templet: '#startDateTemplet', sort: true, title: '上机时间', filterField: 'StartDate' },
+                { align: 'center', field: 'endDate', templet: '#endDateTemplet', sort: true, title: '下机时间', filterField: 'EndDate' },
+                { align: 'center', toolbar: '#operate', title: '操作',fixed:'right' }
+                ]]];
+
+            layuiExt.reRender('ProcessTask');
+
+            layui.form.on('select(processCostStatus)', function (data) {
+                currentFilter.processCostStatus = data.value;
+                doSearch();
+            });
+        }
+        //鼠标点击拖拽宽度改变
+        
+
+        function doSearch() {
+            var where = { where: filterObject.oriWhere, tableFilter: JSON.stringify(filterObject.tableFilter) };
+            var projectsn = $('#projectSNSearch').val();
+            if (projectsn) {
+                //where.where += " and Part.Project.ProjectSN.Contains(\"" + projectsn + "\")";
+                where.where += " and (Part.Project.ProjectSN.Contains(\"" + projectsn + "\") or (ProcessSN.Contains(\"" + projectsn + "\")) )";
+            }
+            var processCostStatus = currentFilter.processCostStatus;
+            switch (processCostStatus) {
+                //未核算
+                case "1":
+					where.where += ' and checkFee=null';
+                    break;
+                //已核算
+                case "2":
+					where.where += ' and checkFee!=null';
+                    break;
+                //未开票
+                case "3":
+                    where.where += ' and (Status==null or (!Status.Contains("MakeInvoice")))';
+                    break;
+                //已开票
+                case "4":
+                    where.where += ' and (Status.Contains("MakeInvoice"))';
+                    break;
+            }
+            //fee != null 录入          fee == null
+            //Status.Contains("MakeInvoice")开票
+            //!Status.Contains("MakeInvoice")未开票
+
+            filterObject.whereFilter = where.where;
+            console.log(where);
+            window.ProcessTask[0].where = where;
+            filterObject.aShaiXuanDone = [];//清除已筛选的列
+            layuiExt.reRender('ProcessTask')
+
+            return false;
+        }
+        function SetMakeInvoice(id,processSN) {
+            layer.confirm('"'+processSN+'"确定开票吗', {
+                btn: ['开票', '取消'] //按钮
+            }, function () {
+                abp.services.app.processTask.setTasksStatus([id], 'MakeInvoice', true).done(function () {
+                    layuiExt.reRender('ProcessTask');
+                });
+                layer.closeAll();//放在回调里面，给用户感觉太迟钝了，会给错觉没点到
+            }, function () {
+                layer.closeAll();
+            });
+        }
+    </script>
+    <script type="text/html" id="IsMakeInvoice">
+        {{# if(d.isKaiPiao){}}
+        <span class="layui-badge layui-bg-green">已开票</span>
+        {{#}else{}}
+        <span class="layui-badge" style="cursor:pointer;" title="点击开票" onclick="SetMakeInvoice({{d.id}},{{d.processSN}})">未开票</span>
+        {{#}}}
+        <div style="display: inline-block;width: 2px;"></div>
+        {{# if(d.checked){}}
+        <span class="layui-badge layui-bg-green">已核算</span>
+        {{#}else{}}
+        <span class="layui-badge" style="">未核算</span>
+        {{#}}}
+        {{# if(d.isAccountingPass){}}
+        <span class="layui-badge layui-bg-green">已确认</span>
+        {{#}else{}}
+        {{# if(d.isAccountingDeny){}}
+        <span class="layui-badge">已驳回</span>
+        {{#}}}
+        {{#}}}
+        @*{{# if(d.isAccountingDeny){}}
+        <span class="layui-badge">已驳回</span>
+        {{#}}}*@
+    </script>
+
+}

@@ -1,0 +1,484 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "任务大厅-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <style>
+        body {
+            font-size: 14px;
+        }
+
+        .iconfont {
+            margin-right: 10px;
+            color: #007aff;
+        }
+
+        #app {
+            position: relative;
+        }
+
+        .r-fanhui {
+            position: absolute;
+            left: 17px;
+            top: 15px;
+            font-size: 18px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 30px;
+            color: #3cc51f;
+            font-weight: 400;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .r-cell__bd-p2 {
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .r-cell__bd-p2 span {
+                display: inline-block;
+                width: 140px;
+            }
+
+        .loading {
+            text-align: center;
+            font-size: 14px;
+            line-height: 50px;
+        }
+
+        .site-title {
+            margin: 30px 0 20px;
+        }
+
+            .site-title fieldset {
+                border: none;
+                padding: 0;
+                border-top: 1px solid #c0c0c0;
+            }
+
+                .site-title fieldset legend {
+                    margin-left: 20px;
+                    padding: 0 10px;
+                    font-size: 22px;
+                    font-weight: 300;
+                }
+
+        .verify-span {
+            font-size: 20px;
+            color: red;
+        }
+
+        .detail-wrap {
+            line-height: 2;
+            font-size: 14px;
+            background: #fff;
+            margin: 15px;
+            border-radius: 5px;
+        }
+
+        .detail-title {
+            padding: 0 20px;
+            color: #000;
+        }
+
+        .detail-title_p {
+            text-align: left;
+            font-weight: 600
+        }
+
+        .detail-title-right {
+            float: right;
+            color: #007aff;
+        }
+
+        .submit-btns {
+            background: #f4f4f4;
+            padding: 1em 0;
+            margin: 0;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            z-index: 99;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .submit-btn {
+            padding: 0 2em;
+            margin: 0 !important;
+        }
+    </style>
+}
+<div id="app">
+    <router-view></router-view>
+</div>
+
+@section scripts{
+    <script id="home" type="text/x-template">
+        <div class="home-title">
+            <h1>任务大厅</h1>
+            <div class="weui-cells">
+                <a class="weui-cell weui-cell_access" href="javascript:;" @@click="go(index)" v-for="(title,index) in titles">
+                    <div class="weui-cell__bd">
+                        <p>{{title}}</p>
+                    </div>
+                    <div class="weui-cell__ft" style="color:#01AAED">
+                    </div>
+                </a>
+            </div>
+        </div>
+    </script>
+    <script type="text/x-template" id="msg">
+        <div style="margin-bottom:80px;">
+            <i class="iconfont icon-fanhui r-fanhui" @@click="back"></i>
+            <h1>{{currentItem.quoteName}}</h1>
+            <div class="weui-cells">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <p>客户</p>
+                    </div>
+                    <div class="weui-cell__ft">{{currentItem.tenancyName}}</div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <p>截止日期</p>
+                    </div>
+                    <div class="weui-cell__ft">{{currentItem.expireDate}}</div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <p>询价类型</p>
+                    </div>
+                    <div class="weui-cell__ft">{{[null,'邀请投标','公开投标'][currentItem.quoteScope]}}</div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <p>付款方式:</p>
+                    </div>
+                    <div class="weui-cell__ft">{{[null,'协议','现金'][currentItem.quotePayType]}}</div>
+                </div>
+            </div>
+            <div class="weui-cells__title" v-if="currentItem.quoteStatus!=1||currentItem.quoteStatus!=0">已结束投标</div>
+            <div class="weui-cells weui-cells_form">
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">报价价格<span class="verify-span">*</span></label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input type="text" :readonly="!canSubmit" class="weui-input" v-model="currentItem.bidCost" placeholder="请输入报价价格">
+                    </div>
+                </div>
+            </div>
+            <div class="weui-cells__title">报价备注</div>
+            <div class="weui-cells weui-cells_form">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <textarea :readonly="!canSubmit" v-model="currentItem.bidRemarks" placeholder="请输入报价备注" rows="3" class="weui-textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="site-title"><fieldset><legend><a name="card">询价明细</a></legend></fieldset></div>
+            <div>
+                <div class="detail-wrap" v-for="list in currentItem.processQuoteTasks" :key="list.id">
+                    <div class="detail-title">
+                        <p class="detail-title_p">{{ list.partName }}/{{ list.processTypeName }}</p>
+                        <p>
+                            <span>
+                                <i class="iconfont icon-rili1"></i>
+                                <small>要求时间:</small>
+                                {{list.requireDate?new Date( list.requireDate).pattern('yyyy-MM-dd'):'' }}
+                            </span>
+
+                        </p>
+                        <p>
+                            <span>
+                                <i class="iconfont icon-yuanliaojiedian"></i>
+                                <small>规格：</small>{{ list.partSpecification }}&nbsp;&nbsp;
+                                <small>数量：</small>{{ list.partNum }}
+                            </span>
+                        </p>
+                        <p>
+                            <small><i class="icon-chengben iconfont"></i>计价:</small>
+                            <span>{{['承包','按时间','按平方','按长度','按数量'][list.feeType]}}</span>
+                            <span style="float:right;">
+                                <small>{{['承包','时间','平方','长度','数量'][list.feeType]}}</small>
+                                <span>{{list.feeFactor}}</span>
+                            </span>
+
+                        </p>
+                        <p>
+                            <small>工艺要求：</small>
+                            <span>{{list.taskInfo}}</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="site-title">
+                <fieldset><legend><a name="card">备注及附件</a></legend></fieldset>
+            </div>
+            <div class="weui-cells weui-cells_form">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <textarea v-model="currentItem.remarks" class="weui-textarea" readonly></textarea>
+                    </div>
+                </div>
+                <hr />
+                <div>
+                    <ul>
+                        <li v-for="(item,index) in currentItem.files" style="margin: 20px;">
+                            <a :href="item.filePath" target="_blank" style="color:blue;text-decoration:underline; ">{{item.fileName}}</a>
+                            <span>{{item.filePath}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="weui-btn-area submit-btns" style="" v-if="canSubmit">
+                <a class="weui-btn weui-btn_primary submit-btn" href="javascript:;" id="submitBtn" @@click="bid">提交</a>
+                <a class="weui-btn weui-btn_warn submit-btn" href="javascript:;" id="submitBtn" @@click="giveUp">放弃</a>
+            </div>
+        </div>
+    </script>
+    <script type="text/x-template" id="list">
+        <div>
+            <i class="iconfont icon-fanhui r-fanhui" @@click="back"></i>
+            <h1>{{titles[status]}}</h1>
+            <div>
+                <ul>
+                    <li v-for="(list,index) in lists" @@click="go(list.id,index)">
+                        <div class="weui-cells__title">{{list.tenancyName}}</div>
+                        <div class="weui-cells">
+                            <div class="weui-cell">
+                                <div class="weui-cell__bd">
+                                    <p>【{{list.quoteName}}】/{{list.quotePayType}}</p>
+                                    <p class="r-cell__bd-p2">
+                                        <span style="color:#c80011"><i class="iconfont icon-rili1" style="color:red;"></i>{{getD(list.publishDate)}}</span>
+                                        <span style="color:#0066b2">截止:&nbsp;{{getD(list.expireDate)}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <water-load :loaded="lists.length==page*limit" :nomore="noMore" @@page-add="page++;loadData()"></water-load>
+        </div>
+    </script>
+    <script>
+        console.log(location.href, '刚进入')
+        var titles = ['待投标', '已投标', ' 已放弃', '未中标', '已中标'];
+        var List = {
+            data: function () {
+                return {
+                    lists: [],
+                    page: 1,
+                    limit: 10,
+                    //where: '1=1',
+                    noMore: false,
+                    titles: titles,
+                    status: this.$route.params.status
+                }
+            },
+            computed: {
+                options: function () {
+                    return {
+                        page: this.page,
+                        limit: this.limit,
+                        searchKeys: this.getWhere(this.status),
+                    }
+                }
+            },
+            methods: {
+                getD: function (d) {
+                    return new Date(d).pattern('MM/dd HH:mm')
+                },
+                getWhere: function (index) {
+                    var searchKeys = {}
+                    switch (Number(index)) {
+                        case 0:
+                            searchKeys.bidStatus = 1;
+                            break;
+                        case 1:
+                            searchKeys.bidStatus = 2;
+                            break;
+                        case 2:
+                            searchKeys.bidStatus = 3;
+                            break;
+                        case 3:
+                            searchKeys.bidStatus = 4;
+                            break;
+                        case 4:
+                            searchKeys.bidStatus = 5;
+                            break;
+                    }
+                    console.log(searchKeys)
+                    return JSON.stringify(searchKeys);
+                },
+                loadData: function () {
+                    var that = this;
+                    console.log(this.options)
+                    abp.services.app.processQuoteProcessor.getPageResult(this.options).done(function (res) {
+                        if (res.data.length < that.limit) {//已无更多数据
+                            that.noMore = true;
+                        }
+                        that.lists = that.lists.concat(res.data);
+                    })
+                },
+                go: function (id, index) {
+                    window.listNow = this.lists[index];
+                    this.$router.push('/msg/' + id)
+                },
+                back: function () {
+                    router.go(-1);
+                }
+            },
+            mounted: function () {
+                console.log(location.href, '进入list的mounted')
+                if (!this.lists.length) {
+                    this.loadData();
+                }
+            },
+            template: "#list"
+        };
+        var Msg = {
+            data: function () {
+                return {
+                    listNow: {},
+                    currentItem: {
+                        id: this.$route.params.id,
+                        quoteName: '',
+                        quoteScope: 1,
+                        quotePayType: 1,
+                        expireDate: '',
+                        unitIds: [{}],
+                        processQuoteTasks: [{}],
+                        files: [],
+                        bidRemarks: '',
+                        bidCost: '',
+                        quoteBidStatus: 1,
+                        bidType: '',
+                        tenancyName: ''
+                    },
+                }
+            },
+            computed: {
+                canSubmit: function () {
+                    //只有询价单为询价中，且自己是待投标状态才可以投标
+                    return this.currentItem.quoteBidStatus == 1 && this.currentItem.quoteStatus == 1
+                },
+                reportData: function () {
+                    return {
+                        processQuoteId: this.$route.params.id,
+                        bidType: 1,
+                        cost: this.currentItem.bidCost,
+                        remarks: this.currentItem.bidRemarks
+                    }
+                },
+
+            },
+            methods: {
+                back: function () {
+                    console.log('back');
+                    router.go(-1);
+                },
+                giveUp: function () {
+                    //放弃
+                    var reportData = this.reportData;
+                    reportData.bidType = 0;
+                    console.log(reportData)
+                    $.confirm('您确定放弃吗？放弃后将无法进行此次询价，无法撤销，请慎重考虑!!!', function () {
+                        func.runAsync(abp.services.app.processQuoteProcessor.bid(reportData).done(function () {
+                            
+                            layer.msg('提交成功');
+                            location.href = '/WeiXin/Success?msg=' + encodeURIComponent('投标成功，请耐心等待对方选标');
+                        }))
+                    })
+                },
+                bid: function () {
+                    var that = this;
+                    if (this.reportData.cost) {
+                        $.confirm('您确定提交吗？提交后将无法进行修改!', function () {
+                            func.runAsync(abp.services.app.processQuoteProcessor.bid(that.reportData).done(function () {
+                                layer.msg('提交成功')
+                                location.href = '/WeiXin/Success?msg=' + encodeURIComponent('投标成功，请耐心等待对方选标');
+                            }))
+                        })
+                    } else {
+                        $.toptip('价格必须填写，并且只能提交一次，请确认！')
+                    }
+                }
+            },
+            created: function () {
+                console.log(location.href,'进入msg的created')
+                function resetData(res) {
+                    //res.expireDate = new Date(res.expireDate).pattern('MM-dd HH:mm');
+
+                    res.processQuoteTasks.forEach(function (elm, index) {
+                        elm.requireDate && (elm.requireDate = new Date(elm.requireDate).pattern('yyyy-MM-dd'));
+                    })
+                    var processQuoteBids = res.processQuoteBids[0];
+                    var obj = {
+                        bidRemarks: processQuoteBids.remarks,
+                        bidCost: processQuoteBids.cost,
+                        quoteBidStatus: processQuoteBids.quoteBidStatus,
+                        bidType: processQuoteBids.bidType
+                    };
+                    $.extend(res, obj);
+
+                    return res
+                }
+                if (this.currentItem.id) {
+                    abp.services.app.processQuoteProcessor.getQuoteInfo(this.currentItem.id).done(res => {
+                        this.currentItem = resetData(res);
+                    })
+                    return
+                }
+                alert('无对应Id任务')
+            },
+            template: '#msg'
+        }
+        var Home = {
+            data: function () {
+                return { titles: titles }
+            },
+            methods: {
+                go: function (status) {
+                    this.$router.push('/list/' + status)
+                }
+            },
+            created: function () {
+                console.log(location.href, '进入Home的created')
+            },
+            template: '#home'
+        }
+        var router = new VueRouter({
+            routes: [
+                { path: '/', redirect: 'home' },
+                { name: 'home', path: '/home', component: Home },
+                { name: 'list', path: '/list/:status', component: List },
+                { name: 'msg', path: '/msg/:id', component: Msg }
+            ]
+        })
+        console.log(location.href, '进入二')
+        var hash = location.hash.split('/');
+        if (hash[1] == 'msg') {
+            router.push({ name: 'msg', params: { id: hash[2] } })
+        }
+        new Vue({
+            el: '#app',
+            router: router,
+            created: function () {
+                console.log(location.href, '进入Vue的created')
+            }
+        })
+    </script>
+}

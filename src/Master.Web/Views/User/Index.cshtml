@@ -1,0 +1,110 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("用户管理")</div>
+        <div class="layui-card-body">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-xs3">
+                    <ul id="tree" class="ztree"
+                        style="padding: 2px; border: 1px solid #ddd; overflow: auto;min-height:500px"></ul>
+                </div>
+                <div class="layui-col-xs9 ">
+                    <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                        <vc:module-button module-key="User"></vc:module-button>
+                        <input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
+                        <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
+                    </div>
+                    <vc:module-table param="@(new ModuleTableViewParam() {ID="User",ModuleKey=nameof(Master.Authentication.User),Height="full-150",Where="" })"></vc:module-table>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var app;
+        var searchKeys = {};
+        var ztree = function () {
+            var zTreeObj;
+            var setting = {
+                view: { selectedMulti: false },
+                data: {
+                    key: {
+                        name: 'displayName',
+                        title: 'displayName'
+                    },
+                    simpleData: {
+                        enable: true,
+                        idKey: 'id',
+                        pIdKey: 'parentId',
+                        rootPId: null
+                    }
+                },
+                callback: {
+                    onClick: function (event, treeId, treeNode) {
+                        console.log(treeNode);
+                        searchKeys.organizationId = treeNode.id;
+                        config.reloadTable();
+                        //searchKeys.parentId = treeNode.id;
+                        //config.reloadTable();
+                    }
+                }
+            };
+            var load = function () {
+                abp.services.app.organization.getTreeJson().done(function (json) {
+                    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                    var nodes = [{ displayName: "未分组", id: -1, parentId: null }];
+                    nodes = nodes.concat(json);
+                    //json.push(newNode);
+                    zTreeObj.addNodes(null, nodes);
+                    //mainList({ orgId: "" });
+                    zTreeObj.expandAll(true);
+                });
+                //$.getJSON(url, function (json) {
+                //    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                //    var newNode = { Name: "根节点", Id: null, ParentId: "" };
+                //    json.push(newNode);
+                //    zTreeObj.addNodes(null, json);
+                //    //mainList({ orgId: "" });
+                //    zTreeObj.expandAll(true);
+                //});
+            };
+            load();
+            return {
+                reload: load
+            };
+        }();
+        config.ready = function () {
+            
+        };
+        config.refresh = function () {
+            ztree.reload();
+        };
+        config.reloadTable = function () {
+            layui.table.reload('User', {
+                where: getWhere()
+            })
+        }
+        function getWhere(index) {
+            var where = { searchKeys: JSON.stringify(searchKeys) };
+            
+            var value = $('#name-input').val();
+            if (value) {
+                where.where += " and Name.Contains(\"" + value + "\")"
+            }
+            where.searchCondition = func.buildSearchCondition('User');
+
+            return where;
+
+        }
+    </script>
+}
+

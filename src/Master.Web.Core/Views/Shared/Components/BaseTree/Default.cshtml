@@ -1,0 +1,173 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model BaseTreeViewParam
+@{
+
+}
+
+<div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+	<div class="layui-btn-group">
+		@if (Model.EnableAdd)
+		{
+			<button class="layui-btn layui-btn-sm" onclick="baseTree.doAdd()">
+				<i class="layui-icon">&#xe654;</i>
+			</button>
+		}
+		@if (Model.EnableEdit)
+		{
+			<button class="layui-btn layui-btn-sm" onclick="baseTree.doEdit()">
+				<i class="layui-icon">&#xe642;</i>
+			</button>
+		}
+		@if (Model.EnableDelete)
+		{
+			<button class="layui-btn layui-btn-sm layui-btn-danger" onclick="baseTree.doDel()">
+				<i class="layui-icon">&#xe640;</i>
+			</button>
+		}
+
+	</div>
+</div>
+<ul id="baseTree" class="ztree"
+	style="padding: 2px; border: 1px solid #ddd; overflow: auto;"></ul>
+
+<script>
+	var baseTree = function () {
+		var zTreeObj;
+		var setting = {
+			view: { selectedMulti: false,addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom,
+            },
+            edit: {
+                        enable:true,
+                        showRemoveBtn: showRemoveBtn,
+                        showRenameBtn: false
+                    },
+			data: {
+				key: {
+					name: 'displayName',
+					title: 'displayName'
+				},
+				simpleData: {
+					enable: true,
+					idKey: 'id',
+					pIdKey: 'parentId',
+					rootPId: 'null'
+				}
+			},
+			callback: {
+				onClick: function (event, treeId, treeNode) {
+					baseTree.node = treeNode;
+					baseTree.onSelect(treeNode);
+					//config.reloadTable();
+                },
+                beforeRemove: function (treeId, treeNode) {
+                    baseTree.node = treeNode;
+                    baseTree.doDel();
+                    return false;
+                }
+			}
+		};
+		var load = function () {
+			abp.services.app.baseTree.getTreeJson('@Model.TreeKey', null).done(function (json) {
+				zTreeObj = $.fn.zTree.init($("#baseTree"), setting);
+				@*var newNode = { displayName: "@Html.Raw(Model.TreeName)", id: null, parentId: "" };
+                json.push(newNode);
+                json.push({ displayName: '未分类', id: -1, parentId: null });*@
+				zTreeObj.addNodes(null, json);
+				//mainList({ orgId: "" });
+				zTreeObj.expandAll(true);
+			});
+			//$.getJSON(url, function (json) {
+			//    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+			//    var newNode = { Name: "根节点", Id: null, ParentId: "" };
+			//    json.push(newNode);
+			//    zTreeObj.addNodes(null, json);
+			//    //mainList({ orgId: "" });
+			//    zTreeObj.expandAll(true);
+			//});
+		};
+		load();
+		return {
+			node: {},
+			reload: load,
+			onSelect: function () {},
+            doAdd: function (nodeId) {
+                var parentId = "";
+                if (nodeId) {
+                    parentId = (baseTree.node.id ? (baseTree.node.id == -1 ? "" : baseTree.node.id) : "");
+                }
+				layer.open({
+					type: 2,
+					title: "添加分类",
+					shadeClose: false,
+					shade: 0.8,
+					area: ['60%', '60%'],
+                    content: "/BaseTree/Add?treeKey=@Model.TreeKey&parentId=" + parentId,
+					btn: ['提交', '关闭'],
+					btnAlign: 'l',
+					yes: function (index, layero) {
+						var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+						if (iframeWin.submit) { iframeWin.submit(); return false; }
+					}
+				})
+			},
+			doEdit: function () {
+				if (!baseTree.node.id) {
+					layer.msg(L("请先选择分类节点"), { icon: 5, anim: 6 });
+					return false;
+				} else {
+					layer.open({
+					type: 2,
+					title: "编辑分类",
+					shadeClose: false,
+					shade: 0.8,
+					area: ['60%', '60%'],
+					content: "/BaseTree/Edit?id=" +( baseTree.node.id ),
+					btn: ['提交', '关闭'],
+					btnAlign: 'l',
+					yes: function (index, layero) {
+						var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+						if (iframeWin.submit) { iframeWin.submit(); return false; }
+					}
+				})
+				}
+			},
+			doDel: function () {
+				if (!baseTree.node.id) {
+					layer.msg(L("请先选择分类节点"), { icon: 5, anim: 6 });
+					return false;
+				} else {
+					abp.message.confirm(L("确认删除此分类节点?相应子节点也将被删除"), function () {
+						func.runAsync(abp.services.app.baseTree.deleteEntity([baseTree.node.id]).done(function () {
+							baseTree.reload();
+						}));
+					})
+				}
+			}
+		}
+        }();
+    function showRemoveBtn(treeId, treeNode) {
+            //return treeNode.level>0;
+        return true;
+        }
+        function addHoverDom(treeId, treeNode) {
+            var sObj = $("#" + treeNode.tId + "_span");
+            if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+            var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                + "' title='add node' onfocus='this.blur();'></span>";
+            sObj.after(addStr);
+            var btn = $("#addBtn_" + treeNode.tId);
+            if (btn) btn.bind("click", function () {
+                baseTree.doAdd(treeNode.id);
+                
+                return false;
+            });
+        };
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_" + treeNode.tId).unbind().remove();
+        };
+</script>

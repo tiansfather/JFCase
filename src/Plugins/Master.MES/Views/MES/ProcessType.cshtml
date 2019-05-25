@@ -1,0 +1,228 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+
+@section styles{
+    <style>
+        /*---------------移动---------------------------*/
+        .dom-move-td {
+            cursor: move;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80%;
+            max-width: 1500px;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .dom-move-td .layui-table {
+            margin: 0 !important;
+            color: #000;
+            background: #f2f2f2;
+        }
+
+        .dom-move-td tr {
+            border-top: 1px solid #ccc;
+        }
+
+        .dom-move-td tr {
+            width: 150px;
+        }
+
+        .moveFlag {
+            border: 1px dashed;
+        }
+
+        .moveFlag td {
+            border: none !important;
+        }
+
+        .moveFlag td {
+            opacity: 0.1;
+        }
+    </style>
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card" id="app" v-cloak>
+        <blockquote class="layui-elem-quote" style="padding:5px;margin-bottom:0">
+            @L("工序初始化")
+            <button type="button" class="layui-btn layui-btn-sm" @@click="addProcessType">@L("添加工序")</button>
+            &emsp;&emsp;&emsp;&emsp;@L("请填写单价以产生实时的加工成本")
+        </blockquote>
+        <table class="layui-hide" id="ProcessType" lay-filter="ProcessType"></table>
+        <div class="table-wrap_drag">
+            <table class="layui-table " lay-size="sm" lay-even>
+                <thead>
+                    <tr>
+                        <td>@L("序号")</td>
+                        <td>@L("工序名称")</td>
+                        <td>@L("单价")</td>
+                        <td>@L("操作")</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item,index) in processTypes" :key="item.id" :class="{moveFlag:item.moveFlag}">
+                        <td @@mousedown="moveTR" style="cursor: move;">{{index+1}}</td>
+                        <td is="edit-td" :value="item.processTypeName" @@input="function(a){item.processTypeName=a;}"></td>
+                        <td is="edit-td" :value="item.price" @@input="function(a){item.price=a;}"></td>
+                        <td>
+                            <button class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-note"></i></button>
+                            @*<button class="layui-btn layui-btn-xs layui-btn-primary layui-btn-danger" onclick="alert('删除')">删除</button>*@
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="dom-move-td" v-if="typeof moveObj.index=='number'">
+            <table class="layui-table " lay-size="sm">
+                <tbody>
+                    <tr>
+                        <td style="width:70px;">{{moveObj.index+1}}</td>
+                        <td>{{moveObj.processTypeName}}</td>
+                        <td>{{moveObj.price}}</td>
+                        <td><button class="layui-btn layui-btn-xs"><i class="layui-icon layui-icon-note"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/html" id="toolbar">
+        @*<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>*@
+    </script>
+    <script>
+        function submit() {
+            var hadDuplicate =isEmpty=false;
+            var repD = app.processTypes.map(function (elm, index) {
+                hadDuplicate = app.processTypes.some(function (everyE,indexE) {//做些验证
+                    if (indexE != index) {
+                        return elm == everyE;
+                    }
+                });
+                if (hadDuplicate) {
+                    hadDuplicate=index+1
+                }
+                if (!elm) {
+                    isEmpty = index + 1;
+                }
+                elm.sort = index;
+                return elm;
+            })
+            if (hadDuplicate) {
+                layer.msg('第' + hadDuplicate +'项的工序有重复，请注意检查')
+                return 
+            }
+            if (isEmpty) {
+                layer.msg('第' + hadDuplicate + '项的工序为空值，请注意检查')
+                return 
+            }
+            abp.services.app.processType.updateProcessTypes(repD).done(function () {
+                parent.layer.closeAll();
+                parent.layer.msg('提交成功');
+            })
+        }
+		var app;
+		config.ready = function () {
+            var table = layui.table;
+			app = new Vue({
+				el: '#app',
+				data: {
+                    processTypes: [],
+                    moveObj: {}
+				},
+                methods: {
+                    loadData: function () {
+                        var that = this;
+                        abp.services.app.processType.getAll().done(function (data) {
+                            that.processTypes = data;
+                            //that.loadTable();
+                        })
+                    },
+                    
+                    moveTR: function (ev) {
+                        var dragObj = {
+                            setArr: function (index, newV) {
+                                that.processTypes.splice(index, 1, newV)
+                            },
+                            reorder: function (i, sum) {
+                                if ((i > 0 && sum < 0) || (sum > 0 && i < that.processTypes.length - 1)) {
+                                    var obj = that.processTypes[i + sum];
+                                    this.setArr(i + sum, that.processTypes[i])
+                                    this.setArr(i, obj)
+                                }
+                            },
+                            trmouseEnter: function (ev) {
+                                var moveToIndex = $(this).index();
+                                dragObj.reorder(nowIndex, moveToIndex - nowIndex);
+                                that.moveObj.index = nowIndex = moveToIndex;
+                                console.log($(this).index(), moveToIndex)
+                            }
+                        }
+
+                        var that = this,
+                            oEvent = ev || event,
+                            oDiv = $(oEvent.target),
+                            bLeft = oDiv.offset().left,
+                            bTop = oDiv.offset().top,
+                            disX = oEvent.clientX,
+                            disY = oEvent.clientY - bTop,
+                            nowIndex = oDiv.closest('tr').index();
+
+                        
+                        //让被拖拽的元素赋值展现
+                        this.moveObj = this.processTypes[nowIndex];
+                        this.moveObj.index = nowIndex;
+                        this.$nextTick(function () { $('.dom-move-td').offset({ left: disX + 10, top: bTop })})
+                        this.processTypes[nowIndex].moveFlag = true;//将被拖拽的透明化
+                 
+                        $('.table-wrap_drag tbody tr').on('mouseenter', dragObj.trmouseEnter)
+                        document.onmousemove = function (ev) {
+                            var oEvent = ev || event;
+                            var l = oEvent.clientX;
+                            var t = oEvent.clientY - disY;
+                            var $wrap = $('body');//要移植到其他系统，需确认最外层元素
+                            if (l < 0) {
+                                l = 0;
+                            }
+                            else if (l > $wrap.width()) {
+                                l = $wrap.width()
+                            }
+
+                            if (t < 0) {
+                                t = 0;
+                            }
+                            else if (t > $wrap.height() - 10) {
+                                t = $wrap.height() - 10
+                            }
+                            $('.dom-move-td').offset({ left: l + 10, top: t });
+                        };
+
+                        document.onmouseup = function () {
+                            document.onmousemove = null;
+                            document.onmouseup = null;
+                            $('.table-wrap_drag tbody tr').off('mouseenter', dragObj.trmouseEnter)
+                            that.moveObj = {index:''};
+                            that.processTypes[nowIndex].moveFlag = false;
+                            var task = that.processTypes[nowIndex];
+                            that.processTypes.splice(nowIndex, 1, task);
+                        };
+
+                        event.preventDefault();
+                        return false;
+                    },
+                    addProcessType: function () {
+                        this.processTypes.push({ processTypeName:'',price:''})
+                    }
+				},
+                mounted: function () {
+                    this.loadData();
+
+				}
+
+			});
+
+		}
+    </script>
+
+}

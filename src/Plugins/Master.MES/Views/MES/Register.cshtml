@@ -1,0 +1,144 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    //微信端注册页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "注册";
+}
+@section styles{
+    <style>
+        .verify-span {
+            color:red;
+            font-size:14px;
+        }
+    </style>
+    
+}
+<div id="app" style="display:none">
+    <div class="weui-cells__title" style="text-align: center; color: #c74949; font-size: 20px">模来模往注册</div>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">企业名称<span class="verify-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" v-model="currentItem.companyName">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">账套名<span class="verify-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" v-model="currentItem.tenancyName" placeholder="公司简写,用于登录系统">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">姓名<span class="verify-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" v-model="currentItem.name">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">手机号码<span class="verify-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" v-model="currentItem.mobile">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">登录密码<span class="verify-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="password" v-model="currentItem.password" placeholder="6~16个字符，区分大小写">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">重复密码<span class="verify-span">*</span></label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="password" v-model="currentItem.password2" placeholder="请再次填写密码">
+            </div>
+        </div>
+    </div>
+
+    <div class="weui-btn-area" style="position: fixed; bottom: 2px; width: 92%;">
+        <a class="weui-btn weui-btn_primary" @@click="doSubmit">提交</a>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        var app;
+        app = new Vue({
+            el: '#app',
+            data: {
+                currentItem: { inviter: null, companyName: null }
+            },
+            methods: {
+                doSubmit: function () {
+                    var currentItem = this.currentItem;
+                    //有效性检测
+                    if (!currentItem.companyName) {
+                        $.toptip('请输入公司名', 'error');
+                        return false;
+                    }
+                    if (!currentItem.tenancyName) {
+                        $.toptip('请输入账套名', 'error');
+                        return false;
+                    }
+                    if (!currentItem.mobile) {
+                        $.toptip('请输入手机号', 'error');
+                        return false;
+                    }
+                    if (!currentItem.name) {
+                        $.toptip('请输入姓名', 'error');
+                        return false;
+                    }
+                    if (!currentItem.password) {
+                        $.toptip('请输入密码', 'error');
+                        return false;
+                    }
+                    if (!(/^.{6,16}$/.test(currentItem.password))) {
+                        $.toptip('密码长度需为6~16个字符', 'error');
+                        return false;
+                    }
+                    if (!currentItem.password2) {
+                        $.toptip('请重复输入密码', 'error');
+                        return false;
+                    }
+                    if (currentItem.password2 != currentItem.password) {
+                        $.toptip('两次密码输入不一致', 'error');
+                        return false;
+                    }
+
+                    func.runAsync(abp.services.app.mesTenancy.register(currentItem).done(function () {
+                        //abp.message.success('注册成功，请耐心等待后台审核');
+                        //location.href = '/WeiXin/GuanZhu';
+                        if ($.getUrlParam("companyName") && $.getUrlParam("inviter")) {
+                            //是加工点或客户
+                            location.href = '/WeiXin/Success?msg=' + encodeURIComponent('注册成功，欢迎登陆');
+                        } else {
+                            //是新注册
+                            location.href = '/WeiXin/Success?msg=' + encodeURIComponent('注册成功，请耐心等待后台审核');
+                        }
+                    }));
+                }
+
+            },
+            mounted: function () {
+                this.currentItem.inviter = $.getUrlParam("inviter");
+                this.currentItem.companyName =this.currentItem.inviterUnitName = $.getUrlParam("companyName");
+                $("#app").show();
+
+            }
+
+        });
+    </script>
+
+}

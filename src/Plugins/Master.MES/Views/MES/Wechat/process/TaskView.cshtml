@@ -1,0 +1,370 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    //微信端加工点查看加工任务页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "加工任务";
+}
+@section styles{
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <style>
+        .btm-img {
+            width: 100%;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .weui-cell {
+            padding: 8px 10px;
+        }
+
+        .weui-textarea {
+            font-size: 14px;
+        }
+    </style>
+}
+<div id="app">
+    <div class="weui-cells__title" style="text-align: center; color: #c74949; font-size: 20px">{{currentItem.tenancyName}} 加工任务</div>
+    @*<div class="weui-cells__title">预计工时</div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" placeholder="请输入预计工时" v-model="currentItem.estimateHours">
+                </div>
+            </div>
+        </div>*@
+    @*<div class="weui-cells__title">加工费用</div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" placeholder="请输入加工费用(下机24小时内录入有效)" v-model="currentItem.feeFromProcessor">
+                </div>
+            </div>
+        </div>*@
+
+    <div class="weui-cells weui-cells_form" v-if="currentItem.submitFeeFromProcessor">
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">加工费用<span style="color:red;">*</span></label>
+            </div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" placeholder="请输入金额" v-model="currentItem.submitFeeFromProcessor.fee">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">单价</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" placeholder="请输入" v-model="currentItem.submitFeeFromProcessor.price">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">数量/单位</label>
+            </div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" placeholder="请输入" v-model="currentItem.submitFeeFromProcessor.num">
+            </div>
+        </div>
+        <div class="weui-cells__title">备注</div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <textarea class="weui-textarea" placeholder="请输入" rows="3" v-model="currentItem.submitFeeFromProcessor.info"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="weui-cells weui-cells_form" style="margin-bottom: 10px;">
+        <wx-uploader-img v-model="imgArr"></wx-uploader-img>
+    </div>
+
+    <div class="weui-btn-area">
+        <a class="weui-btn weui-btn_primary" href="javascript:" @@click="doSubmit">提交</a>
+    </div>
+    <div class="weui-cells weui-cells_form">
+
+        <mb-project-detail :item="currentItem"></mb-project-detail>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">加工工艺</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" :value="currentItem.processTypeName" readonly>
+            </div>
+        </div>
+    </div>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <textarea class="weui-textarea" rows="3" name="remarks" id="remarks" :value="currentItem.taskInfo" readonly></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="weui-cells__title" style="color:red">长按图片转发操作工报工,右上角转发无效</div>
+    <img src="@ViewBag.ImgPath" @@click="previewImage('@ViewBag.ImgPath')" class="btm-img" />
+    <img :src="app.currentItem.sheetFile.filePath+'?w=450&gap=false' " @@click="previewImage(app.currentItem.sheetFile.filePath)" v-if="currentItem.sheetFile&&currentItem.sheetFile.filePath" class="btm-img" />
+    <ul class="fileUl">
+        @* +'?w=450&gap=false' *@
+        <li v-for="(item,index) in currentItem.files" v-if="currentItem.files&&currentItem.files.length">
+            <img :src="item.filePath+'?w=450&gap=false' " @@click="previewImage(item.filePath)" v-if="func.judgeFileType(item.fileName).type=='jpg'" class="btm-img" />
+            <a :href="item.filePath" target="_blank" v-else :style="{color:func.judgeFileType(item.fileName).color}" class="btm-img">{{item.fileName}}</a>
+        </li>
+    </ul>
+    @*<div class="weui-btn-area" style="position: fixed; bottom: 2px; width: 92%;">
+            <a class="weui-btn weui-btn_primary" href="javascript:doSubmit();" id="submitBtn">提交</a>
+        </div>*@
+</div>
+
+
+@section scripts{
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+        wx.error(function (res) {
+			console.log(res);
+			alert('验证失败:' + JSON.stringify(res));
+        });
+
+         wx.ready(function () {
+
+            });
+    </script>
+    <style>
+        .mobeil-cell-project .iconfont {
+            color: #c74949;
+            margin-right: 10px;
+        }
+    </style>
+    <script type="text/x-template" id="mbProjectDetail">
+        <div class="mobeil-cell-project">
+            <div v-show="showSimple">
+                <div class="weui-cell">
+                    <div style="width: 55%;">模号:{{item.projectSN}}</div>
+                    <div style="width: 45%;" @@click="showSimple=!showSimple"><i class="iconfont icon-gongjian"></i>{{item.partName}}</div>
+                </div>
+                <div class="weui-cell">
+                    <div style="width: 55%;">规格:{{item.partSpecification}}</div>
+                    <div style="width: 45%;" @@click="showSimple=!showSimple"><i class="iconfont icon-number"></i>{{item.partNum}}</div>
+                </div>
+            </div>
+            <div v-show="!showSimple">
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">模具编号</label>
+                    </div>
+                    <div class="weui-cell__bd">
+                        <input class="weui-input" type="text" :value="item.projectSN" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件名称</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partName" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件规格</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partSpecification" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件数量</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partNum" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script>
+        Vue.component('mb-project-detail', {
+            data: function () {
+                var showSimple = false;
+                if (window.innerHeight < 660) {
+                    showSimple = true;
+                }
+                return { showSimple: showSimple }
+            },
+            props: ['item'],
+            template: '#mbProjectDetail',
+            created: function () {
+                console.log(this.item)
+            }
+        })
+    </script>
+    <script>
+		var app;
+		var imgPath = '@ViewBag.ImgPath';
+        app = new Vue({
+            el: '#app',
+            data: {
+                taskId:0,
+                currentItem: {
+                    submitFeeFromProcessor: {}
+                },
+                imgArr:[]
+			},
+			computed: {
+				canSubmit: function () {
+					//已下机的不允许提交数据,此条件暂未使用，目前直接后台做判断下机24小时内方可提交
+					return this.currentItem.processTaskStatus == 1 || this.currentItem.processTaskStatus == 2 || this.currentItem.processTaskStatus == 3;
+                },
+                imgPaths: function () {
+                    var arr = [location.origin + '@ViewBag.ImgPath'];
+                    if (this.currentItem.sheetFile && this.currentItem.sheetFile.filePath) {
+                        arr.push(location.origin + app.currentItem.sheetFile.filePath)
+                    }
+                    this.currentItem.files.forEach(function (item,index) {
+                        if (func.judgeFileType(item.fileName).type == 'jpg') {
+                            arr.push(location.origin + item.filePath)
+                        }
+                    })
+                    return arr
+                }
+			},
+            methods: {
+                previewImage: function (url) {
+                    var url = location.origin + url
+                    wx.previewImage({
+                        current: url,
+                        urls: this.imgPaths
+                    });
+                },
+                loadItem: function (taskId) {
+                    var that = this;
+                    func.runAsync(abp.services.app.processTask.getReportTaskInfoById(taskId).done(function (data) {
+                        !data.submitFeeFromProcessor && (data.submitFeeFromProcessor = { });
+                        that.currentItem = data;
+
+                        $("#app").show();
+                    }));
+
+				},
+                doSubmit: function () {
+                    var that = this;
+                    var submitFeeFromProcessor = this.currentItem.submitFeeFromProcessor;
+                    var ret = {
+                        fee: submitFeeFromProcessor.fee,
+                        price: submitFeeFromProcessor.price,
+                        num:submitFeeFromProcessor.num,
+                        info:submitFeeFromProcessor.info,
+                    };
+                    ret.taskId = this.taskId;
+                    if (!ret.fee || isNaN(Number(ret.fee))) {
+						$.toptip('请输入数字加工费用', 'warning');
+						return false;
+                    }
+
+                    $.confirm("确认进行回单提交?",async function () {
+                        abp.ui.setBusy();
+                        if (that.imgArr.length) {
+                            ret.files = await abp.services.app.weiXin.downLoadMedia(that.imgArr);
+                            await abp.services.app.processTask.attachFiles(that.taskId, ret.files, 'programFiles')
+                        }
+                        verifyFee();
+                        //上传数据
+                        function verifyFee() {
+                            func.runAsync(abp.services.app.processTask.submitFeeFromProcessor(ret).done(function () {
+                                $.alert("提交成功", "成功", function () {
+                                    location.href = '/WeiXin/Success?msg=' + encodeURIComponent('提交成功');
+                                });
+                            }))
+                        }
+                    })
+				}
+            },
+            mounted: function () {
+                this.taskId = $.getUrlParam("id");
+                this.loadItem(this.taskId);
+
+            }
+
+        });
+		config.ready = function () {
+			//layui.use('upload', function () {
+			//	layui.upload.render({
+			//		elem: '#chooseBtn'
+			//		, url: '/file/upload/'
+			//		, accept: 'images'
+			//		, acceptMime: 'image/*'
+			//		, before: function () {
+			//			layui.layer.load()
+			//		}
+			//		, done: function (res) {
+			//			layui.layer.closeAll('loading');
+			//			//获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意：此乃 layui 2.1.0 新增
+			//			var item = this.item;
+			//			//如果上传失败
+			//			if (!res.result.success) {
+			//				layer.msg(res.result.msg, { icon: 5, anim: 6 });
+			//			}
+			//			//上传成功
+			//			else {
+
+			//				$("#imglist").append("<li class='weui-uploader__file'><img src='" + res.result.filePath + "?w=100' /></li>");
+			//				app.files.push({ fileName: res.result.fileName, filePath: res.result.filePath });
+
+			//			}
+			//		}
+			//	});
+			//})
+
+		}
+
+
+    </script>
+
+}

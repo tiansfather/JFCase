@@ -1,0 +1,514 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@{
+    ViewData["Title"] = "Index";
+    @section styles{
+        <style>
+            .layui-anim.layui-anim-upbit {
+            }
+
+            .my-partName-img {
+                margin: 10px auto;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 150px;
+                width: 150px;
+                background: #eaeaea;
+                cursor: pointer
+            }
+
+                .my-partName-img img {
+                    width: 150px;
+                }
+
+            .layui-col-xs2 {
+                height: 500px;
+                overflow: auto;
+            }
+        </style>
+    }
+}
+
+<div style="margin:5px 10px;">
+    <div id="bomTreeWrap">
+        <ul id="bomTree" class="ztree" style="padding: 2px; border: 1px solid #ddd; overflow: auto;"></ul>
+    </div>
+    <div id="msgWrap">
+        <div class="layui-form layui-form-pane" id="app" v-show="showPartInfo && projectId" v-cloak>
+            <div style="display:flex;">
+                <div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("零件名称")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" v-model="part.partName"  autocomplete="off" id="partName">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("零件编码")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" :value="part.id>0?part.partSN:'自动产生'" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("物料编码")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="materialCode" class="layui-input" v-model="part.materialCode" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("物料应到料时间")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="laydate layui-input" v-model="part.requireDate" placeholder="yyyy-MM-dd HH:mm:ss">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("数量")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" v-model="part.partNum">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("材质")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" v-model="part.material">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("规格")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" v-model="part.partSpecification">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">@L("单位")</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" v-model="part.measureMentUnit">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+
+                        <label class="layui-form-label">@L("属性")</label>
+                        <div class="layui-input-block" tips="未启用生产的零件不会出现在加工路线">
+                            <input type="checkbox" name="enableProcess" title="生产" v-model="part.enableProcess" lay-filter="partEnables">
+                            <input type="checkbox" name="enableBuy" title="采购" v-model="part.enableBuy" lay-filter="partEnables">
+                            <input type="checkbox" name="enableStorage" title="仓库" v-model="part.enableStorage" lay-filter="partEnables">
+                            @*<input type="checkbox" :checked="part.enableProcess" name="enableProcess" lay-skin="switch" title="生产" lay-text="ON|OFF">
+                            <input type="checkbox" :checked="part.enableBuy" name="enableBuy" lay-skin="switch" title="采购" lay-text="ON|OFF">
+                            <input type="checkbox" :checked="part.enableStorage" name="enableStorage" lay-skin="switch" title="仓库" lay-text="ON|OFF">*@
+
+                        </div>
+                    </div>
+                </div>
+                <div style="flex-grow: 1;">
+                    <div class="my-partName-img picupload" tips="点击上传零件图片">
+                        <img :src="part.partImg || '/assets/images/upImg1.png'" alt="零件" />
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;">
+                <input type="button" class="layui-btn" :value="part.id?'修改':'添加'" @@click="doSubmit" />
+                <input type="button" class="layui-btn" value="取消" onclick="app.part = {}; app.showPartInfo = false; refresh();" />
+            </div>
+            <hr class="layui-bg-gray">
+        </div>
+        <div class="LAY-app-message-btns">
+            <input type="button" class="layui-btn layui-btn-sm" value="导入" onclick="doImport()" />
+            <input type="button" class="layui-btn layui-btn-sm layui-btn-normal" value="添加" onclick="app.part = {}; app.showPartInfo = true; refresh();" />
+            <button class="layui-btn layui-btn-danger layui-btn-sm" type="button" buttonname="删除" modulekey="Bom" params="" lay-event="Delete" confirmmsg="确认删除？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.bom.deleteEntity" onclick="func.callModuleButtonEvent()">删除</button>
+        </div>
+
+        <table autoevent="1" id="Bom" lay-filter="Bom" class="layui-table " lay-data="{cellMinWidth:'80',height:'full-330',where:{where:''}, page: { limit: 20, limits: [20,100, 200] }, id:'Bom', even:true,done:config.onTableDone, url: '/api/services/app/bom/GetPageResult',where:{where:'1>2'}}">
+            <thead>
+                <tr>
+                    <th lay-data="{align: 'center', type: 'checkbox', fixed: 'left'}"></th>
+                    <th lay-data="{align:'center',field:'partSN'}">零件编码</th>
+                    <th lay-data="{align:'center',field:'partName'}">名称</th>
+                    <th lay-data="{align:'center',field:'partSpecification'}">规格</th>
+                    <th lay-data="{align:'center',field:'partNum'}">数量</th>
+                    <th lay-data="{align:'center',field:'material'}">材质</th>
+                    <th lay-data="{align:'center',field:'measureMentUnit'}">单位</th>
+                    <th lay-data="{align:'center',field:'enableProcess',templet:'#enableProcess'}">生产</th>
+                    <th lay-data="{align:'center',field:'materialStatus'}">物料状态</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/html" id="enableProcess">
+        {{# if(d.enableProcess) {}}
+        <span class="layui-badge layui-bg-green">是</span>
+        {{# }else{ }}
+        <span class="layui-badge layui-bg-gray">否</span>
+        {{# } }}
+    </script>
+    <script>
+
+
+        var searchKeys = {};
+        var app, treeObj;
+
+        //layui加载完成后调用此方法，
+        config.ready = function () {
+
+            initLayuiForm();
+
+            var curExpandNode = null;
+            var setting = {
+                view: {
+                    addHoverDom: addHoverDom,
+                    removeHoverDom: removeHoverDom,
+                    selectedMulti: false
+                },
+                edit: {
+                    enable: true,
+                    showRemoveBtn: showRemoveBtn,
+                    showRenameBtn: false
+                },
+                keep: {
+                    parent: true
+                },
+                async: {
+                    enable: true,
+                    type: 'get',
+                    url: "/api/services/app/bom/getbomtree",
+                    autoParam: ["id", "level"],
+                    //otherParam: { "otherParam": "zTreeAsyncTest" },
+                    //dataFilter: filter
+                },
+                data: {
+                    key: {
+                        name: 'name',
+                        title: 'name'
+                    },
+                    simpleData: {
+                        enable: true,
+                        idKey: 'id',
+                        pIdKey: 'parentId',
+                        rootPId: 'null'
+                    }
+                },
+                callback: {
+                    beforeDrag: function (treeId, treeNodes) {
+                        //前三级不允许拖动
+                        for (var i = 0, l = treeNodes.length; i < l; i++) {
+                            if (treeNodes[i].level <= 2) { return false; }
+                        }
+                        return true;
+                    },
+                    beforeDrop: function (treeId, treeNodes, targetNode, moveType, isCopy) {
+                        //不允许拖动到第一级和第二级节点，不允许拖动到其它项目节点，当目标节点是二级节点（即项目节点）时，只允许拖动类型为inner,即把节点放到项目节点内
+                        if (targetNode.level < 2 || treeNodes[0].projectId != targetNode.projectId || targetNode.level == 2 && moveType != inner) {
+                            abp.message.error(L("此操作不允许"));
+                            return false;
+                        }
+                        console.log(treeNodes);
+                        console.log(targetNode);
+                        console.log(moveType);
+                    },
+                    onDrop: function (event, treeId, treeNodes, targetNode, moveType, isCopy) {
+                        if (!moveType) {
+                            return;
+                        }
+                        abp.services.app.bom.moveTreeNode(treeNodes[0].id, targetNode.id, moveType);
+                    },
+                    onClick: function (event, treeId, treeNode) {
+                        app.projectId = treeNode.projectId;
+                        treeObj.expandNode(treeNode, null, null, null, true);
+                        if (treeNode.level > 2) {
+                            //点击的是零件,加载零件信息
+                            app.loadPart(treeNode.id);
+                        } else if (treeNode.level == 2) {
+                            //点击项目,加载bom表
+                            app.showPartInfo = false;
+                            layui.table.reload('Bom', {
+                                where: { where: 'ProjectId=' + treeNode.projectId }
+                            })
+                        }
+                        console.log(treeNode);
+                    },
+                    beforeExpand: function (treeId, treeNode) {
+                        var pNode = curExpandNode ? curExpandNode.getParentNode() : null;
+                        var treeNodeP = treeNode.parentTId ? treeNode.getParentNode() : null;
+                        var zTree = $.fn.zTree.getZTreeObj("bomTree");
+                        for (var i = 0, l = !treeNodeP ? 0 : treeNodeP.children.length; i < l; i++) {
+                            if (treeNode !== treeNodeP.children[i]) {
+                                zTree.expandNode(treeNodeP.children[i], false);
+                            }
+                        }
+                        while (pNode) {
+                            if (pNode === treeNode) {
+                                break;
+                            }
+                            pNode = pNode.getParentNode();
+                        }
+                        if (!pNode) {
+                            singlePath(treeNode);
+                        }
+
+                    },
+                    onExpand: function (event, treeId, treeNode) {
+                        curExpandNode = treeNode;
+                    }
+                }
+            };
+            function singlePath(newNode) {
+                if (newNode === curExpandNode) return;
+
+                var zTree = $.fn.zTree.getZTreeObj("bomTree"),
+                    rootNodes, tmpRoot, tmpTId, i, j, n;
+
+                if (!curExpandNode) {
+                    tmpRoot = newNode;
+                    while (tmpRoot) {
+                        tmpTId = tmpRoot.tId;
+                        tmpRoot = tmpRoot.getParentNode();
+                    }
+                    rootNodes = zTree.getNodes();
+                    for (i = 0, j = rootNodes.length; i < j; i++) {
+                        n = rootNodes[i];
+                        if (n.tId != tmpTId) {
+                            zTree.expandNode(n, false);
+                        }
+                    }
+                } else if (curExpandNode && curExpandNode.open) {
+                    if (newNode.parentTId === curExpandNode.parentTId) {
+                        zTree.expandNode(curExpandNode, false);
+                    } else {
+                        var newParents = [];
+                        while (newNode) {
+                            newNode = newNode.getParentNode();
+                            if (newNode === curExpandNode) {
+                                newParents = null;
+                                break;
+                            } else if (newNode) {
+                                newParents.push(newNode);
+                            }
+                        }
+                        if (newParents != null) {
+                            var oldNode = curExpandNode;
+                            var oldParents = [];
+                            while (oldNode) {
+                                oldNode = oldNode.getParentNode();
+                                if (oldNode) {
+                                    oldParents.push(oldNode);
+                                }
+                            }
+                            if (newParents.length > 0) {
+                                zTree.expandNode(oldParents[Math.abs(oldParents.length - newParents.length) - 1], false);
+                            } else {
+                                zTree.expandNode(oldParents[oldParents.length - 1], false);
+                            }
+                        }
+                    }
+                }
+                curExpandNode = newNode;
+            }
+            //$.fn.zTree.init($("#bomTree"), setting, zNodes);
+            treeObj = $.fn.zTree.init($("#bomTree"), setting);
+            var element = layui.element;
+            var table = layui.table;
+
+            app = new Vue({
+                el: '#app',
+                data: {
+                    part: {},
+                    projectId: null,
+                    showPartInfo: false
+                },
+                methods: {
+                    doSubmit: function () {
+                        var that = this
+                        abp.message.confirm(L('确认保存'), function () {
+                            that.part.projectId = that.projectId;
+                            var datapart = that.part;
+                            console.log(datapart);
+                            func.runAsync(abp.services.app.bom.submitBomInfo(app.part).done(function (datapart) {
+                                abp.message.success(L('提交成功'));
+                                that.part = {};
+                                that.showPartInfo = false;//隐藏
+                                config.refresh();//刷新树及表格
+                            }))
+                        })
+                    },
+                    loadPart: function (id) {
+                        var that = this;
+                        func.runAsync(abp.services.app.bom.getBomInfo(id).done(function (data) {
+                            that.part = data;
+                            that.showPartInfo = true;
+                            refresh();
+                        }))
+                    }
+                },
+                mounted: function () {
+                    layui.suggest.render({
+                        id: 'partName', //设置容器唯一id
+                        type: 'sug', //设置输入框提示类型：sug-下拉框，sugTable-下拉表格
+                        url: '/api/services/app/Bom/GetSuggestResult?columnKey=partName&keyword=' //设置异步数据接口,url为必填项
+                    });
+                    func.splitDrag($('#bomTreeWrap'), $('#msgWrap'), { key: 'bomTreeWidth' })
+                }
+            });
+
+            //config.refresh();
+            func.renderUpload('.picupload', {
+                trigger: 'click', callback: function (res) {
+                    var item = $(upload.element);
+                    //    console.log(item);
+                    //   console.log(res);
+                    item.find('img').attr('src', res.filePath);
+                    app.part.partImg = res.filePath;
+                    //    console.log(app.part)
+                    //var partid = item.attr("partid");
+                    //func.runAsync(abp.services.app.part.setPartImg(partid, res.filePath).done(function () {
+                    //    item.find('img').attr('src', res.filePath)
+                    //    //item.append("<img src='"+res.result.filePath+"'/>");
+                    //}));
+                }
+            })
+
+            var tableSelect = layui.tableSelect;
+            tableSelect.render({
+                elem: '#materialCode',	//定义输入框input对象 必填
+                checkedKey: 'code', //表格的唯一建值，非常重要，影响到选中状态 必填
+                searchKey: 'name',	//搜索输入框的name值 默认keyword
+                searchPlaceholder: '物料搜索',	//搜索输入框的提示文字 默认关键词搜索
+                table: {	//定义表格参数，与LAYUI的TABLE模块一致，只是无需再定义表格elem
+                    url: '/api/services/storage/material/getPageResult',
+                    cols: [[
+                        { type: 'radio' },
+                        { field: "code", title: "物料编码" },
+                        { field: "name", title: "物料名称" },
+                        { field: "specification", title: "规格型号" },
+                        { field: "brand", title: "品牌" },
+                    ]]
+                },
+                done: function (elem, data) {
+                    console.log(elem, data)
+                    Vue.set(app.part, 'materialCode', data.data[0].code)
+                    //  Vue.set(app.part, 'materialName', data.data[0].name)
+                    Vue.set(app.part, 'partSpecification', data.data[0].specification)
+                    Vue.set(app.part, 'measureMentUnit', data.data[0].measureMentId_display)
+                }
+            })
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: '.laydate',
+                type: 'datetime',
+                done: function (value, date, endDate) {
+                    app.part.requireDate = value;
+                }
+            });
+
+        }
+        //当检索窗体提交后会调用此方法
+        config.reloadTable = function () {
+            layui.table.reload('Bom', {
+                where: getWhere()
+
+            })
+        }
+        config.onTableDone = function () {
+
+        }
+        //当编辑或删除或添加表单提交后会调用此方法
+        config.refresh = function () {
+            layui.table.reload('Bom', {
+                where: { where: 'ProjectId=' + app.projectId }
+            })
+            //刷新树
+            var node = treeObj.getNodesByParam("projectId", app.projectId)[0];
+            treeObj.reAsyncChildNodes(node, "refresh");
+        }
+        function getWhere() {
+            var where = { searchKeys: JSON.stringify(searchKeys) };
+
+            return where;
+
+        }
+
+        function initLayuiForm() {
+            layui.form.on('checkbox(partEnables)', function (data) {
+                console.log(data)
+                app.part[data.elem.name] = data.elem.checked;
+                var name = data.elem.name;
+                if (data.elem.checked) {
+                    if (name == 'enableStorage' && app.part['enableBuy'] == true) {
+                        $("input[type='checkbox'][name='enableBuy']").prop("checked", false);
+                        app.part['enableBuy'] = false;
+                    } else if (name == 'enableBuy' && app.part['enableStorage'] == true) {
+                        $("input[type='checkbox'][name='enableStorage']").prop("checked", false);
+                        app.part['enableStorage'] = false;
+                    }
+                    form.render('checkbox');
+                }
+            })
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+            })
+        }
+        function showRemoveBtn(treeId, treeNode) {
+            return false;
+        }
+        function addHoverDom(treeId, treeNode) {
+            //if (treeNode.level != 1) {
+            //	return false;
+            //}
+            //var sObj = $("#" + treeNode.tId + "_span");
+            //if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+            //var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+            //	+ "' title='导入Bom' onfocus='this.blur();'></span>";
+            //sObj.after(addStr);
+            //var btn = $("#addBtn_" + treeNode.tId);
+            //if (btn) btn.bind("click", function () {
+
+            //	return false;
+            //});
+        };
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_" + treeNode.tId).unbind().remove();
+        };
+
+
+        function doImport() {
+            if (!app.projectId) {
+                abp.message.error(L('请先选择项目再进行导入'));
+                return false;
+            }
+            var params = { projectId: app.projectId }
+            layer.open({
+                type: 2,
+                title: "导入",
+                shadeClose: false,
+                shade: 0.8,
+                area: ['80%', '80%'],
+                content: "/Import/?type=Master.MES.Dtos.PartDto&parameter=" + encodeURIComponent(JSON.stringify(params)),
+                btn: []
+            })
+        }
+
+
+
+    </script>
+}

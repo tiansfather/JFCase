@@ -1,0 +1,125 @@
+﻿
+@{
+    Layout = "_LayoutDialog";
+}
+
+@section styles{
+<style>
+    #editor .w-e-text-container{
+        height:400px;
+    }
+        .header  p {
+            margin: 1.2em;
+            font-size: 15px;
+        }
+    </style>
+}
+<div id="app" class="layui-hide layui-form layui-form-pane" style="padding:20px">
+    <div class="layui-form-item">
+        <div class="layui-inline header">
+            <p><strong>往来单位：</strong>{{unitNames}}</p>
+            @*<ul>
+                <li v-for="unit in units"><p  v-text="unit"></p></li>
+            </ul>*@
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="" autocomplete="off" class="layui-input" lay-verify="required" v-model="currentItem.helpTitle">
+            </div>
+        </div>
+    </div>
+
+    <input type="button" lay-submit id="submitBtn" style="display:none" />
+
+
+</div>
+<div id="editor">
+</div>
+
+
+@section scripts{
+
+    <script src="~/lib/wangEditor/wangEditor.js"></script>
+    <script>
+        var editor = new wangEditor('#editor')
+        editor.customConfig.uploadImgShowBase64 = true;
+        editor.customConfig.linkImgCallback = function (url) {
+            console.log(url) // url 即插入图片的地址
+        }
+        editor.create();
+        var app;
+        config.ready = function () {
+            $("#editor .w-e-text-container").height(($(window).height() - 200) + "px");
+            layui.form.on("submit", function () {
+                app.currentItem.helpContent = editor.txt.html();
+                var unitIds = app.units.map(function (o) { return o.id; });
+                func.runAsync(abp.services.app.mESUnit.sendNotice({ unitIds: unitIds, title: app.currentItem.helpTitle, content: app.currentItem.helpContent })
+                    .done(function (data) {
+                        parent.layer.msg("提交成功");
+                        parent.layer.closeAll("iframe");
+                    }));
+            });
+            app = new Vue({
+                el: '#app',
+                data: {
+                    currentItem: {
+                        helpContent:'',
+                    },
+                    units:[]
+                },
+                computed: {
+                    unitNames: function () {
+                        return this.units.map(function (unit,index) {
+                            return unit.unitName
+                        }).join(';')
+                    }
+                },
+                methods: {
+                    loadItem: function (ids) {
+                        var that = this;
+                        if (ids) {
+                            func.runAsync(abp.services.app.mESUnit.getUnitTenantInfos(ids.split(',')).done(function (data) {
+                                if (!data.every(function (elm, index) {return elm.tenantBinded})) {
+                                    //如果没有全部加入直接return掉
+                                    parent.layer.closeAll();
+                                    parent.abp.message.warn('只能发送给已加入的【往来单位】')
+                                    return
+                                }
+                                that.units = data;
+                                $("#app").removeClass("layui-hide");
+                                editor.txt.html(data.helpContent);
+                                refresh();
+                            }))
+                            return;
+                        }
+                        $("#app").removeClass("layui-hide");
+                        refresh();
+
+                    }
+
+                },
+                mounted: function () {
+                    var ids = $.getUrlParam("data");
+                    this.loadItem(ids);
+
+                }
+            })
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+
+            })
+
+        }
+
+        function submit() {
+            abp.message.confirm(L('确认发布公告?'), function () {
+                $("#submitBtn").trigger("click");
+            });
+            
+        }
+    </script>
+}

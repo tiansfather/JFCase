@@ -1,0 +1,138 @@
+﻿@using Master.Web.Startup
+@using Master.Web
+@using Master.Configuration;
+@using Master.Web.Views.Shared.Components.SideBarNav;
+@using Master.Web.Views.Shared.Components.TopBarNav;
+@inject WebCoreConfiguration WebCoreConfiguration
+@*@inject Master.Timing.AppTimes AppTimes*@
+@model Master.Session.Dto.LoginInformationDto
+@using Master.Web.Components
+@*@inherits Master.Web.Components.MasterRazorPage<TModel>*@
+<style>
+    button 
+    {
+        border-style: solid;
+        border-width: medium;
+        border-color: green;
+        border-style: none;
+        background-color: lightgrey;
+    }
+</style>
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        @*<div id="app" v-cloak>
+            <form class="layui-form">*@
+        <div class="layui-tab layui-tab-brief" lay-filter="settingTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">开通会员</li>
+                <li>套餐升级</li>
+                <li>消费记录</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-row">
+                    </div>
+                    <label style="font-size:16px;margin-left:10px"><b>当前会员</b></label>
+                    <span style="font-size:26px;margin-top:10px;margin-left:10px"><b>全年会员</b></span><span style="color:gray">（2016-01-12 至 2021-01-31）</span>
+                    <div style="margin-top:30px">
+                        <b style="font-size:16px;margin-left:10px;margin-right:20px;position:absolute">会员套餐</b>
+                        <button class="layui-btn layui-btn-primary" style="height:140px;width:200px;margin-left:100px;background-color: lightgrey" onclick="getPrice(this)">
+                            <h2>季度会员</h2>
+                            <p style="font-size:30px;margin-top:10px"><span><em>12000.00</em>元</span></p>
+                        </button>
+                        <button class="layui-btn layui-btn-primary" id="button2" style="height:140px;width:200px;margin-left:10px;background-color: lightgrey" onclick="getPrice(this)">
+                            <h2>半年会员</h2>
+                            <p style="font-size:30px;margin-top:10px"><span><em>22000.00</em>元</span></p>
+                        </button>
+                        <button class="layui-btn layui-btn-primary" style="height:140px;width:200px;margin-left:10px;background-color: lightgrey" onclick="getPrice(this)">
+                            <h2>全年会员</h2>
+                            <p style="font-size:30px;margin-top:10px"><span><em>36000.00</em>元</span></p>
+                        </button>
+                    </div>
+                    <div style="margin-top:30px">
+                        <b style="font-size:16px;margin-left:10px;margin-right:20px">会员时间</b>    <span>可延续至2022-01-31</span>
+                    </div>
+                    <div style="margin-top:30px">
+                        <b style="font-size:16px;margin-left:10px;margin-right:20px">支付方式</b>
+                        <button class="layui-btn layui-btn-primary" style="height:40px;width:120px;margin-left:0px;background-color: lightgrey" onclick="chosed(this)">
+                            <h3>支付宝支付</h3>
+                        </button>
+                        <button class="layui-btn layui-btn-primary" style="height:40px;width:120px;margin-left:10px;background-color: lightgrey" onclick="chosed(this)">
+                            <h3>公司转账</h3>
+                        </button>
+                    </div>
+                    <div style="margin-top:30px">
+                        <b style="font-size:16px;margin-left:10px;margin-right:20px">应付金额</b>   <b id="price" style="color:red;font-size:26px">4500元</b>
+                    </div>
+                </div>
+                <div class="layui-tab-item">todo</div>
+                <div class="layui-tab-item">
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="150">
+                            <col>
+                            <col width="200">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>操作详情</th>
+                                <th>操作时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>开通会员</td>
+                                <td>恭喜您！您已成功开通全年会员，有效期至2018-01-31</td>
+                                <td>2016-01-31</td>
+                            </tr>
+                            <tr>
+                                <td>开通会员</td>
+                                <td>恭喜您！您已成功开通全年会员，有效期至2017-01-31</td>
+                                <td>2016-01-31</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        @*</form>
+            </div>*@
+    </div>
+</div>
+
+
+
+
+<script>
+    var money = 0.00;
+    function getPrice(obj) {
+
+        var tmp = obj;
+        $(tmp).css("background-color", "white");
+        $(tmp).css("border-style", "solid");
+        $(tmp).css("border-color", "green");
+        $(tmp).css("border-width", "medium")
+        $(tmp).siblings().css({ "border-style": "none", "background-color": "lightgrey" });
+        money = $(tmp).find("em").text();
+        //alert("text的值：" + $("#price").text() + "\n" +
+        //    "html的值：" + $("#price").html());
+        
+        $("#price").text(money + "元");
+    }
+    function chosed(obj) {
+        var tmp = obj;
+        $(tmp).css("background-color", "white");
+        $(tmp).css("border-style", "solid");
+        $(tmp).css("border-color", "green");
+        $(tmp).css("border-width", "medium")
+        $(tmp).siblings().css({ "border-style": "none", "background-color": "lightgrey" });
+    }
+</script>
+
+
+
+

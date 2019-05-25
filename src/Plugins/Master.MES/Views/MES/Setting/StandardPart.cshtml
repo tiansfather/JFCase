@@ -1,0 +1,143 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+
+
+<div id="app">
+    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">标准零件库</li>
+            <li>批量模式</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <blockquote class="layui-elem-quote" style="padding:5px;margin-bottom:0">
+                    <span style="color:#999">@L("点击增加更多零件")</span>
+                    <button type="button" class="layui-btn layui-btn-sm" onclick="addRow()">添加项</button>
+
+                </blockquote>
+                <table class="layui-hide" id="dictionary" lay-filter="dictionary"></table>
+
+
+            </div>
+            <div class="layui-tab-item">
+                <blockquote class="layui-elem-quote" style="padding:5px;margin-bottom:0">
+                    <span style="color:#999">请用非中文或非英文或非数字，例如（&nbsp;,&nbsp;&nbsp;、&nbsp;&nbsp;|&nbsp;&nbsp;-&nbsp;&nbsp;/&nbsp;）等等亦可使用空格，隔开两组零件名称</span>
+                </blockquote>
+                <div class="layui-form-item layui-form-text" style="margin-top:10px;">
+                    <label class="layui-form-label">普通文本域</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入内容" v-model="standardData" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script>
+        var app;
+        var table = layui.table;
+        var tabIndex = 0;
+        config.ready = function () {
+            app = new Vue({
+                el: '#app',
+                data: {
+                    standardData: ''
+                },
+                created: function () {
+                    this.standardData = abp.setting.get('MES.StandardPartName');
+                    this.$nextTick(function () {
+                        layui.form.render();
+                        randerTable();
+                    })
+                }
+            });
+            layui.element.on('tab(docDemoTabBrief)', function (data) {
+                if (data.index == 0 && tabIndex != data.index) {
+                    saveData2();
+                    randerTable();
+                    tabIndex = 0;
+                } else if (data.index == 1 && tabIndex != data.index) {
+                    saveData1();
+                    tabIndex = 1;
+                }
+            });
+
+        }
+
+        function randerTable() {
+            var data = [];
+            app.standardData.split(',').forEach(function (i) {
+                data.push({ key: i })
+            })
+            var table = layui.table;
+            window.tableIns = table.render({
+                elem: '#dictionary'
+                , cols: [[ //标题栏
+                    { field: 'key', title: '零件名', edit: 'text' }
+                    , { field: 'operation', title: '操作', toolbar: '#toolbar' }
+                ]]
+                , data: data
+                //,skin: 'line' //表格风格
+                , even: true
+                //,page: true //是否显示分页
+                //,limits: [5, 7, 10]
+                ,limit: 1000 //每页默认显示的数量
+            });
+            //监听工具条
+            table.on('tool(dictionary)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    layer.msg('ID：' + data.id + ' 的查看操作');
+                } else if (obj.event === 'del') {
+                    layer.confirm(L('真的删除行么'), function (index) {
+                        obj.del();
+                        layer.close(index);
+                    });
+                } else if (obj.event === 'edit') {
+                    layer.alert('编辑行：<br>' + JSON.stringify(data))
+                }
+            });
+        }
+        function saveData1() {
+            var data = layui.table.cache["dictionary"];
+            var dic = [];
+            $.each(data, function (i, v) {
+                if (v.key) {
+                    dic.push(v.key);
+                }
+            })
+            console.log(dic)
+            app.standardData = dic.join(',')
+        }
+        function saveData2() {
+            app.standardData = app.standardData.replace(/[^a-z0-9\u4e00-\u9fa5]+/gi, ',')
+
+        }
+        function submit() {
+            if (tabIndex == 0) {
+                saveData1();
+            } else if (tabIndex == 1) {
+                saveData2();
+            }
+            parent.$('[name="MES.StandardPartName"]').val(app.standardData);
+            console.log(app.standardData)
+            parent.$('[lay-submit]').click();
+            parent.layer.closeAll('iframe');
+        }
+        function addRow() {
+            var data = layui.table.cache["dictionary"];
+            data.push({ key: '', value: '' });
+            tableIns.reload({ data: data });
+
+        }
+
+    </script>
+}

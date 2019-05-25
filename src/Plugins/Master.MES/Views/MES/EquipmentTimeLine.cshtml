@@ -1,0 +1,376 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+    ViewData["Title"] = "Index";
+}
+@section styles{
+    <link rel='stylesheet' type='text/css' href='/lib/dhtmlx/scheduler/dhtmlxscheduler_material.css?v=20181212'>
+
+    <style type="text/css">
+        html, body, .layui-anim, .content, #r-treedrag, #r-treedrag-ul, #treeWrap, #schedulerWrap,.r-treedrag-table_wrap {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            box-sizing: border-box;
+            /*overflow: hidden;*/
+        }
+
+        .one_line {
+            white-space: nowrap;
+            overflow: hidden;
+            padding-top: 5px;
+            padding-left: 5px;
+            text-align: left !important;
+        }
+
+        #processTypeTree {
+            padding: 2px;
+            border: 1px solid #ddd;
+            overflow: auto;
+            height: calc(100% - 90px);
+        }
+
+        body .r-bg-brown {
+            background: #898900
+        }
+
+        body .r-bg-green {
+            background: #75d239
+        }
+
+        body .r-bg-blue {
+            background: #2699f6
+        }
+
+        body .r-bg-unequipment {
+            background: #738ca0;
+        }
+        /*----------------------------*/
+        .temp-p {
+            min-height: 25px !important;
+            line-height: 18px;
+            padding-top: 10px;
+            margin-left: 122px;
+        }
+        /*重置timeline的样式*/
+        .dhx_cal_event_line {
+            white-space: nowrap;
+            color: black;
+            overflow: visible;
+            font-weight: 400;
+            font-size: 13px;
+            line-height:22px;
+        }
+    </style>
+}
+@*<div class="layui-row layui-col-space10" style="height:100%">
+    <div class="layui-col-xs2">
+
+    </div>
+    <div class="layui-col-xs10" style="height:100%">
+    </div>
+</div>*@
+<div class="content" style="margin:5px 10px;">
+    <div id="treeWrap">
+        <ul style=" margin: 0 0 10px 30px;overflow: hidden;height: 18px;">
+            <li class="r-bg-blue layui-badge">待上机</li>
+            <li class="r-bg-brown layui-badge">加工中</li>
+            <li class="r-bg-green layui-badge">已完成</li>
+        </ul>
+        <ul id="processTypeTree" class="ztree"></ul>
+        <div>
+            <button class="layui-btn" onclick="doSave()" style="margin: 20px 0 0 30px;">保存</button>
+        </div>
+    </div>
+    <div id="schedulerWrap">
+        <div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:100%;'>
+            <div class="dhx_cal_navline">
+                <div class="dhx_cal_prev_button">&nbsp;</div>
+                <div class="dhx_cal_next_button">&nbsp;</div>
+                <div class="dhx_cal_today_button"></div>
+                <div class="dhx_cal_date"></div>
+                <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+                <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+                <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+                <div class="dhx_cal_tab" name="timeline_tab" style="right:280px;"></div>
+
+            </div>
+            <div class="dhx_cal_header">
+            </div>
+            <div class="dhx_cal_data">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        func.splitDrag($('#treeWrap'), $('#schedulerWrap'), { key: 'EquipmentTimeLineWidth' })
+    </script>
+    <script src='/lib/dhtmlx/scheduler/dhtmlxscheduler.js?v=20181212' type="text/javascript" charset="utf-8"></script>
+    <script src='/lib/dhtmlx/scheduler/ext/dhtmlxscheduler_timeline.js?v=20181212' type="text/javascript" charset="utf-8"></script>
+    <script src='/lib/dhtmlx/scheduler/ext/dhtmlxscheduler_treetimeline.js?v=20181212' type="text/javascript" charset="utf-8"></script>
+    <script src='/lib/dhtmlx/scheduler/ext/dhtmlxscheduler_readonly.js?v=20181212' type="text/javascript" charset="utf-8"></script>
+    <script src="/lib/dhtmlx/scheduler/locale/locale_cn.js"></script>
+    <script id="lighttemp" type="text/html">
+        <p class="temp-p">{{func.getProcessTaskStatusColor(d.processTaskStatus).name }}</p>
+    </script>
+    <script>
+        //layui加载完成后调用此方法，
+        config.ready = function () {
+            var element = layui.element;
+            var table = layui.table;
+
+            var processTypeTree = function () {
+                var zTreeObj;
+                var setting = {
+                    view: {
+                        selectedMulti: false,
+                        addDiyDom: function (treeId, treeNode) {
+                            console.log(treeNode);
+                            var count = treeNode.unArrangeTaskCount;
+                            if (!count) { return; }
+                            var aObj = $("#" + treeNode.tId + "_a");
+                            aObj.append("<span style='color:red'>【" + count + "】</span>");
+                        }
+                    },
+                    data: {
+                        key: {
+                            name: 'displayName',
+                            title: 'displayName'
+                        },
+                        simpleData: {
+                            enable: true,
+                            idKey: 'id',
+                            pIdKey: 'parentId',
+                            rootPId: 'null'
+                        }
+                    },
+                    callback: {
+                        onClick: function (event, treeId, treeNode) {
+                            var processTypeId = treeNode.id;
+                            location.href = '/Home/Show?name=../MEs/EquipmentTimeLine&processTypeId=' + (processTypeId || '');
+
+                        }
+                    }
+                };
+                var load = function () {
+                    abp.services.app.processType.getAllWithUnArrangeTaskCount().done(function (json) {
+                        zTreeObj = $.fn.zTree.init($("#processTypeTree"), setting);
+                        var nodes = [];
+                        var newNode = { displayName: "全部工序", id: null, parentId: "" };
+                        nodes.push(newNode);
+                        $.each(json, function (i, v) {
+                            nodes.push({ displayName: v.processTypeName, id: v.id, parentId: null, unArrangeTaskCount: v.unArrangeTaskCount});
+                        });
+                        zTreeObj.addNodes(null, nodes);
+                        zTreeObj.expandAll(true);
+                    });
+
+                };
+                load();
+                return {
+                    node: {},
+                    reload: load
+                }
+            }();
+            //获取设备信息
+
+            config.refresh();
+            loadFromProcessType($.getUrlParam("processTypeId"));
+        }
+        function loadFromProcessType(processTypeId) {
+            abp.services.app.equipment.getEquipmentInfos(processTypeId).done(function (data) {
+                var sections = [{ key: '-1', label: '未排机' }]
+                sections = sections.concat(data.map(function (o) {
+                    return { key: o.id, label: o.equipmentSN };
+                }));
+                init(sections);
+            })
+        }
+        function init(sections) {
+
+            scheduler.locale.labels.timeline_tab = "时间轴";
+            scheduler.locale.labels.section_custom = "Section";
+            scheduler.config.details_on_create = false;
+            scheduler.config.details_on_dblclick = false;
+            scheduler.config.dblclick_create = false;
+            scheduler.config.xml_date = "%Y-%m-%d %H:%i";
+
+            //===============
+            //Configuration
+            //===============
+
+            scheduler.config.hour_size_px = 90;
+
+            scheduler.createTimelineView({
+                section_autoheight: false,
+                name: "timeline",
+                x_unit: "day",
+                x_date: "%d",
+                x_step: 1,
+                x_size: 14,
+                x_start: 0,
+                x_length: 14,
+                y_unit: sections,
+                y_property: "equipmentId",
+                render: "bar",
+                second_scale: {
+                    x_unit: "month", // unit which should be used for second scale
+                    x_date: "%F" // date format which should be used for second scale, "July 01"
+                },
+                folder_events_available: true,
+                dy: 30
+            });
+
+            scheduler.form_blocks["status"] = {
+                render: function (sns) {
+                    return "<div><p>详情</p></div>";
+                },
+                set_value: function (node, value, task, section) {
+                    var $node = $(node);
+                    console.log($node, task, 'set');
+                    //渲染模版
+                    var getTpl = $('#lighttemp')[0].innerHTML
+                    layui.laytpl(getTpl).render(task, function (html) {
+                        $node.html(html)
+                    });
+
+                },
+                get_value: function (node, task, section) {
+                    var $node = $(node);
+                    console.log($node, task, 'get');
+                },
+                focus: function (node) {
+                    console.log($node, task, 'focus');
+                }
+            };
+            scheduler.form_blocks["hours"] = {
+                render: function (sns) {
+                    return "<div><p class=\"temp-p\">小时</p></div>";
+                },
+                set_value: function (node, value, task, section) {
+                    var $node = $(node);
+                    console.log($node, task, 'set');
+                    //渲染模版
+                    $node.find('.temp-p').html(task.estimateHours ? (task.estimateHours + '小时') : '未填写')
+                },
+                get_value: function (node, task, section) {
+                    var $node = $(node);
+                    console.log($node, task, 'get');
+                },
+                focus: function (node) {
+                    console.log($node, task, 'focus');
+                }
+            };
+            scheduler.form_blocks["actual"] = {
+                render: function (sns) {
+                    return "<div><p class=\"temp-p\">小时</p></div>";
+                },
+                set_value: function (node, value, task, section) {
+                    var $node = $(node);
+                    console.log($node, task, 'set');
+                    //渲染模版
+                    $node.find('.temp-p').html(task.actualHours + '小时' || '未下机')
+                },
+                get_value: function (node, task, section) {
+                    var $node = $(node);
+                    console.log($node, task, 'get');
+                },
+                focus: function (node) {
+                    console.log($node, task, 'focus');
+                }
+            };
+            scheduler.locale.labels.section_status = "任务状态";
+            scheduler.locale.labels.section_hours = "预计工时";
+            scheduler.locale.labels.section_actual = "实际工时";
+            scheduler.config.lightbox.sections = [
+                { name: "status", height: 72, type: "status", map_to: "auto" },
+                { name: "hours", height: 72, type: "hours", map_to: "auto" },
+                { name: "time", height: 72, type: "time", map_to: "auto" }
+            ]
+            scheduler.attachEvent("onBeforeLightbox", function (id) {
+                if (scheduler.getEvent(id).processTaskStatus >= 3) {//当你是上机了就只能读安排时间
+                    scheduler.config.readonly_form = true;
+                } else {
+                    scheduler.config.readonly_form = false;
+                }
+                if (scheduler.getEvent(id).processTaskStatus == 4) {//当已完成，增加读取实际工时
+                    if (!scheduler.config.lightbox.sections.filter(function (elm) {
+                        return elm.name == 'actual';
+                    }).length) {
+                        scheduler.config.lightbox.sections.splice(1, 0, { name: "actual", height: 72, type: "actual", map_to: "auto" })
+                    }
+                }
+                return true;
+            });
+            scheduler.templates.event_bar_text = function (start, end, event) {
+                return '<span style="background:rgba(204, 204, 204, 0.6);">'+event.text+'</span>';
+            };
+            scheduler.templates.event_class = function (start, end, ev) {
+                if (ev.equipmentId == -1) {
+                    return 'r-bg-unequipment';//未排机的
+                }
+                var obj = { 0: 'r-bg-blue', 1: 'r-bg-blue', 2: 'r-bg-blue', 3: 'r-bg-brown', 4: 'r-bg-green', 5: 'r-bg-brown', 6: 'r-bg-green' };
+                return obj[ev.processTaskStatus] || '';
+            };
+            scheduler.attachEvent("onBeforeDrag", function (id, mode, e) {
+                if (id) {
+                    var processTaskStatus = scheduler.getEvent(id).processTaskStatus;
+                    if (processTaskStatus >= 3) {//当状态为已上机或已下机或暂停中就不给改了
+                        return false;
+                    }
+                }
+                return true;
+            });
+            scheduler.attachEvent("onBeforeEventCreated", function (e) {
+                return false;
+            });
+            scheduler.attachEvent("onEventLoading", function (ev) {
+                var formatFunc = scheduler.date.str_to_date("%Y-%m-%d %H:%i:%s");
+
+                return true;
+            });
+            scheduler.attachEvent('onEventDeleted', function (id) {
+                submitData.deleteIds.push(id);
+            });
+            scheduler.attachEvent('onEventChanged', function (id, event) {
+                if (submitData.changedIds.indexOf(id) < 0) {
+                    submitData.changedIds.push(id);
+                }
+
+            });
+            //===============
+            //Data loading
+            //===============
+
+
+            scheduler.init('scheduler_here', new Date(), "timeline");
+            scheduler.setLoadMode("day");
+            var pid = $.getUrlParam("processTypeId");
+            scheduler.load("/api/services/app/Equipment/GetEquipmentTimeLineTasks" + (pid ? ("?processTypeId=" + pid) : ''), "json");
+        }
+
+        var submitData = { deleteIds: [], changedIds: [], events: [] };
+
+        function doSave() {
+            abp.message.confirm('共删除了' + submitData.deleteIds.length + '个任务,修改了' + submitData.changedIds.length + '个任务,是否确认提交?', function () {
+                submitData.events = scheduler.getEvents().map(function (n) {
+                    n.start_date = new Date(n.start_date).pattern('yyyy-MM-dd HH:mm:ss')
+                    n.end_date = new Date(n.end_date).pattern('yyyy-MM-dd HH:mm:ss')
+                    return n
+                });
+                func.runAsync(abp.services.app.equipment.submitTimeLineData(submitData).done(function () {
+                    abp.message.success(L('提交成功'));
+                    submitData.deleteIds.length = 0;
+                    submitData.changedIds.length = 0;
+                }))
+            })
+
+        }
+    </script>
+}

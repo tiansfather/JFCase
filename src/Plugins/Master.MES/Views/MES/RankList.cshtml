@@ -1,0 +1,705 @@
+﻿
+@{
+
+}
+@section styles{
+    <style>
+        html {
+            background: #fff;
+        }
+        header {
+            display: flex;
+            height: 50px;
+            padding: 10px 20px;
+            justify-content: space-between;
+        }
+
+        h1 {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+            header .search {
+                display: flex;
+            }
+        #app {
+            padding: 10px;
+        }
+
+        .my-switch-mode_wrap {
+            height:30px;
+            transition: all .3s;
+        }
+
+        .my-switch-mode_wrap:hover {
+            top: 22px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .process-wrap, .range-date {
+            /*height: 30px;*/
+            width: 200px;
+            margin-right: 8px;
+        }
+/*树*/
+        .main-wrap{
+            display:flex;
+        }
+        .my-row-tree {
+            width: 20%;
+        }
+    </style>
+}
+    <div id="app" class="disnone">
+        <header>
+            <div class="search">
+                <div class="range-date" v-show="!verticalMode">
+                    <lay-range-date col-key="rankInput" data="" value="" @@choosed-date="console.log($event)"></lay-range-date>
+                </div>
+                <div class="process-wrap" v-show="!verticalMode">
+                    <select name="processType" xm-select="processType" id="processType" xm-select-radio="" xm-select-search="" lay-vertype="tips" xm-select-height="36px"></select>
+                </div>
+                <button class="layui-btn layui-btn-sm" @@click="doSearch">{{verticalMode?'横向对比':'查询'}}</button>
+            </div>
+            <h1 style="text-align:center">加工点报工排行</h1>
+            <div class="my-inline-block my-switch-mode_wrap" v-show="!verticalMode">
+                <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" @@click="mode=!mode">切换模式</button>
+            </div>
+        </header>
+        <div class="main-wrap">
+
+            <div class="my-row-tree">
+                <ul id="unitTree" class="ztree" style="padding: 2px; border: 1px solid #ddd; overflow: auto;"></ul>
+            </div>
+            <div>
+                <div id="table-main" v-show="mode">
+                    <table class="layui-table" lay-size="sm" lay-filter="Task">
+                        <thead>
+                            <tr>
+                                <th lay-data="{field:'unitId',sort:'true'}">加工点</th>
+                                <th lay-data="{field:'taskCount',sort:'true'}">应报工总数</th>
+                                <th lay-data="{field:'reportCount',sort:'true'}">报工总数</th>
+                                <th lay-data="{field:'reportTaskCount',sort:'true'}">有报工的任务数</th>
+                                <th lay-data="{field:'completedCount',sort:'true'}">完成报工任务数</th>
+                                <th lay-data="{field:'delayStartCount',sort:'true'}">延期上机任务数</th>
+                                <th lay-data="{field:'delayEndCount',sort:'true'}">延期下机任务数</th>
+                                <th lay-data="{field:'overHourCount',sort:'true'}">超时任务数</th>
+                                <th lay-data="{field:'nGCount',sort:'true'}">不合格任务数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="task in tasks">
+                                <td>{{task.unitName}}</td>
+                                <td>{{task.taskCount*baseCount}}</td>
+                                <td>{{task.reportCount}}</td>
+                                <td>{{task.reportTaskCount}}</td>
+                                <td>{{task.completedCount}}</td>
+                                <td>{{task.delayStartCount}}</td>
+                                <td>{{task.delayEndCount}}</td>
+                                <td>{{task.overHourCount}}</td>
+                                <td>{{task.nGCount}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="canvas-main" v-show="!mode">
+                    <div id="main" style="width: 75%;height:600px;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+@section scripts{
+    <script src="~/lib/echarts/echarts.min.js"></script>
+    <script>
+        //var baseCount = 2;
+        config.ready = function () {
+            layui.use('formSelects', function () {
+                app = new Vue({
+                    el: '#app',
+                    data: {
+                        tasks: [],
+                        //verticalTasks:[],
+                        mode: false,
+                        verticalMode:false,
+                        valueDatas: ['应报工总数', '实际报工总数', '已报工任务数', '已完成任务数', '延期上机任务数', '延期下机任务数', '超时任务数', '不合格任务数', '报工率', '上机拖延率', '延期率', '超时率', '合格率'],
+                        VerticalDates: [],
+                        baseCount:2
+                    },
+                    computed: {
+                        yAxisMax: function () {
+                            var baseCount = this.baseCount;
+                            var max = 0;
+                            this.tasks.forEach(function (n) {
+                                if (n.taskCount * baseCount > max) {
+                                    max = n.taskCount * baseCount;
+                                }
+                            })
+                            max = max * 1.1;
+                            max = max - max % 10 + 10;
+                            return max
+                        },
+                        lineValue: function () {
+                            var that = this;
+                            var tasks = this.tasks
+                            function getLine(key) {
+                                if (key == 'ngCount') {
+                                    return tasks.map(function (n) {
+                                        return ((n.taskCount - n.ngCount) / n.taskCount * 100).toFixed(1)
+                                    })
+                                }
+                                if (key == 'completedCount') {
+                                    return tasks.map(function (n) {//报工率=实际报工数除以（总任务*3）
+                                        return (n.reportCount / (n.taskCount * that.baseCount) * 100).toFixed(1)
+                                    })
+                                }
+                                return tasks.map(function (n) {
+                                    return (n[key] / n.taskCount * 100).toFixed(1)
+                                })
+                            }
+                            return {
+                                '报工率': getLine('completedCount'),
+                                '上机拖延率': getLine('delayStartCount'),
+                                '延期率': getLine('delayEndCount'),
+                                '超时率': getLine('overHourCount'),
+                                '合格率': getLine('ngCount')
+                            }
+                        },
+                        keyDatas: function () {
+                            return {
+                                unitName: '',
+                                taskCount: this.valueDatas[0],
+                                reportCount: this.valueDatas[1],
+                                reportTaskCount: this.valueDatas[2],
+                                completedCount: this.valueDatas[3],
+                                delayStartCount: this.valueDatas[4],
+                                delayEndCount: this.valueDatas[5],
+                                overHourCount: this.valueDatas[6],
+                                nGCount: this.valueDatas[7]
+                            }
+                        },
+      
+                        units: function () {
+                            return this.tasks.map(function (n) {
+                                return n.unitName;
+                            })
+                        },
+                        option: function () {
+                            var that = this;
+                            return {
+                                //title: { text: '最近一周各加工点的报工情况' },
+                                tooltip: {
+                                    trigger: 'axis',
+                                    axisPointer: {
+                                        type: 'cross',
+                                        crossStyle: {
+                                            color: '#999'
+                                        }
+                                    }
+                                },
+                                toolbox: {
+                                    feature: {
+                                        dataView: { show: true, readOnly: false },
+                                        magicType: { show: true, type: ['line', 'bar'] },
+                                        restore: { show: true },
+                                        saveAsImage: { show: true }
+                                    },
+                                },
+                                legend: {
+                                    width: $(document).width() * 0.5,
+                                    type: 'scroll',
+                                    data: that.valueDatas,
+                                    selected: {
+                                        '已完成任务数': false,
+                                        '已报工任务数': false,
+                                        '延期上机任务数': false,
+                                        '延期下机任务数': false,
+                                        '超时任务数': false,
+                                        '不合格任务数': false,
+                                        '上机拖延率': false,
+                                        '延期率': false,
+                                        '超时率': false,
+                                        '合格率': false,
+                                    }
+                                },
+                                xAxis: [
+                                    {
+                                        type: 'category',
+                                        data: that.units,
+                                        axisPointer: {
+                                            type: 'shadow'
+                                        }
+                                    }
+                                ],
+                                yAxis: [
+                                    {
+                                        type: 'value',
+                                        name: '任务数',
+                                        min: 0,
+                                        max: that.yAxisMax,
+                                        interval: that.yAxisMax / 5,
+                                        axisLabel: {
+                                            formatter: '{value} '
+                                        }
+                                    },
+                                    {
+                                        type: 'value',
+                                        name: '百分比',
+                                        min: 0,
+                                        max: 100,
+                                        interval: 20,
+                                        axisLabel: {
+                                            formatter: function (value, index) {
+                                                return value + '%';
+                                            }
+                                        }
+                                    }
+                                ],
+                                dataZoom: [
+                                    {   // 这个dataZoom组件，默认控制x轴。
+                                        type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+                                        start: 0,      // 左边在 10% 的位置。
+                                        end: 30         // 右边在 60% 的位置。
+                                    },
+                                    {   // 这个dataZoom组件，也控制x轴。
+                                        type: 'inside', // 这个 dataZoom 组件是 inside 型 dataZoom 组件
+                                        start: 0,      // 左边在 10% 的位置。
+                                        end: 30         // 右边在 60% 的位置。
+                                    }
+                                ],
+                                series: that.series()
+                            };
+                        },
+                        VerticalOption: function () {
+                            var that = this;
+                            return {
+                                //title: { text: 'XX加工点最近一年报工排行' },
+                                tooltip: {
+                                    trigger: 'axis',
+                                    axisPointer: {
+                                        type: 'cross',
+                                        crossStyle: {
+                                            color: '#999'
+                                        }
+                                    }
+                                },
+                                toolbox: {
+                                    feature: {
+                                        dataView: { show: true, readOnly: false },
+                                        magicType: { show: true, type: ['line', 'bar'] },
+                                        restore: { show: true },
+                                        saveAsImage: { show: true }
+                                    },
+                                },
+                                legend: {
+                                    width: $(document).width() * 0.5,
+                                    type: 'scroll',
+                                    data: that.valueDatas,
+                                    selected: {
+                                        '已报工任务数': false,
+                                        '延期上机任务数': false,
+                                        '延期下机任务数': false,
+                                        '超时任务数': false,
+                                        '不合格任务数': false,
+                                        '上机拖延率': false,
+                                        '延期率': false,
+                                        '超时率': false,
+                                        '合格率': false,
+                                    }
+                                },
+                                xAxis: [
+                                    {
+                                        type: 'category',
+                                        data: that.VerticalDates,
+                                        axisPointer: {
+                                            type: 'shadow'
+                                        }
+                                    }
+                                ],
+                                yAxis: [
+                                    {
+                                        type: 'value',
+                                        name: '任务数',
+                                        min: 0,
+                                        max: that.yAxisMax,
+                                        interval: that.yAxisMax / 5,
+                                        axisLabel: {
+                                            formatter: '{value} '
+                                        }
+                                    },
+                                    {
+                                        type: 'value',
+                                        name: '百分比',
+                                        min: 0,
+                                        max: 100,
+                                        interval: 20,
+                                        axisLabel: {
+                                            formatter: function (value, index) {
+                                                return value + '%';
+                                            }
+                                        }
+                                    }
+                                ],
+                                dataZoom: [
+                                    {   // 这个dataZoom组件，默认控制x轴。
+                                        type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+                                        start: 0,      // 左边在 10% 的位置。
+                                        end: 100         // 右边在 60% 的位置。
+                                    },
+                                    {   // 这个dataZoom组件，也控制x轴。
+                                        type: 'inside', // 这个 dataZoom 组件是 inside 型 dataZoom 组件
+                                        start:0,      // 左边在 10% 的位置。
+                                        end: 100         // 右边在 60% 的位置。
+                                    }
+                                ],
+                                series: that.series()
+                            };
+                        }
+                    },
+                    methods: {
+                        series: function () {
+                            var arr = [];
+                            var keyDatas = this.keyDatas, that = this;
+                            for (key in keyDatas) {
+                                if (key != 'unitName') {
+                                    var obj = {
+                                        name: keyDatas[key],
+                                        type: 'bar',
+                                        data: that.getSeriesArr(key)
+                                    };
+                                    if (key == 'taskCount1' || key =='reportCount') {
+                                        obj. barGap= '-100%'// Make series be overlap
+                                    }
+                                    arr.push(obj)
+                                }
+                            }
+                            for (key in this.lineValue) {
+                                arr.push({
+                                    name: key,
+                                    type: 'line',
+                                    yAxisIndex: 1,
+                                    data: this.lineValue[key]
+                                })
+                            }
+                            return arr
+                        },
+                        doSearch: function () {
+                            var val = [];
+                            var processType = null;
+                            if (this.verticalMode) {
+                                this.verticalMode = !this.verticalMode;
+                            } else {
+                                val= $('#rankInput').val().split('|') || null;
+                                processType = $('#processType').attr('data-value') || null;
+                            }
+                            this.getTasksByDate(processType, val[0], val[1])
+                        },
+                        getSeriesArr: function (key) {
+                            var baseCount = this.baseCount;
+                            if (key == 'taskCount') {
+                                return this.tasks.map(function (n) {//如果是总任务数，则将乘以baseCount等于应该报工数量
+                                    return n[key] * baseCount;
+                                })
+                            }
+                            return this.tasks.map(function (n) {
+                                return n[key];
+                            })
+                        },
+                        refeshVertical: function () {
+                            var Vertical = echarts.init(document.getElementById('main'));
+                            Vertical.setOption(this.VerticalOption);
+                        },
+                        getVerticalTasks: function (unitId) {
+                            var that = this;
+                            function formatData(data) {//对从后台来的数据进行一步处理
+                                var dateArr = [];
+                                var tasksArr = []
+                                data.forEach(function (n, i) {
+                                    tasksArr.push(n.report)
+                                    dateArr.push(n.date);
+                                })
+                                that.tasks = tasksArr;//给具体数据赋值
+                                that.VerticalDates = dateArr;//给x轴的参数赋值
+                            }
+                            abp.services.app.mESUnit.getUnitDateRangeReport(unitId).done(function (data) {
+                                formatData(data)
+                                console.log(that.tasks)
+                                //that.verticalTasks = data;
+                                that.$nextTick(that.refeshVertical)
+                            })
+                        },
+                        getTasksByDate: function (processType,start, end) {
+                            var that = this;
+                            abp.services.app.mESUnit.getUnitRankReport(processType,start, end).done(function (data) {
+                                that.tasks = data;
+                                $('#app').show();
+                                that.$nextTick(refesh)
+                            })
+
+                        },
+                        configProcess: function () {
+                            var formSelects = layui.formSelects;
+                            formSelects.config('processType', {
+                                searchName: 'key',
+                                searchUrl: '/api/services/app/ProcessType/GetAll',
+                                beforeSuccess: function (id, url, searchVal, result) {//接到后台返回的数据result后处理输出到下拉框中
+                                    var datas = result.result
+                                    var resultArr=datas.map(function (n) {
+                                        return { name: n.processTypeName, value: n.id }
+                                    })
+                                    resultArr = resultArr.filter(function (kong) {//返回非空数组
+                                        return kong.name
+                                    });
+                                    return resultArr;
+                                }
+                            })
+                            formSelects.on('processType', function (id, vals, val, isAdd, isDisabled) {
+                                console.log(vals)
+                                $('#processType').attr('data-value', vals[0]?vals[0].value:'')
+                            },true)
+                        }
+                    },
+                    created: function () {
+                        $('#main').width($('body').width() * 0.75)
+                        $('#main').height($(document).height() - 120)
+                        this.getTasksByDate();
+                        this.configProcess();//初始化工艺选择
+                        fUnitTree();
+                    }
+                })
+            })
+           
+
+        }
+        function refesh() {
+            layui.table.init('Task', {
+                //设置高度
+                //支持所有基础参数
+            });
+            var myChart = echarts.init(document.getElementById('main'));
+            myChart.setOption(app.option);
+        }
+
+
+        var fUnitTree = function () {
+            var zTreeObj;
+            var setting = {
+                view: {
+                    selectedMulti: false,//多选
+                    addDiyDom: function (treeId, treeNode) {
+                        console.log(treeNode);
+                        var count = treeNode.unCheckTaskCount;
+                        if (!count) { return; }
+                        var aObj = $("#" + treeNode.tId + "_a");
+                        //aObj.append("<span style='color:red'>【" + count + "】</span>");
+                    }
+                },
+                data: {
+                    key: {
+                        name: 'displayName',
+                        title: 'displayName'
+                    },
+                    simpleData: {
+                        enable: true,
+                        idKey: 'id',
+                        pIdKey: 'parentId',
+                        rootPId: 'null'
+                    }
+                },
+                callback: {
+                    onClick: function (event, treeId, treeNode) {//点击左侧加工点后，切换模式
+                        var unitId = treeNode.id;//加工点id
+                        if (unitId && unitId != -1) {
+                            app.mode = false;
+                            app.verticalMode = true;
+                            app.getVerticalTasks(unitId);
+                        }
+                    }
+                }
+            };
+            var load = function () {
+                abp.services.app.mESUnit.getAllUnitUnCheckCount().done(function (json) {
+                    zTreeObj = $.fn.zTree.init($("#unitTree"), setting);
+                    var nodes = [];
+                    var newNode = { displayName: "全部供应商", id: null, parentId: "" };
+                    nodes.push(newNode);
+                    nodes.push({ displayName: '未分类', id: -1, parentId: null });
+                    $.each(json, function (i, v) {
+                        nodes.push({ displayName: v.unitName, id: v.id, unCheckTaskCount: v.unCheckTaskCount, parentId: null });
+                    });
+                    console.log(nodes)
+                    zTreeObj.addNodes(null, nodes);
+                    zTreeObj.expandAll(true);
+                });
+            };
+            load();
+            return {
+                node: {},
+                reload: load
+            }
+        };
+
+
+        //var option = {
+        //    title: { text: '最近一周各加工点的报工情况' },
+        //    tooltip: {
+        //        trigger: 'axis',
+        //        axisPointer: {
+        //            type: 'cross',
+        //            crossStyle: {
+        //                color: '#999'
+        //            }
+        //        }
+        //    },
+        //    toolbox: {
+        //        feature: {
+        //            dataView: { show: true, readOnly: false },
+        //            magicType: { show: true, type: ['line', 'bar'] },
+        //            restore: { show: true },
+        //            saveAsImage: { show: true }
+        //        }
+        //    },
+        //    legend: {
+        //        data: ['总任务数', '报工总数', '已报工任务数']
+        //    },
+        //    xAxis: [
+        //        {
+        //            type: 'category',
+        //            data: ['安泰', '云加工测试公司', '黄岩中淼模具厂', '方小明数控铣'],
+        //            axisPointer: {
+        //                type: 'shadow'
+        //            }
+        //        }
+        //    ],
+        //    yAxis: [
+        //        {
+        //            type: 'value',
+        //            name: '任务数',
+        //            min: 0,
+        //            max: 250,
+        //            interval: 50,
+        //            axisLabel: {
+        //                formatter: '{value} '
+        //            }
+        //        },
+        //        {
+        //            type: 'value',
+        //            name: '百分比',
+        //            min: 0,
+        //            max: 1,
+        //            interval: 0.2,
+        //            axisLabel: {
+        //                formatter: function (value, index) {
+        //                    return value * 100 + '%';
+        //                }
+        //            }
+        //        }
+        //    ],
+        //    series: [
+        //        {
+        //            name: '总任务数',
+        //            type: 'bar',
+        //            data: [25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+        //        },
+        //        {
+        //            name: '报工总数',
+        //            type: 'bar',
+        //            data: [175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+        //        },
+        //        {
+        //            name: '已报工任务数',
+        //            type: 'line',
+        //            yAxisIndex: 1,
+        //            data: [0.5, 0.2, 0, 1, 0.32]
+        //        }
+        //    ]
+        //};
+
+        //[
+        //    {
+        //        name: '总任务数',
+        //        type: 'bar',
+        //        data: that.getSeriesArr('taskCount')
+        //    },
+        //    {
+        //        name: '报工总数',
+        //        type: 'bar',
+        //        data: that.getSeriesArr('reportCount')
+        //    },
+        //    {
+        //        name: '已报工任务数',
+        //        type: 'bar',
+        //        data: that.getSeriesArr('reportTaskCount')
+        //    },
+        //    {
+        //        name: '已完成任务数',
+        //        type: 'bar',
+        //        data: that.getSeriesArr('completedCount')
+        //    },
+        //    {
+        //        name: '延期上机任务数',
+        //        type: 'bar',
+        //        data: that.getSeriesArr('delayStartCount')
+        //    },
+        //    {
+        //        name: '延期下机任务数',
+        //        type: 'bar',
+        //        data: that.getSeriesArr('delayEndCount')
+        //    },
+        //    {
+        //        name: '延期下机任务数',
+        //        type: 'bar',
+        //        data: that.getSeriesArr('overHourCount')
+        //    },
+        //    {
+        //        name: '超时任务数',
+        //        type: 'bar',
+        //        data: that.getSeriesArr('nGCount')
+        //    }
+        //]
+
+
+
+
+
+        // 使用刚指定的配置项和数据显示图表。
+
+            //var option = {
+            //    title: { text: '最近一周各加工点的报工情况' },
+            //    legend: { type: 'scroll', left: "20%" },
+            //    tooltip: {},
+            //    dataset: {
+            //        source: [
+            //            ['product', '2012', '2013', '2014', '2015'],
+            //            ['Matcha Latte', 41.1, 30.4, 65.1, 53.3],
+            //            ['Milk Tea', 86.5, 92.1, 85.7, 83.1],
+            //            ['Cheese Cocoa', 24.1, 67.2, 79.5, 86.4]
+            //        ]
+            //    },
+            //    xAxis: [
+            //        { type: 'category', gridIndex: 0 },
+            //        { type: 'category', gridIndex: 1 }
+            //    ],
+            //    yAxis: [
+            //        { gridIndex: 0 },
+            //        { gridIndex: 1 }
+            //    ],
+            //    grid: [
+            //        { bottom: '55%' },
+            //        { top: '55%' }
+            //    ],
+            //    series: [
+            //        // 这几个系列会在第一个直角坐标系中，每个系列对应到 dataset 的每一行。
+            //        { type: 'bar', seriesLayoutBy: 'row' },
+            //        { type: 'bar', seriesLayoutBy: 'row' },
+            //        { type: 'bar', seriesLayoutBy: 'row' },
+            //        // 这几个系列会在第二个直角坐标系中，每个系列对应到 dataset 的每一列。
+            //        { type: 'bar', xAxisIndex: 1, yAxisIndex: 1 },
+            //        { type: 'bar', xAxisIndex: 1, yAxisIndex: 1 },
+            //        { type: 'bar', xAxisIndex: 1, yAxisIndex: 1 },
+            //        { type: 'bar', xAxisIndex: 1, yAxisIndex: 1 }
+            //    ]
+            //}
+    </script>
+}

@@ -1,0 +1,1192 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@section styles{
+    <style>
+        h2, header, ul, li, div {
+            box-sizing: border-box
+        }
+
+        .bodydata {
+            background: #fff;
+            color: #000;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 10px 0;
+            width: 550px;
+        }
+
+        .head1 {
+            margin-right: 30px;
+            float: left;
+            width: 500px;
+            line-height: 35px;
+            /* background-color: #00a4ff; */
+            text-align: center;
+            /* margin: 10px; */
+        }
+
+            .head1 h2 {
+                font-size: 12px;
+                border-bottom: 2px #00a4ff solid;
+            }
+        /*.head2 {
+            margin-left: 50px;
+            float: left;
+            width: 224px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            border-bottom: 2px #00a4ff solid;
+        }*/
+        .search {
+            width: 260px;
+            height: 40px;
+            float: left;
+            margin: 30px 0 0 0;
+            background: #666666;
+        }
+
+            .search input {
+                width: 210px;
+                height: 40px;
+                border: 1px solid #00a4ff;
+                outline: none; /* 轮廓线 */
+                padding: 10px;
+                float: left;
+            }
+
+            .search button {
+                background: #1e9fff;
+                width: 50px;
+                height: 40px;
+                border: 0;
+                outline: none;
+                cursor: pointer;
+            }
+
+        .hed-shebei {
+            margin: 30px 0 0 50px;
+        }
+
+        .choose > ul {
+            margin-top: 5px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+            .choose > ul > li {
+                height: 25px;
+                line-height: 25px;
+                margin-right: 20px;
+            }
+
+        .choose li a {
+            /* display: block; */
+            /* a是行内元素,给height是没用的,要先转换成块级元素 */
+            /* height: 40px; */
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+            /* padding: 0 13px; */
+        }
+
+            .choose li a:hover {
+                color: #00a4ff;
+                /* font-size: 16px; */
+                border-bottom: 1px solid #00a4ff;
+            }
+
+        .active {
+            /* 由于默认为.choose li a的color样式，提高优先级*/
+            color: #00a4ff !important;
+            border-bottom: 1px solid #00a4ff;
+        }
+
+        .tdata {
+        }
+        /*-----------------------------------------------------------*/
+
+        .jiqi-content {
+            width: 225px;
+        }
+
+        /*@@media screen and (min-width: 750px) {
+            .jiqi-content, header {
+                width: 450px;
+            }
+        }*/
+
+        @@media screen and (min-width: 975px) {
+            .jiqi-content {
+                width: 450px;
+            }
+        }
+
+        @@media screen and (min-width: 1200px) {
+            .jiqi-content {
+                width: 675px;
+            }
+
+            header {
+                width: 1030px;
+            }
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 8px;
+            height: 24px;
+        }
+
+            .flex-between p {
+                line-height: 16px;
+            }
+
+        header {
+            margin: 10px auto;
+        }
+
+        .jiqi-content {
+            margin: 25px auto;
+        }
+
+            .jiqi-content ul {
+                font-size: 12px;
+                display: flex;
+                flex-wrap: wrap;
+                display: flex;
+                justify-content: center;
+            }
+
+        .jiqi-wrap {
+            background: #fff;
+            /*height: 170px;*/
+            width: 209px;
+            border-radius: 15px;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+            margin: 8px;
+            margin-top: 15px;
+        }
+
+        .jiqi-scale:hover {
+            transform: scale(1.1);
+            transition: all .3s;
+        }
+
+        [class^='item'] {
+        }
+
+        .item-0 p:first-child {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .item-0 .iconfont {
+            color: #666;
+        }
+
+        .item-0 p:last-child {
+            color: #666;
+        }
+
+        .item-1 p:first-child {
+            font-size: 14px;
+        }
+
+        .process-wrap {
+            padding: 0 5px;
+        }
+
+        .progressing {
+            position: relative;
+            height: 12px;
+            background: #eff3f6;
+        }
+
+            .progressing span {
+                color: #000082;
+                position: absolute;
+                margin: 0 auto;
+                line-height: 12px;
+                box-sizing: border-box;
+                /*background: #e2ac40;*/
+            }
+
+        .item-6 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            min-height: 40px;
+            padding: 5px;
+        }
+
+            .item-6 > ul {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                max-width: 150px;
+            }
+
+        .table-wrap > div {
+            padding: 0 15px 5px 5px;
+            border: 1px solid #ddd;
+            padding-top: 0;
+            margin-right: 20px;
+        }
+
+        .table-wrap .layui-table-main tr {
+            cursor: move;
+        }
+
+        .generate-li {
+            z-index: 9999;
+            position: absolute;
+            background: rgba(0,0,0,0);
+            top: 0;
+            left: 0;
+            transform: scale(1.2)
+        }
+
+        .generate-div {
+            z-index: 9999;
+            position: absolute;
+            background: #f4f4f4;
+            top: 0;
+            left: 0;
+        }
+
+            .generate-div div {
+                padding: 8px;
+                border-bottom: 1px solid #ccc;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+            }
+
+            .generate-div .iconfont {
+                color: #436ba6;
+                font-size: 24px;
+                line-height: 12px;
+            }
+
+            .generate-div span {
+                padding: 0 10px;
+                font-size: 12px;
+                line-height: 12px;
+            }
+
+        .cur-move {
+            cursor: move;
+        }
+
+        .main {
+            display: flex;
+        }
+
+        #dom-change_width {
+            flex-basis: 10px;
+            width: 10px;
+            z-index: 999;
+            top: 0;
+            background: #efefef;
+            cursor: col-resize;
+        }
+
+        .main .table-wrap {
+            width: 100%;
+            flex: 2;
+            overflow: hidden;
+        }
+
+        .templet-a {
+            text-decoration: none;
+            color: black;
+        }
+
+            .templet-a:hover, .item-6 a:hover {
+                text-decoration: underline;
+                color: #3b3bf5;
+                cursor: pointer;
+            }
+
+        .task-li {
+            position: relative;
+            cursor: pointer;
+            width: 25px;
+            height: 25px;
+            line-height: 21px;
+            border-radius: 50%;
+            font-size: 16px;
+            border: 3px solid #f1f1f1;
+            text-align: center;
+        }
+
+        .task-details {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 25px;
+            width: 38px;
+            background: #1e9fff;
+            height: 25px;
+            margin-right: 5px;
+            border-radius: 6px;
+        }
+
+        .task-li_more {
+            font-size: 24px;
+            padding-left: 3px;
+            cursor: pointer;
+        }
+
+        .yellow-bg {
+            background-color: #f8ac59 !important;
+        }
+
+        .yellow-bg, .blue-bg {
+            width: 26px;
+            height: 26px;
+            font-size: 18px;
+            line-height: 24px;
+        }
+
+        .blue-bg {
+            background-color: #1c84c6 !important;
+        }
+
+        .li-msg-hovered {
+            z-index: 9;
+            display: none;
+            position: absolute;
+            top: -98px;
+            width: 220px;
+            background: #f2f2f2;
+            color: #000;
+            font-size: 12px;
+            text-align: left;
+            padding: 5px;
+            line-height: 1.4;
+            border-radius: 8px;
+        }
+
+            .li-msg-hovered h3 {
+                white-space: nowrap;
+            }
+
+        .head-max-h {
+            max-height: 75px;
+            overflow: hidden;
+        }
+
+        .load-info-i {
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        /*--------填写安排时间-------*/
+        .layui-layer-page .layui-layer-content {
+            display: block;
+        }
+
+        .layer-arra-wrap {
+            padding: 0 20px;
+            min-height: 100%;
+        }
+
+        .arra-part {
+            position: relative;
+            padding: 20px;
+            color: #000;
+        }
+
+            .arra-part p, .arra-part span {
+                line-height: 2;
+                font-size: 16px;
+            }
+
+        .layer-arra-wrap hr {
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0px 1px 4px 0 rgba(0, 0, 0, 0.2);
+        }
+    </style>
+}
+<div id="app" class="bodydata" style="overflow: scroll; " layoutH="0" v-cloak>
+    <header>
+        <div class="head1 choose">
+            <h2>按工序组别</h2>
+            <ul class="head-max-h">
+                <li v-for="(item,index) in chooseProcessTypeNames">
+                    <a @@click="choosePr(index)" href="#" :class="{active:index==aActive}">
+                        {{item.processTypeName}}
+                        <span style="color: #2ec4b6;" v-if="item.equipmentCount">({{item.equipmentCount}})</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="search">
+            <input @@keydown.enter="inputKeyenter"
+                   type="search"
+                   placeholder="操作工/机器编号"
+                   v-model="searchInput" />
+            <button @@click="inputKeyenter"><i class="layui-icon-search  layui-icon" style="font-size:22px;"></i></button>
+        </div>
+        <a fornonerow="1" buttonname="设备排机" modulekey="" class="layui-btn hed-shebei layui-btn-warm layui-btn-sm" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;],&quot;btn&quot;:[]}" lay-event="Edit" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/EquipmentTimeLine" onclick="func.callModuleButtonEvent()">设备排机</a>
+
+        @if (await PermissionChecker.IsGrantedAsync("Module.FieldControl.Button.OutSoursing"))
+        {
+            <button class="layui-btn layui-btn-normal layui-btn-sm move-out-button" style="margin:30px 0 0 20px;" onclick="move2Out()">外协加工</button>
+
+        }
+        @*<div class="head2 choose">
+                <h2>按机器位置</h2>
+                <ul>
+                    <li v-for="(item,index) in chooseWorkroom">
+                        <a @@click="chooseWR(index)" href="#">{{item}}</a>
+                    </li>
+                </ul>
+            </div>*@
+    </header>
+
+
+    <div class="main">
+        <div class="jiqi-content">
+            <ul>
+                <li class="jiqi-wrap" v-for="(item,fieldindex) in fields" :data-eqid="item.id" :data-eqsn="item.equipmentSN">
+                    <div class="jiqi">
+                        <div class="flex-between item-0">
+                            <p :url="'/Home/Show?name=../MES/EquipmentCode&id='+item.id+'&equipmentSN='+item.equipmentSN" class="laydialog" width="400px" height="400px" title="设备任务信息">{{item.equipmentSN}}</p>
+                            <div class="flex-between">
+                                <i class="iconfont icon-xingzheng"></i>
+                                <p>{{item.operator}}</p>
+                            </div>
+                        </div>
+                        <div class="flex-between">
+                            <p>{{item.processTypeName}}</p>
+                            <span>
+                                任务数：<b style="font-size: 15px;">{{item.taskNumber}}</b>
+                            </span>
+                        </div>
+                        <div class="flex-between item-1">
+                            <p>{{SNpart(item)}}</p>
+                            <p :tips="'周负荷：'+getLoadInfo(item.equipmentLoadInfo).str">
+                                <i class="iconfont icon-liucheng load-info-i" :style="{color:getLoadInfo(item.equipmentLoadInfo).color}"></i>{{getLoadInfo(item.equipmentLoadInfo).per}}
+                            </p>
+                        </div>
+                        @*<div class="flex-between item-3">
+                                <p>{{item.projectSN }}</p>
+                            </div>*@
+                        @*<div class="flex-between item-4">
+                                <p>{{item.Time}}</p>
+                                <i class="iconfont" :class="fGetState(item.state)"></i>
+                            </div>*@
+                        <div style="height:10px;"></div>
+                        <div class="process-wrap item-5">
+                            <div class="progressing">
+                                <span :class="[func.getProgressColor(objEmptyStr(item.processTaskProgressInfo,'progressType'))]"
+                                      :style="{width:objEmptyStr(item.processTaskProgressInfo,'progress')*100+ '%'}">
+                                    {{Math.round(objEmptyStr(item.processTaskProgressInfo,'progress')*100)}}%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="task-wrap item-6">
+                            <ul class="dom-task-ul">
+                                <li v-for="(task,taskindex) in item.tasks" class="task-li dom-li-hover" :class="{'layui-bg-green':true,'layui-bg-red':task.emergency,'blue-bg':task.processTaskStatus==3}" @@dblclick="editSheet(task.id)" :data-taskid="task.id">
+                                    <span>{{taskindex+1}}</span>
+                                    <div class="li-msg-hovered">
+                                        <h3>{{task.partName}}（{{task.partSN}}）--{{task.processTypeName}}</h3>
+                                        模号：{{task.projectSN}}<br>
+                                        安排上机：{{task.arrangeDate?new Date(task.arrangeDate).pattern('MM-dd HH:mm'):''}}<br>
+                                        安排下机：{{getFinishDate(task.arrangeDate,task.estimateHours)}}<br>
+                                        预计工时：{{task.estimateHours}}
+                                    </div>
+                                </li>
+                                @*<li v-if="item.tasks.length>5" class="task-li layui-bg-cyan">{{item.tasks.length}}</li>*@
+                                <li v-if="item.taskNumber>5&&item.tasks.length" class="task-li_more" @@click="showMoreTaskLi(item.id,fieldindex)">
+                                    <span v-show="!item.hadShowMore">...</span>
+                                    <span v-show="item.hadShowMore">-</span>
+                                </li>
+                            </ul>
+                            @*<a :url="'/home/show?name=../MES/FieldTask&id='+item.id" class="laydialog" width="600px" height="500px" title="设备详情" href="javascript:">任务列表</a>*@
+                            <a class="task-details laydialog" :url="'/home/show?name=../MES/FieldTask&id='+item.id" width="540px" height="550px" title="设备详情" href="javascript:">列表</a>
+                        </div>
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+        <div id="dom-change_width"></div>
+        <div class="table-wrap">
+            <div>
+                <table id="TaskField" lay-filter="TaskField" class="layui-table "></table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="generate-wrap">
+
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/html" id="ArrangeTaskToEquipment">
+        <div class="layer-arra-wrap">
+            {{#  layui.each(d, function(index, item){ }}
+            <div class="arra-part">
+                <span>零件名：{{item.partName}}({{item.partSN}})</span>&emsp;&emsp;
+                <span>工序：{{item.processTypeName}}</span><br />
+                <div>
+                    <p>安排上机：</p>
+                    <div class="layui-inline">
+                        <input type="text" class="layui-input" id="dateone{{item.id}}">
+                    </div>
+                    <div class="layui-inline">
+                        <input type="text" class="layui-input" id="datetwo{{item.id}}">
+                    </div>
+                </div>
+                <div>
+                    <p>预计工时：</p>
+                    <div class="layui-inline">
+                        <input type="text" class="layui-input" value="{{item.estimateHours||defaultEstimateHours}}" id="estimate{{item.id}}">
+                    </div>
+                </div>
+            </div>
+            <hr />
+            {{#  }); }}
+
+        </div>
+
+
+    </script>
+    <script type="text/html" id="searchProcessType">
+        <div class="dom-data">
+            <a class="templet-a" onclick="fSrchProType('{{ d.processTypeName}}')">
+                {{ d.processTypeName}}
+            </a>
+        </div>
+    </script>
+    <script type="text/html" id="projectTpl">
+        <div class="dom-data">
+            <a dataid="0" class="layui-btn layui-btn-xs" type="button" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;300px&quot;],&quot;btn&quot;:[],&quot;offset&quot;:&quot;t&quot;,&quot;shade&quot;:0}" lay-event="View" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/PartTimeLine&projectId={{d.projectId}}" onclick="layer.closeAll();func.callModuleButtonEvent()" buttonname="{{d.projectSN}}">{{ d.projectSN}}</a>
+        </div>
+    </script>
+    <script type="text/html" id="partNameTpl">
+        <div class="dom-data">
+            <a dataid="0" class="layui-btn layui-btn-xs" type="button" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;300px&quot;],&quot;btn&quot;:[],&quot;offset&quot;:&quot;t&quot;,&quot;shade&quot;:0}" lay-event="View" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/PartTimeLine&partId={{d.partId}}" onclick="layer.closeAll();func.callModuleButtonEvent()" buttonname="{{d.partName}}({{d.partSN}})">{{ d.partName}}</a>
+        </div>
+    </script>
+    <script type="text/html" id="generateTpl">
+        <div class="generate-div">
+            {{#  layui.each(d, function(index, item){ }}
+            <div><i class="iconfont icon-zhongjianxiaoyuanquan"></i><span>{{item.processTypeName}}</span><span>{{item.partName}}({{item.partSN}})</span></div>
+            {{#  }); }}
+        </div>
+    </script>
+    <script>
+        var defaultEstimateHours = 1;
+        function move2Out() {
+            var arr = [];
+            var str = [];
+            layui.table.checkStatus('TaskField').data.forEach(function (item, index) {
+                arr.push(item.id)
+                str.push(item.processTypeName);
+            })
+            console.log(arr)
+            if (arr.length) {
+                abp.message.confirm(`确定将"${str.join(',')}"设置成外协加工吗？`, function () {
+                    abp.services.app.processTask.setTasksStatus(arr, 'Inner', false).done(function () {
+                        layer.msg('设置成功');
+                        layuiExt.reRender('TaskField');
+                    })
+                })
+
+            } else {
+                layer.msg("先勾选具体工序，再点击\"外协加工\"按钮")
+            }
+        }
+        //宽度读取改变应在加载前完成
+        var fieldCtWidth = layui.data('manyChangeWidth').fieldCtWidth;
+        if (fieldCtWidth) {//如果之前写入过了，就读取这个值
+            $('.jiqi-content').width(fieldCtWidth);
+        } else {//如果没写入过，则设置初始值
+            layui.data('manyChangeWidth', {
+                key: 'fieldCtWidth'
+                , value: $('.jiqi-content').width()
+            });
+            //localStorage.setItem("costTreeWidth",250);
+        }
+        function fTaskLiHover() {
+            $('.dom-task-ul').on('mousedown', '.dom-li-hover', function (ev) {
+                $(this).find('.li-msg-hovered').show();
+                var type = $(this).find('.li-msg-hovered h3').text();
+                //.split('--')[1];
+                var eqSN = $(this).closest('.jiqi-wrap').data('eqsn');
+                var outerHtml = $(this).prop('outerHTML');
+                var taskid = $(this).attr('data-taskid');
+                var eqid = $(this).closest('.jiqi-wrap').data('eqid');
+                var eqindex = $(this).closest('.jiqi-wrap').index();
+
+                console.log(taskid)
+                var goBackFlag = false;
+                $('.table-wrap .layui-form').on('mouseenter', function (ev) {
+                    goBackFlag = true;
+                })
+                $('.table-wrap .layui-form').on('mouseleave', function (ev) {
+                    goBackFlag = false;
+                })
+
+                //var goOut = false;
+                //$('.move-out-button').on('mouseenter', function (ev) {
+                //    goOut = true;
+                //})
+                //$('.move-out-button').on('mouseleave', function (ev) {
+                //    goOut = false;
+                //})
+
+
+                document.onmousemove = function (ev) {
+                    var oEvent = ev || event;
+                    if (!$('.generate-wrap .generate-li').length) {
+                        $('.generate-wrap').append(`<div class="generate-li"></div>`);
+                        $('.generate-li').append(outerHtml);
+                    }
+
+                    var l = oEvent.clientX;
+                    var t = oEvent.clientY;
+                    if (l < 0) {
+                        l = 0;
+                    }
+                    else if (l > document.documentElement.clientWidth - 250) {
+                        l = document.documentElement.clientWidth - 250;
+                    }
+                    if (t < 100) {
+                        t = 100;
+                    }
+                    else if (t > document.documentElement.clientHeight - 40) {
+                        t = document.documentElement.clientHeight - 40;
+                    }
+                    $('.generate-li')[0].style.left = l - 30 + 'px';
+                    $('.generate-li')[0].style.top = t - 10 + 'px';
+                };
+                document.onmouseup = function () {
+                    if (goBackFlag) {
+                        abp.message.confirm(`确定将"${type}"从设备${eqSN}上删除吗？`, function () {
+                            abp.services.app.processTask.unArrangeTasks([taskid]).done(function () {
+                                layer.msg('删除成功');
+                                layuiExt.reRender('TaskField');
+                                oPlanData.aSelectedObj = [];
+                                console.log(eqid, eqindex)
+                                app.fGetFinishedTasks(eqid, eqindex);
+                            })
+                        })
+                    }
+                    //if (goOut) {
+                    //    abp.message.confirm(`确定将"${type}"从设备${eqSN}上设置成外协加工吗？`, function () {
+                    //        abp.services.app.processTask.setTasksStatus([taskid], 'Inner', false).done(function () {
+                    //            layer.msg('设置成功');
+                    //            app.fGetFinishedTasks(eqid, eqindex);
+                    //        })
+                    //    })
+                    //}
+                    $('.generate-li').remove();
+                    document.onmousemove = null;
+                    document.onmouseup = null;
+                }
+                return false;
+            })
+
+            $('.dom-task-ul').on('mouseenter', '.dom-li-hover', function (ev) {
+                console.log('s')
+                $(this).find('.li-msg-hovered').show();
+
+
+            })
+            $('.dom-task-ul').on('mouseleave', '.dom-li-hover', function (ev) {
+                $(this).find('.li-msg-hovered').hide();
+            })
+
+        }
+
+        function fSrchProType(prtype) {
+            if (TaskField[0].where.where.indexOf('ProcessType.ProcessTypeName') == -1) {
+                TaskField[0].where.where = oriWhereStr + ' and ProcessType.ProcessTypeName="' + prtype + '"'
+                layuiExt.reRender('TaskField')
+            } else {
+                TaskField[0].where.where = oriWhereStr;
+                layuiExt.reRender('TaskField');
+            }
+            oPlanData.aSelectedObj = [];
+        }
+
+        function fSetPlan() {
+            var laytpl = layui.laytpl;
+            $('.table-wrap .layui-table-main tr').on('mousedown', function (ev) {
+                evTarget = $(ev.target).context;
+                //console.log(evTarget,evTarget.querySelector(".layui-icon"),evtarget.className.indexOf('layui-icon'))
+                if (!evTarget.querySelector(".layui-icon") && evTarget.className.indexOf('layui-icon') == -1) {
+                    //if (1==1) {
+                    $('.jiqi-wrap').addClass('jiqi-scale')
+
+                    $('.jiqi-wrap').on('mouseenter', function (ev) {
+                        oPlanData.jiqiId = $(this).data('eqid');
+                        oPlanData.jiqiSN = $(this).data('eqsn');
+                        oPlanData.jiqiIndex = $(this).index();
+                    })
+                    $('.jiqi-wrap').on('mouseleave', function (ev) {
+                        oPlanData.jiqiId = '';
+                        oPlanData.jiqiSN = '';
+                        oPlanData.jiqiIndex = '';
+                    })
+                    var data;
+                    if (oPlanData.aSelectedObj.length) {//多选
+                        data = oPlanData.aSelectedObj;
+                    } else {
+                        //data = JSON.parse($(evTarget).closest('tr').find('[data-field="processTypeName"] .dom-data').attr('data-d'));
+                        data = [JSON.parse($(evTarget).closest('tr').data('index'))];
+                    }
+                    var generateData = data.map(function (el) {
+                        return layui.table.cache.TaskField[el]
+                    })
+                    var getTpl = generateTpl.innerHTML
+                        , view = document.getElementsByClassName('generate-wrap')[0];
+                    laytpl(getTpl).render(generateData, function (html) {
+                        view.innerHTML = html;
+                    });
+                    //$(`<div class="generate-div">aaaa</div>`).appendTo($('.generate-wrap'))
+                    var oDiv = $('.generate-div')[0];
+                    var oEvent = ev || event;
+
+                    disX = oEvent.clientX;
+                    disY = oEvent.clientY;
+
+                    oDiv.style.left = disX + 5 + 'px';
+                    oDiv.style.top = disY + 5 + 'px';
+                    document.onmousemove = function (ev) {
+                        var oEvent = ev || event;
+                        var l = oEvent.clientX;
+                        var t = oEvent.clientY;
+                        if (l < 0) {
+                            l = 0;
+                        }
+                        else if (l > document.documentElement.clientWidth - oDiv.offsetWidth - 20) {
+                            l = document.documentElement.clientWidth - oDiv.offsetWidth - 20;
+                        }
+
+                        if (t < 0) {
+                            t = 0;
+                        }
+                        else if (t > document.documentElement.clientHeight - oDiv.offsetHeight - 20) {
+                            t = document.documentElement.clientHeight - oDiv.offsetHeight - 20;
+                        }
+
+                        oDiv.style.left = l + 5 + 'px';
+                        oDiv.style.top = t + 5 + 'px';
+                    };
+
+                    document.onmouseup = function () {
+                        var jiqiId = oPlanData.jiqiId;
+                        var jiqiIndex = oPlanData.jiqiIndex;
+                        var laydate = layui.laydate;
+                        if (jiqiId) {
+                            //里面存的index，通过table.cache去读出来
+                            var tplData = (oPlanData.aSelectedObj.length ? oPlanData.aSelectedObj : data).map(function (el) {
+                                return layui.table.cache.TaskField[el]
+                            })
+                            var tHtml;
+                            var getTpl = $('#ArrangeTaskToEquipment')[0].innerHTML;
+                            layui.laytpl(getTpl).render(tplData, function (html) {
+                                tHtml = html;
+                            });
+                            func.runAsync(abp.services.app.equipment.getAvailableArrangeDate(jiqiId).done(function (res) {
+                                layerOpen(res)
+                            }))
+                            function layerOpen(res) {
+                                layui.layer.open({
+                                    type: 1,
+                                    content: tHtml,
+                                    title: '机器：' + oPlanData.jiqiSN,
+                                    area: ['500px', '500px'],
+                                    shadeClose: true,
+                                    success: function (layero, index) {
+                                        function renderDate(el, Available) {//在layer打开后，render页面
+                                            //日期选择器
+                                            laydate.render({
+                                                elem: '#dateone' + el.id,
+                                                value: Available.pattern('yyyy-MM-dd')
+                                            });
+                                            //时间选择器
+                                            laydate.render({
+                                                elem: '#datetwo' + el.id
+                                                , type: 'time'
+                                                , value: Available.pattern('HH:mm:ss')
+                                            });
+                                        }
+                                        var nextAvailable;
+                                        tplData.forEach(function (el, index) {
+                                            var Available = new Date(el.appointDate || (nextAvailable ? nextAvailable : res));
+                                            renderDate(el, Available);//当自己有预约时间，就取自己的，没有则用后台来的时间或通过累加得到的时间
+                                            nextAvailable = new Date(new Date(res).getTime() + (el.estimateHours ? Number(el.estimateHours) : defaultEstimateHours) * 60 * 60 * 1000);//下次起始时间
+                                        })
+                                    },
+                                    btn: ['提交', '取消']
+                                    , yes: function (index, layero) {
+                                        var repArr = [];
+                                        tplData.forEach(function (el) {
+                                            repArr.push({
+                                                id: el.id,
+                                                ArrangeDate: $('#dateone' + el.id).val() + ' ' + $('#datetwo' + el.id).val(),
+                                                EstimateHours: $('#estimate' + el.id).val()
+                                            })
+                                        })
+                                        console.log(repArr)
+                                        func.runAsync(abp.services.app.processTask.arrangeTaskToEquipment(repArr, jiqiId).done(function () {
+                                            layer.msg('添加成功');
+                                            //TaskField[0].where.where = oriWhereStr;
+                                            layuiExt.reRender('TaskField');
+                                            oPlanData.aSelectedObj = [];
+                                            app.fGetFinishedTasks(jiqiId, jiqiIndex);
+                                            layer.closeAll();
+                                        }))
+                                    }
+                                    , btn2: function (index, layero) {
+                                        //oPlanData.aSelectedObj = [];
+                                    }
+                                })
+                            }
+                        }
+
+                        $('.generate-div').remove();
+                        document.onmousemove = null;
+                        document.onmouseup = null;
+
+                        $('.jiqi-wrap').removeClass('jiqi-scale')
+                        //清空机器相关
+                        $('.jiqi-wrap').on('mouseenter', null)
+                        $('.jiqi-wrap').on('mouseleave', null)
+                        oPlanData.jiqiId = '';
+                    };
+
+                    return false;
+                } else {
+                    //console.log('a')
+                }
+            })
+        }
+
+        var app;
+        //显示厂内任务未排机的
+        var oriWhereStr = '((processTaskStatus=0 or processTaskStatus=1) and Status!=null and Status.Contains("Inner") and (equipmentid = null ))';
+        window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhereStr, whereFilter: oriWhereStr };
+        var oPlanData = { res: '', jiqiId: '', jiqiIndex: '', jiqiSN: '', aSelectedObj: [] };
+        config.ready = function () {
+            app = new Vue({
+                el: '#app',
+                data: {
+                    fields: [],
+                    chooseProcessTypeNames: [],
+                    alldatas: [],
+                    searchInput: '',
+                    chooseWorkroom: ['车间一', '车间二', '车间三', '车间四', '车间五'],
+                    aActive: 0,
+                },
+                methods: {
+                    getLoadInfo: function (equipmentLoadInfo) {//获取日产能
+                        var oc = equipmentLoadInfo.occupyHours;
+                        var to = equipmentLoadInfo.totalCapacity;
+                        var color = oc / to < 1 ? 'green' : 'yellow';//超过理论产能为黄色，未超过为绿色
+                        return { per: Math.round(oc / to * 100) + '%', str: oc + '/' + to, color: color }
+                    },
+                    getFinishDate: function (startDate, hours) {
+                        if (startDate && hours) {
+                            return new Date(new Date(startDate).getTime() + hours * 60 * 60 * 1000).pattern('MM-dd HH:mm')
+                        } else {
+                            return ''
+                        }
+
+                    },
+                    objEmptyStr: function (value, str) {
+                        if (!value) return '';
+                        return value[str];
+                    },
+                    getProgress: function (d) {
+                        var color = 'layui-bg-blue'; var progress = 0;
+                        var task = {};
+                        task = d.tasks.filter(function (elem) {
+                            return elem.id == d.taskId
+                        })[0] || {}
+                        //报工报上来了进度，则显示绿色的报工进度
+                        if (d.progress) {
+                            color = 'my-bg-green';
+                            progress = d.progress;
+                        }
+                        //已上机状态的任务
+                        else if (task.processTaskStatus == 3) {
+                            //有开始时间（报工上来的和在系统手填的）和开单时填了预计工时
+                            if (task.startDate && task.estimateHours) {
+                                //当前时间减去开始时间，再除以预计工时得到目前应该进度到哪了，未超过预计工时显示蓝色进度条，超过显示橘色进度条
+                                var D = new Date();
+                                var S = new Date(task.startDate);
+                                S.setFullYear(D.getFullYear());
+                                var spendTime = (D - S) / (1000 * 60 * 60);
+                                progress = spendTime / task.estimateHours;
+                                if (progress > 1) {
+                                    color = 'layui-bg-orange';
+                                    progress = 1;
+                                }
+                            }
+                        }
+                        return { color: color, progress: progress }
+                    },
+                    showMoreTaskLi: function (id, index) {
+                        var flag;
+                        if (!this.fields[index].hadShowMore) {
+                            flag = true;
+                            this.fields[index].hadShowMore = true;
+
+                        } else {
+                            flag = 5;
+                            this.fields[index].hadShowMore = false;
+                        }
+                        this.fGetFinishedTasks(id, index, flag)
+                    },
+                    editSheet: function (taskId) {
+                        top.layui.index.openTabsPage('/Home/Show?name=../MES/JGKD&taskid=' + taskId, '加工开单')
+                    },
+                    SNpart: function (item) {
+                        //console.log('SNpart');//不知道当input输入数据，会触发这个函数
+                        return !item.taskId ? '未上机' : item.partName + '(' + item.partSN + ')'
+                    },
+                    inputKeyenter: function () {
+                        console.log('inputKeyenter');
+                        var tempusedata = [];
+                        for (var i = 0; i < this.alldatas.length; i++) {
+                            if (this.alldatas[i].equipmentSN ? this.alldatas[i].equipmentSN.indexOf(this.searchInput) >= 0 : false || this.alldatas[i].operator ? this.alldatas[i].operator.indexOf(this.searchInput) >= 0 : false) {
+                                tempusedata.push(this.alldatas[i]);
+                            }
+                        }
+                        this.aActive = 0;
+                        this.fields = tempusedata;
+                        console.log(this.searchInput)
+                    },
+                    choosePr: function (index) {
+                        if (index == 0) {//点的所有设备
+                            this.fields = this.alldatas;
+                            TaskField[0].where.where = oriWhereStr
+                            layuiExt.reRender('TaskField')
+                            if ($('.choose > ul').hasClass('head-max-h')) {
+                                $('.choose > ul').removeClass('head-max-h')
+                            } else {
+                                $('.choose > ul').addClass('head-max-h')
+                            }
+                        }
+                        else {
+                            var eqtype = this.chooseProcessTypeNames[index].processTypeName;
+                            var usedata = [];
+                            for (var i = 0; i < this.alldatas.length; i++) {
+                                if (this.alldatas[i].processTypeName.indexOf(eqtype) != -1) {
+                                    usedata.push(this.alldatas[i]);
+                                }
+                            }
+                            this.fields = usedata;
+
+                            TaskField[0].where.where = oriWhereStr + ' and ProcessType.ProcessTypeName="' + eqtype + '"'
+                            layuiExt.reRender('TaskField')
+                        }
+                        oPlanData.aSelectedObj = [];
+                        this.aActive = index;
+
+                        console.log('工艺' + index)
+                    },
+                    fGetState: function (m) {
+                        var state;
+                        if (m) {
+                            state = 'green'
+                        }
+                    },
+                    fGetFinishedTasks: function (id, index, maxdata) {//往机器圆圈上添加东西
+                        var that = this;
+                        if (typeof maxdata == 'boolean' && maxdata) {
+                            maxdata = ''
+                        } else {
+                            maxdata = maxdata || 5;
+                        }
+                        //console.log(id, index, maxdata)
+                        abp.services.app.equipment.getUnFinishedTasks(id, maxdata).done(function (data) {
+                            that.alldatas[index].tasks = data;
+                            that.fields[index].tasks = data;
+                            if (index == 0) {
+                                fTaskLiHover();
+                            }
+                        })
+                    }
+                },
+                mounted: function () {
+                    var that = this;
+                    abp.services.app.processType.getAllWithEquipmentCount().done(function (data) {
+                        //data.forEach(function (n) {
+                        //    that.chooseProcessTypeNames.push(n.processTypeName)
+                        //})
+                        that.chooseProcessTypeNames = data;
+                        that.chooseProcessTypeNames.sort(function (o1, o2) {
+                            return o2.equipmentCount - o1.equipmentCount;
+                        })
+                        that.chooseProcessTypeNames.unshift({ processTypeName: '所有设备+', equipmentCount: 0 });
+                    })
+                    abp.services.app.equipment.getEquipmentProcessInfos({}).done(function (data) {
+                        data.forEach(function (n, index) {
+                            that.fields.push(n);
+                            that.alldatas.push(n);
+                            that.fGetFinishedTasks(n.id, index);
+
+                            //abp.services.app.equipment.getUnFinishedTasks(n.id).done(function (data) {
+                            //    app.alldatas[index].tasks = data;
+                            //    app.fields[index].tasks = data;
+                            //})
+
+                        })
+                        console.log(that.fields, that.alldatas)
+                    })
+                    //var where = { page: 1, limit: 10, where:'Status!=null and Status.Object.Contains("Inner") and equipmentid = null'}
+                    //abp.services.app.processTask.getPageResult(where).done(function (data) {
+                    //    console.log(data)
+                    //});
+                },
+                created: function () {
+                    top.app.setBulletinText('')
+                    top.app.setBulletinText('请将任务拖到设备框进行排机或勾选任务再点击外协加工进行外协加工', 'FieldControl', 60);
+                    window.addEventListener('unload', () => {
+                        top.app.setBulletinText('')
+                    });
+                }
+            })
+
+            var table = layui.table;
+            window.TaskField = [{
+                elem: '#TaskField',
+                cellMinWidth: '80',
+                height: '',
+                url: '/api/services/app/ProcessTask/GetPageResult',
+                where: { where: oriWhereStr },
+                page: false,
+                id: 'TaskField',
+                page: { limit: 20, limits: [20, 50, 100, 200, 500] },
+                even: true,
+                done: config.onTableDone,
+                initSort: { field: 'Id', type: 'desc' }
+            }, [[
+                { align: 'center', type: 'checkbox', gudinglie: false },
+                { align: 'center', field: 'processTypeName', templet: '#searchProcessType', title: '工序', sort: true, gudinglie: false, width: 80, filterField: 'ProcessType.ProcessTypeName' },
+                { align: 'center', field: 'partName', templet: '#partNameTpl', title: '零件', width: 140, sort: true, gudinglie: false, filterField: 'Part.PartName' },
+                { align: 'center', field: 'appointDate', title: '预约时间', sort: true, gudinglie: false },
+                { align: 'center', field: 'requireDate', title: '要求完成时间', sort: true, gudinglie: false },
+                { align: 'center', field: 'projectSN', title: '模具编号', sort: true, gudinglie: false, filterField: 'Part.Project.ProjectSN', templet: '#projectTpl' },
+                { align: 'center', field: 'partSN', title: '零件编号', sort: true, gudinglie: false },
+                { align: 'center', field: 'estimateHours', title: '预计工时', sort: true, gudinglie: false },
+                { align: 'center', field: 'partSpecification', title: '规格', sort: true, gudinglie: false },
+                { align: 'center', field: 'partNum', sort: true, title: '数量', gudinglie: false },
+            ]]];
+            //table.on('row(TaskField)', function (obj) {
+            //    console.log(obj.tr) //得到当前行元素对象
+            //    console.log(obj.data) //得到当前行数据
+            //    //obj.del(); //删除当前行
+            //    //obj.update(fields) //修改当前行数据
+            //});
+            //table.on('checkbox(TaskField)', function (obj) {
+            //    console.log(obj.checked); //当前是否选中状态
+            //    console.log(obj.data); //选中行的相关数据
+            //    console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
+            //});
+            layuiExt.reRender('TaskField');
+        }
+        //config.tableRowdone = function (obj) {
+        //    console.log(evTarget.querySelector(".layui-icon") , evTarget.className.indexOf('layui-icon'))
+        //var status= obj.tr.find('[data-field="0"] input').prop('checked');
+        //if(status)
+        //};
+        config.tableCheckBoxdone = function (obj) {
+            if (obj.type == 'all') {
+                if (obj.checked) {
+                    oPlanData.aSelectedObj = [];
+                    oPlanData.res.data.forEach(function (item, index) {
+                        oPlanData.aSelectedObj.push(index)
+                    })
+                } else {
+                    //oPlanData.selectedData = [];
+                    oPlanData.aSelectedObj = [];
+                }
+            } else {
+                if (obj.checked) {
+                    oPlanData.aSelectedObj.push(obj.tr.data('index'))
+                } else {
+                    oPlanData.aSelectedObj.forEach(function (e, i) {
+                        if (obj.data.id == e.id) {
+                            oPlanData.aSelectedObj.splice(i, 1)
+                        }
+                    })
+                    //oPlanData.selectedData.splice(oPlanData.selectedData.indexOf(obj.data.id), 1);
+                }
+            }
+            console.log(oPlanData.aSelectedObj, obj)
+        }
+        config.onTableDone = function (res, curr, count) {
+            oPlanData.res = res;
+
+            fSetPlan();
+
+            layui.table.on('sort(TaskField)', function (obj) {
+                fSetPlan();
+            });
+
+            function fChangeWidth() {
+                var oDiv = document.getElementById('dom-change_width');
+                var rowWrap = document.getElementsByClassName('jiqi-content')[0];
+                var disX = 0;
+
+                oDiv.onmousedown = function (ev) {
+                    var oEvent = ev || event;
+                    disX = oEvent.clientX - oDiv.offsetLeft;
+                    //console.log(disX, oEvent.clientX, oDiv.offsetLeft, $('.my-row-wrap').width(),a.offsetWidth);
+                    var rowWrapPadding = (rowWrap.offsetWidth - $('.jiqi-content').width()) / 2;//border+padding合宽
+                    console.log(rowWrapPadding)
+                    document.onmousemove = function (ev) {
+                        var oEvent = ev || event;
+                        var l = oEvent.clientX - disX - rowWrapPadding;//当前鼠标位置-padding宽度
+                        //console.log(l)
+                        if (l < 220) {
+                            l = 220;
+                        }
+                        else if (l > 900) {
+                            l = 900;
+                        }
+                        $('.jiqi-content').width(l);
+                        layui.data('manyChangeWidth', {
+                            key: 'fieldCtWidth'
+                            , value: l
+                        });
+
+                    };
+
+                    document.onmouseup = function () {
+                        document.onmousemove = null;
+                        document.onmouseup = null;
+                    };
+
+                    return false;
+                };
+
+            }
+            fChangeWidth();
+
+            $(window).resize();
+        }
+    </script>
+
+}

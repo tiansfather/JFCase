@@ -1,0 +1,101 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "开单审核-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <style>
+        h1 {
+            text-align: center;
+            font-size: 26px;
+            color: #3cc51f;
+            font-weight: 400;
+            margin: 0 15%;
+        }
+        [v-cloak] {
+            display: none;
+        }
+
+        .r-cell__bd-p2 {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .r-cell__bd-p2 span {
+            display: inline-block;
+            width: 140px;
+        }
+    </style>
+}
+    <div id="app">
+        <div>
+            <h1>开单审核</h1>
+            <div>
+                <ul>
+                    <li v-for="(list,index) in lists" @@click="go(list.id,index)">
+                        <div class="weui-cells__title">{{list.processSN||'未开单'}}</div>
+                        <div class="weui-cells">
+                            <div class="weui-cell">
+                                <div class="weui-cell__bd">
+                                    <p>{{list.partName}}({{list.partSN}})/{{list.processTypeName}}</p>
+                                    <p class="r-cell__bd-p2">
+                                        <span :style="{color:func.getProcessTaskStatusColor(list.processTaskStatus).color}">{{func.getProcessTaskStatusColor(list.processTaskStatus).name}}</span>
+                                        <span><i class="iconfont icon-rili1" style="color:red;"></i>{{list.requireDate}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <water-load :loaded="lists.length==page*limit" :nomore="noMore" @@page-add="page++;loadData()"></water-load>
+        </div>
+    </div>
+
+@section scripts{
+    <script>
+        new Vue({
+            el:'#app',
+            data: function () {
+                return {
+                    lists: [],
+                    page: 1,
+                    limit: 10,
+                    noMore: false,
+                    where: 'ProcessTaskStatus=0'
+                }
+            },
+            computed: {
+                options: function () {
+                    return {
+                        page: this.page,
+                        limit: this.limit,
+                        where: this.where,
+                    }
+                }
+            },
+            methods: {
+                loadData: function () {
+                    var that = this;
+                    abp.services.app.processTask.getPageResult(this.options).done(function (res) {
+                        if (res.data.length < that.limit) {//已无更多数据
+                            that.noMore = true;
+                        }
+                        that.lists = that.lists.concat(res.data);
+                    })
+                },
+                go: function (id, index) {
+                    location.href = '/mes/JGKD?taskid=' + id;
+                }
+            },
+            mounted: function () {
+                if (!this.lists.length) {
+                    this.loadData();
+                }
+            }
+        });
+    </script>
+}

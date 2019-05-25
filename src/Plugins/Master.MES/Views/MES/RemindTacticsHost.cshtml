@@ -1,0 +1,84 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+	ViewData["Title"] = "RemindTactics";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>提醒策略</div>
+		<div class="layui-card-body ">
+			<table autoevent="1" id="RemindTactics" lay-filter="RemindTactics" class="layui-table " lay-data="{toolbar:'#toolbarTpl',cellMinWidth:'80',height:'full-130',where:{where:''}, page:true, id:'RemindTactics', even:true,done:config.onTableDone, url: '/api/services/app/Tactic/GetRemindTacticHostPageResult'}">
+				<thead>
+					<tr>
+						<th lay-data="{align:'center',field:'tacticName'}">策略名称</th>
+						<th lay-data="{align:'center',field:'isActive',templet:'#isActiveTpl'}">状态</th>
+						<th lay-data="{align:'center',templet:'#personTpl'}">被提醒人</th>
+						<th lay-data="{align:'center',toolbar: '#toolbar'}">操作</th>
+					</tr>
+				</thead>
+			</table>
+
+		</div>
+	</div>
+</div>
+<script type="text/html" id="isActiveTpl">
+	<input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="有效|无效" lay-filter="isActive" {{ d.isActive ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+		@*<button class="layui-btn layui-btn-sm" fornonerow="1" buttonname="添加策略" type="button" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;],&quot;btn&quot;:[&quot;提交&quot;,&quot;关闭&quot;],&quot;btnAlign&quot;: &quot;l&quot;}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/RemindTacticsSubmit" onclick="func.callModuleButtonEvent()">添加策略</button>*@
+
+	</div>
+</script>
+<script type="text/html" id="toolbar">
+	@*<button class="layui-btn layui-btn-xs" dataid="{{d.id}}" fornonerow="1" buttonname="编辑策略" type="button" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;],&quot;btn&quot;:[&quot;提交&quot;,&quot;关闭&quot;],&quot;btnAlign&quot;: &quot;l&quot;}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/RemindTacticsSubmit" onclick="func.callModuleButtonEvent()">编辑</button>*@
+
+	<button class="layui-btn layui-btn-xs layui-btn-danger" onclick="bindReminder({{d.id}})">绑定被提醒人</button>
+</script>
+<script type="text/html" id="personTpl">
+	{{#  layui.each(d.persons, function(index, item){ }}
+	<span class="layui-badge layui-bg-green" tips="双击移除人员" ondblclick="removeReminder({{d.id}},{{item.id}},'{{item.name}}')">{{item.name}}</span>
+	{{#  }); }}
+</script>
+<div id="codeContainer" style="padding:0 20px;display:none;text-align:center" tips="请让需要接收提醒的人员扫描此二维码">
+	<img />
+</div>
+@section scripts{
+	<script>
+		config.ready = function () {
+			layui.form.on('switch(isActive)', function (obj) {
+				func.runAsync(abp.services.app.tactic.setActive(this.value, obj.elem.checked).done(function (data) {
+					layer.msg("提交成功");
+				}))
+				//layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+			});
+
+		}
+		function bindReminder(tacticId) {
+			var url = location.origin + "/mes/bindreminder?id=" + tacticId
+			var code = '/api/qrcode?url=' + encodeURIComponent(url);
+			$("#codeContainer img").attr("src", code);
+			layer.open({
+				type: 1,
+				shade: false,
+				btn: null,
+				title: "绑定被提醒人",
+				area: ['250px', '250px'],
+				content: $('#codeContainer'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+				success: function () {
+
+				}
+			});
+		}
+
+		function removeReminder(tacticId, personId, personName) {
+			abp.message.confirm("确认移除人员" + personName, function () {
+				func.runAsync(abp.services.app.tactic.removeReminder(tacticId, personId)
+					.done(function () {
+						layui.table.reload('RemindTactics');
+					}))
+			})
+
+		}
+	</script>
+}

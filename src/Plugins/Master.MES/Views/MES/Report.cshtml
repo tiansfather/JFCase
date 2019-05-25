@@ -1,0 +1,628 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端报工页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "生产报工";
+}
+<link href="~/lib/jquery-nstslider/jquery.nstSlider.min.css" rel="stylesheet" />
+<link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+@section styles{
+    <style>
+        #imglist img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .layui-upload-file {
+            display: none;
+        }
+
+        .my-flex-start.weui-cell {
+            align-items: flex-start;
+        }
+
+        .nstSlider-wrap {
+            display: flex;
+        }
+
+        .my-flex-start .nstSlider {
+            height: 30px;
+            border-radius: 0;
+            width: 95%;
+            border-top-right-radius: 7px;
+            border-bottom-right-radius: 7px;
+        }
+
+            .my-flex-start .nstSlider .bar {
+                top: 11px;
+            }
+
+        .leftGrip {
+            top: 5px;
+        }
+
+        .nstSlider-left {
+            border-top-left-radius: 7px;
+            border-bottom-left-radius: 7px;
+            width: 5%;
+            background: #134;
+        }
+
+        .weui-grids {
+            position: fixed;
+            top: 100px;
+            z-index: 9999;
+            background: #fff;
+            width: 100%;
+        }
+
+        .weui-grid__icon {
+            text-align: center;
+        }
+
+        .iconfont-daoliao.iconfont {
+            font-size: 24px;
+            color: #000;
+        }
+
+        .weui-grid__label {
+            font-size: 17px;
+        }
+
+        .hongbao {
+            margin-top: 15px;
+            padding-bottom: 5px;
+            font-size: 13px;
+            color: #cecece;
+            line-height: 1em;
+        }
+    </style>
+}
+<div id="app" style="display:none">
+    <div class="weui-cells__title" style="text-align: center; color: #c74949; font-size: 20px">{{currentItem.tenancyName}} 任务汇报</div>
+    <div class="weui-mask weui-mask--visible "></div>
+    <div class="weui-grids dom-choosetype-wrap">@* 首屏快速选择报工类型 *@
+        <a href="#" class="weui-grid js_grid" v-for="item in reportTypeArr" @@click="fChooseType(item)">
+            <div class="weui-grid__icon">
+                <i class="iconfont iconfont-daoliao" :class="getRIcon(item)"></i>
+            </div>
+            <p class="weui-grid__label" v-html="item">
+            </p>
+        </a>
+    </div>
+    <div class="weui-cells weui-cells_form">
+
+        <mb-project-detail :item="currentItem"></mb-project-detail>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">加工工艺</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" :value="currentItem.processTypeName" readonly>
+            </div>
+        </div>
+        <div class="weui-cell" @@click="TaskInfoShowed=!TaskInfoShowed">
+            <div class="weui-cell__hd">
+                <label class="weui-label">工艺要求</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" :value="currentItem.taskInfo" readonly v-show="TaskInfoShowed">
+            </div>
+        </div>
+        <div class="weui-cell" v-show="!TaskInfoShowed">
+            <div class="weui-cell__bd">
+                <textarea class="weui-textarea" style="color:#e5e5e5" placeholder="请输入文本" rows="3" :value="currentItem.taskInfo" readonly></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">报工类型</label>
+            </div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="reporttype" name="reporttype" type="text" value="" readonly="" data-values="" placeholder="请正确选择报工类型">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">时间</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <input class="weui-input" type="text" value="@(DateTime.Now.ToString("yyyy-MM-dd HH:mm"))" :readonly="reportTimeReadonly" id="reporttime">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">汇报人</label>
+            </div>
+            <div class="weui-cell__bd weui-cell_primary">
+                <input class="weui-input" type="text" name="reportername" value="@ViewBag.ReporterName" readonly="" style="color: #888" />
+            </div>
+        </div>
+        <div class="weui-cell my-flex-start">
+            <div class="weui-cell__hd">
+                <label class="weui-label">进度</label>
+            </div>
+            <div class="weui-cell__bd ">
+                <div class="nstSlider-wrap">
+                    <div class="nstSlider-left"></div>
+                    <div class="nstSlider" data-range_min="0" data-range_max="100" data-cur_min="0" data-cur_max="0">
+                        <div class="bar"></div>
+                        <div class="leftGrip"></div>
+                    </div>
+                    <div class="leftLabel"></div>
+                </div>
+                <p>{{currentItem.progress}}%</p>
+            </div>
+        </div>
+    </div>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <textarea class="weui-textarea" placeholder="请输入报工说明" rows="3" name="remarks" id="remarks"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="weui-cells weui-cells_form" style="margin-bottom: 45px;">
+        <div class="weui-cell">
+            <div class="weui-cell__bd ">
+                <div class="weui-uploader">
+                    <div class="weui-uploader__hd">
+                        <p class="weui-uploader__title">图片上传</p>
+                        <div class="weui-cell_ft"></div>
+                    </div>
+                    <div class="weui-uploader__bd">
+                        <ul class="weui-uploader__files" id="imglist"></ul>
+                        <div class="weui-uploader__input-box">
+                            <input class="weui-uploader__input" type="button" id="chooseBtn" onclick="choose()" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<p class="hongbao">关注微信公众号"模来模往"，报工可领现金红包</p>*@
+    <div class="weui-btn-area" style="position: fixed; bottom: 2px; width: 92%;">
+        <a class="weui-btn weui-btn_primary" href="javascript:doSubmit();" id="submitBtn">提交</a>
+    </div>
+</div>
+
+
+@section scripts{
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script src="~/lib/jquery-nstslider/jquery.nstSlider.js"></script>
+    <script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+        wx.error(function (res) {
+			console.log(res);
+			alert('验证失败:' + JSON.stringify(res));
+        });
+
+         wx.ready(function () {
+
+            });
+    </script>
+    <style>
+        .mobeil-cell-project .iconfont {
+            color: #c74949;
+            margin-right: 10px;
+        }
+    </style>
+    <script type="text/x-template" id="mbProjectDetail">
+        <div class="mobeil-cell-project">
+            <div v-show="showSimple">
+                <div class="weui-cell">
+                    <div style="width: 55%;">模号:{{item.projectSN}}</div>
+                    <div style="width: 45%;" @@click="showSimple=!showSimple"><i class="iconfont icon-gongjian"></i>{{item.partName}}</div>
+                </div>
+                <div class="weui-cell">
+                    <div style="width: 55%;">规格:{{item.partSpecification}}</div>
+                    <div style="width: 45%;" @@click="showSimple=!showSimple"><i class="iconfont icon-number"></i>{{item.partNum}}</div>
+                </div>
+            </div>
+            <div v-show="!showSimple">
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">模具编号</label>
+                    </div>
+                    <div class="weui-cell__bd">
+                        <input class="weui-input" type="text" :value="item.projectSN" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件名称</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partName" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件规格</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partSpecification" readonly>
+                    </div>
+                </div>
+                <div class="weui-cell">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">零件数量</label>
+                    </div>
+                    <div class="weui-cell__bd ">
+                        <input class="weui-input" type="text" :value="item.partNum" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script>
+        Vue.component('mb-project-detail', {
+            data: function () {
+                var showSimple = false;
+                if (window.innerHeight < 660) {
+                    showSimple = true;
+                }
+                return { showSimple: showSimple }
+            },
+            props: ['item'],
+            template: '#mbProjectDetail',
+            created: function () {
+                console.log(this.item)
+            }
+        })
+    </script>
+    <script>
+		var app;
+		var submiting = false;
+        app = new Vue({
+            el: '#app',
+            data: {
+                taskId:0,
+                reporterName: '@Html.Raw(ViewBag.ReporterName)',
+                currentItem: { },
+                chooseIds: [],//选择的文件Ids数组
+				mediaIds: [],//微信返回的素材id数组
+                files: [],
+                reportTypeArr: [],
+                TaskInfoShowed: true,//taskinfo是否显示
+            },
+            computed: {
+                reportTimeReadonly: function () {
+                    return this.currentItem.tenantId == 168;//智盛不让手填报工时间
+                }
+            },
+            methods: {
+                fChooseType: function(item) {
+                    var val = $(this).find('.weui-grid__label').html();
+                    $("#reporttype").val(item);
+                    $('.dom-choosetype-wrap').hide(300);
+                    $('.weui-mask').hide();
+                },
+                getRIcon: function (item) {
+                    var icon;
+                    switch (item) {
+                        case "到料":
+                            icon = 'icon-wuliaoguanli1';
+                            break;
+                        case "上机":
+                            icon = 'icon-shangji';
+                            break;
+                        case "下机":
+                            icon = 'icon-xiaji';
+                            break;
+                        case "日报":
+                            icon = 'icon-jichuang';
+                            break;
+                        case "暂停":
+                            icon = 'icon-zanting';
+                            break;
+                    }
+                    return icon;
+                },
+                fVerifyFee: function () {
+                    abp.services.app.processTask.verifyFee().done(function () {
+                        layer.msg()
+                    })
+                },
+                loadItem: function (taskId) {
+                    var that = this;
+                    func.runAsync(abp.services.app.processTask.getReportTaskInfoById(taskId)
+                        .done(function (data) {
+                            that.currentItem = data;
+                            that.currentItem.progress = Math.round(that.currentItem.progress * 100);
+                            console.log(data)
+                            //chooseProgress(that.currentItem.progress);
+                            var reportTypeArr = ["到料", "上机", "下机", "日报", "暂停"];
+                            switch (data.processTaskStatus.toString()) {
+                                case "1"://待加工
+                                    reportTypeArr = ["到料", "上机"];
+                                    break;
+                                case "2"://已到料
+                                    reportTypeArr = ["上机", "下机", "日报", "暂停"];
+                                    break;
+                                case "3"://加工中
+                                    reportTypeArr = ["下机", "日报", "暂停"];
+                                    break;
+                                case "4"://已完成
+                                    location.href = '/WeiXin/Error?msg=' + encodeURIComponent('此加工单已结束');
+                                    break;
+                                case "-1":
+                                    location.href = '/WeiXin/Error?msg=' + encodeURIComponent('此加工单已取消');
+                                    break;
+                                case "5":
+                                    reportTypeArr = [ "重新开始"];
+                                    break;
+                            }
+                            that.reportTypeArr = reportTypeArr;
+                            $("#reporttype").select({
+                                title: "选择报工类型",
+                                items: reportTypeArr
+                            });
+                            if (!that.reportTimeReadonly) {
+                                $("#reporttime").datetimePicker();
+                            }
+
+                            $('.nstSlider').nstSlider({
+                                "rounding": {
+                                    "5": "100"
+                                },
+                                "left_grip_selector": ".leftGrip",
+                                "value_bar_selector": ".bar",
+                                "value_changed_callback": function (cause, leftValue, rightValue) {
+                                    var $container = $(this).parent(),
+                                        g = 255 - 100 + leftValue,
+                                        r = 255 - g,
+                                        b = 0;
+                                    //$('select[name="percent"]').val(leftValue);
+                                    that.currentItem.progress=leftValue
+                                    $(this).find('.bar').css('background', 'rgb(' + [r, g, b].join(',') + ')');
+                                }
+                            });
+
+                            $('.nstSlider').nstSlider('set_position', 100, that.currentItem.progress);
+                            $("#app").show();
+                        }));
+
+                }
+
+            },
+            mounted: function () {
+                this.taskId = $.getUrlParam("taskid");
+                this.loadItem(this.taskId);
+                $('.dom-choosetype-wrap a').click(function () {
+
+                })
+            }
+
+        });
+		config.ready = function () {
+			//layui.use('upload', function () {
+			//	layui.upload.render({
+			//		elem: '#chooseBtn'
+			//		, url: '/file/upload/'
+			//		, accept: 'images'
+			//		, acceptMime: 'image/*'
+			//		, before: function () {
+			//			layui.layer.load()
+			//		}
+			//		, done: function (res) {
+			//			layui.layer.closeAll('loading');
+			//			//获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意：此乃 layui 2.1.0 新增
+			//			var item = this.item;
+			//			//如果上传失败
+			//			if (!res.result.success) {
+			//				layer.msg(res.result.msg, { icon: 5, anim: 6 });
+			//			}
+			//			//上传成功
+			//			else {
+
+			//				$("#imglist").append("<li class='weui-uploader__file'><img src='" + res.result.filePath + "?w=100' /></li>");
+			//				app.files.push({ fileName: res.result.fileName, filePath: res.result.filePath });
+
+			//			}
+			//		}
+			//	});
+			//})
+
+		}
+
+        function choose() {
+            var existImgCount = $("#imglist img").size();
+            wx.chooseImage({
+                count: 6 - existImgCount,
+                sizeType:['compressed'],
+                sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
+                success: function (res) {
+                    var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                    app.chooseIds = app.chooseIds.concat(localIds);
+                    console.log(app.chooseIds);
+                    for (var i = 0; i < localIds.length; i++) {
+                        $("#imglist").append("<li class='weui-uploader__file'><img src='" + localIds[i] + "' /></li>");
+                    }
+                }
+            });
+        }
+        function doSubmit() {
+            if (!$("#reporttype").val()) {
+                $.toptip('请正确选择报工类型', 'error');
+                return false;
+            }
+            //如果没有图片不允许上传
+            if ($("#imglist img").size() == 0) {
+                //formSubmit();
+                $.toptip('请上传图片,如果图片上传不了,请把微信升级到最新版本,如果还是不行请联系技术客服，18806597400或15906863922。', 'error');
+                return false;
+			} else {
+				if (submiting) { return;}
+				$.confirm("确认提交汇报?", function () {
+					submiting = true;
+                    //点击确认后的回调函数
+                    //设置按钮不可用
+                    $("#submitBtn").addClass("weui_btn_disabled");
+					var queue = []; //用于放置函数队列
+					var medias = [];
+
+					//从input得到ID
+					var arrid = app.chooseIds;
+					var thisnum = 0;
+					$("#imglist img").each(function () {
+						var localid = arrid[thisnum]; //var mediaid = $(this).attr("src");
+						var $that = $(this);
+						var func = function () {
+							wx.uploadImage({
+								localId: localid, // 需要上传的图片的本地ID，由chooseImage接口获得
+								isShowProgressTips: 1, // 默认为1，显示进度提示
+								success: function (res) {
+									var serverId = res.serverId; // 返回图片的服务器端ID
+									medias.push(serverId);
+									$that.addClass("uploaded");
+									$that.parent("li").addClass("weui-uploader__file_status").append('<div class="weui-uploader__file-content"><i class="weui-icon-success"></i></div>');
+									//是否均已上传完成
+									if ($("#imglist img.uploaded").size() == $("#imglist img").size()) {
+										app.mediaIds = medias;
+										formSubmit();
+									} else {
+										nextQueue(); //开始下一个函数
+									}
+
+								}
+							});
+						};
+						queue.push(func);
+						thisnum++;
+					})
+					$("body").queue("uploadqueue", queue);
+					nextQueue();
+					//$("#imglist img").each(function () {
+					//	app.mediaIds.push($(this).attr("src"));
+     //               })
+					//formSubmit();
+                }, function () {
+                    //点击取消后的回调函数
+                });
+            }
+        }
+        function nextQueue(cb) {
+            $("body").dequeue("uploadqueue"); //开始下一个函数
+        }
+
+        function formSubmit() {
+            //$.showLoading("正在提交...");
+            var reportObj = {
+                processTaskId: app.taskId,
+                reportType: getReportTypeId($("#reporttype").val()),
+                reportTime: $("#reporttime").val()+":00",
+				remarks: $("#remarks").val(),
+				mediaIds: app.mediaIds,
+                //files: app.files
+                progress:app.currentItem.progress/100
+            }
+            //alert(JSON.stringify(reportObj));
+            func.runAsync(abp.services.app.processTask.report(reportObj).done(function (data) {
+                location.href = "/weixin/success?msg=" + encodeURIComponent("提交成功");
+            }))
+            //$.ajax({
+            //    cache: true,
+            //    type: "POST",
+            //    url: "/Ajax/AjaxAPI.ashx?action=MESReport",
+            //    data: $("#myForm").serialize(),
+            //    async: false,
+            //    complete: function () {
+            //        //$.hideLoading();
+            //        $("#submitBtn").removeClass("weui_btn_disabled");
+            //    },
+            //    error: function (request) {
+            //        $.toast("发生错误,请联系技术客服，18806597400或18268160763。", "forbidden");
+            //    },
+            //    success: function (data) {
+            //        var d = $.parseJSON(data);
+            //        if (d.errCode == 0) {
+            //            $.hideLoading();
+            //            $.toast(d.message);
+            //            setTimeout(function () { location.href = "/WePage/Error.aspx?icon_type=success&info=" + encodeURIComponent("提交成功") }, 300);
+            //        } else {
+            //            $.hideLoading();
+            //            $.alert(d.message, function () {
+            //                location.reload();
+            //            });
+            //            //$.toptip(d.message, 'error');
+            //            //setTimeout(function () { location.reload() }, 300);
+            //        }
+            //    }
+            //});
+        }
+        //"到料", "上机", "下机", "加工", "暂停"
+        function getReportTypeId(reportType) {
+            var reportTypeId = 0;
+            switch (reportType) {
+                case "到料":
+                    reportTypeId = 1;
+                    break;
+                case "上机":
+                    reportTypeId = 2;
+                    break;
+                case "下机":
+                    reportTypeId = 5;
+                    break;
+                case "日报":
+                    reportTypeId = 3;
+                    break;
+                case "暂停":
+                    reportTypeId = 4;
+                    break;
+                case "重新开始":
+                    reportTypeId = 6;
+                    break;
+
+            }
+            return reportTypeId;
+        }
+    </script>
+
+}

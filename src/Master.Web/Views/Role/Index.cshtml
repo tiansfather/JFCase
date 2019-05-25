@@ -1,0 +1,177 @@
+﻿
+@{
+	ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("角色管理")</div>
+		<div class="layui-card-body">
+			<form class="layui-form layui-form-pane" onsubmit="return doSearch();">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">@L("角色名称")</label>
+						<div class="layui-input-inline">
+							<input type="text" id="roleName" name="roleName" autocomplete="off" class="layui-input">
+						</div>
+						<button class="layui-btn layui-btn-primary" type="button" onclick="doSearch()">@L("搜索")</button>
+						<button class="layui-btn  " buttonname="@L("添加")" type="button" onclick="addRole()">@L("添加")</button>
+					</div>
+				</div>
+			</form>
+
+
+			<table autoevent="1" id="Roles" lay-filter="Roles" class="layui-table " lay-data="{cellMinWidth:'80',height:'full-170', url:'/api/services/app/Role/GetPageResult', page:true, id:'Roles',  even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
+				<thead>
+                    <tr>
+                        <th lay-data="{field:'displayName',sort:true,edit:'text'}">@L("角色名称")</th>
+                        <th lay-data="{field:'remarks',edit:'text'}">@L("描述")</th>
+                        <th lay-data="{field:'isStatic',sort:true,templet:'#staticTpl'}">@L("类型")</th>
+                        <th lay-data="{field:'',templet:'#memberTpl'}">@L("成员")</th>
+                        <th lay-data="{field:'creator'}">@L("创建人")</th>
+                        <th lay-data="{field:'creationTime',sort:true}">@L("创建时间")</th>
+                        <th lay-data="{align:'center', toolbar: '#toolbar'}">@L("操作")</th>
+                    </tr>
+				</thead>
+			</table>
+		</div>
+
+	</div>
+</div>
+<script type="text/html" id="staticTpl">
+	{{#if(d.isStatic){}}
+	<span class="layui-badge layui-bg-blue">@L("内置")</span>
+	{{#}else{}}
+	<span class="layui-badge layui-bg-cyan">@L("用户")</span>
+	{{#}}}
+</script>
+<script type="text/html" id="memberTpl">
+	
+	{{#  layui.each(d.users, function(index, item){ }}
+	<span class="layui-badge layui-bg-blue" tips="双击移除人员" ondblclick="removeUser({{d.id}},{{item.id}},'{{item.name}}')">{{item.name}}</span>
+	{{#  }); }}
+</script>
+<script type="text/html" id="toolbar">
+	<button class="layui-btn layui-btn-xs" type="button" fornonerow="1" buttonname="加入成员" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;],&quot;btn&quot;:null}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Select/SelUser?key=User&where=@(System.Net.WebUtility.UrlEncode("IsActive=true"))&searchKeys=@(System.Net.WebUtility.UrlEncode(""))" onclick="window.currentRoleId = {{ d.id}};func.callModuleButtonEvent()">加入成员</button>
+	<a dataid="{{d.id}}" buttonname="@L("权限")" modulekey="Roles" class="layui-btn layui-btn-xs " params='{"btn":null}' buttonactiontype="Form" buttonactionurl="/Permission/Assign" onclick="func.callModuleButtonEvent()">@L("权限")</a>
+	@*{{#if(!d.isStatic){}}
+	<a dataid="{{d.id}}" buttonname="@L("编辑")" modulekey="" class="layui-btn layui-btn-xs " onclick="editRole({{d.id}},'{{d.displayName}}')">@L("编辑")</a>
+	<a dataid="{{d.id}}" class="layui-btn layui-btn-danger layui-btn-xs" buttonname="@L("删除")" modulekey="Roles" params="" lay-event="Delete" confirmmsg="@(L("确认删除"))？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.role.deleteEntity" onclick="func.callModuleButtonEvent()">@L("删除")</a>
+	{{#}}}*@
+</script>
+@section scripts{
+	<script>
+        config.ready = function () {
+            var element = layui.element,
+                table = layui.table;
+            table.on('edit(Roles)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                //layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+                if (!value.trim()) {
+                    layer.msg("输入不能为空", { icon: 5, anim: 6 });
+                    return false;
+                }
+                abp.message.confirm(L('确认修改?'), function () {
+                    func.runAsync(abp.services.app.role.updateField(data.id, field, value, {
+                        error: function () {
+                            layui.table.reload('Roles');
+                        }
+                    }).done(function () {
+                        layer.msg('更新成功');
+                    }));
+                })
+
+            });
+            table.on('sort(Roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                //console.log(obj.field); //当前排序的字段名
+                //console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+                //console.log(this); //当前排序的 th 对象
+
+                //尽管我们的 table 自带排序功能，但并没有请求服务端。
+                //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
+                table.reload('Roles', {
+                    initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                    , where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+                        orderfield: obj.field,
+                        ordertype: obj.type
+                    }
+                });
+            });
+
+            config.refresh();
+
+			func.bringBackFuncs["User"] = function (data) {
+				console.log(data);
+				var userIds = data.map(function (o) { return o.id; });
+				func.runAsync(abp.services.app.user.moveIntoRole(userIds, window.currentRoleId).done(function () {
+					layer.msg("加入成功");
+					layui.table.reload('Roles');
+				}));
+				return true;
+			};
+        }
+        config.onTableDone = function () {
+
+        }
+        config.refresh = function () {
+
+        }
+        function addRole() {
+            layer.prompt({ title: '@L("请输入角色名")', formType: 0 }, function (text, index) {
+                        layer.close(index);
+                doAdd(text);
+            });
+
+            function doAdd(text) {
+
+                func.runAsync(abp.services.app.role.addRole(text).done(function (data) {
+                    layer.msg('@L("提交成功")');
+                    doSearch();
+
+                }));
+            }
+
+        }
+        function editRole(id,name) {
+            layer.prompt({ title: '@L("请输入角色名")', formType: 0 ,value:name}, function (text, index) {
+                layer.close(index);
+                doEdit(id,text);
+            });
+
+            function doEdit(id,text) {
+
+                func.runAsync(abp.services.app.role.editRole(id,text).done(function (data) {
+                    layer.msg('@L("提交成功")');
+                    doSearch();
+
+                }));
+            }
+
+        }
+        function doSearch() {
+            var where = {where:'1=1'};
+            var roleName = $("#roleName").val();
+            if (roleName) {
+                where.where += " and DisplayName.Contains(\"" + roleName + "\") ";
+
+            }
+            layui.table.reload('Roles', {
+                where: where
+
+            })
+
+            return false;
+		}
+		function removeUser(roleId, userId, personName) {
+			abp.message.confirm("确认移除人员" + personName, function () {
+				func.runAsync(abp.services.app.user.removeFromRole(userId, roleId)
+					.done(function () {
+						layui.table.reload('Roles');
+					}))
+			})
+
+		}
+	</script>
+}

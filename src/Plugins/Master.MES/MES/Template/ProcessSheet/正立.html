@@ -1,0 +1,448 @@
+﻿
+<style>
+    header {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-pack: distribute;
+        justify-content: space-around;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    h1 {
+        line-height: 1.5;
+        text-align: center;
+    }
+
+    h3 {
+        color: #cc3300;
+        letter-spacing: 0px;
+        text-align: right;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .my-btn {
+        width: 26px;
+        padding: 0 5px;
+        overflow: hidden;
+        transition: width 0.3s;
+        -moz-transition: width 0.3s;
+        /* Firefox 4 */
+        -webkit-transition: width 0.3s;
+        /* Safari 和 Chrome */
+        -o-transition: width 0.3s;
+        /* Opera */
+    }
+
+        .my-btn:first-child:hover {
+            width: 60px;
+        }
+
+    body {
+        background: #fff;
+    }
+
+    #app {
+        position: relative;
+        font-family: SimSun;
+        width: 80%;
+        margin: 0 auto;
+        max-width: 850px;
+        margin-bottom: 100px;
+    }
+
+    #print {
+        position: absolute;
+        left: 50px;
+        top: 22px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    tr {
+        text-align: center;
+        height: 35px;
+    }
+
+    img.qrcode {
+        height: 200px;
+        width: 200px;
+    }
+
+    img.qrcode-many {
+        height: 140px;
+        width: 140px;
+        padding: 2px;
+    }
+
+    .had-print {
+        background: #ccc;
+    }
+
+    .print_unshow-span {
+        cursor: pointer;
+    }
+
+    .qianzhang {
+        position: relative;
+    }
+
+        .qianzhang img {
+            top: -20px;
+            position: absolute;
+            right: 0;
+        }
+
+    #sendUnitWrapper #btn, #sendUnitWrapper .print_unshow-span {
+        display: none !important;
+    }
+
+    #sendUnitWrapper #app {
+        max-width: none;
+        margin-bottom: auto;
+    }
+
+    @media print {
+        #btn, .print_unshow-span {
+            display: none !important;
+        }
+
+        #app {
+            max-width: none;
+            margin-bottom: auto;
+        }
+    }
+</style>
+<div id="app" v-show="currentItem.id">
+    <header>
+        <div id="btn">
+            <button class="my-btn layui-btn layui-btn-sm" :class="{'had-print':currentItem.printed}" @click="myPrint">
+                <i class="layui-icon layui-icon-print my-i-print"></i> 打印
+            </button>
+        </div>
+        <img src="/user-resource/zhengli/zlprint.png" alt="正立">
+        <div>
+            <img :src="qrCode()" class="qrcode" v-if="!hadWrappedInfo" />
+            <h3>{{currentItem.processSN}}</h3>
+        </div>
+    </header>
+    <h1>模具模件外协加工记录单</h1>
+    <table width="100%" cellpadding="0" cellspacing="0" border="1">
+        <colgroup>
+            <col span="7" style="background-color:#fff;width:14.28%">
+        </colgroup>
+        <tr>
+            <td>模具编号</td>
+            <td colspan="3">{{currentItem.projectSN}}</td>
+            <td>模具材质</td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td>模具组长</td>
+            <td colspan="3">{{currentItem.projectCharger}}</td>
+            <td>加工单位</td>
+            <td colspan="2">{{currentItem.unitName}}</td>
+        </tr>
+        <tr>
+            <td>联系电话</td>
+            <td colspan="3"></td>
+            <td>加工工艺</td>
+            <td colspan="2">{{currentItem.processTypeName}}</td>
+        </tr>
+        <tr>
+            <!--<td :rowspan="detailLength">加工费用</td>-->
+            <td rowspan="2">加工费用</td>
+            <td colspan="2">数量/单位</td>
+            <td colspan="2">单价（元）</td>
+            <td colspan="2">合计（元）</td>
+        </tr>
+        <tr>
+            <td colspan="2">{{currentItem.submitFeeFromProcessor|objEmpty('Num')}}</td>
+            <td colspan="2">{{currentItem.submitFeeFromProcessor|objEmpty('Price')}}</td>
+            <td colspan="2">{{currentItem.submitFeeFromProcessor|objEmpty('Fee')}}</td>
+        </tr>
+        <tr v-if="!hadWrappedInfo">
+            <td>部件名</td>
+            <td>{{currentItem.partName}}</td>
+            <td>部件尺寸</td>
+            <td colspan="4">{{currentItem.partSpecification}}</td>
+        </tr>
+        <tr><td colspan="7">{{currentItem.taskInfo}}</td></tr>
+        <tr  v-if="!hadWrappedInfo">
+            <td>加工内容</td>
+            <td title="双击上传图片" class="uploadinsert" colspan="6" valign="top" style="padding:5px;position:relative;" callback="uploadCallback">
+                <img class="uploadimg" style="max-height:300px;" :src="currentItem.sheetFile.filePath+'?'+ +new Date()" alt="图片信息" v-if="currentItem.sheetFile&&currentItem.sheetFile.filePath" onerror="this.src=app.currentItem.logo" asp-append-version="true" />
+                <span class="print_unshow-span" v-else>双击上传图片</span>
+            </td>
+        </tr>
+        <tr>
+            <td>加工要求</td>
+            <td colspan="6" style="text-align:left;">
+                <span>1、本公司外协加工以凭本单作为结算依据，无加工单不予结算，</span><span style="color:red;">凭有效的加工单加工，无加工单进行加工的后期一律不补单，结算时附上程序单一并带回，无程序单一律不予结算，</span><span>请确认清楚，避免结算时造成不必要损失。</span><br />
+                <span>2、加工单位不得随意拖延加工时间，如有特殊情况应当及时跟我司沟通协商。对于长期不能按时交货或加工经常出错的加工单位一律取消合作。</span><br />
+                <span>
+                    3、加工时凭我司的加工工艺单进行加工，按加工工艺单上的要求加工到位，凡是没有达到要求的一律重新加工。加工错误或没加工到位的模料，必须及时的重新安排上机，无法及时安排的我司自行安排，所产生的费用由出错单位负责。
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>填表</td>
+            <td colspan="2">{{currentItem.poster}}</td>
+            <td>部门负责人</td>
+            <td colspan="3" class="qianzhang"><img src="/user-resource/zhengli/正立签章.png"></td>
+        </tr>
+        <tr>
+            <td>审核</td>
+            <td colspan="2"></td>
+            <td>时间</td>
+            <td colspan="3">{{nowDate}}</td>
+        </tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0" border="1" v-if="hadDetail" style="margin-top:30px;">
+        <colgroup>
+            <col span="5" style="background-color:#fff;width:16.66%">
+        </colgroup>
+        <tr>
+            <td>加工类别</td>
+            <td>数量</td>
+            <td>单位</td>
+            <td>单价</td>
+            <td>金额</td>
+            <td>备注</td>
+        </tr>
+        <tr v-for="detail in currentItem.processTaskDetails">
+            <td>{{detail.type}}</td>
+            <td>{{detail.number}}</td>
+            <td>{{detail.measureMentUnit}}</td>
+            <td>{{detail.price}}</td>
+            <td>{{detail.cost}}</td>
+            <td>{{detail.remarks}}</td>
+        </tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0" border="1" style="margin-top:30px;" v-if="hadWrappedInfo">
+        <colgroup>
+            <col span="1" style="background-color:#fff;width:145px">
+        </colgroup>
+        <template v-for="(info,index) in wrappedInfo1">
+            <tr>
+                <td rowspan="2">
+                    <img :src="qrCode(info.taskId)" class="qrcode-many" />
+                </td>
+                <td style="max-width:20em;">部件名:{{info.partName}}</td>
+                <td rowspan="2">
+                    <img style="height:145px;padding:2px;" :src="info.sheetFile.filePath+'?'+ +new Date()" alt="图片信息" v-if="info.sheetFile&&info.sheetFile.filePath" onerror="this.src=app.currentItem.logo" />
+                </td>
+            </tr>
+            <tr>
+                <td>部件尺寸:{{info.partSpecification}}</td>
+            </tr>
+        </template>
+    </table>
+    <div class="main" v-if="false">
+        <template v-for="(info,index) in currentItem.wrappedInfo">
+            <code-comp :dataid="info.taskId" :info="info"></code-comp>
+        </template>
+    </div>
+</div>
+    
+<style>
+    .main {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }   
+    .code-wrap, .code-wrap img {
+        width: 150px;
+        text-align: center;
+    }
+
+        .code-wrap img {
+            height: 150px;
+        }
+
+        .code-wrap p {
+            font-size: 16px;
+            color: black;
+            font-weight: 700;
+            line-height: 22px;
+            text-align:left;
+            width:100%;
+        }
+
+    .code-wrap {
+        flex-wrap: wrap;
+        display: flex;
+        border: 5px solid #ccc;
+        margin-bottom: 5px;
+        padding: 0 5px 5px 5px;
+        margin-right: 5px;
+    }
+</style>
+<script type="text/x-template" id="codeComp">
+    <div class="code-wrap">
+        <img :src="getCodeUrl(dataid)" />
+        <p v-html="info.partName" style="text-align:center;"></p>
+        <p>规格:{{info.partSpecification}}</p>
+        <p>数量:{{info.partNum}}</p>
+    </div>
+</script>
+<script>
+    Vue.component('code-comp', {
+        props: ['dataid', 'info'],
+        template: '#codeComp',
+        methods: {
+            getCodeUrl: function (id) {
+                return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Report?taskid=" + id);
+            }
+        }
+    })
+</script>
+
+
+<script>
+    var app;
+    //图片上传
+    layui.use(['layer'], function () {
+
+    })
+    app = new Vue({
+        el: '#app',
+        data: {
+            currentItem: {},
+            taskId: $.getUrlParam("taskid")
+        },
+        methods: {
+            loadItem: function (taskId) {
+                var that = this;
+                func.runAsync(abp.services.app.processTask.getTaskInfoById(taskId).done(function (data) {
+                    that.currentItem = data;
+                    //加载额外添加数据
+                    loadTemplateData(function () {
+                        $("#app").show();
+                        typeof dataLoaded != "undefined" &&that.$nextTick(dataLoaded);
+                    });
+                }))
+
+            },
+            myPrint: function () {
+                window.print();
+                this.currentItem.printed = true;
+                var taskIds = [];
+                if (hadWrappedInfo) {
+                    taskIds= app.currentItem.wrappedInfo.map(e => e.taskId)
+                }
+                taskIds.push(this.taskId)
+                abp.services.app.processTask.setTasksStatus(taskIds, 'Print', true)
+            },
+            qrCode: function (id = this.taskId) {
+                return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Report?taskid=" + id);
+            }
+        },
+        computed: {
+            wrappedInfo1: function () {
+                var c = this.currentItem;
+                if (!c.wrappedInfo) {
+                    return []
+                } else {
+                    var data = [];
+                    $.extend(data, c.wrappedInfo);
+                    var obj = {
+                        partName: c.partName,
+                        partSN: c.partSN,
+                        partNum: c.partNum,
+                        partSpecification: c.partSpecification,
+                        taskId: c.id,
+                        sheetFile: c.sheetFile
+                    }
+                    data.unshift(obj);
+                    return data
+                }
+            },
+            //wrappedInfo: function () {
+            //    var c = this.currentItem;
+            //    if (!c.wrappedInfo) {
+            //        return []
+            //    } else {
+            //        var data = [];
+            //        $.extend(data, c.wrappedInfo);
+            //        var obj = {
+            //            partName: c.partName,
+            //            partSN: c.partSN,
+            //            partNum: c.partNum,
+            //            partSpecification: c.partSpecification,
+            //            taskId: c.id,
+            //            sheetFile: c.sheetFile
+            //        }
+            //        data.unshift(obj);
+            //        //[1,2,3,4]  ==》   [[1, 2], [3, 4]]
+            //        var newA = [], NUM = 2;
+            //        data.forEach((e, i) => {
+            //            var _index = Math.floor(i / NUM)
+            //            if (!newA[_index]) {
+            //                newA[_index] = [e]
+            //            }
+            //            else {
+            //                newA[_index].push(e)
+            //            }
+            //        })
+            //        return newA
+            //    }
+            //},
+            hadWrappedInfo: function () {
+                return this.currentItem.wrappedInfo&&this.currentItem.wrappedInfo.length
+            },
+            hadDetail: function () {
+                var d = this.currentItem.processTaskDetails;
+                var bol = true;
+                if (d&&d.length ==1) {//只有当d的长度等于1时，才去要求比较第一行是否全为空；即当没有数据只有一个默认数据
+                     bol = false;
+                    for (n in d[0]) {
+                        if (d[0][n]) { bol = true; }
+                    }
+                }
+              
+                return d&&d.length &&bol;
+            },
+            nowDate: function () {
+                var myDate = new Date();
+                var date = myDate.getDate();
+                var month = myDate.getMonth() + 1;
+                var year = myDate.getFullYear();
+                return year + '-' + month + '-' + date;
+            }
+        },
+        mounted: function () {
+            this.loadItem(this.taskId);
+
+        },
+        filters: {
+            objEmpty:function(value,arg) {
+                if (!value) return '';
+                return value[arg];
+            }
+        }
+
+    })
+
+    $(".uploadinsert").on('mousewheel', '.uploadimg', function (e) {
+        var delta = e.originalEvent.wheelDelta;
+        var oriWidth = $(this).height();
+        var newWidth = oriWidth * (delta > 0 ? 1.2 : 0.8);
+        $(this).css("height", newWidth + "px");
+        console.log(e);
+    })
+
+    function uploadCallback(res) {
+        var filePath = res.filePath;//图片路径
+        app.currentItem.sheetFile = {filePath:filePath}
+        //$(".uploadinsert").html("<img src='" + filePath + "' width='300' tips='鼠标滚轮进行图片缩放' />");
+        //提交至加工图片
+        abp.services.app.processTask.attachSheetFile(app.taskId, filePath);
+        console.log(res);
+    }
+</script>

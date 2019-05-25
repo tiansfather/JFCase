@@ -1,0 +1,223 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "报工记录-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+    <style>
+        /*img {
+            width: 100%;
+            vertical-align: middle;
+            object-fit: contain;
+            max-height: 200px;
+        }*/
+
+        #imglist img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        p {
+            font-size: 14px;
+        }
+
+        .weui-form-preview__bd {
+            line-height: 1.5;
+        }
+
+        .weui-uploader__hd {
+            padding: 0;
+        }
+
+        .weui-form-preview__bd {
+            padding: 0;
+        }
+
+        .weui-form-preview__label {
+            text-align: left;
+            text-align-last: auto;
+        }
+
+        .weui-uploader__title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .weui-uploader__info{
+            color:#000;
+        }
+    </style>
+}
+
+<div id="app">
+    <div id="main">
+        <div id="list" v-for="list in lists">
+            <div class="weui-cells weui-cells_form">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <div class="weui-uploader">
+                            <div class="weui-uploader__hd">
+                                <p class="weui-uploader__title">{{list.tenantName}}</p>
+                                <div class="weui-uploader__info">{{list.reporterName}}&nbsp;/&nbsp;{{list.reportTime}}</div>
+                            </div>
+                            <div class="weui-form-preview__bd">
+                                <div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label">任务详情</label>
+                                    <span class="weui-form-preview__value">{{list.partName}}({{list.partSN}})&nbsp;/&nbsp;{{list.processTypeName}}</span>
+                                </div>
+                                @*<div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label">工序</label>
+                                    <span class="weui-form-preview__value"></span>
+                                </div>*@
+                            </div>
+                            <div class="weui-uploader__bd">
+                                <ul class="weui-uploader__files" id="imglist">
+                                    <li class='weui-uploader__file' @@click="previewImage(file.filePath,list.files)" v-for="file in list.files">
+                                        <img :src='file.filePath' />
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div>
+                    <img :src="list.files[0].filePath" :alt="list.reporterName" @@click="previewImage(list.files[0].filePath)" />
+                </div>
+                <p>模具编号:{{list.projectSN}}<span class="c-card__name-span">{{list.reportType}}</span></p>
+                <p><span class="glyphicon glyphicon-map-marker">零件:{{list.partName}}</span></p>
+                <p>{{list.processTypeName}}</p>
+                <p>
+                    <span>{{list.reportTime}}</span>
+                    <span>{{list.reporterName}}</span>
+                </p>*@
+        </div>
+        <div class="weui-loadmore">
+            <i class="weui-loading"></i>
+            <span class="weui-loadmore__tips">正在加载</span>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+@section scripts{
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+        wx.error(function (res) {
+			console.log(res);
+			alert('验证失败:' + JSON.stringify(res));
+        });
+
+         wx.ready(function () {
+
+            });
+    </script>
+
+    <script>
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                lists: [],
+                options: {
+                    page: 1,
+                    limit: 10,
+                    where: "1=1"
+                }
+            },
+            methods: {
+                loadData: function () {
+                    var that = this;
+                    abp.services.app.processTaskReportProcessor.getPageResult(this.options).done(function (data) {
+                        //当没有数据则隐藏加载文字，并销毁插件
+                        if (!data.data.length) {
+                            console.log('没得了')
+                            $(document.body).destroyInfinite();
+                            $('.weui-loadmore').hide();
+                        }
+                        that.lists = that.lists.concat(data.data);
+                        console.log(data);
+                        loading = false;
+                    });
+                    this.options.page++;
+                },
+                infiniteListen: function () {
+                    var that = this;
+                    var loading = false;  //状态标记
+                    $(document.body).infinite().on("infinite", function () {
+                        if (loading) return;
+                        loading = true;
+                        console.log('走着')
+                        that.loadData()
+                    });
+                },
+                previewImage: function (url, files) {
+                    var f = files.map(function (n) {
+                        return location.origin + n.filePath
+                    })
+                    wx.previewImage({
+                        current: location.origin + url,
+                        urls: f
+                    });
+                }
+            },
+            created: function () {
+                var loading;
+                this.loadData();
+                $(document.body).infinite();
+                this.infiniteListen();
+            },
+        })
+    </script>
+
+}

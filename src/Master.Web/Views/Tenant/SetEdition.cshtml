@@ -1,0 +1,49 @@
+﻿@using Master.Web.Components
+@using Master.Application.Editions
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+	Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+	var editions = ViewData["Editions"] as List<Edition>;
+}
+@{
+	ViewData["Title"] = "SetEdition";
+}
+
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div >
+			<form class="layui-form">
+				<div class="layui-form-item">
+					<select name="edition" asp-items="@(new SelectList(editions,"Id","DisplayName",ViewData["EditionId"]))"></select>
+					@*<input type="text" name="tenancyName" placeholder="@L("账套")" class="layui-input" value="@Model.CurrentTenancyName">*@
+				</div>
+
+				<div class="layui-form-item" style="display:none">
+					<div class="layui-input-block">
+						<button class="layui-btn" type="button" lay-submit="" id="Btn_Submit">@L("提交")</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@section scripts{ 
+	<script>
+		config.ready = function () {
+			var tenantId = $.getUrlParam("data");
+			layui.form.on('submit', function (obj) {
+					func.runAsync(abp.services.app.tenant.setEdition(tenantId, obj.field.edition).done(function () {
+						parent.layer.msg(L("提交成功"));
+						parent.layer.closeAll('iframe');
+						parent.config.reload();
+					}));
+			})
+		}
+
+		function submit() {
+			$("#Btn_Submit").trigger("click");
+		}
+	</script>
+}

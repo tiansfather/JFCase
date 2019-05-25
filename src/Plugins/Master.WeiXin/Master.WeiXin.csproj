@@ -1,0 +1,104 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>Master</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Views\MiniProgram\BindLoginCallback.cshtml" />
+    <None Remove="Views\Shared\_WeUICommon.cshtml" />
+    <None Remove="Views\Shared\_WeUILayout.cshtml" />
+    <None Remove="Views\WeiXin\BindLogin.cshtml" />
+    <None Remove="Views\WeiXin\BindLoginCallback.cshtml" />
+    <None Remove="Views\WeiXin\Error.cshtml" />
+    <None Remove="Views\WeiXin\GuanZhu.cshtml" />
+    <None Remove="Views\WeiXin\Login.cshtml" />
+    <None Remove="Views\WeiXin\LoginCallback.cshtml" />
+    <None Remove="Views\WeiXin\Register.cshtml" />
+    <None Remove="Views\WeiXin\ScanUpload.cshtml" />
+    <None Remove="Views\WeiXin\ScanUploadCallback.cshtml" />
+    <None Remove="Views\WeiXin\ScanUserInfo.cshtml" />
+    <None Remove="Views\WeiXin\ScanUserInfoCallback.cshtml" />
+    <None Remove="Views\WeiXin\Success.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\MiniProgram\BindLoginCallback.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Shared\_WeUICommon.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Shared\_WeUILayout.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MiniProgram\BindLogin.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\BindLogin.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\BindLoginCallback.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\GuanZhu.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\Register.cshtml" />
+    <EmbeddedResource Include="Views\WeiXin\ScanUserInfoCallback.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\ScanUserInfo.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\ScanUploadCallback.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\ScanUpload.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\LoginCallback.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\Login.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\Success.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\Error.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Senparc.Weixin" Version="6.3.10.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common.csproj" />
+    <ProjectReference Include="..\..\Master.Core\Master.Core.csproj" />
+    <ProjectReference Include="..\..\Master.Web.Core\Master.Web.Core.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y &quot;$(TargetDir)Master.WeiXin.dll&quot; &quot;$(SolutionDir)\src\Master.Web\plugins\Master.WeiXin.dll&quot;" />
+  </Target>
+
+</Project>

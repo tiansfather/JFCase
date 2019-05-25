@@ -1,0 +1,468 @@
+﻿@using Master.MES
+@using Microsoft.AspNetCore.Http;
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@inject Master.Timing.AppTimes AppTimes
+@inject ProcessTaskManager ProcessTaskManager
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "SheetView";
+    Layout = null;
+    var taskId = HttpContextAccessor.HttpContext.Request.Query["taskid"].FirstOrDefault();
+    var templateContent = await ProcessTaskManager.GetTaskTemplate(int.Parse(taskId));
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="/assets/layuiadmin/layui/css/layui.css" media="all" asp-append-version="true">
+    <style>
+
+    @@media print {
+        #templateChooser{display:none;}
+    }
+    </style>
+    <script src="/assets/layuiadmin/layui/layui.js" asp-append-version="true"></script>
+    <script src="/view-resources/Views/_Bundles/base.min.js" asp-append-version="true"></script>
+    <script src="/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
+    <script src="/assets/js/global.js" asp-append-version="true"></script>
+    <!-- 全局js -->
+    <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
+    <script src="/scripts/GetAll.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    <script src="/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    <script>
+        function loadTemplateData(callback) {
+            abp.services.app.processTask.getTaskTemplateData(@taskId).done(function (data) {
+                if (data) {
+                    $("[field]").each(function () {
+                        var name = $(this).attr("field");
+
+                        if (data[name]) {
+                            if ($(this).attr('type') == "checkbox") {
+                                $(this).prop('checked', eval(data[name]))
+                            } else {
+                                $(this).html(data[name]);
+                            }
+                        }
+                    });
+                }
+                callback && callback();
+            })
+        }
+        function submitTemplateData() {
+            var data = {};
+            $("[field]").each(function () {
+                if ($(this).attr('type') == "checkbox") {
+                    data[$(this).attr('field')] = $(this).is(':checked');
+                } else {
+                    data[$(this).attr('field')] = $(this).html();
+                }
+            });
+            abp.services.app.processTask.submitTaskTemplateData(@taskId, data);
+        }
+    </script>
+</head>
+<body>
+    <div id="templateChooser" class="layui-hide">
+        <button class="layui-btn layui-btn-xs" @@click="chooseTemplate">@L("切换模板")</button>
+        <div style="display:none;padding:20px;width:300px;" id="templates" >
+            @*<select @@change="selTemplate(this.value)">
+                <option v-for="(item,index) in templates" @@click="selTemplate(item.id)">{{item.templateName}}</option>
+            </select>*@
+            <span v-for="(item,index) in templates" class="layui-badge layui-bg-blue" @@click="selTemplate(item.id)" style="margin:5px;cursor:pointer">{{item.templateName}}</span>
+        </div>
+
+    </div>
+    <div id="templateWrapper">
+        @Html.Raw(templateContent)
+    </div>
+    
+
+    <script>
+        var templateChooserApp = new Vue({
+                el: '#templateChooser',
+                data: {
+                    templates:[]
+                },
+                methods: {
+                    selTemplate: function (templateId) {
+                        console.log(templateId);
+                        func.runAsync(abp.services.app.processTask.setTaskTemplate(@taskId, templateId).done(function () {
+                            layui.layer.msg(L("提交成功"));
+                            location.reload();
+                        }))
+                    },
+                    chooseTemplate: function () {
+                        layui.use('layer', function () {
+                            layer.open({
+                                type: 1,
+                                title: L("选择模板"), //不显示标题
+                                offset: 't',
+                                content: $('#templates'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+                                //cancel: function () {
+                                //    layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构', { time: 5000, icon: 6 });
+                                //}
+                            });
+                        })
+                        
+                    }
+                },
+            mounted: function () {
+                var that = this;
+                abp.services.app.processTask.getAvailableTemplates(@taskId).done(function (data) {
+                    that.templates = data;
+                    //只有超过一个模板可选时才显示模板切换
+                    if (data.length > 1) {
+                        $("#templateChooser").removeClass("layui-hide");
+                    }
+                        
+                    });
+                }
+        });
+        //当内部模板数据加载完成后调用此函数
+        function dataLoaded() {
+            //如果页面url参数中传递了sendUnit=1,则认为是向加工点发送
+            var sendUnit = $.getUrlParam("sendUnit");
+            if (sendUnit == 1) {
+                //获取html向后台请求生成加工单的静态文件
+                var html = '<meta charset="utf-8"/>';
+                html += '<div id="sendUnitWrapper" style="width:1024px;position:relative">' + $("#templateWrapper").html() + '</div>';
+                //$("style").each(function () {
+                //    html += '<style>' + $(this).html() + '</style>';
+                //});
+                parent.func.runAsync(parent.abp.services.app.processTask.saveTaskToHtmlAndSendUnit(html,@taskId, {
+                    error: function (err) {
+                        top.abp.ajax.showError(err);
+                    }
+                }).done(function () {
+                    parent.layer.closeAll();
+                    top.abp.message.success("发送成功");
+                }));
+            } else if (sendUnit == 2) {
+                var html = '<meta charset="utf-8"/>';
+                html += '<div id="sendUnitWrapper" style="width:1024px;position:relative">' + $("#templateWrapper").html() + '</div>';
+                parent.func.runAsync(parent.abp.services.app.processTask.saveTaskToHtml(html,@taskId, {
+                    error: function (err) {
+                        top.abp.ajax.showError(err);
+                    }
+                }).done(function (data) {
+                    console.log("TT" + data);
+                    parent.layer.closeAll();
+                    //top.abp.message.success("发送成功");
+                }));
+            }
+        }
+    </script>
+</body>
+</html>
+@*@section styles{
+        <style>
+            @@media print {
+                #btn{
+                    display:none!important;
+                }
+                .print_unshow-span{
+                    display:none!important;
+                }
+            }
+            #app{
+                position:relative;
+            }
+            #btn {
+                position: absolute;
+                left: 6px;
+                top: 14px;
+            }
+            .my-zhuti {
+                width: 80%;
+                margin: 0 auto;
+            }
+            p {
+                padding: 0;
+                margin: 0;
+            }
+
+            .process {
+                font-size: 10px;
+                margin: 0;
+                padding: 5px;
+                width: 100%;
+            }
+
+            .top {
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+                letter-spacing: 10px;
+            }
+
+            .top img.logo {
+                padding: 0 0 0 10px;
+                float: left;
+                height: 50px;
+            }
+            tr{
+                height:35px;
+            }
+            .process td {
+                font-size:14px;
+                border-bottom: 1px solid #222;
+                border-right: 1px solid #222;
+                line-height: 18px;
+                padding: 1px 5px;
+                text-align: center;
+                font-family: "宋体";
+                letter-spacing: 4px;
+            }
+
+            .process table {
+                border-left: 1px solid #222;
+                border-top: 1px solid #222;
+            }
+
+            .process ul {
+                list-style: none;
+                text-align: center;
+                margin: 0;
+                padding: 0;
+                display: block;
+            }
+
+            .process li {
+                float: left;
+                width: 25%;
+                text-align: left;
+            }
+
+            .peo li {
+                float: left;
+                width: 20%;
+                text-align: left;
+            }
+
+            strong {
+                font-size: 14px;
+                font-family: "楷体_GB2312";
+            }
+            .my-btn {
+                width: 26px;
+                padding:0 5px;
+                overflow: hidden;
+                transition: width 0.3s;
+                -moz-transition: width 0.3s; /* Firefox 4 */
+                -webkit-transition: width 0.3s; /* Safari 和 Chrome */
+                -o-transition: width 0.3s; /* Opera */
+            }
+            .my-btn:first-child:hover {
+                width: 60px;
+            }
+            .my-btn:nth-child(2):hover{
+                width:80px;
+            }
+        </style>
+    }
+        <div id="app" class="my-zhuti" style="display:none">
+            <div id="btn" class="">
+
+                <button class="my-btn layui-btn layui-btn-sm" onclick="fPrint()">
+                    <i class="layui-icon layui-icon-print my-i-print"></i> &nbsp;打印
+                </button>
+                <button class="my-btn layui-btn layui-btn-sm" onclick="saveImg()">
+                    <i class="iconfont icon-baocuntupian"></i> &nbsp;保存图片
+                </button>
+                <span style="display: block;font-size:12px;">
+                    请联系我们定制打印模板
+                </span>
+            </div>
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-style: none;">
+                <tbody>
+                    <tr style="border-style: none;">
+                        <td rowspan="2" width="40%" style="border-style: none; padding-left:5px">
+                            <img src="" alt="" class="logo" width="90px" height="50px" />
+                        </td>
+                        <td rowspan="2" style="text-align: center; border-style: none;" width="20%">
+                            <span style="letter-spacing:0; font-size:18px; font-weight: bold;">{{currentItem.tenancyName}}模具加工单</span>
+                        </td>
+                        <td width="40%" style="border-style: none; padding-right: 3px;">
+                            <span style="color:#C30; letter-spacing:0; float:right; font-size:18px; font-weight: bold;">{{currentItem.processSN}}</span>
+                        </td>
+                    </tr>
+                    <tr style="border-style: none;">
+                        <td style="border-style: none; padding-right: 3px;">
+                            <span style="letter-spacing:0;float:right; font-size:14px;">开单日期：@DateTime.Now.ToString("yyyy-MM-dd")</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="process" style="overflow:hidden">
+                <div style="clear:both;">
+                </div>
+                <div>
+                    <ul>
+                        <li>
+                            <strong>加工点：{{currentItem.unitName}}</strong>
+                        </li>
+                        <li>
+                            <strong>加工类型：{{currentItem.processTypeName}}</strong>
+                        </li>
+                        <li>
+                            <strong>
+                                要求完成：{{currentItem.requireDate}}
+                            </strong>
+                        </li>
+                        <li>
+                            <strong>预约上机：{{currentItem.appointDate}}</strong>
+                        </li>
+                    </ul>
+                </div>
+                <div style="clear:both;">
+                </div>
+                <table cellpadding="0" cellspacing="0" align="center" width="100%">
+                    <tbody>
+                        <tr class="bt">
+                            <td width="15%">
+                                模具编号
+                            </td>
+                            <td width="15%">
+                                工件名称
+                            </td>
+                            <td width="20%">
+                                规格
+                            </td>
+                            <td width="15%">
+                                数量
+                            </td>
+                            <td width="15%">
+                                设备名称
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span style="letter-spacing:0;">{{currentItem.projectSN}}</span>
+                            </td>
+                            <td>
+                                <span style="letter-spacing:0;">{{currentItem.partName}}</span>
+                            </td>
+                            <td>
+                                <span style="letter-spacing:0;">{{currentItem.partSpecification}}</span>
+                            </td>
+                            <td>
+                                <span style="letter-spacing:0;">{{currentItem.partNum}}</span>
+                            </td>
+                            <td>
+                                <span style="letter-spacing:0;"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="5" style="text-align:left; letter-spacing: 0;font-size: 12px;">
+                                <span style="font-size: 14px;">加工内容:</span>{{currentItem.taskInfo}}
+                            </td>
+                        </tr>
+                        <tr style="height:180px;">
+                            <td colspan="2">
+                                <div class="qrcode" style="height:200px;width:200px;float:left; margin-left: 20px;">
+                                    <img style="height:200px;width:200px;" :src="qrCode" />
+                                </div>
+                            </td>
+                            <td class="uploadinsert" colspan="3" valign="top" style="padding:5px;" callback="uploadCallback">
+                                <span class="print_unshow-span">双击上传图片</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <ul class="peo">
+                    <li>
+                        <strong>开单人：{{currentItem.poster}}</strong>
+                    </li>
+                    <li>
+                        <strong>模具组长：{{currentItem.projectCharger}}</strong>
+                    </li>
+                    <li>
+                        <strong>加工户签字：</strong>
+                    </li>
+                    <li>
+                        <strong>
+                            审核：{{currentItem.verifier}}
+
+
+                        </strong>
+                    </li>
+                    <li>
+                        <strong>检验：{{currentItem.checker}}</strong>
+                    </li>
+                </ul>
+            </div>
+            <div style="clear:both;">
+            </div>
+            <p style="font-size: 10px; padding-left: 5px; padding-right: 5px; margin-top: 0; padding-top: 0;">
+                &nbsp;&nbsp;每次加工必须先开此加工单，生成加工单号，加工点按此单填写。上下料必须扫码，如未接收到扫码报工图片，我司不负责该加工发票。红联和加工程序必须返回本公司；黄联，加工点自己保留。若以后红联未返回，不予结账，加工单返回后，必须各部门签字，方可生效。<br />&nbsp;&nbsp;若加工单上二维码扫描不出来或者在报工界面出现无法提交等其他异常情况，请联系软件公司客服18806597400或15906863922。
+            </p>
+            <div style="clear:both;">
+            </div>
+
+        </div>
+
+    @section scripts{
+        <script>
+            var app;
+            config.ready = function () {
+                //图片上传
+                app = new Vue({
+                    el: '#app',
+                    data: {
+                        currentItem: {  },
+                        taskId: $.getUrlParam("taskid")
+                    },
+                    methods: {
+                        loadItem: function (taskId) {
+                            var that = this;
+                            func.runAsync(abp.services.app.processTask.getTaskInfoById(taskId).done(function (data) {
+                                that.currentItem = data;
+                                $("#app").show();
+                            }))
+
+                        }
+                    },
+                    computed: {
+
+                        qrCode: function () {
+                            return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Report?taskid=" + this.taskId);
+
+                        }
+                    },
+                    mounted: function () {
+                        this.loadItem(this.taskId);
+
+                    }
+
+                })
+
+                $(".uploadinsert").on('mousewheel', 'img', function (e) {
+                    var delta = e.originalEvent.wheelDelta;
+                    var oriWidth = $(this).width();
+                    var newWidth = oriWidth * (delta > 0 ? 1.2 : 0.8);
+                    $(this).css("width", newWidth + "px");
+                    console.log(e);
+                })
+            }
+
+            function uploadCallback(res) {
+                var filePath = res.filePath;//图片路径
+                $(".uploadinsert").html("<img src='" + filePath + "' width='300' tips='鼠标滚轮进行图片缩放' />");
+                console.log(res);
+            }
+
+            function fPrint() {
+                console.log('a')
+                saveImg();
+                window.print();
+            }
+            function saveImg() {
+
+            }
+            //function print() {
+            //    window.print();
+            //}
+        </script>
+    }*@

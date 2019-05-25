@@ -1,0 +1,289 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    //微信端报工信息查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "询价详情-模来模往";
+}
+@section styles{
+
+    <link rel="stylesheet" href="/lib/swiper/swiper.min.css">
+    <style>
+        #imglist img {
+            width: 100%;
+            height: 100%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        a {
+            /* color:#666; */
+            text-decoration: none
+        }
+
+            a:hover {
+                cursor: pointer
+            }
+
+        button {
+            cursor: pointer
+        }
+
+        ul, li {
+            padding: 0;
+            margin: 0;
+            list-style: none
+        }
+
+        body {
+            /* background-color:#f3f5f7 ; */
+            /* background-color:#082c60 ; */
+            background-color: #e9edee;
+            /* background-image: url(zhanwei3.png); */
+            /* background-position: center; */
+            opacity: 0.95;
+        }
+
+        .left {
+            float: left;
+        }
+
+        .right {
+            float: right;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        span {
+            font-size: 0.42666667rem;
+        }
+
+        .split {
+            width: 9.6rem;
+            background-color: #e9edee;
+            height: 0.2rem;
+            position: relative;
+            left: -0.266667rem
+        }
+
+        .zhuti {
+            width: 9.6rem;
+            margin: 0 auto;
+            padding: 0.2666667rem;
+            background: white;
+        }
+
+        .nav-head {
+            padding-bottom: 0.4rem;
+        }
+
+            .nav-head p {
+                font-size: 0.42666667rem;
+                /* display: inline; */
+            }
+
+        #Time {
+            /* 	float: right;
+        position: relative;
+        top: 0.5866667rem; */
+            /* float: left; */
+        }
+
+        /*#loading {
+                display: block;
+            }*/
+
+        #watermark {
+            position: absolute;
+            width: 10rem;
+            opacity: 0.3;
+            pointer-events: none;
+            /*IE11+有效，解决点击事件传不下去*/
+            z-index: 9999;
+            /* overflow : hidden; */
+        }
+
+        .main-head {
+            margin: 0.8rem 0;
+            /* height: 50px; */
+            /* line-height: 50px; */
+        }
+
+            .main-head span {
+                font-weight: 900;
+                font-size: 0.5066667rem;
+                color: #2a82b0;
+            }
+
+        .main-img {
+            /*margin: 0 0 20px 0;*/
+        }
+
+        .content-part {
+            /* height: 30px; */
+            /*margin: 80px 0;*/
+            /* line-height: 30px; */
+        }
+
+            .content-part span {
+                font-weight: 900;
+                font-size: 0.5066667rem;
+                color: #2a82b0;
+            }
+
+        .content-main {
+            position: relative;
+        }
+
+        .content-message {
+            box-shadow: 7px 7px 8px rgba(0, 0, 0, 0.4);
+            height: 0.9rem;
+            font-weight: 900;
+        }
+
+        .content-baogong {
+            margin: 0.666667rem 0;
+        }
+
+        .content-baogong p, .content-img p {
+            text-align:left;
+            font-size: 0.4rem;
+            line-height: 0.66667rem;
+        }
+
+        .content-main h2 {
+            margin: 55px 0 30px 5px;
+            font-size: 0.5066667rem;
+        }
+
+        .content-content {
+            padding: 1px 9px 2px 9px;
+            margin: 20px 0;
+            box-shadow: 0 0 10px #0cc;
+        }
+
+        .content-content-h {
+            height: 1rem;
+            border-bottom: #ccc 3px solid;
+        }
+
+        .content-content_li {
+            position: relative;
+            /* height: 1.5333333rem; */
+            line-height: 0.9rem;
+        }
+
+            .content-content_li span {
+                color: #000;
+                font-size: 0.373333rem;
+            }
+
+            .content-content_li .type-name {
+                color: #000;
+            }
+
+            .content-content_li .ta-eq-name {
+                color: #000000;
+            }
+
+            .content-content_li .eq-name {
+                float: right;
+            }
+
+        .main-img {
+            text-align: center;
+        }
+
+        .content-img {
+            text-align: center;
+        }
+
+        .now {
+            /* box-shadow: 0 5px 5px #FFFFFF; */
+            font-weight: 900;
+            border-radius: 0.2rem;
+        }
+        .gehang {
+            background: #f4f4f4;
+        }
+
+        .time-img {
+            width: 30px;
+        }
+        .swiper-pagination-bullet{
+            width:18px;
+            height:18px;
+        }
+    </style>
+}
+
+	<div id="app" class="zhuti" style="display:none;">
+		<div class="nav-head ">
+			<p>询价单号:{{currentItem.id}}</p>
+			<p>项目名称:{{currentItem.projectName}}</p>
+			<p>零件名称:{{currentItem.partName}}</p>
+			<p>询价方:{{currentItem.quoter}}</p>
+		</div>
+		<div>单价:<input type="text" v-model="replyInfo.price" /></div>
+		<div>金额:<input type="text" v-model="replyInfo.cost" /></div>
+		<div>备注:<input type="text" v-model="replyInfo.message" /></div>
+	</div>
+
+@section scripts{
+
+    <script src="/lib/swiper/swiper.min.js"></script>
+    <script>
+
+
+
+        var scale = 1 / window.devicePixelRatio;
+        document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width,initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+        var docFontSize = document.documentElement.clientWidth / 10;
+        //document.documentElement.style.fontSize = document.documentElement.clientWidth / 10 + 'px';
+        var cssText = $("html").attr("style") + ";font-size:" + docFontSize + "px !important;";
+        $("html").css("cssText", cssText);
+        $('html').attr('font-size', docFontSize)
+        console.log($('h2').html(), $('html').attr('font-size'))
+        var app;
+        app = new Vue({
+            el: '#app',
+			data: {
+				isSupplier:@(ViewBag.IsSupplier?"true":"false"),//当前查看方是否是加工点
+				currentItem: { files: [] },
+				replyInfo: {price:null,cost:null,message:null}
+            },
+            methods: {
+                loadItem: function (quoteDetailId) {
+                    var that = this;
+					func.runAsync(abp.services.app.processQuote.getProcessQuoteDetailInfo(quoteDetailId).done(function (data) {
+                        that.currentItem = data;
+                        console.log(that.currentItem)
+						$("#app").show();
+                    }));
+				},
+				//反馈报价
+				reply: function () {
+					//!!!需要注意如果此询价已被反馈,则只能查看不能再次提交报价
+					func.runAsync(abp.services.app.processQuote.replyQuote(quoteDetailId, app.replyInfo).done(function (data) {
+						location.reload();
+					}));
+				}
+            },
+            created: function () {
+                
+                
+            },
+            mounted: function () {
+				this.quoteDetailId = $.getUrlParam("id");
+				this.loadItem(this.quoteDetailId);
+               
+            }
+        });
+    </script>
+
+}

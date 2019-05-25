@@ -1,0 +1,293 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    //微信端加工点查看加工任务页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "我的设备信息";
+}
+@section styles{
+    <link href="~/lib/swiper/swiper.min.css" rel="stylesheet" />
+    <style>
+        .swiper-container {
+            width: 100%;
+            height: 200px;
+        }
+
+        .swiper-slide {
+            position:relative;
+            text-align: center;
+            background: #f2f2f2;
+            /*border:1px solid;*/
+        }
+
+            .swiper-slide:nth-child(2n+1) {
+                background: #fff;
+            }
+
+            .swiper-slide p {
+                line-height: 2;
+                font-size: 16px;
+            }
+        li.weui-uploader__file{
+            display:none;
+        }
+        li.weui-uploader__file:nth-last-of-type(1) {
+            display: block;
+        }
+        .my-li-delete {
+            font-size: 26px;
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            line-height: 30px;
+            height: 30px;
+            cursor: Pointer;
+            color: orange;
+        }
+    </style>
+}
+<div id="app" v-cloak>
+    <header>
+        <div class="weui-cells__title">设备列表</div>
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" v-for="(eq,index) in equipments" :key="eq.id">
+                    <p>{{eq.equipmentSN}}</p>
+                    <div>
+                        <img width="100%" :src="eq.equipmentPic_Files?eq.equipmentPic_Files[0].filePath:'/assets/images/equipment.png?w=200&gap=false'" alt="设备" />
+                    </div>
+                    <i class="iconfont icon-qingkong1 my-li-delete" @@click="removeEq(index)"></i>
+                </div>
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+        </div>
+        <a href="javascript:;" class="weui-cell weui-cell_link" @@click.prevent="addEq">
+            <div class="weui-cell__bd">添加设备</div>
+        </a>
+    </header>
+
+    <div>
+        <div class="weui-cells__title">设备详情</div>
+        <div class="weui-cells weui-cells_form">
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">工序<span class="verify-span">*</span></label></div>
+                <div class="weui-cell__bd">
+                    <weui-select :value="activeEq.processType" @@input="activeEq.hadTypeId=true;activeEq.processType=$event" key="processtype" :items="processTypes" :multi="true" title="选择工序"></weui-select>
+                </div>
+            </div>
+            <div class="weui-cell" v-for="(list,key) in randerList" :key="key">
+                <div class="weui-cell__hd">
+                    <label class="weui-label">
+                        {{list}}
+                        <span class="verify-span" v-if="key=='equipmentSN'||key=='price'">*</span>
+                    </label>
+                </div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" v-model="activeEq[key]" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="weui-cells__title">设备图片</div>
+        <div class="weui-cells weui-cells_form" style="margin-bottom: 45px;">
+            <wx-uploader-img v-model="activeEq.imgArr" :files="activeEq.equipmentPic_Files||[]" ref="img"></wx-uploader-img>
+        </div>
+    </div>
+    <weui-submit :submit="doSubmit"></weui-submit>
+</div>
+
+@section scripts{
+    <script src="~/lib/swiper/swiper.min.js"></script>
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+        wx.error(function (res) {
+			console.log(res);
+			alert('验证失败:' + JSON.stringify(res));
+        });
+
+         wx.ready(function () {
+
+            });
+    </script>
+
+    <script>
+        app = new Vue({
+            el: '#app',
+            data: {
+                equipments: [],
+                activeEq: {},
+                randerList: {
+                    equipmentSN: '设备名称',
+                    brand: '品牌',
+                    dayCapacity: '日产能',
+                    range: '行程',
+                    price: '加工单价',
+                    buyYear: '购置年份',
+                    buyCost: '购置金额',
+                    range: '行程',
+                },
+                swiper: {},
+                processTypes:[]
+            },
+            methods: {
+                removeEq:  function (index) {
+                    $.confirm("确定删除这个设备吗？这是不可撤销的操作", async () => {
+                        abp.ui.setBusy()
+                        var eq = this.equipments[index];
+                            
+                        if (eq.id) {//有id的去后台把这个删掉
+                            await abp.services.app.equipment.deleteEntity([eq.id])
+                        }
+                        this.equipments.splice(index, 1);
+                        this.activeEq = this.equipments[0];
+                        Vue.nextTick(() => {
+                            this.swiper.slideTo(0);
+                        })
+
+                        abp.ui.clearBusy()
+                        $.toptip('删除成功!', 'success');
+                    }, function () {
+                        //点击取消后的回调函数
+                    });
+                },
+                addEq: function () {
+                    this.equipments.unshift({
+                        equipmentSN: '新设备',
+                        processType:'',
+                        brand: '',
+                        dayCapacity: '',
+                        range: '',
+                        price: '',
+                        buyYear: '',
+                        buyCost: '',
+                        range: '',
+                        imgArr: [],
+                    })
+                    this.activeEq = this.equipments[0];
+                    Vue.nextTick( ()=> {
+                        this.swiper.updateSlides();
+                        this.swiper.slideTo(0);
+                    })
+                    $.toptip('编辑完成后记得保存哦!', 'success');
+                },
+                doSubmit: async function () {
+                    var _indexs = [],_ids = [];
+                    app.equipments.forEach(function (eq, index) {
+                        if (eq.imgArr.length) {
+                            _indexs.push(index);
+                            _ids.push(eq.imgArr[eq.imgArr.length - 1])
+                        }
+                    });
+                    if (_ids.length) {
+                        let res= await abp.services.app.weiXin.downLoadMedia(_ids);
+                        _ids = res.map(file => file.filePath)
+                    }
+
+                    app.equipments.forEach((eq, index) => {
+                        eq.id = eq.id||0;//id为0就是新增
+                        eq.equipmentPicPath = _indexs[index] ? _ids[index] : eq.equipmentPic_Files?eq.equipmentPic_Files[0].filePath:'';
+                        if (eq.hadTypeId) {
+                            //在组件往回提交的时候，修改当前eq的hadTypeId为true
+                            eq.typeID = eq.typeID.split(',')
+                        } else {
+                            eq.typeID = eq.processType.split(',')
+                        }
+                    })
+                    console.log(app.equipments)
+                    abp.services.app.processQuoteProcessor.processEquipmentSaves(app.equipments).done(res => {
+                        $.alert('成功')
+                    })
+                },
+                loadEq: function () {
+                    abp.services.app.equipment.getPageResult({ page: 1, limit: 999 }).done(res => {
+                        console.log(res)
+                        res.data.forEach(elm => {
+                            if (!elm.imgArr) {
+                                elm.imgArr = [];
+                            }
+                            elm.typeID = elm.processType_display
+                        })
+                        this.equipments = res.data;
+                        this.activeEq = this.equipments[0]
+                        Vue.nextTick(this.loadSwiper)
+                    })
+
+                },
+                loadSwiper: function () {
+                    var that = this;
+                    this.swiper = new Swiper('.swiper-container', {
+                        slidesPerView: 2,//同时显示的slides数量
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        on: {
+                            slideChangeTransitionEnd: function () {
+
+                                that.activeEq = that.equipments[this.activeIndex];
+                            },
+                        },
+                    });
+                }
+            },
+            mounted: function () {
+                this.loadEq();
+                abp.services.app.processType.getAll().done(res => {
+                    this.processTypes = res.map(type => {
+                        return {
+                            title: type.processTypeName,
+                            value: type.id,
+                        }
+                    });
+                })
+            }
+        })
+    </script>
+}

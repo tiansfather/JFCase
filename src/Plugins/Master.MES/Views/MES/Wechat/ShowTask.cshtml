@@ -1,0 +1,309 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@section styles{
+	<style>
+        #LAY-app-message {
+            padding: 0;
+        }
+
+		.my-card-body {
+			padding: 0;
+		}
+
+		.my-tab-content {
+			padding: 0 15px;
+			padding-top: 5px;
+		}
+
+			/*.fileUl img {
+				width: 150px;
+				height: 150px;
+			}*/
+        .layui-tab-item{
+            min-height:400px;
+        }
+        .my-show_p{
+            line-height:30px;
+            border-bottom: 1px solid #ccc;
+            padding-left: 10px;
+            color: black;
+        }
+        .upload-img-wrap,.fileUl,.fileUl-li,.fileUl-img-wrap{
+            box-sizing:border-box;
+        }
+
+        .upload-img-wrap {
+            margin-top:20px;
+            display: flex;
+            justify-content: center;
+        }
+        .fileUl {
+            width: 1000px;
+            overflow: hidden;
+            max-width: 100%;
+            padding: 0;
+        }
+        .fileUl-li {
+            position:relative;
+            border-bottom:1px solid #f7f7f7;
+            display: inline-block;
+            vertical-align: top;
+            width: 25%;
+            padding: 20px;
+        }
+        .fileUl-img-wrap {
+            display: inline-block;
+            width: 100%;
+            height: 0;
+            position: relative;
+            background-color: #e6e6e6;
+            padding-bottom: 100%;
+        }
+        .fileUl-li img {
+            -moz-background-size: cover;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            vertical-align: top;
+            -o-object-fit: cover;
+            object-fit: cover;
+        }
+
+        .verified-span{
+            height:30px;
+            line-height:30px;
+        }
+        .upload-button{
+            margin-left:70px;
+        }
+        .my-file-wrap {
+            padding-top:25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .my-file-icon {
+            font-size: 80px;
+            height: 80px;
+            line-height: 80px;
+        }
+        .my-file-p {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 25px;
+            font-size: 14px;
+        }
+        .my-li-delete{
+            display:none;
+        }
+        li:hover .my-li-delete {
+            display:block;
+            line-height: 40px;
+            background: rgba(76, 72, 72, 0.5);
+            top: 25px;
+            position: absolute;
+            font-size: 32px;
+            right: 25px;
+            height: 40px;
+            width: 40px;
+            cursor: Pointer;
+            color: #0c0d29;
+            text-align: center;
+            border-radius: 3px;
+        }
+        .rate-div_wrap span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            font-size: 0;
+            vertical-align: middle;
+        }
+
+        .rate-div_wrap .layui-icon {
+            display: inline-block;
+            position: relative;
+            font-size: 18px;
+            margin-right: 6px;
+            color: #c0c4cc;
+            transition: .3s;
+            top: 4px;
+        }
+
+            .rate-div_wrap .layui-icon.layui-icon-rate-solid {
+                color: rgb(247, 186, 42);
+            }
+        .gongshi-p {
+            font-size: 18px;
+            height: 39px;
+            color: #868686;
+            line-height: 39px;
+        }
+	</style>
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		@*<div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>任务详情</div>*@
+		<div class="layui-card-body layui-form my-card-body layui-hide" id="app">
+
+			<div class="layui-tab layui-tab-brief" lay-filter="taskTab">
+				<ul class="layui-tab-title">
+					<li class="layui-this">加工单</li>
+					<li>报工记录</li>
+					<li lay-id="returnFiles">回单审核</li>
+			 
+				</ul>
+				<div class="layui-tab-content my-tab-content">
+					<div class="layui-show layui-tab-item my-tab-item">
+						<iframe src="" id="sheet" width="100%" height="700" frameborder="0"></iframe>
+					</div>
+					<div class="layui-tab-item">
+						<table class="layui-table" lay-size="sm">
+							<colgroup>
+								<col width="150">
+								<col width="200">
+								<col>
+							</colgroup>
+							<thead>
+								<tr>
+									<th>报工人</th>
+									<th>报工类型</th>
+									<th>报工时间</th>
+									<th>提交时间</th>
+									<th>图片</th>
+									<th>汇报内容</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(item,index) in reports">
+									<td>{{item.reporterName}}</td>
+									<td>{{item.reportType}}</td>
+									<td>{{item.reportTime}}</td>
+									<td>{{item.creationTime}}</td>
+									<td>{{item.files.length}}</td>
+									<td>{{item.remarks}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+                    <div class="layui-tab-item">
+                        <iframe src="" id="receipt" width="100%" height="450px"  frameborder="0"></iframe>
+
+                    </div>
+                 
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		var app, taskid;
+		config.ready = function () {
+			//直接切换到对应的标签页
+			var layid = location.href.indexOf('#') > 0 ? location.href.split('#')[1] : '';
+			if (layid) {
+				console.log(layid);
+				layui.element.tabChange('taskTab', layid);
+			}
+			
+
+			app = new Vue({
+				el: '#app',
+				data: {
+					reports: [],
+                    task: {},
+                    rateIndex: 0,
+                    rateClickRep: 0
+
+                },
+                methods: {
+                    fRateClick: function (i) {
+                        if (i == this.rateClickRep) {
+                            this.rateClickRep = 0
+                        } else {
+                            this.rateClickRep = i
+                        }
+                    },
+                    judgeType: function (file) {
+                        var arr = file.split('.');
+                        var s = arr[arr.length - 1];
+                        return this.judgeFileType(s);
+                    },
+                    judgeFileType: function (fileSuffix ) {
+                        return func.judgeFileType(fileSuffix );
+                    },
+                    removeFile: function (name,index) {
+                        var removeData = { taskId: this.task.id, filePath: this.task[name][index].filePath, rel: name };
+                        console.log(removeData)
+                        var that = this;
+                        layer.confirm('您确定删除此文件吗？', {
+                            btn: ['确定', '取消'] 
+                        }, function () {
+                            abp.services.app.processTask.removeAttachFile(that.task.id, that.task[name][index].filePath, name).done(function () {
+                                that.task[name].splice(index, 1);
+                                layer.msg('删除成功');
+                            })
+                        }, function () {
+                            
+                        });
+                        
+                    },
+                    fLayerImg: function (m,n) {
+                        layuiExt.fLayerImg(m, n);
+                    }
+				},
+				mounted: function () {
+					taskid = $.getUrlParam("data");
+					var that = this;
+                    $("#sheet").attr("src", "/Home/Show?name=../MES/SheetView&taskid=" + taskid);
+                    $("#receipt").attr("src", "/Home/Show?name=../MES/Receiptaudit&data=" + taskid);
+					//获取报工记录
+					abp.services.app.processTask.getProcessTaskReports(taskid)
+                        .done(function (data) {
+                            console.log(data)
+							that.reports = data;
+						});
+					//获取任务详情
+                    abp.services.app.processTask.getTaskInfoById(taskid).done(function (data) {
+                        console.log(data)
+                        that.task = data; mn 
+                        $("#app").removeClass("layui-hide");
+                        $('.in-loading').remove();
+					})
+				}
+
+			});
+
+			//配置上传
+			func.renderUpload(".upload", { trigger: "click" });
+
+		}
+        function uploadCallback(data) {
+            console.log(data);
+			var elem = $(window.upload.element);//调用上传的元素
+			var rel = elem.attr("rel");
+			abp.services.app.processTask.attachFile(taskid, data, rel).done(function () {
+				app.task[rel].push(data);
+			});
+			//func.runAsync(abp.services.app.processTask.attachFile(taskid, data.filePath, rel).done(function () {
+			//	app.task[rel].push({ filePath: data.filePath });
+			//}));
+        }
+        function changeFrameHeight() {
+            //var h=$('[name="ifd"]').scrollHeight();
+            var i = document.getElementById('receipt');
+            var h=i.scrollHeight;
+            alert(h);
+            i.style.height = h;
+            //this.height = ifd.document.body.scrollHeight;
+        }
+	</script>
+
+}

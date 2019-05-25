@@ -1,0 +1,93 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "微信页版本跳转-模来模往";
+}
+@section styles{
+    <style>
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+}
+
+<div id="app">
+    <h1>加载中...</h1>
+</div>
+
+
+@section scripts{
+
+ 
+    <script>
+        var app;
+        config.ready = function () {
+  
+        app = new Vue({
+            el: '#app',
+            data: {
+            },
+            methods: {
+                loadItem: function () {
+                    var that = this;
+                    var MESManufacture = abp.features.getValue("MESManufacture");
+                    var MESSupplier = abp.features.getValue("MESSupplier");
+                    var MESCustomer = abp.features.getValue("MESCustomer");
+                    console.log(MESManufacture, MESSupplier);
+                    if (MESManufacture == "true" && MESSupplier == "true") {
+                  
+                        layer.confirm('选择版本', {
+                            btn: ['模具厂', '加工点'], //按钮
+                            closeBtn: 0
+                        }, function () {
+                            that.go("Index/factory");
+                        }, function () {
+                            that.go("Index/process");
+                        });
+                    } else {
+                        if (MESManufacture == "true") {
+                            that.go("Index/factory");
+                        } else if (MESSupplier == "true") {
+                            that.go("Index/process");
+                        } else if (MESCustomer == "true") {
+                            that.go("Index/customer");
+                        }
+                        else {
+                            layer.alert('版本信息为空，请设置版本', {
+                                skin: 'layui-layer-molv' //样式类名
+                                , closeBtn: 0
+                            }, function () {
+                                window.close();
+                                })
+                        }
+                    }
+
+                    
+                },
+                go(path) {
+                    location.href = path;
+                },
+                setDate(oldTime) {
+                    var newTime = oldTime;
+                    if (newTime == null || newTime == "") { return ""; }
+                    newTime.split('T')[0];
+                    newTime.replace("-", "/");
+                    return newTime;
+                }
+            },
+            created: function () {
+                this.loadItem();
+
+            },
+            mounted: function () {
+               
+
+            }
+            });
+        }
+    </script>
+
+}

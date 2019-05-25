@@ -1,0 +1,17 @@
+﻿@using Master.Web.Components
+@model Master.Module.ModuleInfo
+@{
+
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                <vc:module-button module-key="@Model.ModuleKey"></vc:module-button>
+            </div>
+            <vc:module-table param="@(new ModuleTableViewParam() {ID=Model.ModuleKey,ModuleKey=Model.ModuleKey,Height="full-100" })"></vc:module-table>
+        </div>
+        
+    </div>
+</div>

@@ -1,0 +1,262 @@
+﻿
+@{
+    Layout = "_LayoutDialog";
+    ViewData["Title"] = "RemindTacticsSubmit";
+}
+
+@section styles{
+    <style>
+        .my-input-inlinewrap{
+            display:inline-block;
+        }
+        .my-input-inline {
+            position: relative;
+            width: 80px;
+            display: inline-block;
+        }
+        .my-input-inline .layui-input {
+            height: 30px;
+        }
+        .my-input-span {
+            position: absolute;
+            display: inline;
+            top: 5px;
+            right: 4px;
+            color: #999;
+            line-height: 20px;
+        }
+    </style>
+}
+    <div id="app" class="layui-hide layui-form layui-form-pane" style="padding:20px">
+        <div class="layui-form-item">
+            <label class="layui-form-label">策略名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="" autocomplete="off" placeholder="请输入策略名称" class="layui-input" lay-verify="required" v-model="currentItem.tacticName">
+            </div>
+        </div>
+        <blockquote class="layui-elem-quote">提醒时间</blockquote>
+        <div class="layui-form-item" >
+            <div class="layui-inline">
+                <label class="layui-form-label">提醒时间段</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="title" lay-verify="numberOrempty" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.remindStartHour">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" name="title" lay-verify="numberOrempty" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.remindEndHour">
+                </div>
+            </div>
+            
+        </div>
+        <blockquote class="layui-elem-quote">提醒内容</blockquote>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">到料提醒</label>
+            <div class="layui-input-block">
+                <input type="checkbox" :checked="currentItem.enableReceiveRemind" name="enableReceiveRemind" lay-skin="switch" lay-filter="switchTest" title="开关">
+            </div>
+        </div>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">上机提醒</label>
+            <div class="layui-input-block">
+                <input type="checkbox" :checked="currentItem.enableStartRemind" name="enableStartRemind" lay-skin="switch" lay-filter="switchTest" title="开关">
+            </div>
+        </div>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">加工提醒</label>
+            <div class="layui-input-block">
+                <input type="checkbox" :checked="currentItem.enableProcessingRemind" name="enableProcessingRemind" lay-skin="switch" lay-filter="switchTest" title="开关">
+            </div>
+        </div>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">下机提醒</label>
+            <div class="layui-input-block">
+                <input type="checkbox" :checked="currentItem.enableEndRemind" name="enableEndRemind" lay-skin="switch" lay-filter="switchTest" title="开关">
+            </div>
+        </div>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">暂停提醒</label>
+            <div class="layui-input-block">
+                <input type="checkbox" :checked="currentItem.enableSuspendRemind" name="enableSuspendRemind" lay-skin="switch" lay-filter="switchTest" title="开关">
+            </div>
+        </div>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">延期提醒</label>
+            <div class="layui-input-block">
+                <div class="my-input-inlinewrap">
+                    <input type="checkbox" :checked="currentItem.enableStartDelayRemind" name="enableStartDelayRemind" title="延期上机">
+                    <div class="my-input-inline">
+                        <input type="text" name="title" lay-verify="numberOrempty" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.startDelayOffsetDay">
+                        <span class="my-input-span">天</span>
+                    </div>
+                </div>
+                <div class="my-input-inlinewrap">
+                    <input type="checkbox" :checked="currentItem.enableEndDelayRemind" name="enableEndDelayRemind" title="延期下机">
+                    <div class="my-input-inline">
+                        <input type="text" name="title" lay-verify="numberOrempty" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.endDelayOffsetDay">
+                        <span class="my-input-span">天</span>
+                    </div>
+                </div>
+                <div class="my-input-inlinewrap">
+                    <input type="checkbox" :checked="currentItem.enableReceiveNotStartRemind" name="enableReceiveNotStartRemind" title="到料未上机">
+                    <div class="my-input-inline">
+                        <input type="text" name="title" lay-verify="numberOrempty" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.receiveNotStartOffsetDay">
+                        <span class="my-input-span">天</span>
+                    </div>
+                </div>
+                <div class="my-input-inlinewrap">
+                    <input type="checkbox" :checked="currentItem.enableExceedHourRemind" name="enableExceedHourRemind" title="工时超预计">
+                    <div class="my-input-inline">
+                        <input type="text" name="title" lay-verify="numberOrempty" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.exceedHourOffsetHour">
+                        <span class="my-input-span">小时</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+            @*<div class="layui-input-block">
+                <input type="checkbox" :checked="currentItem.enableStartDelayRemind" name="enableStartDelayRemind" title="延期上机">
+                <div class="layui-input-inline">
+                    <input type="text" name="title" required="" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.startDelayOffsetDay">
+                </div>
+
+                <div class="layui-form-mid layui-word-aux">天</div>
+                <input type="checkbox" :checked="currentItem.enableEndDelayRemind" name="enableEndDelayRemind" title="延期下机">
+                <input type="text" name="title" required="" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.endDelayOffsetDay">
+                <div class="layui-form-mid layui-word-aux">天</div>
+                <input type="checkbox" :checked="currentItem.enableReceiveNotStartRemind" name="enableReceiveNotStartRemind" title="到料未上机">
+                <input type="text" name="title" required="" lay-verify="required" placeholder="" autocomplete="off" class="layui-input" v-model="currentItem.receiveNotStartOffsetDay">
+                <div class="layui-form-mid layui-word-aux">天</div>
+            </div>*@
+        </div>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">动态提醒</label>
+            <div class="layui-input-block">
+                <input type="checkbox" :checked="currentItem.dynamicRemindCustomer" name="dynamicRemindCustomer" title="客户">
+                <input type="checkbox" :checked="currentItem.dynamicRemindProjectCharger" name="dynamicRemindProjectCharger" title="模具组长">
+                <input type="checkbox" :checked="currentItem.dynamicRemindProjectTracker" name="dynamicRemindProjectTracker" title="项目负责">
+                <input type="checkbox" :checked="currentItem.dynamicRemindPoster" name="dynamicRemindPoster" title="开单人">
+                <input type="checkbox" :checked="currentItem.dynamicRemindCraftsMan" name="dynamicRemindCraftsMan" title="工艺师">
+                <input type="checkbox" :checked="currentItem.dynamicRemindVerifier" name="dynamicRemindVerifier" title="审核">
+                <input type="checkbox" :checked="currentItem.dynamicRemindChecker" name="dynamicRemindChecker" title="检验">
+            </div>
+        </div>
+        <blockquote class="layui-elem-quote">项目范围：设置后只有对应项目任务的提醒才能接收到</blockquote>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">项目范围</label>
+            <div class="layui-input-block">
+                <select name="projectSN" xm-select="projectSN" xm-select-search=""></select>
+            </div>
+        </div>
+        <input type="button" lay-submit id="submitBtn" style="display:none" />
+    </div>
+
+@section scripts{ 
+    <script>
+        var app;
+        config.ready = function () {
+            layui.form.on("submit", function () {
+                app.currentItem.remindStartHour = app.currentItem.remindStartHour || 0;
+                app.currentItem.remindEndHour = app.currentItem.remindEndHour || 0;
+                func.runAsync(abp.services.app.tactic.submitRemindTactic(app.currentItem)
+                    .done(function (data) {
+                        layer.msg("提交成功");
+                        parent.layui.table.reload('RemindTactics');
+                        parent.layer.closeAll("iframe");
+                    }));
+            });
+            layui.form.on("switch", function (data) {
+                app.currentItem[data.elem.name] = data.elem.checked;
+			});
+			layui.form.on("checkbox", function (data) {
+				app.currentItem[data.elem.name] = data.elem.checked;
+			});
+            layui.use('formSelects', function () { 
+                var formSelects = layui.formSelects;
+                function configForm() {
+                    formSelects.config('projectSN', {
+                        searchUrl: '/api/services/app/Project/GetAll',
+                        searchName: 'key',
+                        beforeSuccess: function (id, url, searchVal, result) {
+                            var resultArr = [];
+                            $.each(result.result, function (i, v) {
+                                if (app.currentItem.remindProjectSNs.indexOf(v.projectSN) != -1) {
+                                    resultArr.push({ name: v.projectSN, value: v.projectSN, selected: true});
+                                } else {
+                                    resultArr.push({ name: v.projectSN, value: v.projectSN });
+                                }
+                            })
+                            return resultArr;
+                        }
+                    });
+                    formSelects.opened('projectSN', function (id) {
+                        console.log(app.currentItem.remindProjectSNs)
+                        formSelects.value('projectSN', app.currentItem.remindProjectSNs);
+                    });
+                    formSelects.on('projectSN', function (id, vals, val, isAdd, isDisabled) {
+                        app.currentItem.remindProjectSNs = vals.map(function (o) { return o.value; });
+                    }, true);
+                }
+                configForm();
+                app = new Vue({
+                    el: '#app',
+                    data: {
+                        currentItem: {
+                            id: 0,
+                            tacticName: '',
+                            enableReceiveRemind: false,
+                            enableStartRemind: false,
+                            enableProcessingRemind: false,
+                            enableEndRemind: false,
+                            enableSuspendRemind: false,
+                            remindProjectSNs: [],
+                            startDelayOffsetDay: 3,
+                            endDelayOffsetDay: 3,
+                            receiveNotStartOffsetDay: 3,
+                            exceedHourOffsetHour: 0,
+                            remindStartHour:0,
+                            remindEndHour:24
+                        }
+                    },
+                    methods: {
+                        loadItem: function (id) {
+                            var that = this;
+                            if (id) {
+                                abp.services.app.tactic.getRemindTacticInfoById(id).done(function (data) {
+                                    that.currentItem = data;
+                                    formSelects.value('projectSN', data.remindProjectSNs);
+                                    $("#app").removeClass("layui-hide");
+                                    refresh();
+                                });
+                                return;
+                            }
+                            $("#app").removeClass("layui-hide");
+                            refresh();
+
+                        }
+
+                    },
+                    mounted: function () {
+                        var id = $.getUrlParam("data");
+                        this.loadItem(id);
+
+                    },
+                })
+            });
+          
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+
+            })
+
+        }
+
+        function submit() {
+            $("#submitBtn").trigger("click");
+
+        }
+    </script>
+}

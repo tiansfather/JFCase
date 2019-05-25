@@ -1,0 +1,71 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model OSTreeViewParam
+@{
+    var list = new List<object>();
+    for (var i = 1; i <= Model.TreeDate.Count; i++)
+    {
+
+        var temp = new { displayName = Model.TreeDate[i-1], id = i, parentId = 0 };
+        list.Add(temp);
+    }
+
+    string jsonlist = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+
+
+}
+
+
+<ul id="OSTree" class="ztree"
+    style="padding: 2px; border: 1px solid #ddd; overflow: auto;"></ul>
+
+<script>
+	var baseTree = function () {
+		var zTreeObj;
+		var setting = {
+			view: { selectedMulti: false },
+			data: {
+				key: {
+					name: 'displayName',
+					title: 'displayName'
+				},
+				simpleData: {
+					enable: true,
+					idKey: 'id',
+					pIdKey: 'parentId',
+					rootPId: 'null'
+				}
+			},
+			callback: {
+				onClick: function (event, treeId, treeNode) {
+					baseTree.node = treeNode;
+					baseTree.onSelect(treeNode);
+					//config.reloadTable();
+				}
+			}
+		};
+        var load = function () {
+            zTreeObj = $.fn.zTree.init($("#OSTree"), setting);
+            var treelist = @Html.Raw(jsonlist);
+
+            //根节点的显示
+            var newNode = { displayName: "@Html.Raw(Model.TreeName)", id: 0, parentId: "" };
+
+            treelist.push(newNode);
+            zTreeObj.addNodes(null, treelist);
+            //mainList({ orgId: "" });
+            zTreeObj.expandAll(true);
+            
+            
+		};
+		load();
+		return {
+			node: {},
+			reload: load,
+			onSelect: function () {},
+		}
+	}();
+</script>

@@ -1,0 +1,398 @@
+﻿
+<style>
+    .A4 {
+        page-break-before: auto;
+        page-break-after: always;
+        margin:30px 0;
+    }
+    @media print {
+        #btn, .print_unshow-span, .print-p {
+            display: none !important;
+        }
+        .A4{
+            margin:5px 0;
+        }
+    }
+
+    .logo-wrap {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+        .logo-wrap img {
+            max-height: 100px;
+            max-width: 150px;
+            margin-left: 15px;
+        }
+
+    .print-p {
+        font-size: 16px;
+    }
+
+    .my-btn {
+        width: 26px;
+        padding: 0 5px;
+        overflow: hidden;
+        transition: width 0.3s;
+        -moz-transition: width 0.3s; /* Firefox 4 */
+        -webkit-transition: width 0.3s; /* Safari 和 Chrome */
+        -o-transition: width 0.3s; /* Opera */
+    }
+
+    .my-btn:first-child:hover {
+        width: 60px;
+    }
+
+    body{
+        background:#fff;
+    }
+    #app {
+        position: relative;
+        font-family: SimSun;
+    }
+
+    #print {
+        position: absolute;
+        left: 50px;
+        top: 22px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    .my-zhuti {
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    p {
+        padding: 0;
+        margin: 0;
+    }
+
+    .process {
+        font-size: 16px;
+        margin: 0;
+        padding: 5px;
+        width: 100%;
+    }
+
+    .top {
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        letter-spacing: 10px;
+    }
+
+        .top img.logo {
+            padding: 0 0 0 10px;
+            float: left;
+            height: 50px;
+        }
+
+    tr {
+        height: 35px;
+    }
+
+    .process td {
+        font-size: 18px;
+        border-bottom: 1px solid #222;
+        border-right: 1px solid #222;
+        line-height: 18px;
+        padding: 0 5px;
+        text-align: center;
+        letter-spacing: 4px;
+    }
+
+    .process table {
+        border-left: 1px solid #222;
+        border-top: 1px solid #222;
+    }
+
+    .process ul {
+        list-style: none;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        display: block;
+    }
+
+    .process li {
+        float: left;
+        width: 25%;
+        text-align: left;
+    }
+
+    .peo li {
+        float: left;
+        width: 18%;
+        text-align: left;
+    }
+    .peo li strong {
+        font-size:14px;
+    }
+
+    strong {
+        font-size: 18px;
+    }
+
+    .qrcode {
+        height: 200px;
+        width: 200px;
+        float: left;
+        margin-left: 20px;
+        padding: 3px 0
+    }
+
+        .qrcode img {
+            height: 200px;
+            width: 200px;
+        }
+    .had-print {
+        background: #ccc;
+    }
+</style>
+<div id="app" class="my-zhuti" style="display:none">
+    <div class="A4" v-for="(currentItem,currentItemIndex) in currentItems" :key="currentItem.id">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-style: none;">
+            <tbody>
+                <tr style="border-style: none;">
+                    <td rowspan="2" width="25%" style="border-style: none; padding-left:5px">
+                        <div class="logo-wrap" id="btn">
+                            <button class="my-btn layui-btn layui-btn-sm" :class="{'had-print':currentItem.printed}" @click="myPrint">
+                                <i class="layui-icon layui-icon-print my-i-print"></i> 打印
+                            </button>
+                        </div>
+                        <div class="logo-wrap">
+                            <img :src="currentItem.logo||'/assets/images/master-logo.png'" alt="" class="logo-img" />
+                        </div>
+                        <p class="print-p">
+                            请联系我们定制打印模板
+                        </p>
+                        <!--<img src="" alt="" class="logo" width="90px" height="50px" />-->
+                    </td>
+                    <td rowspan="2" style="text-align: center; border-style: none;" width="50%">
+                        <p style="letter-spacing:0; font-size:24px; font-weight: bold;color:black;font-family:SimSun;">{{currentItem.tenancyName}}</p>
+                        <span style="letter-spacing:0; font-size:16px;">模具加工单</span>
+                    </td>
+                    <td width="25%" style="border-style: none; padding-right: 3px;">
+                        <span style="color:#C30; letter-spacing:0; float:right; font-size:18px; font-weight: bold;">{{currentItem.tenantId}}{{currentItem.processSN}}</span>
+                    </td>
+                </tr>
+                <tr style="border-style: none;">
+                    <td style="border-style: none; padding-right: 3px;">
+                        <span style="letter-spacing:0;float:right; font-size:18px;">开单日期：{{nowDate}}</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="process" style="overflow:hidden">
+            <div style="clear:both;">
+            </div>
+            <div>
+                <ul>
+                    <li>
+                        <strong>加工点：{{currentItem.unitName}}</strong>
+                    </li>
+                    <li>
+                        <strong>加工类型：{{currentItem.processTypeName}}</strong>
+                    </li>
+                    <li>
+                        <strong>
+                            要求完成：{{currentItem.requireDate}}
+                        </strong>
+                    </li>
+                    <li>
+                        <strong>预约上机：{{currentItem.appointDate}}</strong>
+                    </li>
+                </ul>
+            </div>
+            <div style="clear:both;">
+            </div>
+            <table cellpadding="0" cellspacing="0" align="center" width="100%">
+                <tbody>
+                    <tr class="bt">
+                        <td width="14%">
+                            模具编号
+                        </td>
+                        <td width="14%">
+                            工件名称
+                        </td>
+                        <td width="18%">
+                            规格
+                        </td>
+                        <td width="12%">
+                            数量
+                        </td>
+                        <td width="14%">
+                            工序编号
+                        </td>
+                        <td width="14%">
+                            加工总价
+                        </td>
+                        <td width="14%">
+                            设备名称
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span style="letter-spacing:0;">{{currentItem.projectSN}}</span>
+                        </td>
+                        <td>
+                            <span style="letter-spacing:0;">{{currentItem.partName}}</span>
+                        </td>
+                        <td>
+                            <span style="letter-spacing:0;">{{currentItem.partSpecification}}</span>
+                        </td>
+                        <td>
+                            <span style="letter-spacing:0;">{{currentItem.partNum}}</span>
+                        </td>
+                        <td>
+                            <span style="letter-spacing:0;"></span>
+                        </td>
+                        <td>
+                            <span style="letter-spacing:0;">{{currentItem.jobFee}}</span>
+                        </td>
+                        <td>
+                            <span style="letter-spacing:0;">{{currentItem.equipmentSN}}</span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="7" style="text-align:left; letter-spacing: 0;font-size: 16px;">
+                            <span style="font-size: 16px;">加工内容:</span>{{currentItem.taskInfo}}
+                        </td>
+                    </tr>
+                    <tr style="height:180px;">
+                        <td colspan="2">
+                            <div class="qrcode">
+                                <img :src="qrCode" />
+                            </div>
+                        </td>
+                        <td title="双击上传图片" class="uploadinsert" colspan="5" valign="top" style="padding:5px;position:relative;" callback="uploadCallback" :currentItemIndex="currentItemIndex">
+                            <div>
+                                <img class="uploadimg" style="max-height:300px;" :src="currentItem.sheetFile.filePath+'?'+ +new Date()" alt="图片信息" v-if="currentItem.sheetFile!=null" />
+                                <span class="print_unshow-span" v-if="currentItem.sheetFile==null">双击上传图片</span>
+                            </div>
+                            <div>
+                                <img src="/user-resource/keshuo/科硕.png" width="150" style="max-width: 110px;max-height: 110px;right:1px;bottom:1px;position:absolute;" alt="科硕">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <ul class="peo">
+                <li>
+                    <strong>开单人：{{currentItem.poster}}</strong>
+                </li>
+                <li>
+                    <strong>模具组长：{{currentItem.projectCharger}}</strong>
+                </li>
+                <li>
+                    <strong>工艺组：{{currentItem.craftsMan}}</strong>
+                </li>
+                <li>
+                    <strong>加工户签字：</strong>
+                </li>
+                <li style="width:14%">
+                    <strong>
+                        审核：{{currentItem.verifier}}
+                    </strong>
+                </li>
+                <li style="width:14%">
+                    <strong>检验：{{currentItem.checker}}</strong>
+                </li>
+            </ul>
+        </div>
+        <div style="clear:both;">
+        </div>
+        <p style="font-size: 15px; padding-left: 5px; padding-right: 5px; margin-top: 0; padding-top: 0;">
+            备注：1、上下料必须扫码，如未接收到扫码报工图片，我司不支付该加工费用。<br />
+            &emsp;&emsp;&emsp;2、白联:存根;&nbsp;红联:回单;&nbsp蓝联:结算;&nbsp黄联;对单。<br />
+            &emsp;&emsp;&emsp;3、若加工单上二维码扫描不出来或者在报工界面出现无法提交等其他异常情况；请联系软件公司客服18806597400或15906863922。
+        </p>
+        <div style="clear:both;">
+        </div>
+    </div>
+
+
+</div>
+    
+<script>
+    var app;
+    //图片上传
+    app = new Vue({
+        el: '#app',
+        data: {
+            currentItems:[],
+            taskId: $.getUrlParam("taskid")
+        },
+        methods: {
+            loadItem: function (taskIds) {
+                var that = this;
+                func.runAsync(abp.services.app.processTask.getProcessTaskInfosByIds(taskIds).done(function (data) {
+                    that.currentItems = data;
+                    //加载额外添加数据
+                    loadTemplateData(function () {
+                        $("#app").show();
+                        that.imgMousewheel();
+                        typeof dataLoaded != "undefined" &&that.$nextTick(dataLoaded);
+                    });
+                }))
+
+            },
+            myPrint: function () {
+                window.print();
+                this.currentItems.forEach(function (elm) {
+                    elm.printed = true;
+                    abp.services.app.processTask.setTaskStatus(elm.id, 'Print', true)
+                })
+            },
+            imgMousewheel: function() {
+
+
+                $(".uploadinsert").on('mousewheel', '.uploadimg', function (e) {
+                    var delta = e.originalEvent.wheelDelta;
+                    var oriWidth = $(this).height();
+                    var newWidth = oriWidth * (delta > 0 ? 1.2 : 0.8);
+                    $(this).css("height", newWidth + "px");
+                    console.log(e);
+                })
+            }
+        },
+        computed: {
+            nowDate: function () {
+                var myDate = new Date();
+                var date = myDate.getDate();
+                var month = myDate.getMonth() + 1;
+                var year = myDate.getFullYear();
+                return year + '-' + month + '-' + date;
+            },
+            qrCode: function () {
+                return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Report?taskid=" + this.taskId);
+
+            }
+        },
+        mounted: function () {
+            var taskIds = $.getUrlParam("data")
+            if (taskIds) {
+                taskIds = taskIds.split(',')
+            } else {
+                taskIds = [this.taskId]
+            }
+            this.loadItem(taskIds);
+
+        }
+
+    })
+
+    function uploadCallback(res) {
+        var currentItem = app.currentItems[$(upload.element).attr('currentItemIndex')];
+        var filePath = res.filePath;//图片路径
+        currentItem.sheetFile = {filePath:filePath}
+        //$(".uploadinsert").html("<img src='" + filePath + "' width='300' tips='鼠标滚轮进行图片缩放' />");
+        //提交至加工图片
+        abp.services.app.processTask.attachSheetFile(currentItem.id, filePath);
+        console.log(res);
+    }
+</script>

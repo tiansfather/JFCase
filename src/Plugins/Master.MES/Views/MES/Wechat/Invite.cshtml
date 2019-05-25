@@ -1,0 +1,30 @@
+﻿@using Master.Configuration;
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+	//此页用为手机端注册邀请页
+	Layout = "_WeUILayout";
+	ViewData["Title"] = "邀请注册";
+}
+
+<div class="weui-msg" id="app">
+	<img :src="qrCode" />
+</div>
+
+@section scripts{
+	<script>
+		var inviter = "@(AbpSession.TenantId==null?"":AbpSession.TenantId.Value.ToString())";
+		config.ready = function () {
+			var app = new Vue({
+				el: '#app',
+				computed: {
+					qrCode: function () {
+						var url = '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Register?inviter=" + inviter );
+						console.log(url);
+						return url;
+					}
+				}
+			});
+		}
+	</script>
+}

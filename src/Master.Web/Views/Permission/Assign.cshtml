@@ -1,0 +1,187 @@
+﻿
+@{
+	Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+@section styles{
+	<style>
+		.layui-table-view {
+			margin: 0
+		}
+	</style>
+}
+<div class="layui-row">
+	<div class="layui-col-xs3">
+		<ul id="tree" class="ztree"
+			style="padding: 2px; border: 1px solid #ddd; overflow: auto;"></ul>
+	</div>
+	<div class="layui-col-xs9">
+		<table class="layui-table"
+			   lay-data="{height: 'full-30', page:false, id:'PermissionList',url:'/api/services/app/Permission/GetMenuDetailPermissions'}"
+			   lay-filter="PermissionList" @*lay-size="sm" *@>
+			<thead>
+				<tr>
+					<th lay-data="{type:'numbers'}"></th>
+					<th lay-data="{field:'displayName',width:100 }">@L("名称")</th>
+					<th lay-data="{field:'name',width:250 }">@L("标志")</th>
+					<th lay-data="{field:'permissionType', }">@L("类型")</th>
+					<th lay-data="{field:'isGranted', templet:'#grantedTpl'}">@L("授权")</th>
+				</tr>
+			</thead>
+		</table>
+
+		<script type="text/html" id="grantedTpl">
+			<input type="checkbox" name="isGranted" value="{{d.name}}" lay-skin="switch" lay-filter="granted" {{ d.isGranted ? 'checked' : '' }}>
+		</script>
+	</div>
+</div>
+
+
+@section scripts{
+	<script>
+
+                    var dataid = $.getUrlParam("data");
+                    var type = $.getUrlParam("modulekey");
+        if (type == "User") {
+            $("table").before("<button class=\"layui-btn layui-btn-danger\" type=\"button\" onclick=\"deletepeo();\">重置默认权限</button>");
+        } else if (type == "Roles") {
+            $("table").before("<button class=\"layui-btn \" type=\"button\" onclick=\"grantAllPeo();\">添加所有权限</button>");
+        }
+
+
+
+                    var searchKeys = { type: type, id: dataid };
+
+                    var ztree = function () {
+                        var zTreeObj;
+                        var setting = {
+                            view: { selectedMulti: true },
+                            check: {
+                                enable: true,
+                                chkStyle: "checkbox",
+                                chkboxType: { "Y": "", "N": "" }
+                            },
+                            data: {
+                                key: {
+                                    name: 'displayName',
+                                    title: 'displayName',
+                                    children: 'items'
+                                },
+                                //simpleData: {
+                                //    enable: true,
+                                //    idKey: 'id',
+                                //    pIdKey: 'parentId',
+                                //    rootPId: 'null'
+                                //}
+                            },
+                            callback: {
+                                onClick: function (event, treeId, treeNode) {
+                                    searchKeys.menu = treeNode.name;
+                                    config.reloadTable();
+                                },
+                                onCheck: function (event, treeId, treeNode) {
+                                    searchKeys.menu = treeNode.name;
+                                    config.reloadTable();
+                                    //获取所有选中节点
+                                    var nodes = zTreeObj.getCheckedNodes();
+                                    abp.services.app.permission.assignAllMenuPermission(type, getPermissionNames(nodes), dataid)
+                                        .done(function (json) {
+                                            layer.msg(L("设置成功"));
+                                         });
+
+                                }
+                            }
+                        };
+                        var load = function () {
+                            abp.services.app.menu.getMenuTreeJson().done(function (json) {
+                                zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                                var newNode = [{ displayName: "根节点", items: json }];
+                                zTreeObj.addNodes(null, newNode);
+                                //设置已分配权限
+                                abp.services.app.permission.loadGrantedMenuPermissions(type, dataid)
+                                    .done(function (data) {
+                                        $.each(data, function (i, v) {
+                                            console.log(v);
+                                            var node = zTreeObj.getNodeByParam("name", v.replace("Menu.",""), null);
+                                            console.log(node);
+                                            if (node) {
+                                                zTreeObj.checkNode(node, true, false);
+
+                                            }
+                                        })
+
+                                    });
+                                zTreeObj.expandAll(true);
+                            });
+                        };
+                        var getPermissionNames = function (nodes) {
+                            var result = [];
+                            for (var i = 0; i < nodes.length; i++) {
+                                var node = nodes[i];
+                                if (node.name && node.items.length==0) {
+                                    result.push("Menu." + node.name);
+                                }
+
+
+                            }
+                            console.log(result);
+                            return result;
+
+                        }
+                        load();
+                        return {
+                            reload: load
+                        }
+                    }();
+                    config.ready = function () {
+                        $("#tree").height($("div.layui-table-view").height());
+                        //监听授权
+                        layui.form.on('switch(granted)', function (obj) {
+                            var permissionName = this.value;//权限名
+                            abp.services.app.permission.assignPermission(type, permissionName, dataid,obj.elem.checked)
+                                .done(function (json) {
+                                    layer.msg(L("设置成功"));
+                                });
+                        })
+                    }
+
+                    config.reloadTable = function () {
+                        layui.table.reload('PermissionList', {
+                            where: searchKeys
+
+                        })
+
+                    }
+
+                    //进行删除操作
+                    function deletepeo() {
+                        func.runAsync(abp.services.app.permission.delUserPermissions(dataid)
+                            .done(function (json) {
+                                layer.msg(L("设置成功"));
+                                layui.table.reload('PermissionList', {
+                                    //url: '/api/services/app/Permission/GetMenuDetailPermissions'
+                                    //, where: {} //设定异步数据接口的额外参数
+                                    //,height: 300
+                                });
+                                setTimeout("location.reload()", 1000);
+                            }));
+
+
+        }
+        //添加所有权限
+        function grantAllPeo() {
+            func.runAsync(abp.services.app.permission.grantAllPermissions(dataid)
+                .done(function (json) {
+                    layer.msg(L("权限添加成功"));
+                    layui.table.reload('PermissionList', {
+                        //url: '/api/services/app/Permission/GetMenuDetailPermissions'
+                        //, where: {} //设定异步数据接口的额外参数
+                        //,height: 300
+                    });
+                    setTimeout("location.reload()", 1000);
+                    //location.reload();
+                }));
+
+
+        }
+	</script>
+}

@@ -1,0 +1,224 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    //微信端模具厂查看费用
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "加工点详细";
+}
+@section styles{
+    <link href="~/lib/swiper/swiper.min.css" rel="stylesheet" />
+    <style>
+        html, body {
+            background: #eee;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .unit-title {
+            line-height: 2;
+            margin-left: 20px;
+            font-size: 20px;
+        }
+
+        .base-block {
+            background-color: #fff;
+            margin-bottom: 6px;
+            padding: 13px 0 10px 20px;
+        }
+        .basic-info{
+            position:relative;
+        }
+            .basic-info .rotate {
+                transform: rotate(180deg);
+            }
+        .info-title {
+            line-height: 2;
+        }
+
+        .mod-base {
+            width: 100%;
+            overflow: hidden;
+            /*padding-top: .1rem;*/
+            margin-bottom: 10px;
+        }
+
+            .mod-base li {
+                width: 33.33%;
+                float: left;
+                text-align: left;
+                margin-bottom: 10px;
+            }
+
+                .mod-base li span {
+                    font-size: 14px;
+                    color: #abafb3;
+                }
+
+                .mod-base li p {
+                    font-size: 15px;
+                    color: #757f89;
+                    word-break: keep-all;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+        .swiper-container {
+            width: 100%;
+            height: 200px;
+        }
+
+        .swiper-slide {
+            position: relative;
+            text-align: center;
+            background: #f2f2f2;
+            /*border:1px solid;*/
+        }
+
+            .swiper-slide:nth-child(2n+1) {
+                background: #fff;
+            }
+
+            .swiper-slide p {
+                line-height: 2;
+                font-size: 16px;
+            }
+        .weui-cells__title {
+            padding: 0;
+            line-height: 2;
+            padding-left: 5px;
+        }
+        .weui-cell {
+            padding: 0;
+            line-height: 2.5;
+        }
+        .weui-cell__hd {
+            color: #abafb3;
+        }
+    </style>
+}
+    <div id="app" v-cloak>
+        <h1 class="unit-title">
+            正立模塑
+        </h1>
+        <div class="base-block basic-info" @@click="showSimpleInfo=!showSimpleInfo">
+            <p class="info-title">基本信息</p>
+            <span class="layui-unselect layui-tab-bar">
+                <i lay-stope="tabmore" class="layui-icon"  :class="{rotate:!showSimpleInfo}"></i>
+            </span>
+            <ul class="mod-base showNotice" v-show="showSimpleInfo">
+                <li v-for="list,key in randerList.info" :key="key">
+                    <span>{{list}}</span>
+                    <p>{{key}}</p>
+                </li>
+            </ul>
+            <div class="weui-cells" style="margin-top: 10px;" v-show="!showSimpleInfo">
+                <div class="weui-cell" v-for="(list,key) in randerList.info" :key="key">
+                    <div class="weui-cell__hd">
+                        <label class="weui-label">
+                            {{list}}
+                        </label>
+                    </div>
+                    <div class="weui-cell__bd">
+                        <p>{{key}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="base-block">
+            <p class="info-title">设备信息</p>
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" v-for="(eq,index) in equipments" :key="eq.id">
+                        <p>{{eq.equipmentSN}}</p>
+                        <div>
+                            <img width="100%" :src="eq.equipmentPic_Files?eq.equipmentPic_Files[0].filePath:'/assets/images/equipment.png?w=200&gap=false'" alt="设备" />
+                        </div>
+                    </div>
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+            </div>
+            <div>
+                <div class="weui-cells__title">设备详情</div>
+                <div class="weui-cells">
+                    <div class="weui-cell" v-for="(list,key) in randerList.eq" :key="key">
+                        <div class="weui-cell__hd">
+                            <label class="weui-label">
+                                {{list}}
+                            </label>
+                        </div>
+                        <div class="weui-cell__bd">
+                            <p>{{activeEq[key]}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@section scripts{
+    <script src="~/lib/swiper/swiper.min.js"></script>
+    <script>
+        window.app = new Vue({
+            el: '#app',
+            data: {
+                randerList: {
+                    info: {
+                        charger: '联系人',
+                        contactInfo: '联系方式',
+                        processTypes: '加工工艺',
+                        location: '地址',
+                        jobStartYear: '从业年份',
+                        employeeNumber: '员工数量',
+                        invoiceTax: '开票税率',
+                        outputValue: '产值规模',
+                        usingSoftwares: '编程软件'
+                    },
+                    eq: {
+                        equipmentSN: '设备名称' ,
+                        brand: '品牌' ,
+                        dayCapacity: '日产能' ,
+                        range: '行程' ,
+                        price: '加工单价' ,
+                        buyYear: '购置年份' ,
+                        buyCost: '购置金额' ,
+                        range: '行程' ,
+                    }
+                },
+                equipments: [],
+                activeEq: {},
+                showSimpleInfo:true
+            },
+            methods: {
+                loadEq: function () {
+                    abp.services.app.equipment.getPageResult({ page: 1, limit: 999 }).done(res => {
+                        this.equipments = res.data;
+                        this.activeEq = this.equipments[0]
+                        Vue.nextTick(this.loadSwiper)
+                    })
+
+                },
+                loadSwiper: function () {
+                    var that = this;
+                    this.swiper = new Swiper('.swiper-container', {
+                        slidesPerView: 2,//同时显示的slides数量
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        on: {
+                            slideChangeTransitionEnd: function () {
+                                that.activeEq = that.equipments[this.activeIndex];
+                            },
+                        },
+                    });
+                }
+            },
+            mounted: function () {
+                this.loadEq();
+            }
+        })
+    </script>
+}

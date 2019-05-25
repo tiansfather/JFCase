@@ -1,0 +1,97 @@
+﻿@using Master.Web.Models.Select
+@model SelectFormViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+    ViewData["Title"] = "SelUser";
+}
+
+
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">        
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane" onsubmit="return doSearch();">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">@L("姓名")</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="name" name="name" autocomplete="off" class="layui-input">
+                        </div>
+                        <label class="layui-form-label">所属单位</label>
+                        <div cyType="dropDownTool" cyProps="url:'/api/services/app/Organization/GetTreeJson?maxlevel=2',search:'false',checkbox:'false',key_name:'briefName'"
+                             name="OrganizationId" value="" class="layui-input-inline" style="position:relative">
+                        </div>
+                        <button class="layui-btn layui-btn-primary" type="button" onclick="doSearch()">@L("查询")</button>
+                        <button type="button" class="layui-btn  layui-btn-normal" onclick="func.bringBack('User');">@L("选择")</button>
+                        <button type="button" class="layui-btn  layui-btn-normal" onclick="func.bringBack('User',true);">@L("选择并返回")</button>
+                    </div>
+                </div>
+            </form>
+
+
+            <table autoevent="1" id="User" lay-filter="User" class="layui-table " lay-data="{cellMinWidth:'80',height:'full-120', url:'/api/services/app/User/GetSimplePageResult',where:{where:'@Model.Where',searchKeys:'@Model.SearchKeys'}, page:true, id:'User',  even: true,done:config.onTableDone,initSort:{field:'Name',type:'asc'}}">
+                <thead>
+					<tr>
+						<th lay-data="{checkbox:true,fixed:'left'}"></th>
+						<th lay-data="{align:'center',field:'name'}">@L("姓名")</th>
+						<th lay-data="{align:'center',field:'userName'}">@L("登录账号")</th>
+						<th lay-data="{align:'center',field:'phoneNumber'}">@L("手机号码")</th>
+					</tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+</div>
+@section scripts{
+    <script>
+        config.ready = function () {
+            var element = layui.element,
+                table = layui.table;
+            table.on('sort(User)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                //console.log(obj.field); //当前排序的字段名
+                //console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+                //console.log(this); //当前排序的 th 对象
+
+                //尽管我们的 table 自带排序功能，但并没有请求服务端。
+                //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
+                table.reload('User', {
+                    initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                    , where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+                        orderfield: obj.field,
+                        ordertype: obj.type
+                    }
+                });
+            });
+
+            config.refresh();
+
+            $('div[cytype="dropDownTool"]').dropDownTool();
+        };
+        config.onTableDone = function () {
+
+        };
+        config.refresh = function () {
+
+        };
+        function doSearch() {
+            var where = {where:'@Model.Where',searchKeys:'@Html.Raw(Model.SearchKeys)'};
+            var name = $("#name").val();
+            if (name) {
+                where.where += " and Name.Contains(\"" + name + "\") ";
+
+            }
+            var organizationId = $("input[name='OrganizationId']").val();
+            if (organizationId) {
+                where.where += " and OrganizationId=" + organizationId;
+
+            }
+            layui.table.reload('User', {
+                where: where
+
+            })
+
+            return false;
+        }
+    </script>
+}
+

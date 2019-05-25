@@ -1,0 +1,99 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="quoteTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this ">@L("待投标")</li>
+                <li class="">@L("已投标")</li>
+                <li class="">@L("已放弃")</li>
+                <li class="">@L("未中标")</li>
+                <li class="">@L("已中标")</li>
+            </ul>
+            <div class="layui-tab-content">
+                <table id="quoteTable" lay-filter="quoteTable"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script type="text/html" id="edit">
+    <a dataid="{{d.id}}" buttonname="详情" modulekey="ProcessTask" class="layui-btn layui-btn-xs " params="{&quot;area&quot;: [&quot;100%&quot;, &quot;100%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../ProcessQuote/ProcessorShow" onclick="func.callModuleButtonEvent()">详情</a>
+</script>
+    <script>
+        config.ready = function () {
+
+            var element = layui.element;
+            var table = layui.table;
+            //一些事件监听
+            element.on('tab(quoteTab)', function (data) {
+                config.reloadTable();
+            });
+            table.render({
+                elem: '#quoteTable'
+                , cellMinWidth: 100
+                , url: '/api/services/app/ProcessQuoteProcessor/GetPageResult'
+                , where: getWhere(0)
+                , limit:20
+                , limits:[20,50,100,200]
+                , height: 'full-100' 
+                , cols: [[
+                    { align: 'center', width: 135, field: 'tenancyName', title: '客户' },
+                    { align: 'quoteSN', field: 'quoteSN', title: '询价单号' },
+                    { align: 'center', field: 'quoteName', title: '询价名称', sort: true },
+                    { align: 'center', field: 'quoteScope', title: '询价类型' },
+                    { align: 'center', field: 'quotePayType', title: '付款方式' },
+                    { align: 'center', field: 'publishDate', title: '发布日期' },
+                    { align: 'center', field: 'expireDate', title: '截止日期' },
+                    { align: 'center', field: 'quoteStatus', title: '状态' },
+                    { align: 'center', templet: '#edit', title: '操作' },]]
+            });
+
+            config.refresh();
+        }
+        //当检索窗体提交后会调用此方法
+        config.reloadTable = function () {
+            layui.table.reload('quoteTable', {
+                where: getWhere($(".layui-tab-title .layui-this").index())
+
+            })
+        }
+        config.onTableDoneExport = function () {
+            //console.log('a')
+        }
+        //当编辑或删除或添加表单提交后会调用此方法
+        config.refresh = function () {
+
+        }
+        function getWhere(index) {
+
+            var searchKeys = {}
+            switch (index) {
+                case 0:
+                    searchKeys.bidStatus = 1;
+                    break;
+                case 1:
+                    searchKeys.bidStatus = 2;
+                    break;
+                case 2:
+                    searchKeys.bidStatus = 3;
+                    break;
+                case 3:
+                    searchKeys.bidStatus = 4;
+                    break;
+                case 4:
+                    searchKeys.bidStatus = 5;
+                    break;
+            }
+
+            return { searchKeys: JSON.stringify(searchKeys) };
+
+        }
+    </script>
+}

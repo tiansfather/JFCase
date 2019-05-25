@@ -1,0 +1,292 @@
+﻿
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    @section styles{
+        @*<link href="/Views/MES/Rcss.css" rel="stylesheet" />*@
+        <link rel="stylesheet" href="/Views/MES/CSS/wechatList.css" asp-append-version="true">
+        <link rel="stylesheet" href="/lib/iconfont/wechaticon.css" asp-append-version="true">
+    }
+}
+
+<div class="weui-tab">
+    <div class="weui-navbar">
+        <a class="weui-navbar__item weui-bar__item--on" href="javascript:;">全部</a>
+        <a class="weui-navbar__item" href="javascript:;">未上机</a>
+        <a class="weui-navbar__item" href="javascript:;">已上机</a>
+        <a class="weui-navbar__item" href="javascript:;">已下机</a>
+
+    </div>
+</div>
+@*<div class="weui-tab__bd">
+    <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">*@
+
+<div class="layui-fluid" id="LAY-app-message" style="padding-top: 50px;">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            @*<div class="LAY-app-message-btns">
+                <form class="layui-form layui-form-pane " onsubmit="doSearch(); return false;">
+                    <div class="my-search">
+
+                        <div class="my-inline-block">
+                            <div class="layui-input-inline">
+                                模具编号:<input type="text" id="projectSNSearch" autocomplete="off" class="layui-input" readonly placeholder="模具编号/单号">
+                            </div>
+
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>*@
+
+
+            <div class="disnone flow-wrap">
+                <div class="grid my-grid" style="">
+                </div>
+                <div class="append-btn-wrap">
+                    <i style="font-size:30px;" class="dom-append-i layui-icon layui-icon-loading-1 layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+                    <span class="dom-append-span" style="display:none">已无更多内容</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>
+    </div>*@
+@section scripts{
+    <script src="~/lib/masonry/masonry.min.js"></script>
+    <script src="~/lib/masonry/imagesLoaded.min.js"></script>
+
+    <script type="text/html" id="exhibition">
+        {{#
+            layui.each(d, function(index, item){
+            var date;
+            item.startDate?item.startDate:'未报工'
+        }}
+        <a dataid="{{item.id}}" buttonname="_任务详情"  modulekey="ProcessTask" class="receiptaudit-wrap" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;101%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/MES/PartReportView?id={{item.id}}" onclick="func.callModuleButtonEvent($(this))">
+            <div class="grid-item">
+                <div class="c-card">
+                    <div class="img-wrap">
+                        {{# if(item.overtime){ }}
+                        <div class="over-time-div">
+                            {{# }else{  }}
+                            <div>
+                                {{# } }}
+                                <img src="{{item.file}}?w=100" width="100" />
+                            </div>
+                        </div>
+                        <div class="text-wrap">
+                            <p>{{item.partName}}</p>
+                            <p> {{item.processTypeName}}</p>
+                            <p>{{item.startDate?item.startDate:'未报工'}}{{item.startDate?'-'+item.startDate:'未报工'}}</p>
+ 
+                        </div>
+
+                    </div>
+                </div>
+        </a>
+        {{#  }); }}
+    </script>
+    <script>
+        var projectSN = $.getUrlParam("data");
+        //$("#projectSNSearch").val(projectSN);
+        var reportType = "";
+        $("div.weui-navbar").on("click", "a.weui-navbar__item", function (e) {
+            reportType = $(this).html();
+            $(".weui-bar__item--on").removeClass("weui-bar__item--on");
+            $(this).addClass("weui-bar__item--on");
+            if (reportType == "全部") {
+                reportType = "";
+            }
+            doSearch();
+        })
+        //高级查询设置
+        var SearchData = [];
+
+        var andWhereStr = "";
+
+        var page = 1;//当前打开页
+        var PageCount;//共有n页
+        var getHtml;
+        var $grid;
+        var firstSwitchFlag = true;
+        var searchFlag = false;
+
+        var addEd = false;
+
+        var manyState = layui.data('manyState');
+        if (manyState && manyState.reportState) {
+            switchMode();
+            //layui.data('manyState', {key: 'reportState', value: true });
+        } else {
+            layui.data('manyState', {
+                key: 'reportState'
+                , value: false
+            });
+        }
+
+        function getData(fn) {
+            var where = "";
+
+            where = " Part.Project.ProjectSN =\"" + projectSN + "\" ";
+
+            if (reportType != "") {
+                if (reportType == "未上机") {
+                    where += " and  (processTaskStatus =1 or processTaskStatus=2 ) ";
+                } else if (reportType == "已上机") {
+                    where += " and  (processTaskStatus =3 or processTaskStatus=5 ) ";
+                } else if (reportType == "已下机") {
+                    where += " and  processTaskStatus =4 ";
+                }
+
+            }
+            var options = { limit: 11, page: page, where: where };
+
+            page++;
+            abp.services.app.processTask.getPageResult(options).done(function (data) {
+                if (!PageCount) {
+                    PageCount = Math.ceil(data.count / options.limit);
+                }
+                console.log(data);
+                var aExhibition = [];
+
+                data.data.forEach(function (n) {
+                    aExhibition.push({
+                        file: n.files == null ? "" : n.files[0].filePath,
+                        processSN: n.processSN,
+                        partName: n.partName + '(' + n.partSN + ')',
+
+                        processTypeName: n.processTypeName,
+                        startDate: n.startDate,
+                        endDate: n.endDate,
+                        actualHours: n.actualHours,
+                        remarks: n.remarks,
+                        id: n.id,
+                        taskId: n.taskId
+
+                    })
+                })
+                var getTpl = exhibition.innerHTML;
+                layui.laytpl(getTpl).render(aExhibition, function (html) {
+                    getHtml = html;
+                    if (typeof fn == 'function') {
+                        fn();
+                    }
+                    //
+                });
+            });
+        };
+        function fImgError() {
+            $("img").error(function () {
+                console.log('error')
+                $(this).parent().addClass('error-div')
+                $(this).hide();
+            });
+        }
+
+        function addMore(searchVal) {
+            if (searchVal) {
+                getData(sclBotCallBack);
+            } else {
+                getData(sclBotCallBack);
+            }
+            function sclBotCallBack() {
+                var $items = $(getHtml);
+                $grid.append($items);
+                fImgError();
+                $grid.imagesLoaded(function () {
+                    $grid.masonry('appended', $items);
+                    addEd = false;
+                });
+            }
+        }
+        var judiNum = 200;
+        $(function () {
+            switchMode();
+        })
+        function switchMode() {
+
+
+            if (firstSwitchFlag) {
+                $('.flow-wrap').toggle();
+                $('.yanqi-msg').toggle();
+                getData(configCallBack);
+                function configCallBack() {
+                    $('.grid').append(getHtml);
+                    fImgError();
+                    $grid = $('.grid').imagesLoaded(function () {
+                        $('.grid').masonry({
+                            itemSelector: '.grid-item',
+                            columnWidth: 400
+                        });
+                    });
+                }
+                firstSwitchFlag = false;
+            }
+
+
+            function fWindowScroll() {
+                if ($(document).scrollTop() <= 0) {
+                    //console.log("滚动条已经到达顶部为0");
+                }
+                if ($(document).scrollTop() >= $(document).height() - $(window).height() - judiNum) {
+                    if (page < PageCount) {
+                        if (!addEd) {
+                            addMore(projectSN);
+
+                            addEd = true;
+                        }
+                        setTimeout(function () { }, 2000);
+
+                    } else {
+                        clearTimeout();
+                        function fUnHad() {
+                            $('.dom-append-i').hide(100);
+                            $('.dom-append-span').show(100);
+                        }
+                        var a = setTimeout(fUnHad, 2000)
+
+                    }
+                }
+            }
+            $(window).scroll(fWindowScroll);
+
+
+        }
+
+
+        var tenantId = $.getUrlParam("tenantId");
+        var oriWhereStr = tenantId ? "tenantId=" + tenantId : "1=1";
+
+        window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhereStr, whereFilter: oriWhereStr };
+        var currentFilter = {};
+
+
+
+        function doSearch() {
+            var projectsn = projectSN;//搜索框内容
+            var repoType = reportType;
+
+            //if (projectsn != null && projectsn != "") {
+            //    layer.msg('展示模具编号为"' + projectsn + '"的报工信息');
+            //}
+            page = 1;
+            firstSwitchFlag = true;
+            searchFlag = true;
+            PageCount = false;
+            $('.dom-append-i').show(100);
+            $('.dom-append-span').hide(100);
+
+            $('.grid .grid-item').remove();
+            addMore(projectsn);
+
+            $grid.masonry('layout');
+
+
+
+        }
+
+
+    </script>
+
+}

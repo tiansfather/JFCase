@@ -1,0 +1,211 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+	@section styles{
+		@*<link href="//at.alicdn.com/t/font_883593_dtzlvlvoj2d.css" rel="stylesheet" />在线地址*@
+		<style>
+			/*来自原来的rcss样式------------开单任务 */
+			.layui-card-body {
+				padding: 0;
+			}
+
+
+			/*-----------------------------------------------------------*/
+            #my-card-search {
+                width: calc(100% - 190px);
+                z-index: 999;
+                display: inline-block;
+                position: absolute;
+                left: 15px;
+                top: 13px;
+            }
+
+			#ProcessTask {
+				margin: 0;
+			}
+
+			.layui-table-tool {
+				height: 80px;
+			}
+			/*--------------------------------------------------------------------------------*/
+			th {
+				font-family: Arial,Microsoft YaHei,Pingfang SC,Helvetica Neue,Helvetica,"sans-serif";
+				font-weight: bold !important;
+				font-size: 13px !important;
+			}
+
+			.xm-form-select .xm-cz-group {
+				/*max-width: 280px !important;*/
+			}
+			/*--------------------------------------------合计行高度-------------------------------*/
+			/*html, body, .layui-fluid, .layui-anim, .layui-card, .layui-form {
+				height: 100%;
+				box-sizing: border-box;
+			}
+
+			.layui-card {
+				overflow: hidden;
+			}*/
+			/*---下拉框高度塌陷----*/
+			.status-first .layui-form-selected dl {
+				min-height: 264px;
+			}
+
+			.status-other .layui-form-selected dl {
+				min-height: 156px;
+			}
+            .my-bg-green {
+                background: #5FB878;
+            }
+            .form-title {
+                color: #3788ff;
+                float: right;
+                margin:0;
+                margin-top:9px;
+            }
+            /*.form-title span {
+                display: inline-block;
+                width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }*/
+		</style>
+	}
+}
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<table id="ProcessTaskProcessor" lay-filter="ProcessTaskProcessor" class="layui-table "></table>
+	</div>
+</div>
+
+
+@section scripts{
+
+
+	<script type="text/html" id="tableSearchTool">
+		<div></div>
+
+	</script>
+
+	<script>
+		var oriWhereStr = "1=1";
+		window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhereStr, whereFilter: oriWhereStr };
+        //var currentFilter = {};
+		config.ready = function () {
+				window.ProcessTaskProcessor = [{
+                    elem: '#ProcessTaskProcessor',
+					toolbar: '#tableSearchTool',
+					defaultToolbar: ['filter', 'print', 'exports'],
+					cellMinWidth: '80',
+					height: 'full-51',
+                    url: '/api/services/app/ProcessTaskProcessor/GetPageResult',
+					where: { where: oriWhereStr },
+					page: { limit: 50, limits: [50, 100, 200, 500] },
+                    id: 'ProcessTaskProcessor',
+					even: true,
+					totalRow: true,
+					done: config.onTableDone,
+					initSort: { field: 'Id', type: 'desc' }
+                },
+                [[
+                    { align: 'center', type: 'checkbox', fixed: 'left', totalRowText: '合计', gudinglie: false },
+                    { align: 'center', width: 135, field: 'tenantName', title: '客户', sort: true, filterField: 'Tenant.Name' },
+                    { align: 'center', width: 135, field: 'kaiDate', sort: true, title: '开单时间', filterField: 'KaiDate' },
+                    { align: 'center', width: 135,field: 'processSN', title: '单号', sort: true, filterField: 'ProcessSN' },
+					{ align: 'center', field: 'partName', title: '零件', sort: true, filterField: 'Part.PartName' },
+					{ align: 'center',width: 135, field: 'partSN', title: '零件编号', sort: true, filterField: 'Part.PartSN' },
+					{ align: 'center',width: 135, field: 'partSpecification', title: '规格', sort: true, filterField: 'Part.PartSpecification' },
+					{ align: 'center', field: 'partNum', sort: true, title: '数量', totalRow: true },
+					{ align: 'center', field: 'projectSN', title: '模具编号', sort: true, filterField: 'Part.Project.ProjectSN' },
+					{ align: 'center', field: 'processTypeName', title: '工序', sort: true, filterField: 'ProcessType.ProcessTypeName' },
+					{ align: 'center', width: 100, field: 'appointDate',  sort: true, title: '计划开始', filterField: 'AppointDate' },
+					{ align: 'center', width: 100, field: 'requireDate',  sort: true, title: '计划结束', filterField: 'RequireDate' },
+                    { align: 'center', field: 'feeType', templet: '#feeTypeTolbar', title: '计价方式', sort: true },
+                    { align: 'center', field: 'price', title: '单价', sort: true},
+                    {align: 'center', field: 'jobFee', title: '初始金额', sort: true, totalRow: true},
+                    {align: 'center', field: 'fee', title: '实际金额', sort: true, totalRow: true},
+					{ align: 'center', field: 'feeFactor', title: '长度/数量/重量/平方', sort: true },
+					{ align: 'center', field: 'files', title: '最近报工图片', sort: true, templet: '#filesImg' },
+					{ align: 'center', width: 135, field: 'startDate', sort: true, title: '上机时间', filterField: 'StartDate' },
+					{ align: 'center', width: 135, field: 'endDate', sort: true, title: '下机时间', filterField: 'EndDate' },
+					{ align: 'center', field: 'actualHours', sort: true, title: '实际工时', filterField: 'ActualHours', totalRow: true },
+				]]]
+            layuiExt.reRender('ProcessTaskProcessor')
+			}
+
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+            })
+        }
+        function doSearch() {
+			var where = { where: filterObject.oriWhere + andWhereStr, tableFilter: JSON.stringify(filterObject.tableFilter) };
+			
+			var projectsn = $('#projectSNSearch').val();//输入框的查询
+			if (projectsn) {
+				//where.where += " and Part.Project.ProjectSN.Contains(\"" + projectsn + "\")";
+				where.where += " and (Part.Project.ProjectSN.Contains(\"" + projectsn + "\") or (ProcessSN!=null and ProcessSN.Contains(\"" + projectsn + "\")) )";
+            }
+            if (!(app.orderObj.showIndex == 0)) {
+                where.where += ' and ProcessTaskStatus!=0 ';
+
+                var procesTaskStatus = currentFilter.processTaskStatus;
+                if (procesTaskStatus) {
+                    if (procesTaskStatus == 0) {
+                        where.where += ' and Status.Contains("SendProcessor") ';
+                    } else{
+                        where.where += ' and ProcessTaskStatus=' + procesTaskStatus;
+                    }
+                } 
+                var processTaskStatusOther = currentFilter.processTaskStatusOther;
+                if (OtherStatusObj.arr[processTaskStatusOther]) {
+                    where.where += ' and ' + OtherStatusObj.arr[processTaskStatusOther];
+                }
+                //switch (processTaskStatusOther) {
+                //    //延期上机
+                //    case "1":
+                //        //where.where += ' and ((  TIMESTAMPDIFF(DAY, AppointDate, (case when StartDate is NULL then NOW() else StartDate END))>0 and AppointDate is not null) )';
+
+                //        where.where += ' and  (Convert.ToDateTime(AppointDate)-Convert.ToDateTime(StartDate==null?DateTime.Now.ToString():StartDate.ToString())).TotalDays<0  and AppointDate!=null';
+                //        break;
+                //    //超期完成
+                //    case "2":
+                //        //where.where += ' and ((  TIMESTAMPDIFF(DAY, RequireDate, (case when EndDate is NULL then NOW() else EndDate END)) >0  and RequireDate is not null) )';
+
+                //        where.where += ' and (Convert.ToDateTime(RequireDate)-Convert.ToDateTime(EndDate==null?DateTime.Now.ToString():EndDate.ToString())).TotalDays<0  and RequireDate!=null';
+
+                //        break;
+                //    //延期工时
+                //    case "3":
+                //        //where.where += ' and ((  TIMESTAMPDIFF(HOUR, EstimateHours, (case when EndDate is NULL then NOW() else EndDate END)) >0 and EstimateHours is not null) )';
+
+                //        where.where += ' and (Convert.ToDateTime(EndDate==null?DateTime.Now.ToString():EndDate.ToString())-Convert.ToDateTime(StartDate==null?DateTime.Now.ToString():StartDate.ToString())).TotalHours>Convert.ToDouble(EstimateHours)  and EstimateHours!=null';
+                //        break;
+                //}
+  
+            } else {
+                where.where  +=' and ProcessTaskStatus=0';
+            }
+           
+
+
+			var processsn = $("input[name='processsn']").val();
+			if (processsn) {
+				where.where += ' and ProcessSN.Contains(\"' + processsn + '\") ';
+			}
+			filterObject.whereFilter = where.where;
+			console.log(where);
+			//layui.table.reload('ProcessTask', {
+			//    where: where
+
+			//})
+			ProcessTask[0].where = where;
+			filterObject.aShaiXuanDone = [];//清除已筛选的列
+			layuiExt.reRender('ProcessTask');
+
+			return false;
+		}
+		
+	</script>
+
+}

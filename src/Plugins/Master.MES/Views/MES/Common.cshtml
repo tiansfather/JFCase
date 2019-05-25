@@ -1,0 +1,92 @@
+﻿@* ------------------------------------表格中的报工图片-------------------------------- *@
+<script type="text/html" id="filesImg">
+	{{#
+	var filePaths=[];
+	if(d.files!=null){
+	var fileLength=d.files.length-1;
+	d.files.forEach(function(o){
+	filePaths.push(o.filePath)
+	})
+	}else{
+	@*filePaths=['/assets/images/noloaded.png'];*@
+	}
+	}}
+	<ul>
+		{{#  layui.each(filePaths, function(index, item){ }}
+		<li style="float:left;list-style:none;margin-right:5px;">
+			<img src="{{item+'?w=38' }}" layer-src="{{item}}?w=280" class="{{'item'+d.id}}" style="max-height:30px;max-width:60px" tips="<img src='{{item}}?w=280'/>" lay-background="#fff" lay-direction="4" lay-area="280" onclick="layuiExt.fLayerImg(this,'{{item}}?')" />
+		</li>
+		{{#  }); }}
+	</ul>
+</script>
+@* ------------------------------------表格中的操作查看-------------------------------- *@
+
+@* -------------------------------表格中的零件--------------------------------- *@
+<script type="text/html" id="partNameToolbar">
+	<span>
+		{{d.partName}}({{d.partSN}})
+	</span>
+</script>
+@* ---------------------计价方式------------------ *@
+<script type="text/html" id="feeTypeTolbar">
+	{{#
+    var type;
+    var aFeeType={0:'承包',1:'按时间',2:'按平方',3:'按长度',4:'按重量',5:'按数量'};
+    type=aFeeType[d.feeType];
+	}}
+	{{type}}
+</script>
+@* -----------------------根据单号跳转至JGKD---------------------------- *@
+
+<script type="text/html" id="prcSN2JGKD">
+    {{#  if(abp.auth.isGranted('Menu.MES.Tenancy.' + 'JGKD')){ }}
+    <a class="templet-a" onclick="top.layui.index.openTabsPage('/Home/Show?name=../MES/JGKD&taskid=' + {{d.id}}, '加工开单')">{{d.processSN||''}}</a>
+    {{#  }else{ }}
+    <span>{{d.processSN||''}}</span>
+    {{#}}}
+</script>
+@*---------------------基本设置中的定义零件名称标准库库件---------------------------*@
+<script>
+	Vue.component('lay-standardpart', {
+		template: '#layStandardPart',
+		props: ['columnInfo', 'value'],
+		data: function () {
+			return {
+				newValue:this.value
+			}
+		},
+		created: function () {
+			console.log(this.value);
+		}
+    });
+    Vue.component('lay-JGKDReason', {
+        template: '#layJGKDReason',
+        props: ['columnInfo', 'value'],
+        data: function () {
+            return {
+                newValue: this.value
+            }
+        },
+        created: function () {
+            console.log(this.value);
+        }
+    });
+</script>
+<script type="text/x-template" id="layStandardPart">
+	<div class="layui-form-item">
+		<input type="hidden" :name="columnInfo.ColumnKey" :value="newValue"/>
+		<label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+		<div class="layui-input-block">
+			<a dataid="" buttonname="设定零件标准库" class="layui-btn layui-btn-sm" fornonerow="1" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/Setting/StandardPart" onclick="func.callModuleButtonEvent()" :tips="columnInfo.Tips">设定</a>
+		</div>
+	</div>
+</script>
+<script type="text/x-template" id="layJGKDReason">
+    <div class="layui-form-item">
+        <input type="hidden" :name="columnInfo.ColumnKey" :value="newValue" />
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            <a dataid="" buttonname="添加开单理由" class="layui-btn layui-btn-sm" fornonerow="1" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/Setting/JGKDReason" onclick="func.callModuleButtonEvent()" :tips="columnInfo.Tips">设定</a>
+        </div>
+    </div>
+</script>

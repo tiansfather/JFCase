@@ -1,0 +1,145 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "模具厂主页-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+  
+}
+
+<div id="app" style="height:100%;display:none;">
+    <!-- 容器 -->
+    <div class="logo-wrap"><img src="/assets/images/master-logo.png" alt="" class="logo-img"></div>
+    <div class="weui-tab">
+        <div class="weui-tab__bd">
+            <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+                <div class="content">
+                    <p class="my--tabbar__label">报工管理</p>
+                    <ul>
+                        <li v-for="item in reportUrl">
+                            <div class="content-daohang" :style="{background:item.bcolor}" @@click="toNewTag(item.url)">
+                                <i class="iconfont" :class="item.icon"></i>
+                                <span>{{item.name}}</span>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="tab2" class="weui-tab__bd-item">
+                <div class="content">
+                    <p class="my--tabbar__label">现场管理</p>
+                    <ul>
+                        <li v-for="item in scentUrl">
+                            <div class="content-daohang" :style="{background:item.bcolor}" @@click="toNewTag(item.url)">
+                                <i class="iconfont" :class="item.icon"></i>
+                                <span>{{item.name}}</span>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="tab3" class="weui-tab__bd-item">
+                <div class="content">
+                    <p class="my--tabbar__label">费用管理</p>
+                    <ul>
+                        <li v-for="item in costUrl">
+                            <div class="content-daohang" :style="{background:item.bcolor}" @@click="toNewTag(item.url)">
+                                <i class="iconfont" :class="item.icon"></i>
+                                <span>{{item.name}}</span>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="weui-tabbar">
+            <a href="#tab1" class="weui-tabbar__item weui-bar__item--on">
+                <div class="weui-tabbar__icon">
+
+                </div>
+                <p class="weui-tabbar__label">报工管理</p>
+            </a>
+            <a href="#tab2" class="weui-tabbar__item">
+                <div class="weui-tabbar__icon">
+
+                </div>
+                <p class="weui-tabbar__label">现场管理</p>
+            </a>
+            <a href="#tab3" class="weui-tabbar__item">
+                <div class="weui-tabbar__icon">
+
+                </div>
+                <p class="weui-tabbar__label">费用管理</p>
+            </a>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+@section scripts{
+
+
+    <script>
+        //移动端初始化，以iphone6为基础设计
+        var scale = 1 / window.devicePixelRatio;
+        document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width,initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+        document.documentElement.style.fontSize = document.documentElement.clientWidth / 7.5 + 'px';
+
+
+        var reportUrl = [
+            { name: "加工开单", url: "/MES/JGKD", icon: "icon-icon-kaidan", bcolor: "#5677FC" },
+            //{ name: "开单任务", url: "/MES/Project", icon: "icon-task-icon", bcolor: "#5677FC" },
+            { name: "开单任务", url: "/MES/ProcessTaskWechat/", icon: "icon-renwu", bcolor: "#5677FC" },
+            //{ name: "开单审核", url: "", icon: "icon-icon-test", bcolor: "#cb732b"  },
+            { name: "报工记录", url: "/MES/ProcessTaskReport", icon: "icon-baogong-", bcolor: "#5677FC" }];
+
+        if (!(abp.setting.getBoolean("MES.MustConfirmProcess") && !abp.auth.isGranted('Module.JGKD.Button.ConfirmProcess'))) {
+            //审核模式有审核权限
+            reportUrl.push({ name: "开单审核", url: "/MES/verifyWechat", icon: "icon-pinpaishejichuangxintiyan", bcolor: "#5677FC" })
+        }
+        var scentUrl = [
+            { name: "我的设备", url: "/MES/Equipment", icon: "icon-shebei", bcolor: "#5677FC" },
+            { name: "零件工艺", url: "/MES/PartTask", icon: "icon-workflow", bcolor: "#5677FC" },
+          //  { name: "交接班", url: "", icon: "icon-shouyintubiaojiaojieban", bcolor: "#5677FC" }
+        ];
+        var costUrl = [
+            { name: "加工询价", url: "", icon: "icon-zaixianxunjia", bcolor: "#5677FC" },
+            { name: "回单审核", url: "/MES/ProcessTask/factory", icon: "icon-huidan", bcolor: "#5677FC" },
+            { name: "加工对账", url: "", icon: "icon-duizhangdan", bcolor: "#5677FC" }];
+        costUrl = [];
+        var app = new Vue({
+            el: '#app',
+            data: {
+                reportUrl: reportUrl,
+                scentUrl: scentUrl,
+                costUrl: costUrl
+            },
+            methods: {
+
+                toNewTag: function (url) {
+                    window.location.href = url;
+                    return false;
+                }
+            },
+            created: function () {
+
+
+            },
+            mounted: function () {
+                $("#app").css("display", "block");
+
+            }
+        })
+    </script>
+
+}

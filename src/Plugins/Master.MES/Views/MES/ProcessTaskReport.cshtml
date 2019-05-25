@@ -1,0 +1,739 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+
+@{
+    @section styles{
+        @*<link href="/Views/MES/Rcss.css" rel="stylesheet" />*@
+        <style>
+            /*来自原来的rcss样式 */
+            .layui-card-body {
+                padding: 0;
+            }
+
+            .grid-item {
+                width: 280px;
+                margin-bottom: 10px;
+            }
+
+            .my-grid {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .flow-wrap {
+                padding: 20px;
+            }
+
+            .disnone {
+                display: none;
+            }
+
+            .disblock {
+                display: block;
+            }
+
+            .error-div {
+                box-sizing: border-box;
+                width: 240px;
+                height: 180px;
+                border: 1px solid #939393;
+            }
+
+            .over-time-div {
+                box-sizing: border-box;
+                border: 2px solid red;
+                width: 244px;
+            }
+
+            .append-btn-wrap {
+                text-align: center;
+                height: 350px;
+                line-height: 250px;
+            }
+            .dom-append-i {
+                font-size: 30px;
+                background: #fff;
+            }
+
+            .c-card__name-span {
+                font-size: 12px;
+                float: right;
+                margin-right: 15px;
+                border: 1px solid;
+                padding: 0 3px;
+                line-height: 23px;
+            }
+            /*---------------------------------------------------*/
+            .my-search {
+                display: flex;
+                align-items: center;
+            }
+
+            .my-switch-mode_wrap {
+                position: fixed;
+                top: 25px;
+                right: 100px;
+                z-index: 9999;
+                transition: all .3s;
+            }
+
+                .my-switch-mode_wrap:hover {
+                    top: 22px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                }
+
+            .c-card {
+                background-color: white;
+                border-radius: 2px;
+                box-shadow: 0 0 4px rgba(0, 0, 0, 0.12);
+                height: auto;
+                margin-top: 20px;
+                min-height: 344px;
+                width: 240px;
+            }
+
+            .c-card__thumbnail {
+                padding-bottom: 10px;
+            }
+
+            .c-card .c-card__name {
+                color: #717171;
+                font-size: 18px;
+                font-weight: 400;
+                line-height: 27px;
+                padding: 5px 0 0 20px;
+            }
+
+            .c-card .c-card__location {
+                color: #acaaaa;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 27px;
+                padding-left: 18px;
+            }
+
+            .c-card .c-card__description {
+                color: #acaaaa;
+                font-size: 13px;
+                font-weight: 400;
+                line-height: 16px;
+                padding: 10px 0 20px 20px;
+            }
+
+            .c-card .c-card__rating {
+                padding: 0 0 15px 15px;
+            }
+
+            .c-unit {
+                padding-left: 18px;
+                color: #989898;
+                font-size: 12px;
+                line-height: 18px;
+            }
+
+                .c-unit p {
+                    line-height: 18px;
+                    white-space: nowrap;
+                    display: inline-block;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+            .c-unit-p1 {
+                width: 71%;
+            }
+
+            .c-unit-p2 {
+                width: 25%;
+            }
+
+            .yanqi-msg {
+                display: none;
+            }
+
+                .yanqi-msg div {
+                    border: 2px solid red;
+                    box-sizing: border-box;
+                    width: 30px;
+                    height: 24px;
+                    margin-right: 5px;
+                    margin-left: 10px;
+                    float: left;
+                }
+
+                .yanqi-msg span {
+                    font-size: 12px;
+                }
+
+            .receiptaudit-wrap {
+                cursor: pointer;
+                background: rgba(191, 191, 191, 0.1);
+            }
+
+            .more3 { /*上传时间和报工时间超过三分钟*/
+                color: black;
+                font-weight: 600;
+            }
+            .watermark-wrap {
+                width: 240px;
+                height: 100%;
+                border: none;
+                position: absolute;
+                background-repeat: no-repeat;
+            }
+        </style>
+    }
+}
+@section MainBody{
+    <div class="my-inline-block my-switch-mode_wrap">
+        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" onclick="switchMode()">切换模式</button>
+    </div>
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="LAY-app-message-btns">
+                <form class="layui-form layui-form-pane " onsubmit="doSearch(); return false;">
+                    <div class="my-search">
+                        <div class="my-inline-block">
+                            @*<button class="layui-btn  my-search-btn" type="button" tips="高级查询" onclick="fReportSearch()">查询</button>*@
+                            <button fornonerow="1" buttonname="高级查询" class="layui-btn layui-btn-sm" type="button" tips="高级查询"
+                                    params="{&quot;area&quot;: [&quot;90%&quot;, &quot;90%&quot;],&quot;btn&quot;:[&quot;查询&quot;,&quot;关闭&quot;],&quot;resize&quot;: false}"
+                                    lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/ReportSearch&modelname=ProcessTaskReport&pagename=ProcessTaskReport" onclick="func.callModuleButtonEvent()">
+                                高级查询
+                            </button>
+                        </div>
+                        @*@if (await PermissionChecker.IsGrantedAsync("Module.ProcessTaskReport.Button.Del"))
+                        {
+                            <div class="my-inline-block">
+                                <button class="layui-btn layui-btn-danger layui-btn-sm" type="button" buttonname="删除" modulekey="ProcessTaskReport" params="" lay-event="Delete" confirmmsg="确认删除？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.processTaskReport.deleteEntity" onclick="func.callModuleButtonEvent()">删除</button>
+                            </div>
+                        }*@
+                        <div class="my-inline-block">
+                            <div class="layui-input-inline">
+                                <input type="text" id="projectSNSearch" autocomplete="off" class="layui-input" placeholder="模具编号/单号">
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="deleted"  lay-verify="deleted">
+                                    <option value="">请选择</option>
+                                    <option value="false">有效</option>
+                                    <option value="true">失效</option>
+                                </select>
+                            </div>
+                            <button class="layui-btn  layui-btn-sm" type="button" onclick="doSearch()">查询</button>
+                        </div>
+
+                        <div class="my-inline-block yanqi-msg">
+                            <div></div>
+                            <span>延期上机，延期完工</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class=" disblock table-wrap">
+                <table id="ProcessTaskReport" lay-filter="ProcessTaskReport" class="layui-table "></table>
+            </div>
+
+            <div class="disnone flow-wrap">
+                <div class="grid my-grid" style="">
+                </div>
+                <div class="append-btn-wrap">
+                    <i class="dom-append-i layui-icon layui-icon-loading-1 layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+                    <span class="dom-append-span" style="display:none">已无更多内容</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/lib/masonry/masonry.min.js"></script>
+    <script src="~/lib/masonry/imagesLoaded.min.js"></script>
+    <script type="text/html" id="prcSN2JGKDReport">
+        {{#
+        }}
+        <a class="templet-a" onclick="top.layui.index.openTabsPage('/Home/Show?name=../MES/JGKD&taskid=' + {{d.taskId}}, '加工开单')">{{d.processSN||''}}</a>
+    </script>
+    <script type="text/html" id="toolbar">
+
+    </script>
+    <script type="text/html" id="test-table-toolbar-toolbarDemo">
+
+
+    </script>
+    <style>
+
+    </style>
+    <script type="text/html" id="exhibition">
+        {{#
+            layui.each(d, function(index, item){
+
+        }}
+        <div class="grid-item">
+            {{#if(item.isDeleted){}}
+            <div class="watermark-wrap"><img src="" class="deleted" alt="失效" /></div>
+            {{#}}}
+            <div class="c-card">
+                <div class="c-card__thumbnail">
+                    {{# if(item.overtime){ }}
+                    <div class="over-time-div">
+                        {{# }else{  }}
+                        <div>
+                            {{# } }}
+                            <img src="{{item.file}}?w=240" width="240" onclick="layuiExt.fLayerImg('','{{item.file}}')" />
+
+                        </div>
+                        @*<img src="img/thumbnail-2.png" width="240" height="243" alt="thumbnail">*@
+                        @*file: m.filePath,
+                    processSN: n.processSN,
+                    partName: n.partName + '(' + n.partSN + ')',
+                    partSpecification: n.partSpecification,
+                    partNum: n.partNum,
+                    projectSN: n.projectSN,
+                    unitName: n.unitName,
+                    processTypeName: n.processTypeName,
+                    reporterName: n.reporterName,
+                    reportType: n.reportType,
+                    reportTime: n.reportTime,
+                    remarks: n.remarks
+                         {{item.partSpecification}}{{item.partNum}}
+                        *@
+                    </div>
+
+                    {{# if(item.reportType=='下机'){  }}
+                    <div dataid="{{item.taskId}}" buttonname="回单审核" class="receiptaudit-wrap" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;101%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/Receiptaudit" onclick="func.callModuleButtonEvent($(this))">
+                        {{# }else{ }}
+                        <div>
+                            {{# } }}
+                            <div class="c-card__name">
+                                <span>模具编号:{{item.projectSN}}</span>
+                                <span class="c-card__name-span" title="{{item.reportType}}">{{item.reportType}}</span>
+                            </div>
+                            <p class="c-card__location"><span class="glyphicon glyphicon-map-marker" title="{{item.partName}}">零件:{{item.partName}}</span></p>
+                            <div class="c-unit">
+                                <p class="c-unit-p1" title="{{item.projectCharger||''}}">模具组长：{{item.projectCharger||''}}</p>
+                            </div>
+                            <div class="c-unit">
+                                <p class="c-unit-p1" title="{{item.unitName||''}}">{{item.unitName||''}}</p>
+                                <p class="c-unit-p2" title="{{item.processTypeName}}">{{item.processTypeName}}</p>
+                            </div>
+                            <div class="c-unit" style="color: #000;">
+                                <p class="c-unit-p1" title="{{item.reportTime}}">{{item.reportTime}}</p>
+                                <p class="c-unit-p2" title="{{item.reporterName}}">{{item.reporterName}}</p>
+                            </div>
+                            <div class="c-card__description">
+                                <p>
+                                    {{item.remarks}}
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                {{#  }); }}
+</script>
+    <script type="text/html" id="reportType">
+        {{#if(!d.isDeleted){}}
+        <span>{{d.reportType}}</span>
+        {{#}else{}}
+        <span>{{d.reportType}}<span style="color:red;">(失效)</span></span>
+        {{#}}}
+    </script>
+    <script type="text/html" id="editTb">
+        @if (await PermissionChecker.IsGrantedAsync("Module.ProcessTaskReport.Button.Del"))
+        {
+            <a dataid="{{d.id}}" buttonname="撤销" modulekey="ProcessTaskReport" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="Delete" confirmmsg="确认撤销报工记录?" buttonactiontype="Ajax" buttonactionurl="abp.services.app.processTaskReport.deleteEntity" onclick="func.callModuleButtonEvent()">撤销</a>
+        }
+
+    </script>
+    <script>
+        //高级查询设置
+        var SearchData = [];
+        var andWhereStr = "";
+        var page = 1;//当前打开页
+        var PageCount;//共有n页
+        var getHtml;
+        var $grid;
+        var firstSwitchFlag = true;
+        var searchFlag = false;
+        var addEd = false;
+
+        var manyState = layui.data('manyState');
+
+
+        var sDelImgUrl = (function() {
+            function setWaterMark(txt, w, h, color = "red") {
+                var tpl = '<canvas id = "watermark" width = "130px" height = "100px" style="display:none;" ></canvas>';
+                $(document.body).append(tpl);
+                var cw = $('#watermark')[0];
+                var ctx = cw.getContext("2d");   //返回一个用于在画布上绘图的环境
+                ctx.clearRect(0, 0, ctx.width, ctx.height);  //绘制之前画布清除
+                ctx.font = "20px 黑体";
+                ctx.rotate(-20 * Math.PI / 180);
+                ctx.fillStyle = color;
+                ctx.fillText(txt, 20, 70);
+                ctx.rotate('20*Math.PI/180');  //坐标系还原
+
+                var tplr = '<canvas id = "repeat-watermark" style="display:none;"></canvas>';
+                $(document.body).append(tplr);
+                var crw = $('#repeat-watermark')[0];
+                crw.width = w;
+                crw.height = h;
+                ctxr = crw.getContext("2d");
+                ctxr.clearRect(0, 0, crw.width, crw.height);  //清除整个画布 
+                var pat = ctxr.createPattern(cw, "repeat");    //在指定的方向上重复指定的元素  
+                ctxr.fillStyle = pat;
+                ctxr.fillRect(0, 0, crw.width, crw.height);
+                return crw.toDataURL();
+            }
+            return setWaterMark("失效", 260, 300, 'red')
+        })();
+        function setDeletedImg() {
+            $('.watermark-wrap').css({ 'background-image': 'url(' + sDelImgUrl + ')', 'background-color': 'rgba(244, 240, 240, .3)' })
+
+        }
+        function getData(fn, searchVal) {
+            var where = "1=1";
+
+            if (searchVal) {
+                var projectsn = searchVal.projectsn;
+                var isDeleted = searchVal.isDeleted;
+                if (projectsn) {
+                    where += " and (ProcessTask.Part.Project.ProjectSN.Contains(\"" + projectsn + "\") or ProcessTask.ProcessSN.Contains(\"" + projectsn + "\") )";
+                }
+                if (isDeleted) {
+                    where += " and (isDeleted=" + isDeleted + ")";
+                }
+            }
+            //    var where = "(ProcessTask.Part.Project.ProjectSN.Contains(\"" + searchVal + "\") or ProcessTask.ProcessSN.Contains(\"" + searchVal + "\") )";
+                
+            //} else {
+            //    var where = '1=1'
+            //}
+            var options = { limit: 11, page: page, where: where };
+            page++;
+            abp.services.app.processTaskReport.getPageResult(options).done(function (data) {
+                if (!PageCount) {
+                    PageCount = Math.ceil(data.count / options.limit);
+                }
+                console.log(data);
+                //var aExhibition = data.data;
+                var aExhibition = [];
+                function fGetStatus(type, reporttime, planAppoint, planrequire) {
+                    function fJudgeOvertime(report, plan) {
+                        if (plan) {
+                            console.log(plan)
+                            var report = report.split(' ')[0].split('-');
+                            var plan = plan.split('-');
+                            if (report[0] > plan[0]) {
+                                return true;
+                            } else if (report[0] >= plan[0] && report[1] > plan[1]) {
+                                return true;
+                            } else if (report[0] >= plan[0] && report[1] >= plan[1] && report[2] > plan[2]) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                    if (type == '上机') {
+                        return fJudgeOvertime(reporttime, planAppoint)
+                    } else if (type == '下机') {
+                        return fJudgeOvertime(reporttime, planrequire)
+                    } else {
+                        return false;
+                    }
+                }
+                data.data.forEach(function (n) {
+                    n.files.forEach(function (m) {
+                        //aExhibition.file = m.filePath;
+                        //aExhibition.partName = n.partName + '(' + n.partSN + ')';
+                        //aExhibition.overtime = fGetStatus(n.reportType, n.reportTime, n.appointDate, n.requireDate);
+                        aExhibition.push({
+                            file: m.filePath,
+                            processSN: n.processSN,
+                            partName: n.partName + '(' + n.partSN + ')',
+                            partSpecification: n.partSpecification,
+                            partNum: n.partNum,
+                            projectSN: n.projectSN,
+                            unitName: n.unitName,
+                            processTypeName: n.processTypeName,
+                            reporterName: n.reporterName,
+                            reportType: n.reportType,
+                            reportTime: n.reportTime,
+                            remarks: n.remarks,
+                            overtime: fGetStatus(n.reportType, n.reportTime, n.appointDate, n.requireDate),
+                            taskId: n.taskId,
+                            isDeleted: n.isDeleted,
+                            projectCharger: n.projectCharger
+                        })
+                    })
+                })
+                console.log(aExhibition);
+                var getTpl = exhibition.innerHTML;
+                layui.laytpl(getTpl).render(aExhibition, function (html) {
+                    getHtml = html;
+                    if (typeof fn == 'function') {
+                        fn();
+                    }
+                    //
+                });
+            });
+        };
+        function fImgError() {
+            $("img").error(function () {
+                console.log('error')
+                $(this).parent().addClass('error-div')
+                $(this).hide();
+            });
+        }
+
+        function addMore(searchVal) {
+            if (searchVal) {
+                getData(sclBotCallBack, searchVal);
+            } else {
+                getData(sclBotCallBack);
+            }
+            function sclBotCallBack() {
+                var $items = $(getHtml);
+                $grid.append($items);
+                fImgError();
+                $grid.imagesLoaded(function () {
+                    $grid.masonry('appended', $items);
+                    setDeletedImg();
+                    addEd = false;
+                });
+            }
+        }
+        var judiNum = 200;
+        function switchMode() {
+            $('.flow-wrap').toggle();
+            $('.table-wrap').toggle();
+            $('.yanqi-msg').toggle();
+            layui.data('manyState', { key: 'reportState', value: $(".table-wrap").is(":hidden") });
+
+
+            if (firstSwitchFlag) {
+                getData(configCallBack);
+                function configCallBack() {
+                    $('.grid').append(getHtml);
+                    fImgError();
+                    $grid = $('.grid').imagesLoaded(function () {
+                        $('.grid').masonry({
+                            itemSelector: '.grid-item',
+                            columnWidth: 280
+                        });
+                        setDeletedImg();
+                    });
+                }
+                firstSwitchFlag = false;
+            }
+
+            //if (aExhibitionED.length == 12) {
+            //    setTopLeft();
+            //}
+            if ($(".table-wrap").is(":hidden")) {
+                function fWindowScroll() {
+                    if ($(document).scrollTop() <= 0) {
+                        //console.log("滚动条已经到达顶部为0");
+                    }
+                    if ($(document).scrollTop() >= $(document).height() - $(window).height() - judiNum) {
+                        if (page < PageCount) {
+                            if (!addEd) {
+                                if (searchFlag) {
+                                    addMore($('#projectSNSearch').val());
+                                } else {
+                                    addMore();
+                                }
+                                addEd = true;
+                            }
+                            setTimeout(function () { }, 2000);
+
+                        } else {
+                            clearTimeout();
+                            function fUnHad() {
+                                $('.dom-append-i').hide(100);
+                                $('.dom-append-span').show(100);
+                            }
+                            var a = setTimeout(fUnHad, 2000)
+
+                        }
+                    }
+                }
+                $(window).scroll(fWindowScroll);
+            } else {
+                $(window).unbind("scroll")
+            }
+
+        }
+
+
+        var tenantId = $.getUrlParam("tenantId");
+        var oriWhereStr = tenantId ? "tenantId=" + tenantId : "1=1";
+
+        window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhereStr, whereFilter: oriWhereStr };
+        var currentFilter = {};
+        config.ready = function () {
+            //在localstroge中存储是图片流模式:false还是表格模式:true
+            if (manyState && manyState.reportState) {//当首次进入为图片流，则切换模式
+                switchMode();
+                //layui.data('manyState', {key: 'reportState', value: true });
+            } else {
+                layui.data('manyState', {
+                    key: 'reportState'
+                    , value: false
+                });
+            }
+
+            var table = layui.table;
+            var form = layui.form;
+            form.on('select(deleted)', function (data) {
+                console.log(data.value);
+            });      
+            layui.table.on('edit(ProcessTaskReport)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                //layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+                if (!value.trim()) {
+                    layer.msg("输入不能为空", { icon: 5, anim: 6 });
+                    return false;
+                }
+                abp.message.confirm(L('确认修改?'), function () {
+                    func.runAsync(abp.services.app.processTaskReport.updateField(data.id, field, value, {
+                        error: function () {
+                            layuiExt.reRender('ProcessTaskReport');
+                        }
+                    }).done(function () {
+                        layer.msg('更新成功');
+                        layuiExt.reRender('ProcessTaskReport');
+                    }));
+                })
+
+            });
+            table.on('sort(ProcessTaskReport)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                //console.log(obj.field); //当前排序的字段名
+                //console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+                //console.log(this); //当前排序的 th 对象
+
+                //尽管我们的 table 自带排序功能，但并没有请求服务端。
+                //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
+                var orderField = obj.field;
+                var column = window.ProcessTaskReport[1][0].filter(function (o) { return o.field == orderField })[0];
+                if (column && column.filterField) {
+                    orderField = column.filterField;
+                }
+                //设置参数
+                var option = window.ProcessTaskReport[0];
+                option.where.orderField = orderField;
+                option.where.ordertype = obj.type;
+                option.initSort = obj;
+                //table.reload('ProcessTask', {
+                //	initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                //	, where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+                //		orderfield: orderField,
+                //		ordertype: obj.type
+                //	}
+                //});
+                layuiExt.reRender('ProcessTaskReport');
+            });
+            window.ProcessTaskReport = [{
+                elem: '#ProcessTaskReport',
+                defaultToolbar: ['filter', 'print', 'exports'],
+                cellMinWidth: '80',
+                where: { where: oriWhereStr },
+                page: { limit: 20, limits: [20, 50, 100, 200] },
+                height: 'full-96',
+                url: '/api/services/app/ProcessTaskReport/GetPageResult',
+                page: true,
+                id: 'ProcessTaskReport',
+                even: true,
+                done: config.onTableDone,
+                initSort: { field: 'Id', type: 'desc' }
+            }, [[
+                { align: 'center', type: 'checkbox', fixed: 'left', fixed: 'left', gudinglie: false },
+                    { align: 'center', field: 'processSN', templet: '#prcSN2JGKDReport', width: 135, title: '单号', sort: true, filterField: 'ProcessTask.ProcessSN' },
+                //{ align: 'center', field: 'partName', toolbar: '#partNameToolbar', title: '零件', sort: true, filterField: 'ProcessTask.Part.PartSN' },
+                { align: 'center', field: 'partName', title: '零件', sort: true, filterField: 'ProcessTask.Part.PartName' },
+                { align: 'center', field: 'partSN', title: '零件编号', sort: true, filterField: 'ProcessTask.Part.PartSN' },
+                { align: 'center', field: 'partSpecification', title: '规格', sort: true, filterField: 'ProcessTask.Part.PartSpecification' },
+                { align: 'center', field: 'partNum', sort: true, title: '数量', width: 80 },
+                { align: 'center', field: 'projectSN', title: '模具编号', sort: true, filterField: 'ProcessTask.Part.Project.ProjectSN' },
+                { align: 'center', field: 'projectCharger', title: '模具组长', sort: true, filterField: 'ProcessTask.projectCharger' },
+                { align: 'center', field: 'unitName', title: '加工点/单位', sort: true, filterField: 'ProcessTask.Supplier.UnitName' },
+                { align: 'center', field: 'processTypeName', title: '工序', sort: true, filterField: 'ProcessTask.ProcessType.ProcessTypeName' },
+                { align: 'center', field: 'reporterName', title: '报工人', sort: true, width: 80, filterField: 'Reporter.Name', edit: 'text' },
+                { align: 'center', field: 'reportType', templet: '#reportType', title: '报工类型', sort: true, width: 80 },
+                {
+                    align: 'center', field: 'reportTime',width:150, title: '报工时间', templet: function (d) {
+                        var cls = judgeDate(d.reportTime.toString(), d.creationTime.toString()) ? 'more3' : ''
+                        return `<span class="${cls}">${new Date(d.reportTime).pattern('MM-dd HH:mm')}</span>`
+                    }, sort: true
+                },
+                {
+                    align: 'center', field: 'creationTime', width:150,title: '上传时间', sort: true, templet: function (d) {
+                        var cls = judgeDate(d.reportTime.toString(), d.creationTime.toString()) ? 'more3' : ''
+                        return `<span class="${cls}">${new Date(d.creationTime).pattern('MM-dd HH:mm')}</span>`
+                    }
+                },
+                { align: 'center', field: 'files', title: '报工图片', templet: '#filesImg' },
+                { align: 'center', field: 'remarks', title: '汇报内容', sort: true },
+                    { align: 'center', toolbar: '#editTb', title: '操作', width: '80', fixed: 'right', gudinglie: false }
+            ]]
+            ]
+            layuiExt.reRender('ProcessTaskReport');
+        };
+        function judgeDate(a, b) {
+            return Math.abs(new Date(a).getTime() - new Date(b).getTime()) / (60 * 1000) >= 3
+        }
+        function doSearch() {
+            var projectsn = $('#projectSNSearch').val();//搜索框内容
+            var delSVal=$('[name="deleted"]').val();
+            if ($(".table-wrap").is(":hidden")) {
+                if (projectsn) {
+                    layer.msg('展示模具编号为"' + projectsn + '"的报工信息');
+                }
+                page = 1;
+                firstSwitchFlag = true;
+                searchFlag = true;
+                PageCount = false;
+                $('.dom-append-i').show(100);
+                $('.dom-append-span').hide(100);
+
+                $('.grid .grid-item').remove();
+                addMore({ projectsn: projectsn, isDeleted: delSVal});
+                $grid.masonry('layout');
+            } else {
+                var where = filterObject.oriWhere;
+                if (projectsn) {
+                    //where += " and ProcessTask.Part.Project.ProjectSN.Contains(\"" + projectsn + "\")";
+                    where += " and (ProcessTask.Part.Project.ProjectSN.Contains(\"" + projectsn + "\") or ProcessTask.ProcessSN.Contains(\"" + projectsn + "\") )";
+                    console.log(where)
+                }
+                if (delSVal) {
+                    where += " and (isDeleted=" + delSVal+")";
+                }
+                //layui.table.reload('ProcessTaskReport', {
+                //    where: where
+
+                //})
+                ProcessTaskReport[0].where.where = where;
+                //filterObject.aShaiXuanDone = [];//清除已筛选的列
+                layuiExt.reRender('ProcessTaskReport');
+                return false;
+            }
+        }
+
+        //高级查询方法
+        function GJSearch() {
+            andWhereStr = func.makeQuery(SearchData);
+            var where = { where: filterObject.oriWhere + andWhereStr, tableFilter: JSON.stringify(filterObject.tableFilter) };
+            ProcessTaskReport[0].where = where;
+            layuiExt.reRender('ProcessTaskReport');
+
+        }
+    </script>
+
+}

@@ -1,0 +1,216 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("判例导入")</div>
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane" id="app">
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label">导入方式</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="importType" value="0" title="增量" checked="">
+                        <input type="radio" name="importType" value="1" title="覆盖">
+                    </div>
+                </div>
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label">导入模板</label>
+                    <div class="layui-input-block">
+                        <a href="~/Resource/Template.xlsx" style="line-height:35px;margin-left:20px;color:blue">点此下载模板</a>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">判例Excel</label>
+                        <div class="layui-input-inline" style="width:300px">
+                            <input type="text" v-model="excelFile" autocomplete="off" class="layui-input" lay-verify="required" readonly>
+                        </div>
+                        <div class="layui-input-inline">
+                            <button type="button" class="layui-btn layui-btn-normal" id="uploadBtn1">上传</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">判例原件</label>
+                        <div class="layui-input-inline" style="width:300px">
+                            <input type="text" v-model="sourceFile" autocomplete="off" class="layui-input" lay-verify="required" readonly>
+                        </div>
+                        <div class="layui-input-inline">
+                            <button type="button" class="layui-btn layui-btn-normal" id="uploadBtn2" :disabled="!excelFile" :class="{'layui-btn-disabled':!excelFile}">上传</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button style="display:none" lay-submit="" id="submitBtn" type="button"></button>
+                        <button class="layui-btn" type="button" @@click="doImport" :disabled="!excelFile||!sourceFile" :class="{'layui-btn-disabled':!excelFile||!sourceFile}">确定生效</button>
+                    </div>
+                </div>
+                <blockquote class="layui-elem-quote">数据预览</blockquote>
+            </form>
+
+            <table id="dataTable" lay-filter="dataTable"></table>
+
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/html" id="statusTpl">
+        {{#if(d.exist && app.importType==0){}}
+        <span class="layui-badge layui-bg-gray">忽略</span>
+        {{#} else if(!d.valid){}}
+        <span class="layui-badge ">{{d.errMsg}}</span>
+        {{#} else if(d.valid && !d.sourceFile){}}
+        <span class="layui-badge ">缺少判例原文件</span>
+        {{#}else{}}
+        <span class="layui-badge layui-bg-green">验证成功</span>
+        {{#}}}
+    </script>
+    <script type="text/html" id="sourceFileTpl">
+        <button class="layui-btn layui-btn-xs" onclick="showPdf('/temp/{{d.sourceFile}}','{{d.sourceSN}}')">查看</button>
+    </script>
+    <script>
+        var app;
+        config.ready = function () {
+            layui.form.on('radio', function (data) {
+                app.importType = data.value;
+                //切换导入模式后需要重新验证
+                if (app.excelFile) {
+                    app.validData();
+                }
+
+            });
+            app = new Vue({
+                data: {
+                    importType: 0,
+                    excelFile: '',
+                    sourceFile: '',
+                    pdfFiles: [],//压缩文件中的pdf文件
+                    tableData: []
+                },
+                el: '#app',
+                methods: {
+                    //开始导入
+                    doImport: function () {
+                        abp.message.confirm("确认生效本次导入数据?", function () {
+                            if (app.pdfFiles.length > 0) {
+                                abp.message.error("共多余" + app.pdfFiles.length + "个pdf文件,请先验证成功数据再行导入：" + app.pdfFiles.join(','));
+                                return false;
+                            }
+                            var valid = true;
+                            app.tableData.forEach(function (o) {
+                                if (!(o.exist && app.importType == 0)) {
+                                    if (!o.valid || !o.sourceFile) {
+                                        valid = false;
+                                        return;
+                                    }
+                                }
+                            })
+                            if (!valid) {
+                                abp.message.error("数据验证失败，请先修正数据再行导入");
+                                return false;
+                            }
+                            func.runAsync(abp.services.app.caseSource.doImport(app.excelFile, app.sourceFile, app.importType).done(function (data) {
+                                layer.alert('生效成功,本次共新增' + data.newCount + '个判例,修改了' + data.overrideCount + '个判例', function () {
+                                    location.reload();
+                                })
+                            }));
+                        })
+
+                    },
+                    //验证Excel文件数据并预览
+                    validData: function () {
+                        //读取excel内容
+                        func.runAsync(abp.services.app.caseSource.readExcel(app.excelFile).done(function (data) {
+                            console.log(data);
+                            data.forEach(function (o) {
+                                //Excel导入后默认是未导入原文件状态
+                                //if (o.status == 1) {
+                                //    o.status = 2;
+                                //    o.errMsg = "缺少判例原文件";
+                                //}
+                            })
+                            app.tableData = data;
+                            app.renderTable();
+                        }))
+                    },
+                    renderTable: function () {
+                        //构建表头
+                        var cols = [
+                            { field: '', title: '状态', templet: '#statusTpl', fixed: 'left', width: '200' },
+                            { field: 'sourceSN', title: '案号', width: '150' },
+                            { field: 'city', title: '城市', width: '150' },
+                            { field: 'court1', title: '一审法院', width: '150' },
+                            { field: 'court2', title: '二审法院', width: '150' },
+                            { field: 'anYou', title: '案由', width: '150' },
+                            { field: 'validDate', title: '生效日期', width: '150' },
+                            { field: 'sourceFile', title: '判例原件', width: '150', templet: '#sourceFileTpl' },
+                        ]
+
+                        layui.table.render({
+                            cellMinWidth: 100,
+                            limit: 10000,
+                            elem: '#dataTable'
+                            , cols: [cols]
+                            , data: app.tableData
+                        });
+                    }
+                },
+                mounted: function () {
+                    func.renderSimpleUpload('#uploadBtn1', {
+                        acceptMime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        exts: 'xlsx',
+                        temp: true, callback: function (res) {
+                            app.excelFile = res.filePath;
+                            app.validData();
+                        }
+                    })
+                    func.renderSimpleUpload('#uploadBtn2', {
+                        exts: 'zip|rar',
+                        temp: true, callback: function (res) {
+                            app.sourceFile = res.filePath;
+                            //读取压缩文件内容
+                            func.runAsync(abp.services.app.caseSource.readZip(res.filePath).done(function (data) {
+                                //和tableData对比
+                                app.pdfFiles = data;
+                                app.tableData.forEach(function (o) {
+                                    o.sourceFile = '';//先清空原有文件
+                                    var fileIndex = app.pdfFiles.indexOf(o.sourceSN + ".pdf");
+                                    console.log(fileIndex);
+                                    if (fileIndex >= 0) {
+                                        o.sourceFile = o.sourceSN + ".pdf";
+                                        app.pdfFiles.splice(fileIndex, 1);
+                                    }
+                                });
+                                console.log(app.tableData);
+                                //未能匹配到pdf文件的判例
+                                //var notMappedSources = app.tableData.filter(function (o) { return !o.sourceFile }).map(function (o) { return o.sourceSN });
+                                //if (notMappedSources.length > 0) {
+                                //    abp.message.error("共有" + notMappedSources.length + "个判例缺少pdf文件：" + notMappedSources.join(','));
+                                //}
+                                if (app.pdfFiles.length > 0) {
+                                    abp.message.error("共多余" + app.pdfFiles.length + "个pdf文件：" + app.pdfFiles.join(','));
+                                }
+                                app.renderTable();
+                            }))
+                        }
+                    })
+                    refresh();
+                }
+            })
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+            })
+        }
+    </script>
+}
+

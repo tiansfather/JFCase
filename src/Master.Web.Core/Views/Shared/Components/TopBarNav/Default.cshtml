@@ -1,0 +1,34 @@
+﻿@using Abp.Application.Navigation;
+@using Master.Menu;
+@using Abp.Extensions;
+@model IList<CustomUserMenuItem>
+@{
+    Layout = null;
+}
+
+<ul class="layui-nav layui-layout-left">
+    <li class="layui-nav-item layadmin-flexible" lay-unselect>
+        <a href="javascript:;" layadmin-event="flexible" tips="侧边伸缩">
+            <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+        </a>
+    </li>
+    @foreach (var item in Model)
+    {
+        <li class="layui-nav-item  menuitem" lay-unselect>
+            <a href="javascript:void(0)" tips="@item.DisplayName" onclick="index.showMenu('@item.Name')" menuName="@item.Name">
+                <i class="@item.Icon"></i>
+            </a>
+        </li>
+
+    }
+
+    <li class="layui-nav-item" lay-unselect>
+        <a href="javascript:;" layadmin-event="refresh" tips="刷新">
+            <i class="layui-icon layui-icon-refresh-3"></i>
+        </a>
+    </li>
+
+    <li class="layui-nav-item layui-hide-xs" lay-unselect="">
+        <input type="text" placeholder="搜索..." autocomplete="off" class="layui-input layui-input-search" layadmin-event="serach" lay-action="template/search.html?keywords=">
+    </li>
+</ul>

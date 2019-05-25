@@ -1,0 +1,79 @@
+﻿<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>设置</div>
+        <div class="layui-card-body layui-form layui-hide" id="app">
+
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">基本设置</li>
+                    <li></li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">企业编号</label>
+                            <div class="layui-input-block">
+                                <input type="text" v-model="getSettingByName('MESCompanySN').value" autocomplete="off"  class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">企业令牌</label>
+                            <div class="layui-input-block">
+                                <input type="text" v-model="getSettingByName('MESCompanyToken').value" autocomplete="off"  class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item"></div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" type="button">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var app;
+        config.ready = function () {
+            layui.form.on('submit', function () {
+                func.runAsync(abp.services.app.setting.updateSettingsForTenant(app.settings)
+                    .done(function () { 
+                        layer.msg("提交成功");
+                    }))
+
+            });
+            app = new Vue({
+                el: '#app',
+                data: {
+                    settings:[]
+
+                },
+                methods: {
+                    getSettingByName: function (name) {
+                        return this.settings.filter(function (o) { return o.name == name; })[0] || {};
+                    }
+
+                },
+                mounted: function () {
+                    var that = this;
+                    var settingNames = ["MESCompanySN", "MESCompanyToken"];
+                    for (var i = 0; i < settingNames.length; i++) {
+                        var setting = { name: settingNames[i], value: abp.setting.get(settingNames[i]) };
+                        that.settings.push(setting);
+
+                    }
+                    $("#app").removeClass("layui-hide");
+
+                }
+
+            });
+
+        }
+    </script>
+
+}

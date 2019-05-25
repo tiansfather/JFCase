@@ -1,0 +1,283 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@model ModuleInfo
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+
+}
+@section styles{
+    
+    <style>
+        tr.active {
+            background-color: #c2deda !important;
+        }
+    </style>
+
+}
+<form class="layui-form layui-form-pane layui-hide" id="app">
+    <input type="hidden" name="ids" value="@Model.Id" />
+    <div class="layui-row layui-col-space1">
+        <div class="layui-col-md4">
+
+            <blockquote class="layui-elem-quote" style="padding:5px;margin-bottom:0"><button type="button" class="layui-btn layui-btn-sm" @@click="addBtn()">@L("添加按钮")</button></blockquote>
+
+            <table class="layui-table" style="margin:0">
+                <thead>
+                    <tr>
+                        <th>@L("序号")</th>
+                        <th>@L("名称")</th>
+                        <th>@L("操作")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item,index) in btns" @@click="setCurrent(item)" :class="{active:currentBtn==item}" style="cursor:pointer">
+                        <td>{{index+1}}</td>
+                        <td>{{item.buttonName}}</td>
+                        <td>
+
+                            <a @@click.stop="upItem(index)" style="cursor:pointer"><i class="layui-icon layui-icon-up"></i></a>
+                            <a @@click.stop="downItem(index)" style="cursor:pointer"><i class="layui-icon layui-icon-down"></i></a>
+                            <a @@click.stop="removeItem(index)" style="cursor:pointer" title="@L("删除")"><i class="layui-icon layui-icon-delete"></i></a>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="layui-col-md8">
+            <div class="layui-tab layui-tab-card" style="margin-top:0" lay-filter="tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">@L("基础信息")</li>
+                    <li>@L("行为")</li>
+                    <li>@L("展示")</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">@L("按钮标志")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" lay-verify="required" autocomplete="off" class="layui-input" name="buttonKey" v-model="currentBtn.buttonKey">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">@L("名称")</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="buttonName" autocomplete="off" lay-verify="required" class="layui-input" v-model="currentBtn.buttonName">
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">@L("启用")</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" lay-skin="switch" name="isEnabled" lay-text="ON|OFF" :checked="currentBtn.isEnabled">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label class="layui-form-label">@L("需要权限")</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" lay-skin="switch" name="requirePermission" lay-text="ON|OFF" :checked="currentBtn.requirePermission">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("按钮行为")</label>
+                            <div class="layui-input-block">
+								<select v-model="currentBtn.buttonActionType" name="buttonActionType">
+									<option value="0">@L("资源标记")</option>
+									<option value="1">@L("异步提交")</option>
+									<option value="2">@L("表单提交")</option>
+									<option value="3">@L("标签页")</option>
+								</select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("行为地址")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" name="buttonActionUrl" v-model="currentBtn.buttonActionUrl" placeholder="@L("对应表单地址或者js代理函数")">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("参数")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" name="confirmMsg" v-model="currentBtn.buttonActionParam" placeholder="">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("提示信息")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" name="confirmMsg" v-model="currentBtn.confirmMsg" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("显示位置")</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="isForSingleRow" title="@L("行按钮")" v-model="currentBtn.isForSingleRow">
+                                <input type="checkbox" name="isForSelectedRows" title="@L("多选按钮")" v-model="currentBtn.isForSelectedRows">
+                                <input type="checkbox" name="isForNoneRow" title="@L("直接按钮")" v-model="currentBtn.isForNoneRow">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("按钮样式")</label>
+                            <div class="layui-input-inline">
+                                <select v-model="currentBtn.buttonClass" name="buttonClass">
+                                    <option value="">@L("默认")</option>
+                                    <option value="layui-btn-primary">@L("原始")</option>
+                                    <option value="layui-btn-warm">@L("暖色")</option>
+                                    <option value="layui-btn-normal">@L("普通")</option>
+                                    <option value="layui-btn-danger">@L("警告")</option>
+                                </select>
+                            </div>
+                            <div class="layui-form-mid " style="padding-top:4px!important">
+                                <button type="button" class="layui-btn layui-btn-sm" :class="currentBtn.buttonClass">Button</button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("标题模板")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" name="titleTemplet" v-model="currentBtn.titleTemplet" placeholder="比如{{d.projectSN}}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">@L("客户端条件")</label>
+                            <div class="layui-input-block">
+                                <input type="text" autocomplete="off" class="layui-input" name="clientShowCondition" v-model="currentBtn.clientShowCondition" placeholder="比如!d.JobDateEnd">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</form>
+
+@section scripts{
+    
+    <script>
+        var app;
+        config.ready = function () {
+            app = new Vue({
+            el: "#app",
+            data: {
+                btns: [],
+                currentBtn:
+                    {
+                    }
+
+            },
+            created: function () {
+
+                abp.services.app.moduleInfo.getBtnInfos('@Model.ModuleKey').done(function (data) {
+                    app.btns = data;
+                    app.setCurrent(app.btns[0]);
+                })
+            },
+            mounted: function () {
+                $("#app").removeClass("layui-hide");
+            },
+            methods: {
+                setCurrent: function (item) {
+                    this.currentBtn = item;
+                    refresh();
+                },
+                upItem: function (index) {
+                    if (index > 0) {
+                        var preItem = this.btns[index - 1];
+                        app.$set(this.btns, index - 1, this.btns[index]);
+                        app.$set(this.btns, index, preItem);
+                    }
+                },
+                downItem: function (index) {
+                    if (index < this.btns.length - 1) {
+                        var nextItem = this.btns[index + 1];
+                        app.$set(this.btns, index + 1, this.btns[index]);
+                        app.$set(this.btns, index, nextItem);
+                    }
+
+                },
+                removeItem: function (index) {
+                    abp.message.confirm("@(L("确认删除列"))?", function () {
+                        app.btns.splice(index, 1);
+                        if (app.btns.length > 0) {
+                            app.setCurrent(app.btns[0]);
+                        } else {
+                            app.setCurrent({});
+
+                        }
+                    });
+
+                },
+                addBtn: function () {
+                    //添加列
+                    layer.prompt({ title: '@L("请输入按钮名称")', formType: 0 }, function (text, index) {
+                        layer.close(index);
+                        var key = pinyinUtil.getPinyin(text, '').toUpperCase();
+                        var btn = {
+                            buttonKey: key, buttonName: text, buttonActionType: 1, 
+                            isEnabled: true, 
+                        };
+                        app.btns.push(btn);
+                        app.setCurrent(btn);
+
+                    });
+
+                }
+
+            }
+        });
+            var form = layui.form;
+            form.on('select', function (data) {
+                var btn = app.currentBtn;
+                var name = $(data.elem).attr("name");
+                btn[name] = data.value;
+                refresh();
+            })
+            form.on('checkbox', function (data) {
+                var name = $(data.elem).attr("name");
+                app.currentBtn[name] = data.elem.checked;
+            });        
+            form.on('switch', function (data) {
+                var name = $(data.elem).attr("name");
+                app.currentBtn[name] = data.elem.checked;
+                //console.log(data.elem); //得到checkbox原始DOM对象
+                //console.log(data.elem.checked); //开关是否开启，true或者false
+                //console.log(data.value); //开关value值，也可以通过data.elem.value得到
+                //console.log(data.othis); //得到美化后的DOM对象
+            });
+
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                $(".layui-form-switch,.layui-form-select").remove();
+                layui.form.render();
+            })
+        }
+
+        function submit() {
+            //数据处理
+            for (var i = 0; i < app.btns.length; i++) {
+                app.btns[i].sort = i + 1;//更新排序值
+            }
+            func.runAsync(abp.services.app.moduleInfo.updateBtns( app.btns,'@Model.Id' )
+                .done(function () {
+
+                    parent.layer.msg("@L("提交成功")");
+                    parent.layer.closeAll("iframe");
+                    parent.func.reload("ModuleInfo");
+                    parent.config.refresh();
+                }));
+            console.log(app.btns);
+
+        }
+    </script>
+}

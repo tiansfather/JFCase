@@ -1,0 +1,424 @@
+﻿<script type="text/html" id="partName">
+    <div class="my-partName-show">
+        <div class="my-partName-img picupload" partid="{{d.id}}" tips="点击上传零件图片">
+            <img src={{d.partImg || '/assets/images/upImg1.png'}} alt="上传图片" />
+        </div>
+        <div class="my-partName-msg">
+            <p class="my-pNameMsg-p" title="{{d.partName}}({{d.partSN}})">零件:<span style="font-weight:700;color:#383838;">{{d.partName}}</span>({{d.partSN}})</p>
+            <div>
+                <span>规格:{{d.partSpecification}} </span>
+                <span style="margin-left:10px;">数量:{{d.partNum}}</span>
+            </div>
+            <p class="my-pNameMsg-p">编号：{{d.projectSN}}</p>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="domReportTime">
+    <div class="open-report-time" id="reportTimeTep">
+        <div class="open-msg-div">
+            <p>零件：<b>{{d.partName}}</b>({{d.partSN}})</p>
+            <p>规格：{{d.partSpecification||''}}&emsp;&emsp;数量：{{d.partNum||''}}</p>
+            <p>工艺：{{d.processTypeName||''}}</p>
+            <p>工时：{{d.estimateHours||''}}</p>
+        </div>
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label my-layui-select">安排上机时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input layui-date" lay-key="1-{{d.hadOpened}}" id="arrangeDate-{{d.hadOpened}}">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label my-layui-select">报工到料时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input layui-date" lay-key="4-{{d.hadOpened}}" id="receiveDate-{{d.hadOpened}}" {{d.receiveDateFromReport?'readonly':''}}>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label my-layui-select">报工上机时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input layui-date" lay-key="2-{{d.hadOpened}}" id="startDate-{{d.hadOpened}}" {{d.startDateFromReport?'readonly':''}}>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label my-layui-select">报工下机时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input layui-date" lay-key="3-{{d.hadOpened}}" id="endDate-{{d.hadOpened}}" {{d.endDateFromReport?'readonly':''}}>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="submitTaskDate()" class="layui-btn layui-btn-normal submit-btn">确定修改</button>
+    </div>
+</script>
+<style>
+    /*--------------------选择报工-----------------*/
+    .open-report-time {
+        position: relative;
+        height: 100%;
+        padding: 20px 0;
+        box-sizing: border-box;
+        width:320px;
+        margin:0 auto;
+    }
+
+    .open-report-time .open-msg-div {
+        line-height: 2;
+        width: 110%;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 10px;
+    }
+
+    .open-report-time b {
+        font-size: 16px;
+    }
+
+    .open-report-time .layui-input {
+        height: 38px;
+    }
+
+    .open-report-time .layui-form-pane .layui-form-label {
+        width: 110px;
+        padding: 8px 0;
+    }
+
+    .open-report-time .submit-btn {
+        position: absolute;
+        margin-bottom: 50px;
+        right: 0;
+    }
+
+</style>
+<script>
+    //重加载table，让table回到原来的位置
+    var TableScrollObj = {
+        fTableScroll: function (table) {
+            var that = this;
+            var _ontabledone = window[table][0].done;
+            window[table][0].done = function (res, curr, count) {
+                _ontabledone(res, curr, count);
+                console.log(that.nScroll);
+                $('.layui-table-main').scrollTop(that.nScroll);
+                //$('#' + table).parent().find('.layui-table-main').scrollTop(that.nScroll);
+                window[table][0].done = _ontabledone;
+            }
+        },
+        getTableScroll: function (table) {
+            this.nScroll = $('.layui-table-main').scrollTop()
+            //this.nScroll = $('#' + table).parent().find('.layui-table-main').scrollTop()
+        },
+        nScroll: 0
+    }
+    //添加工序
+    //var tbScrTop ;
+    function addProcess(partId) {
+        var h = $(document).height() - 200;
+        h = h > 550 ? '550px' : h + 'px';
+        layer.open({
+            type: 2,
+            title: "选择工序",
+            shadeClose: false,
+            shade: 0.8,
+            area: ['500px',h],
+            content: "/Home/Show?name=../MES/ProcessTypeChoose&partId=" + partId,
+            btn: false
+        });
+
+    }
+    //选择报工
+    //var canOpened = true;//没点击过为true
+    var hadOpened = 0;
+    function submitTaskDate() {
+        function getSubData() {
+            var arr = ['arrangeDate', 'receiveDate', 'startDate', 'endDate'];
+            var obj = { id: $('#reportTimeTep').data('id')};
+            arr.forEach(function (elm) {
+                var str = $('#' + elm +'-'+ hadOpened).val();
+                obj[elm]=str ? new Date(str).pattern('yyyy-MM-dd HH:mm:ss') : ''
+            })
+            return obj
+        }
+        func.runAsync(abp.services.app.processTask.submitTaskDate(getSubData()).done(function () {
+            layer.closeAll();
+            filterObject.aShaiXuanDone = [];//清除已筛选的列
+            if (typeof PartTask!='undefined') {
+                TableScrollObj.fTableScroll('PartTask');//设置parttask的table滚动高度
+                layuiExt.reRender('PartTask');
+            } else if (typeof ProcessTask != 'undefined'){
+                TableScrollObj.fTableScroll('ProcessTask');//设置parttask的table滚动高度
+                layuiExt.reRender('ProcessTask');
+            }
+            layer.msg('修改成功')
+        }))
+    }
+    //加工线路里设置上下机时间
+    function reportTimes(sort) {
+        var trIndex = $(getEvent().target).closest('tr').index();
+        var cachePartTask = layui.table.cache.PartTask[trIndex];
+        var task;
+        cachePartTask.tasks.forEach(function (n, i) {
+            if (n.sort == sort) {
+                task = n;
+            }
+        })
+        if (task) {//在新增工序的时候，没有task值，只能重新去后台请求，暂时先这样
+            task.partName = cachePartTask.partName
+            task.partSN = cachePartTask.partSN
+            task.partSpecification = cachePartTask.partSpecification
+            task.partNum = cachePartTask.partNum
+            layerReortTimes(task);
+        } else {
+            layuiExt.reRender('PartTask');
+        }
+        
+    }
+    function processReportTimes() {        
+        var trIndex = $(getEvent().target).closest('tr').index();
+        var task = layui.table.cache.ProcessTask[trIndex];
+        layerReortTimes(task);
+    }
+    //设置报工上下机时间弹出层
+    function layerReortTimes(task) {
+        //先判断权限
+        if (!abp.auth.isGranted("Module.ProcessTask.Button.DirectReport")) {
+            return false;
+        }
+        func.runAsync(abp.services.app.processTask.getTaskReportInfo(task.id).done(function (res) {
+            renderLayer(res, task)
+            console.log(res);
+        }))
+        function renderLayer(dates, task) {
+            var processTaskStatus = task.processTaskStatus;
+            if (processTaskStatus == 0) {
+                layer.msg('未开单，无法报工');
+            }
+            else {
+                TableScrollObj.getTableScroll();//保存parttask的table滚动高度
+                hadOpened++;
+                var reportTimeData = { hadOpened: hadOpened};
+                $.extend(reportTimeData, dates, task)
+                console.log(reportTimeData)
+                var getTpl = $('#domReportTime')[0].innerHTML;
+                var openHtml;
+                layui.laytpl(getTpl).render(reportTimeData, function (html) { openHtml = html; });
+                layer.open({
+                    type: 1,
+                    title: "选择报工",
+                    shade: 0.8,
+                    area: ['500px', '500px'],
+                    content: openHtml,
+                    btn: false,
+                });
+                $('#reportTimeTep').attr('data-id', reportTimeData.id);
+                var laydate = layui.laydate;
+                laydate.render({
+                    elem: '#arrangeDate-' + hadOpened
+                    , type: 'datetime'
+                    , position: 'fixed'
+                    , value: reportTimeData.arrangeDate ? new Date(reportTimeData.arrangeDate) : ''
+                });
+                if (!reportTimeData.receiveDateFromReporte) {
+                    laydate.render({
+                        elem: '#receiveDate-' + hadOpened
+                        , type: 'datetime'
+                        , position: 'fixed'
+                        , value: reportTimeData.receiveDate ? new Date(reportTimeData.receiveDate) : ''
+                    });
+                }
+                if (!reportTimeData.startDateFromReporte) {
+                    laydate.render({
+                        elem: '#startDate-' + hadOpened
+                        , type: 'datetime'
+                        , position: 'fixed'
+                        , value: reportTimeData.startDate ? new Date(reportTimeData.startDate) : ''
+                    });
+                }
+                if (!reportTimeData.endDateFromReporte) {
+                    laydate.render({
+                        elem: '#endDate-' + hadOpened
+                        , type: 'datetime'
+                        , position: 'fixed'
+                        , value: reportTimeData.endDate ? new Date(reportTimeData.endDate) : ''
+                    });
+                }
+            }
+
+        }
+    }
+    //当前锁定行标记
+    var lockIndex = '';
+    //var offsetN = {};
+    function editLock(ev) {
+        var aReportDataId;
+        //var aOriDataId;
+        //恢复原样
+        function fReOri() {
+            var changeFlag = false;
+            if (aReportDataId && aReportDataId.length > 0) {
+                cachePartTask.tasks.forEach(function (n, index) {
+                    if (n.id != aReportDataId[index]) {
+                        console.log('不相等');
+                        changeFlag = true;
+                    }
+                })
+                //aOriDataId.forEach(function (n, index) {
+                //    if (n != aReportDataId[index]) {
+                //        console.log('不相等');
+                //        changeFlag = true;
+                //    }
+                //})
+            }
+
+
+            if (changeFlag) {
+                func.runAsync(abp.services.app.processTask.reSort(aReportDataId).done(function (data) {
+                    layer.msg('顺序调整成功')
+                }));
+            } else {
+                layer.msg('顺序与初始相同，未调整')
+            }
+            $('.layui-table-main tbody tr:eq(' + tdIndex + ') [data-field="tasks"]').removeClass('lock-li')
+            var obj = $('.layui-table-main tbody tr:eq(' + tdIndex + ') [data-field="tasks"] .my-tasks-li');
+            lockIndex = '';
+            $('.layui-table-main tbody tr:eq(' + tdIndex + ') [data-field="tasks"] .my-tasks_li-lock>i').removeClass('icon-lock1').addClass('icon-lock2');
+            obj.off('mousedown', fLiClkMove);
+            obj.find('.my-li-typeName').attr({ tips: '双击编辑加工单' });
+            //obj.find('.my-li-date').attr({ title: '点击报工' });
+            obj.each(function () {
+                var itemid = $(this).find('.my-li-date').attr('data-itemid');
+                var ptstatus = $(this).find('.my-li-date').attr('data-ptstatus');
+                $(this).find('.my-li-typeName').attr({ ondblclick: 'editSheet(' + itemid + ')' });
+                $(this).find('.my-li-date').attr({ onclick: 'reportTimes(' + itemid + ',' + ptstatus + ')' });
+            })
+            obj.css({ "cursor": "Default" });
+        }
+        function removeLiId() {
+            var that = this;
+            setTimeout(fDeleteConfim, 300);
+            function fDeleteConfim() {
+                layer.confirm('确定删除吗？', {
+                    btn: ['确定', '取消'] //按钮
+                }, function (index) {
+                    console.log('删除')
+                    var ids = $(that).siblings('.my-li-date').attr('data-itemid');
+                    console.log(ids);
+                    func.runAsync(abp.services.app.processTask.deleteEntity([ids]).done(function (data) {
+                        layer.msg('删除成功');
+                        $(that).parent().remove();
+                    }));
+                    layer.close(index);
+                }, function () {
+                    console.log('取消')
+                });
+            }
+
+            window.event ? window.event.cancelBubble = true : event.stopPropagation();
+        }
+
+        var tdIndex = $(ev).closest('tr').index();
+        var cachePartTask = layui.table.cache.PartTask[tdIndex];
+        console.log(tdIndex, lockIndex);
+        $('.layui-table-main tbody tr:eq(' + tdIndex + ') [data-field="tasks"]').addClass('lock-li')
+        var _tdObj = $('.layui-table-main tbody tr:eq(' + tdIndex + ') [data-field="tasks"] .my-tasks-li');
+        if (lockIndex !== tdIndex) {
+            $('.lock-li .my-li-delete').mousedown(removeLiId);
+            //$('.lock-li .my-li-delete').get(0).addEventListener('mousedown', removeLiId, false);
+
+            lockIndex = tdIndex;
+            $('.layui-table-main tbody tr:eq(' + tdIndex + ') [data-field="tasks"] .my-tasks_li-lock>i').removeClass('icon-lock2').addClass('icon-lock1');
+
+            //aOriDataId = [];
+            //$('.icon-lock1').closest('.my-tasks-ul').find('.my-tasks-li .my-li-date').each(function () {
+            //    aOriDataId.push($(this).attr('data-itemid'));
+            //});
+            function fLiClkMove(ev) {
+                var oEvent = ev || event;
+                var bLeft = $(this).offset().left;
+                //造个新的li
+                var outH = $(this).prop("outerHTML");
+                $(outH).appendTo($(this).parent()).addClass('dom-remove_li')
+                //$(this).parent().append('<li class="my-tasks-li dom-remove_li" >' + $(this).html() + '</li>')
+                $('.dom-remove_li').offset({ left: bLeft });
+                //隐藏原来的li,造出虚线li
+                $(this).after('<li class="my-tasks-li dom-dashed_li"></li>');
+                var distance = 80 + 9 + 4;
+                disX = oEvent.clientX - bLeft;
+                $(this).remove();
+                document.onmousemove = function (ev) {
+                    var oEvent = ev || event;
+                    var l = oEvent.clientX - disX;
+                    var z = $('.dom-remove_li').closest('td').offset().left + 35;
+                    var z = z > 0 ? z : 0;
+                    var y = $('.lock-li .my-tasks_li-lock').offset().left || 0 - $('.dom-remove_li').width() - 10;
+
+                    if (l < z) {
+                        l = z;
+                    }
+                    else if (l > y) {
+                        l = y;
+                    }
+                    //_thisObj.offset({ left: l });
+                    $('.dom-remove_li').offset({ left: l });
+                    if (l > bLeft + distance) {
+                        console.log('右边超一个');
+                        bLeft += distance;
+                        var dashedLiIndex = $('.dom-dashed_li').index();
+                        $('.dom-dashed_li').parent().find('li').eq(dashedLiIndex + 1).after($('.dom-dashed_li'));
+                        $('.dom-dashed_li:first-child').remove();
+                    } else if (l < bLeft - distance) {
+                        console.log('左边超一个')
+                        bLeft -= distance;
+                        var dashedLiIndex = $('.dom-dashed_li').index();
+                        $('.dom-dashed_li').parent().find('li').eq(dashedLiIndex - 1).before($('.dom-dashed_li'));
+                        $('.dom-dashed_li:last-child').remove();
+                    }
+                    return false;
+                };
+                document.onmouseup = function () {
+                    $('.dom-dashed_li').after($('.dom-remove_li'));
+                    $('.dom-dashed_li').remove();
+                    $('.dom-remove_li:last-child').remove();
+                    $('.dom-remove_li').removeClass('dom-remove_li').css('left', 0).css({ "cursor": "move" }).mousedown(fLiClkMove).find('.my-li-delete').mousedown(removeLiId);
+
+                    aReportDataId = [];
+                    $('.icon-lock1').closest('.my-tasks-ul').find('.my-tasks-li .my-li-date').each(function () {
+                        aReportDataId.push($(this).attr('data-itemid'));
+                    });
+                    console.log(aReportDataId);
+
+                    document.onmousemove = null;
+                    document.onmouseup = null;
+                };
+                return false;
+            }
+            _tdObj.find(' .my-li-typeName').removeAttr('tips').removeAttr('ondblclick');
+            _tdObj.find(' .my-li-date').removeAttr('title').removeAttr('onclick');
+            _tdObj.css({ "cursor": "move" });
+            _tdObj.mousedown(fLiClkMove);
+            //_tdObj.get(0).addEventListener('mousedown', fLiClkMove,false )
+            function fRemoveLock(e) {
+                var e = e || window.event; //浏览器兼容性
+                var elem = e.target || e.srcElement;
+                if ($(elem).parents('[data-index="' + tdIndex + '"]').length != 1 && $(elem).parents('.layui-layer ').length != 1) {
+                    console.log('移除');
+                    $(document).off('click', fRemoveLock);
+                    fReOri();
+                }
+            }
+            $(document).on('click', fRemoveLock);
+        } else {
+            console.log('a')
+            fReOri()
+        }
+
+    }
+</script>

@@ -1,0 +1,336 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    //微信端加工点查看加工任务页
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "核算";
+}
+@section styles{
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <style>
+        .btm-img {
+            width: 100%;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .weui-cell {
+            padding: 8px 10px;
+        }
+
+        .weui-textarea {
+            font-size: 14px;
+        }
+    </style>
+}
+    <div id="app">
+        @*<div class="weui-cells__title" style="text-align: center; color: #c74949; font-size: 20px">{{currentItem.tenancyName}} 加工任务</div>*@
+
+        @*<div class="weui-flex">*@
+        <button class="weui-btn weui-btn_primary" style="text-align:center;" onclick="handleCounting(true)" id="confirm">确认</button>
+        <button class="weui-btn weui-btn_primary" style="text-align:center;" onclick="handleCounting(false)" id="reject">驳回</button>
+        <a href="" id="signature" class="weui-btn weui-btn_primary">签名</a>
+        @*</div>*@
+
+
+        @*<div class="weui-btn-area">
+            <a class="weui-btn weui-btn_primary" href="javascript:" @@click="doSubmit">提交</a>
+        </div>*@
+
+        @*<div class="weui-cells weui-cells_form">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <textarea class="weui-textarea" rows="3" name="remarks" id="remarks" :value="currentItem.taskInfo" readonly></textarea>
+                </div>                                                                             <img src="@ViewBag.ImgPath" onclick="previewImage('@ViewBag.ImgPath')" class="btm-img" />
+            </div>
+        </div>*@
+        <img src="@ViewBag.ImgPath" onclick="previewImage('@ViewBag.ImgPath')" onload="dodraw()" class="btm-img" id="acc"/>
+       @* <canvas id="cvs"  > </canvas>*@
+        <img src="@ViewBag.SignUrl" style="display:none" id="img2" />
+        <div id="taskPic"></div>
+        <div v-for="item in idArray">
+            <img :src="item" @@click="previewImage(item)" class="btm-img" />
+        </div>
+
+    </div>
+
+
+@section scripts{
+    <script src="@(this.Context.Request.Scheme)://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script>
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: '@Model.AppId', // 必填，公众号的唯一标识
+            timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+            nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+            signature: '@Model.Signature',// 必填，签名
+            jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2。详见：http://mp.weixin.qq.com/wiki/7/aaa137b55fb2e0456bf8dd9148dd613f.html
+        });
+
+   //     wx.error(function (res) {
+			//console.log(res);
+			//alert('验证失败:' + JSON.stringify(res));
+   //     });
+
+         wx.ready(function () {
+
+            });
+    </script>
+    <style>
+        .mobeil-cell-project .iconfont {
+            color: #c74949;
+            margin-right: 10px;
+        }
+    </style>
+
+    <script>
+	
+        var ids = '@ViewBag.Ids';
+        var imgPath = '@ViewBag.ImgPath';// + "?" + Math.random()
+        var signUrl = '@ViewBag.SignUrl';
+        var taskUrls = '@ViewBag.TaskUrls';
+        new Vue({
+            el: '#app',
+            computed: {
+                idArray: function () {
+                    var Array = taskUrls.split(',');
+                    var arr = [];
+                    for (var i = 0; i < Array.length; i++) {
+                        // var picUrl = imgPath.replace(".png", Array[i] + ".png");
+                        console.log("aa" + Array[i]);
+                        //var data = abp.services.app.processTask.getTaskPicSrc(parseInt(Array[i]))
+                        //    .done(function (data) {
+
+                        //        arr.push(data);
+                        //    })
+                        arr.push(Array[i]);
+                    }
+                    return arr;
+                }
+            }
+        });
+        function dodraw() {
+            //var canvas = document.getElementById('cvs');
+            if (signUrl != "") {
+                var Img = new Image();
+                Img.src = '@ViewBag.ImgPath';
+                Img.onload = function () {
+                    var canvas = document.createElement("canvas"),
+                        width = Img.width, //确保canvas的尺寸和图片一样
+                        height = Img.height;
+                    // var wight = Img.width;
+                    //var height = Img.height;
+                    canvas.width = Img.width;
+                    canvas.height = Img.height;
+                    ctx = canvas.getContext('2d');
+                    ctx.drawImage(Img, 0, 0, width, height);
+                    var img2 = document.getElementById('img2');
+                    //img2.onload = function () {
+                    if (signUrl != "") {
+                        console.log("in:" + img2.src);
+                        var cq = 200;
+                        var we = 150
+                        ctx.drawImage(img2, width - cq, height - we, cq, we);
+                    }
+                    //}
+                    dataURL = canvas.toDataURL('image/png');
+                    var data = {
+                        Base64: dataURL,
+                        ImgPath: "/wwwroot" + imgPath.replace(".png", "signed.png")
+                    }
+                    //abp.services.app.processTask.saveBase64(data);.substring(0, imgPath.lastIndexOf('/'))
+                   func.runAsync(abp.services.app.processTask.saveBase64(data).done(function (data) {
+                        console.log("result:" + data);
+                        if (data) {
+                            console.log("提交成功");
+                            window.location.href = location.origin + "/MES/CountingView?ids=" + ids + "&partUrl=" + imgPath.replace(".png","signed.png") + "?" + Math.random() + "&signUrl="
+                            //window.location.reload();
+                        }
+                        else {
+                            $.alert("提交", "cuccess");
+                        }
+                    })
+                    )
+                    console.log("image:" + imgPath);
+                }
+            }
+        }
+        function getBase64(url) {
+            //通过构造函数来创建的 img 实例，在赋予 src 值后就会立刻下载图片，相比 createElement() 创建 <img> 省去了 append()，也就避免了文档冗余和污染
+            var Img = new Image(),
+                dataURL = '';
+            Img.src = url;
+            Img.onload = function () { //要先确保图片完整获取到，这是个异步事件
+                var canvas = document.createElement("canvas"), //创建canvas元素
+                    width = Img.width, //确保canvas的尺寸和图片一样
+                    height = Img.height;
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext("2d").drawImage(Img, 0, 0, width, height); //将图片绘制到canvas中
+                dataURL = canvas.toDataURL('image/jpeg'); //转换图片为dataURL
+            };
+            return  dataUrl;
+        }
+        $(function () {
+           var dataIds =ids.split(',');
+            func.runAsync(abp.services.app.processTask.getIsAccountingConfirmed(dataIds).done(function (data) {
+                console.log("result:" + data);
+                if (data) {
+                    $("#confirm").attr("class", "weui-btn weui-btn_disabled weui-btn_primary");
+                    $("#reject").attr("class", "weui-btn weui-btn_disabled weui-btn_primary");
+                    $("#confirm").attr("disabled", "disabled");
+                    $("#reject").attr("disabled", "disabled");
+                    $("signature").attr("disabled", true);
+                }
+            }) 
+            )
+            $("#signature").attr("href", location.origin + "/MES/HandWrite?ids=" + ids + "&partUrl=" + imgPath + "&signUrl=" + signUrl);
+            //var Img = new Image();
+            //Img.src = imgPath;
+            //Img.onload = function () {
+            //    canvas = document.getElementById('cvs');
+            //    var canvas = document.createElement("canvas"), 
+            //        width = Img.width, //确保canvas的尺寸和图片一样
+            //        height = Img.height;
+            //   // var wight = Img.width;
+            //   //var height = Img.height;
+            //    canvas.width = Img.width;
+            //    canvas.height = Img.height;
+            //ctx = canvas.getContext('2d');
+            //    ctx.drawImage(Img, 0, 0, width, height);
+
+            //    dataURL = canvas.toDataURL('image/jpeg');
+            //    var data = {
+            //        Base64: dataURL
+            //    }
+            //    //abp.services.app.processTask.saveBase64(data);
+            //    func.runAsync(abp.services.app.processTask.saveBase64(data).done(function (data) {
+            //        console.log("result:" + data);
+            //        if (data) {
+            //            console.log("提交成功");
+            //        }
+            //        else {
+            //            $.alert("提交", "cuccess");
+            //        }
+            //    })
+            //    )
+            //console.log("image:" + imgPath);
+            //}
+            //var taskPics = $("#taskPic");
+            //var idArray = ids.split(',');
+            //    $("#taskPic").append("<p> 详细信息：</p>");
+            //for (var i = 0; i < idArray.length ;i++) {
+            //    var picUrl = imgPath.replace(".png", idArray[i] + ".png")
+
+            //    $("#taskPic").append("<img src='" + picUrl + "' onclick='previewImage('" + picUrl.replace("/","//") + "')' class='btm-img' />");
+            //}
+        }); 
+            function previewImage(url) {
+                var url = location.origin + url
+                var imgPaths = [];
+                imgPaths.push(url)
+                wx.previewImage({
+                    current: url,
+                    urls: imgPaths
+                });
+            }
+            function handleCounting(flag) {
+                //if (flag) {
+                    var data = {
+                        Ids:ids,
+                        Flag: flag,
+                        ImgPath: imgPath
+                    }
+                func.runAsync(abp.services.app.processTask.addAccountingResult(data).done(function () {
+                    if (flag) {
+                        $.alert("提交成功", "成功");
+
+                        $("#confirm").val("已确认");
+                        $("#confirm").attr("class", "weui-btn weui-btn_disabled weui-btn_primary");
+                        $("#reject").attr("class", "weui-btn weui-btn_disabled weui-btn_primary");
+
+                    } else {
+                        $.alert("提交成功", "成功");
+                        $("#reject").val("已驳回");
+                        $("#confirm").attr("class", "weui-btn weui-btn_disabled weui-btn_primary");
+                        $("#reject").attr("class", "weui-btn weui-btn_disabled weui-btn_primary");
+                        $("#confirm").attr("disabled", "disabled");
+                        $("#reject").attr("disabled", "disabled");
+                    }
+                    }))
+                //} else{
+
+                //}
+            //}
+			//layui.use('upload', function () {
+			//	layui.upload.render({
+			//		elem: '#chooseBtn'
+			//		, url: '/file/upload/'
+			//		, accept: 'images'
+			//		, acceptMime: 'image/*'
+			//		, before: function () {
+			//			layui.layer.load()
+			//		}
+			//		, done: function (res) {
+			//			layui.layer.closeAll('loading');
+			//			//获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意：此乃 layui 2.1.0 新增
+			//			var item = this.item;
+			//			//如果上传失败
+			//			if (!res.result.success) {
+			//				layer.msg(res.result.msg, { icon: 5, anim: 6 });
+			//			}
+			//			//上传成功
+			//			else {
+
+			//				$("#imglist").append("<li class='weui-uploader__file'><img src='" + res.result.filePath + "?w=100' /></li>");
+			//				app.files.push({ fileName: res.result.fileName, filePath: res.result.filePath });
+
+			//			}
+			//		}
+			//	});
+			//})
+
+		}
+
+
+
+
+    </script>
+
+}

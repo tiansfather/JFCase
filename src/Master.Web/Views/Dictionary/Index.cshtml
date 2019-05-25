@@ -1,0 +1,120 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-header">@L("用户字典")</div>
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane" onsubmit="return doSearch();">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">@L("字典名称")</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="dictionaryName" name="dictionaryName" autocomplete="off" class="layui-input">
+                        </div>
+                        <button class="layui-btn layui-btn-primary" type="button" onclick="doSearch()">@L("搜索")</button>
+                        <button class="layui-btn  " buttonname="@L("添加")" type="button" onclick="addDictionary()">@L("添加")</button>
+                    </div>
+                </div>
+            </form>
+
+
+            <table autoevent="1" id="Dictionary" lay-filter="Dictionary" class="layui-table " lay-data="{cellMinWidth:'80',height:'full-170', url:'/api/services/app/Dictionary/GetPageResult', page:true, id:'Dictionary', even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
+                <thead>
+                    <tr>
+                        <th lay-data="{field:'dictionaryName',sort:true}">@L("字典名称")</th>
+                        <th lay-data="{field:'fieldCount' }">@L("项数量")</th>
+                        <th lay-data="{field:'creator'}">@L("创建人")</th>
+                        <th lay-data="{field:'creationTime',sort:true}">@L("创建时间")</th>
+                        <th lay-data="{align:'center', toolbar: '#toolbar'}">@L("操作")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        
+    </div>
+</div>
+<script type="text/html" id="toolbar">
+    <a dataid="{{d.dictionaryName}}" buttonname="@L("编辑")" modulekey="Dictionary" class="layui-btn layui-btn-xs " params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Dictionary/Edit" onclick="func.callModuleButtonEvent()">@L("编辑")</a>
+    <a dataid="{{d.id}}" class="layui-btn layui-btn-danger layui-btn-xs" buttonname="@L("删除")" modulekey="Dictionary" params="" lay-event="Delete" confirmmsg="@(L("确认删除"))？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.dictionary.deleteEntity" onclick="func.callModuleButtonEvent()">@L("删除")</a>
+</script>
+@section scripts{
+    <script>
+        config.ready = function () {
+            var element = layui.element,
+                table = layui.table;
+            table.on('sort(Dictionary)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                //console.log(obj.field); //当前排序的字段名
+                //console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+                //console.log(this); //当前排序的 th 对象
+
+                //尽管我们的 table 自带排序功能，但并没有请求服务端。
+                //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
+                table.reload('Dictionary', {
+                    initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                    , where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+                        orderfield: obj.field,
+                        ordertype: obj.type
+                    }
+                });
+            });
+
+            config.refresh();
+
+
+        }
+        config.onTableDone = function () {
+
+        }
+        config.refresh = function () {
+            
+        }
+        function addDictionary() {
+            layer.prompt({ title: '@L("请输入字典名")', formType: 0 }, function (text, index) {
+                        layer.close(index);
+                //检测此字典是否是内置字典
+                func.runAsync(abp.services.app.dictionary.isInInnerDics(text).done(function (data) {
+                    if (data) {
+                        //如果是内置字典进行提示
+                        abp.message.confirm('@(L("此字典名为内置字典,继续操作将替换内置字典,是否继续"))?', function () {
+                            doAdd(text);
+
+                        });
+
+                    } else {
+                        doAdd(text);
+
+                    }
+
+                }));
+            });
+
+            function doAdd(text) {
+
+                func.runAsync(abp.services.app.dictionary.addDictionary(text).done(function (data) {
+                    layer.msg('@L("提交成功")');
+                    doSearch();
+
+                }));
+            }
+
+        }
+
+        function doSearch() {
+            var where = {where:'1=1'};
+            var dictionaryName = $("#dictionaryName").val();
+            if (dictionaryName) {
+                where.where += " and DictionaryName.Contains(\"" + dictionaryName + "\") ";
+
+            }
+            layui.table.reload('Dictionary', {
+                where: where
+
+            })
+
+            return false;
+        }
+    </script>
+}

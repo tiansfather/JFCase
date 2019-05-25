@@ -1,0 +1,129 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+
+}
+@section styles{
+    <style>
+        .layui-table-view {
+            margin: 0
+        }
+    </style>
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-xs3">
+                    <ul id="tree" class="ztree"
+                        style="padding: 2px; border: 1px solid #ddd; overflow: auto;"></ul>
+                </div>
+                <div class="layui-col-xs9">
+                    <form class="layui-form layui-form-pane" onsubmit="return doSearch();">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <button class="layui-btn  " buttonname="@L("添加")" type="button" onclick="addHelps()">@L("添加")</button>
+                            </div>
+                        </div>
+                    </form>
+                    <table class="layui-table"
+                           lay-data="{height: 'full-150', page:false, id:'HelpList',url:'/api/services/app/MESHelps/GetPageResult'}"
+                           lay-filter="HelpList" @*lay-size="sm" *@>
+                        <thead>
+                            <tr>
+                                <th lay-data="{type:'numbers'}"></th>
+                                <th lay-data="{field:'helpTitle',width:300 }">@L("标题 ")</th>
+                                <th lay-data="{field:'menuDisplayName',width:100 }">@L("菜单 ")</th>
+                                <th lay-data="{toolbar:'#toolbar'}">@L("操作")</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <script type="text/html" id="toolbar">
+
+                        <a dataid="{{d.id}}" buttonname="编辑" modulekey="HelpList" class="layui-btn layui-btn-xs " lay-event="Edit" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/HelpsEdit" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;101%&quot;]}" onclick="func.callModuleButtonEvent()">编辑</a>
+                        <a dataid="{{d.id}}" buttonname="删除" modulekey="HelpList" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="Edit" confirmmsg="确认删除此帮助文档?" buttonactiontype="Ajax" buttonactionurl="abp.services.app.mESHelps.deleteEntity" onclick="func.callModuleButtonEvent()">删除</a>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script>
+        var currentMenu = { name: '',displayName:'' };
+
+        var ztree = function () {
+            var zTreeObj;
+            var setting = {
+                data: {
+                    key: {
+                        name: 'displayName',
+                        title: 'displayName',
+                        children: 'items'
+                    },
+                    //simpleData: {
+                    //    enable: true,
+                    //    idKey: 'id',
+                    //    pIdKey: 'parentId',
+                    //    rootPId: 'null'
+                    //}
+                },
+                callback: {
+                    onClick: function (event, treeId, treeNode) {
+                        if (treeNode.items.length > 0) {
+                            currentMenu = {};
+                            return;//只有点击叶节点才重新加载表格
+                        }
+                        currentMenu.name = treeNode.name;
+                        currentMenu.displayName = treeNode.displayName;
+                        config.reloadTable();
+                    },
+                }
+            };
+            var load = function () {
+                abp.services.app.menu.getFullTenancyMenuTreeJson().done(function (json) {
+                    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                    var newNode = [{ displayName: "根节点", items: json }];
+                    zTreeObj.addNodes(null, newNode);
+
+                    zTreeObj.expandAll(true);
+                });
+            };
+            load();
+            return {
+                reload: load
+            }
+        }();
+        config.ready = function () {
+            $("#tree").height($("div.layui-table-view").height()-50);
+
+        }
+
+        config.reloadTable = function () {
+            layui.table.reload('HelpList', {
+                where: { searchKeys: JSON.stringify({ menu: currentMenu.name }) }
+
+            })
+
+        }
+                        function addHelps() {
+                            if (!currentMenu.name) {
+                                abp.message.error("请选择菜单再添加帮助文档");
+                                return false;
+                            }
+            layer.prompt({ title: '@L("请输入标题")', formType: 0 }, function (text, index) {
+                layer.close(index);
+                func.runAsync(abp.services.app.mESHelps.addHelps(text, currentMenu.name, currentMenu.displayName).done(function (data) {
+                    layer.msg('@L("提交成功")');
+                    config.reloadTable();
+                }));
+            });
+
+
+        }
+    </script>
+}

@@ -1,0 +1,417 @@
+﻿<style>
+    .ziti {
+        font-size: 18px;
+    }
+
+    @media print {
+        .left1 {
+            left: 3.6cm;
+        }
+
+        .left2 {
+            left: 12.5cm;
+        }
+
+        .left3 {
+            left: 20.0cm;
+        }
+
+        .top1 {
+            top: 2.0cm;
+        }
+
+        .top2 {
+            top: 3.2cm;
+        }
+
+        .print-info {
+            left: 4cm;
+            top: 4.5cm;
+        }
+
+        .qr-code {
+            width: 4.6cm;
+            height: 4.6cm;
+            left: 2cm;
+            top: 5.2cm;
+        }
+
+        .file {
+            left: 9cm;
+            top: 6.0cm;
+            height: 2.5cm;
+        }
+    }
+</style>
+<style>
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    h1 {
+        line-height: 1.5;
+        text-align: center;
+        font-weight: 600;
+        font-size: 26px;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    h3 {
+        color: rgb(204, 51, 0);
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .my-btn {
+        width: 26px;
+        padding: 0 5px;
+        overflow: hidden;
+        transition: width 0.3s;
+        -moz-transition: width 0.3s; /* Firefox 4 */
+        -webkit-transition: width 0.3s; /* Safari 和 Chrome */
+        -o-transition: width 0.3s; /* Opera */
+    }
+
+        .my-btn:hover {
+            width: 60px;
+        }
+
+    body {
+        background: #fff;
+    }
+
+    #app {
+        position: relative;
+        font-family: SimSun;
+        width: 80%;
+        margin: 0 auto;
+        /*max-width: 850px;
+        margin-bottom: 50px;
+        margin-top: 50px;*/
+    }
+
+    #print {
+        position: absolute;
+        left: 50px;
+        top: 22px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    tr {
+        text-align: center;
+        height: 35px;
+    }
+
+    .logo-img {
+        max-height: 150px;
+        max-width: 150px;
+    }
+
+    img {
+        padding: 2px;
+    }
+
+        img.qrcode {
+            height: 150px;
+            width: 150px;
+        }
+
+    .had-print {
+        background: #ccc;
+    }
+
+    .print_unshow-span {
+        cursor: pointer;
+    }
+
+    .uploadimg {
+        max-height: 300px;
+        max-width: 100%;
+    }
+
+    .info {
+        text-align: left;
+        padding: 10px 20px;
+        line-height: 1.5;
+    }
+
+    .task-info {
+        height: 150px;
+        vertical-align: top;
+        text-align: left;
+        padding: 10px;
+    }
+
+    .sign-bottom p {
+        display: inline-block;
+        width: 32%;
+        font-size: 14px;
+        line-height: 2;
+    }
+
+    .text-left {
+        text-align: left;
+        text-indent: 1em;
+        padding: 0 10px;
+    }
+
+    .cungen {
+        position: absolute;
+        right: -30px;
+        top: 100px;
+    }
+
+        .cungen p {
+            font-size: 16px;
+            writing-mode: vertical-rl;
+        }
+
+    @media print {
+        .my-btn, .print_unshow-span, #showPage {
+            display: none !important;
+        }
+
+        #app {
+            max-width: none;
+            margin-bottom: auto;
+            width: auto;
+            margin: 0;
+        }
+
+        .layui-icon-ok:before {
+            content: '';
+        }
+
+        #r-print {
+            display: block !important;
+        }
+
+            #r-print p, #r-print img {
+                position: absolute;
+            }
+    }
+</style>
+<div id="app" v-if="currentItem.id" class="layui-form">
+    <div id="r-print" class="ziti" style="display:none;">
+        <p class="left1 top1">{{currentItem.projectSN}}</p>
+        <p class="left2 top1">{{currentItem.projectName}}</p>
+        <p class="left3 top1">{{currentItem.partName}}</p>
+        <p class="left1 top2">{{currentItem.unitName}}</p>
+        <p class="left2 top2">{{currentItem.projectCharger}}</p>
+        <p class="left3 top2">{{currentItem.partSpecification}}</p>
+        <p class="print-info">{{currentItem.taskInfo}}</p>
+        <img :src="qrCode" class="qr-code" />
+        <img class="file" :src="currentItem.sheetFile.filePath" alt="图片信息" v-if="currentItem.sheetFile&&currentItem.sheetFile.filePath" :style="{height:printFileHeight+'cm'}"/>
+    </div>
+    <div id="showPage">
+        <header>
+            <div id="btn">
+                <img :src="currentItem.logo||'/assets/images/master-logo.png'" alt="日成" class="logo-img" style="width:115px;" />
+                <button class="my-btn layui-btn layui-btn-sm" :class="{'had-print':currentItem.printed}" @click="myPrint">
+                    <i class="layui-icon layui-icon-print my-i-print"></i> 打印
+                </button>
+                <div>
+                    示意图高度:<input type="text" class="layui-input" v-model="printFileHeight" style="display:inline;width: auto;" />
+                </div>
+            </div>
+            <div>
+                <h1>台州市黄岩智盛模塑有限公司外加工委托单</h1>
+            </div>
+            <div>
+                <img :src="qrCode" class="qrcode" />
+                <h3>{{currentItem.processSN}}</h3>
+            </div>
+        </header>
+        <table width="100%" cellpadding="0" cellspacing="0" border="1">
+            <colgroup>
+                <col style="background-color:#fff;width:13.3%">
+                <col style="background-color:#fff;width:20.3%">
+                <col style="background-color:#fff;width:13.3%">
+                <col style="background-color:#fff;width:20.3%">
+                <col style="background-color:#fff;width:13.3%">
+                <col style="background-color:#fff;width:20.3%">
+            </colgroup>
+            <tr>
+                <td>模具编号</td>
+                <td>{{currentItem.projectSN}}</td>
+                <td>模具名称</td>
+                <td>{{currentItem.projectName}}</td>
+                <td>工件名称</td>
+                <td>{{currentItem.partName}}</td>
+            </tr>
+            <tr>
+                <td>加工单位</td>
+                <td>{{currentItem.unitName}}</td>
+                <td>模具组长</td>
+                <td>{{currentItem.projectCharger}}</td>
+                <td>规格</td>
+                <td>{{currentItem.partSpecification}}</td>
+            </tr>
+            <tr>
+
+                <td colspan="2" class="task-info">
+                    <p>加工要求:{{currentItem.taskInfo}}</p>
+                </td>
+                <td title="双击上传图片" class="uploadinsert" colspan="2" valign="top" style="padding:5px;position:relative;" callback="uploadCallback">
+                    <img class="uploadimg" style="max-height:300px;" :src="currentItem.sheetFile.filePath" alt="图片信息" v-if="currentItem.sheetFile&&currentItem.sheetFile.filePath" onerror="this.src=app.currentItem.logo" />
+                    <span class="print_unshow-span" v-else>双击上传图片</span>
+                </td>
+                <td colspan="2" class="task-info">加工异常情况说明:</td>
+            </tr>
+            <tr>
+                <td>预约日期</td>
+                <td colspan="2">{{currentItem.appointDate}}</td>
+                <td>要求完成日期</td>
+                <td colspan="2">{{currentItem.requireDate}}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-left">总工时：</td>
+                <td colspan="2" class="text-left">单价：</td>
+                <td colspan="2" class="text-left">总价：</td>
+            </tr>
+            <tr>
+                <td style="font-size:12px;text-align:left;" colspan="6">
+                    <p>备注：1、每次加工必须填开此单，每个工作一张加工单（一副模具内多个滑块斜顶等，可备注一张单）。</p>
+                    <p style="padding-left:3em;">2、如果出现加工错误或失误，应及时报告，不能擅自进行烧焊，必须经过我司加工主管审核，如果加工户擅自烧焊，则必须赔偿材料和之前所有加工费用，并扣除工件的加工费。</p>
+                </td>
+            </tr>
+        </table>
+        <div class="sign-bottom">
+            <p>联系电话：18657692272</p>
+            <p>车间主管签字：</p>
+            <p>模具工签字：</p>
+        </div>
+        <div class="cungen">
+            <p>一&emsp;外加工管理处（白）&emsp;二存根（红）&emsp;三加工户（蓝）</p>
+        </div>
+    </div>
+
+    <!--<p style="font-size: 10px; padding-left: 5px; padding-right: 5px; margin-top: 20px; padding-top: 0;">
+        &nbsp;&nbsp;每次加工必须先开此加工单，生成加工单号，加工点按此单填写。上下料必须扫码，如未接收到扫码报工图片，我司不负责该加工发票。红联和加工程序必须返回本公司；黄联，加工点自己保留。若以后红联未返回，不予结账，加工单返回后，必须各部门签字，方可生效。<br />&nbsp;&nbsp;若加工单上二维码扫描不出来或者在报工界面出现无法提交等其他异常情况，请联系软件公司客服18806597400或15906863922。
+    </p>-->
+</div>
+
+<script>
+    var app;
+    //图片上传
+    layui.use(['layer', 'form'], function () {
+
+    })
+
+    function fSendUnit() {
+        //加载额外添加数据
+        loadTemplateData(function () {
+            $("#app").show();
+            typeof dataLoaded != "undefined" && Vue.nextTick(dataLoaded);
+        });
+    }
+    app = new Vue({
+        el: '#app',
+        data: {
+            currentItem: {},
+            taskId: $.getUrlParam("taskid"),
+            printFileHeight:2.5
+        },
+        methods: {
+            loadItem: function (taskId) {
+                var that = this;
+                func.runAsync(abp.services.app.processTask.getTaskInfoById(taskId).done(function (data) {
+                    data.phoneNumber = '';
+                    that.currentItem = data;
+                    that.$nextTick(function () { setTimeout(layui.form.render, 0) })
+                    if (data.projectCharger) {
+                        try {
+                            abp.services.app.user.getUserInfoByName(data.projectCharger).done(function (res) {
+                                res && (that.currentItem.phoneNumber = res.phoneNumber ? ':' + res.phoneNumber : '');
+                                that.$nextTick(function () { layui.form.render() })
+
+                                fSendUnit();
+                            })
+                        }
+                        catch (error) {
+                            console.error(error);
+                            fSendUnit();
+                        }
+
+                    } else {
+                        fSendUnit();
+                    }
+                }))
+
+            },
+            myPrint: function () {
+                //$('.layui-form-checked').removeClass('layui-form-checked')
+                window.print();
+                this.currentItem.printed = true;
+                abp.services.app.processTask.setTaskStatus(this.taskId, 'Print', true)
+            }
+        },
+        computed: {
+            //dLength: function () {
+            //    var a = this.currentItem.processTaskDetails;
+            //    if (a) {
+            //        return a.length
+            //    }
+            //    return 0
+            //},
+            //detailLength: function () {
+            //    if (this.currentItem.processTaskDetails) {
+            //        var l = this.currentItem.processTaskDetails.length;
+            //        return l > 0 ? l + 1 : 2
+            //    } else {
+            //        return 2
+            //    }
+            //},
+            nowDate: function () {
+                var myDate = new Date();
+                var date = myDate.getDate();
+                var month = myDate.getMonth() + 1;
+                var year = myDate.getFullYear();
+                return year + '-' + month + '-' + date;
+            },
+            qrCode: function () {
+                return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Report?taskid=" + this.taskId);
+
+            }
+        },
+        mounted: function () {
+            this.loadItem(this.taskId);
+
+        },
+        filters: {
+            objEmpty: function (value, arg) {
+                if (!value) return '';
+                return value[arg];
+            }
+        }
+
+    })
+
+    $(".uploadinsert").on('mousewheel', '.uploadimg', function (e) {
+        var delta = e.originalEvent.wheelDelta;
+        var oriWidth = $(this).height();
+        var newWidth = oriWidth * (delta > 0 ? 1.2 : 0.8);
+        $(this).css("height", newWidth + "px");
+        console.log(e);
+    })
+
+    function uploadCallback(res) {
+        var filePath = res.filePath;//图片路径
+        app.currentItem.sheetFile = { filePath: filePath }
+        //$(".uploadinsert").html("<img src='" + filePath + "' width='300' tips='鼠标滚轮进行图片缩放' />");
+        //提交至加工图片
+        abp.services.app.processTask.attachSheetFile(app.taskId, filePath);
+        console.log(res);
+    }
+</script>

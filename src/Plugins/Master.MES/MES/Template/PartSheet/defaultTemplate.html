@@ -1,0 +1,187 @@
+﻿<style>
+
+    .layui-anim {
+        background: #fff;
+        padding-top: 0 !important;
+    }
+
+    .layui-table {
+        border-top: 1px solid #ccc;
+    }
+    /*----重置样式*/
+    .head {
+        display: flex;
+        padding: 0 250px 0 20px;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .msg-wrap {
+        padding-bottom: 1px;
+        padding-left: 20px;
+    }
+
+    .msg {
+        font-size: 20px;
+        line-height: 1.5;
+        display: inline-block;
+        padding-left: 20px;
+    }
+
+    b {
+        font-size: 22px;
+    }
+
+    .layui-table td {
+        max-width: 250px;
+    }
+
+    .print {
+        position: absolute;
+        top: 50px;
+        right: 50px;
+    }
+
+    @media print {
+        .print {
+            display: none !important;
+        }
+
+        .head {
+            padding: 0;
+        }
+    }
+</style>
+<div id="app" v-cloak>
+    <div class="head">
+        <div class="msg-wrap">
+            <img id="codeImg" :src="qrCode" width="250" />
+            <p class="msg">
+                零件名:<b>{{part.partName}}</b>&nbsp;({{part.partSN}})<br>
+                规格:{{part.partSpecification}}&emsp;&emsp;数量:{{part.partNum}}<br>
+                编号:{{part.projectSN}}
+            </p>
+        </div>
+        <img :src="part.partImg+'?w=250'" :alt="part.partName" @click="layerImg()" />
+        <button class="layui-btn layui-btn-radius layui-btn-primary print" type="button" @click="window.print()">打印</button>
+    </div>
+    <table class="layui-table">
+        <thead>
+            <tr>
+                <td>序号</td>
+                <td>工序</td>
+                <td>工艺要求</td>
+                <td>预计天数/天</td>
+                <td>计划上机时间</td>
+                <td>计划下机时间</td>
+                <td>预计工时/小时</td>
+                <td>安排上机时间</td>
+                <td>安排下机时间</td>
+                <td>实际上机时间</td>
+                <td>实际下机时间</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(item,index) in part.tasks">
+                <td>{{item.sort}}</td>
+                <td>{{item.processTypeName}}</td>
+                <td>{{item.taskInfo}}</td>
+                <td>{{getDay(item.planStartDate,item.planEndDate)}}</td>
+                <td>{{item.planStartDate}}</td>
+                <td>{{item.planEndDate}}</td>
+                <td>{{item.estimateHours}}</td>
+                <td>{{item.arrangeDate}}</td>
+                <td>{{getArrangeEnd(item.arrangeDate,item.estimateHours)}}</td>
+                <td>{{item.startDate}}</td>
+                <td>{{item.endDate}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    func.formatDate = function (now, op) {
+        //type取值范围
+        //var types = { 'S':8, 'M':5, 'H':2, 'Day':true,'Mounth'}
+        var defaultOp = { type: 'S', split: '-' },
+            op = $.extend(defaultOp, op),
+            split = op.split,
+            y = now.getFullYear(),
+            m = now.getMonth() + 1,
+            d = now.getDate();
+        var ymd = y + split + (m < 10 ? "0" + m : m) + split + (d < 10 ? "0" + d : d)
+
+        var rData;
+        switch (op.type) {
+            case 'S':
+                rData = ymd + " " + now.toTimeString().substr(0, 8);
+                break;
+            case 'M':
+                rData = ymd + " " + now.toTimeString().substr(0, 5);
+                break;
+            case 'H':
+                rData = ymd + " " + now.toTimeString().substr(0, 2);
+                break;
+            case 'Day':
+                rData = ymd;
+                break;
+            case 'Mounth':
+                rData = (m < 10 ? "0" + m : m) + split + (d < 10 ? "0" + d : d);
+            default:
+                rData = ymd + " " + now.toTimeString().substr(0, 8);
+        }
+        return rData
+    }
+
+    var app;
+    config.ready = function () {
+
+        var dataId = $.getUrlParam("data");
+        app = new Vue({
+            el: '#app',
+            data: {
+                part: {}
+            },
+            computed: {
+                qrCode: function () {
+                    return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/PartTasks?id=" + dataId);
+                }
+            },
+            methods: {
+                getDay: function (s, e) {
+                    if (s && e) {
+                        return (new Date(e).getTime() - new Date(s).getTime()) / (1000 * 60 * 60 * 24) + 1
+                    } else {
+                        return 1
+                    }
+                },
+                layerImg: function () {
+                    layuiExt.fLayerImg('', this.part.partImg)
+                },
+                getArrangeEnd: function (aDate, eHours) {
+                    if (aDate && eHours) {
+                        var ms = new Date(aDate).getTime() + eHours * 60 * 60 * 1000;
+                        return func.formatDate(new Date(ms), { type: 'M' });
+                    } else {
+                        return '';
+                    }
+                },
+            },
+            created: function () {
+                var that = this;
+                func.runAsync(abp.services.app.part.getPartTaskInfo(dataId).done(function (data) {
+                    console.log(data)
+                    that.part = data;
+                    refresh();
+                }));
+            }
+        })
+    }
+
+    function refresh() {
+        Vue.nextTick(function () {
+            layui.form.render();
+        })
+
+    }
+</script>

@@ -1,0 +1,83 @@
+﻿@model Master.Configuration.Dictionaries.Dictionary
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+<blockquote class="layui-elem-quote" style="padding:5px;margin-bottom:0">
+    @L("编辑字典")【@Model.DictionaryName】
+    <button type="button" class="layui-btn layui-btn-sm" onclick="addRow()">@L("添加项")</button>
+    <span style="color:#999">@L("如果键和值相同，可以将值留空，系统会自动填充")</span>
+</blockquote>
+<table class="layui-hide" id="dictionary" lay-filter="dictionary"></table>
+
+@section scripts{
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script>
+        config.ready = function () {
+            //将字典数据转化为表格可以识别的数组
+            var dic =@Html.Raw(Model.DictionaryContent);
+            var data = [];
+            for (var key in dic) {
+                data.push({key:key,value:dic[key]});
+
+            }
+
+            var table = layui.table;
+            //展示已知数据
+            window.tableIns=table.render({
+                elem: '#dictionary'
+                , cols: [[ //标题栏
+                     { field: 'key', title: '@L("键")',edit:'text' }
+                    , { field: 'value', title: '@L("值")',edit:'text' }
+                    , { field: 'operation', title: '操作' ,toolbar:'#toolbar'}
+                ]]
+                ,limit:1000
+                , data: data
+                //,skin: 'line' //表格风格
+                , even: true
+                //,page: true //是否显示分页
+                //,limits: [5, 7, 10]
+                //,limit: 5 //每页默认显示的数量
+            });
+            //监听工具条
+            table.on('tool(dictionary)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    layer.msg('ID：' + data.id + ' 的查看操作');
+                } else if (obj.event === 'del') {
+                    layer.confirm(L('真的删除行么'), function (index) {
+                        obj.del();
+                        layer.close(index);
+                    });
+                } else if (obj.event === 'edit') {
+                    layer.alert('编辑行：<br>' + JSON.stringify(data))
+                }
+            });
+        }
+        function addRow() {
+            var data = layui.table.cache["dictionary"];
+            data.push({ key: '', value: '' });
+            tableIns.reload({data:data});
+
+        }
+        function submit() {
+            //数据提交
+            var data = layui.table.cache["dictionary"];
+            var dic = {};
+            $.each(data, function (i, v) {
+                if (v.key) {
+                    dic[v.key] = v.value?v.value:v.key;
+                }
+            })
+            func.runAsync(abp.services.app.dictionary.updateDictionary(@Model.Id, JSON.stringify(dic))
+                .done(function () { 
+                    parent.layer.msg("@L("提交成功")");
+                    parent.layer.closeAll("iframe");
+                    parent.func.reload("Dictionary");
+                    parent.config.refresh();
+                }));
+            console.log(dic);
+        }
+    </script>
+}

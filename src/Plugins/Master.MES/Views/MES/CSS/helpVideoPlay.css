@@ -1,0 +1,130 @@
+﻿@charset "UTF-8";
+html {
+  background: #fff;
+  color: #000;
+}
+
+html, body, .layui-anim {
+  height: 100%;
+}
+
+#app {
+    margin: 0 auto 40px;
+    min-height: calc(100vh - 160px);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+header {
+  height: 45px;
+  padding: 20px;
+}
+
+header a {
+  position: absolute;
+  left: 10%;
+}
+
+h1, .span9 h2 {
+  color: #222;
+  font-weight: normal;
+  height: 40px;
+  line-height: 40px;
+  font-family: "Microsoft Yahei", "微软雅黑","宋体", Verdana, Arial, Geneva, sans-serif;
+  font-size: 24px;
+  text-align: center;
+}
+
+.ul-left h2 {
+  border-bottom: 3px solid #008bda;
+  height: 31px;
+  line-height: 31px;
+  font-size: 18px;
+  color: #000;
+  font-weight: bold;
+  text-indent: 20px;
+}
+
+.ul-left {
+  background-color: #f8f8f8;
+  width: 220px;
+  margin-right: 20px;
+  border-radius: 5px;
+}
+
+.left-name {
+  min-height: calc(100% - 260px);
+}
+
+.left-service {
+  font-size: 16px;
+  line-height: 2;
+  text-align: center;
+}
+
+.left-service .phone-p {
+  font-size: 20px;
+  color: blue;
+}
+
+.left-li p {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    width: 91%;
+    padding-left: 20px;
+    color: #252525;
+    font-size: 14px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.left-li p:hover, .left-li .active_li {
+    color: #008bda;
+}
+
+.span9 {
+  width: 700px;
+}
+
+@media (min-width: 1200px) {
+  .span9 {
+    width: 870px;
+  }
+}
+
+@media (max-width: 960px) {
+  .ul-left {
+    display: none !important;
+  }
+  .span9 {
+    width: 100%;
+  }
+}
+
+.span9 .content {
+  text-indent: 32px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+footer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  background-color: #E7E7E7;
+  color: #666;
+  line-height: 35px;
+  height: 35px;
+  font-size: 16px;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+/*# sourceMappingURL=a.css.map */

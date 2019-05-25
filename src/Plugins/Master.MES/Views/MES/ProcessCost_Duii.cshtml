@@ -1,0 +1,380 @@
+﻿@using Master.Web.Components
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@using Master.Module
+
+
+@*@section styles{
+    <style>
+        .title-head {
+            line-height: 38px;
+        }
+
+        .title-head span, .title-head b {
+            font-size: 16px;
+        }
+    </style>
+}*@
+
+<form class="layui-form layui-form-pane" id="app"   name="accounting">
+    @*<div class="layui-form-item" pane>
+            <label class="layui-form-label">@L("总对账金额")</label>
+            <div class="layui-input-block">
+                <input type="text" autocomplete="off" class="layui-input" name="checkedFee" >
+            </div>
+        </div>*@
+    <div class="layui-form-item">
+        <div class="layui-inline" style="margin-left:70px;">
+            <label class="layui-form-label">@L("总金额")</label>
+            <div class="layui-input-inline">
+                <input type="text" autocomplete="off" class="layui-input" name="checkedFee" v-model="totalFee">
+            </div>
+        </div>
+        <div class="layui-inline title-head">
+            @L("回单总金额"):
+            <span>{{totalHDFee}}</span>
+        </div>
+        <div class="layui-inline title-head">
+            @("供应商"):<b id="provider">{{tUnitName[0]}}{{tUnitName.length>1?'...':''}}</b>
+        </div>
+        @*<div class="layui-inline title-head">
+            <button class="layui-btn" v-disabled="tUnitName.length != 1" type="button" onclick="checkFee()" id="Do_Submit">@L("发送电子对账单")</button>
+        </div>*@
+    </div>
+
+    <div>
+        <table id="searchTable" class="layui-table" lay-size="sm">
+            <thead style="border:1px solid #ccc;">
+                <tr>
+                    <th width="8%">@L("开单日期")</th>
+                    <th width="8%">@L("单号")</th>
+                    <th width="8%">@L("模具编号")</th>
+                    <th width="8%">@L("零件名称")</th>
+                    <th width="8%">@L("计价方式")</th>
+                    <th width="10%">@L("工时/重量/数量/长度")</th>
+                    <th width="10%">@L("加工单价")</th>
+                    <th width="8%">@L("初始金额")</th>
+                    <th width="8%">@L("回单审核金额")</th>
+                    @*<th width="10%">@L("是否开票")</th>*@
+                    <th width="14%">@L("实际核算金额")</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item,index) in tasks">
+                    <td :tips="item.unitName">{{item.kaiDate?new Date(item.kaiDate).pattern('yyyy-MM-dd'):''}}</td>
+                    <td>
+                        <a class="templet-a" @@click="openPage(item.processSN)">{{item.processSN}}</a>
+                    </td>
+                    <td>
+                        {{item.projectSN}}
+                    </td>
+                    <td>
+                        {{item.partName}}
+                    </td>
+                    <td>
+                        {{item.feeType}}
+                    </td>
+                    <td>
+                        <input type="text" class="layui-input" v-model="item.estimateHours" v-if="item.feeType=='按时间'" />
+                        <input type="text" class="layui-input" v-model="item.feeFactor" v-else-if="item.feeType!=='承包'" />
+                        @*{{computeFeeFactor(item)}}*@
+                    </td>
+                    <td>
+                        <input type="text" class="layui-input" v-model="item.jobFee" v-if="item.feeType=='承包'" />
+                        <input type="text" class="layui-input" v-model="item.price" v-else />
+                    </td>
+                    <td>
+                        {{computeFee(item)}}
+                    </td>
+                    <td>
+                        {{item.fee||0}}
+                    </td>
+                    @*<td>
+                        <select v-model="item.makeInvoice" lay-filter="makeinvoice" :vueindex="index">
+                            <option value="">不开票</option>
+                            <option value="1">开票</option>
+                        </select>
+                    </td>*@
+                    <td>
+                        <input type="text" class="layui-input" v-model="item.fixFee" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="display:none">
+        <button class="layui-btn" type="button" lay-submit="" id="MeasureMent_Submit">@L("提交")</button>
+    </div>
+
+</form>
+
+@section scripts{
+    <script>     
+        //$('body').html('aaa')
+		var app;
+        //config.ready = function () {
+            //$('body').html('aaa')
+            //layui.form.on('select(makeinvoice)', function (data) {
+            //    //console.log(data.value);
+            //    app.tasks[$(data.elem).attr("vueindex")].makeInvoice = data.value;
+            //})
+        window.onload = function () {
+            var dataIds = $.getUrlParam("data").split(',');
+            app = new Vue({
+                el: '#app',
+                data: {
+                    tasks: [],
+                    totalFee: '',
+                    sumFlag: 0,
+                    sumWriteFlag: 1
+                },
+                computed: {
+                    totalHDFee: function () {
+                        var data = 0;
+                        this.tasks.forEach(function (n) {
+                            data += Number(n.fee || 0);
+                        })
+                        return data;
+                    },
+                    tUnitName: function () {
+                        var data = [];
+                        this.tasks.forEach(function (n) {
+                            if (n.unitName && data.indexOf(n.unitName) == -1) {
+                                data.push(n.unitName);
+                            }
+                        })
+                        //if (data.length = 1) {
+                        //    $("#Do_Submit").attr("class", "layui-btn");
+                        //}
+                        return data;
+                    }
+                },
+                methods: {
+                    openPage: function (processSN) {
+                        var where = `ProcessSN != null and ProcessSN.Contains("${processSN}")`
+                        top.layui.index.openTabsPage('/Home/Show?name=../MES/ProcessTask&prform=' + encodeURIComponent(where), '开单任务')
+                    },
+                    computeFee: function (item) {
+                        var f;
+                        switch (item.feeType) {
+                            case '按时间':
+                                f = Number(item.estimateHours) * Number(item.price)
+                                break;
+                            case '承包':
+                                f = item.jobFee
+                                break;
+                            default:
+                                f = Number(item.price) * Number(item.feeFactor)
+                        }
+                        if (isNaN(f)) {
+                            return '只允许输入阿拉伯数字'
+                        } else {
+                            return f
+                        }
+                    },
+                },
+                created: function () {
+                    //$('body').html('aaa')
+                    var that = this;
+                    func.runAsync(abp.services.app.processTask.getProcessTaskInfosByIds(dataIds).done(function (data) {
+                        console.log(data)
+                        data = data.map(function (n) {//两种情况，一种在fee为0时，最后得到的也为0，另一种，fee为0，继续看jobFee的值。
+                            //取出一个arr中第一个碰到的numberr类型的值
+                            function fnumFee(a) {
+                                if (a.length > 0) {
+                                    if (typeof a[0] === 'number') {
+                                        return a[0];
+                                    } else {
+                                        a.shift();
+                                        return fnumFee(a);
+                                    }
+                                } else {
+                                    return 0;
+                                }
+                            }
+                            n.checkFee = fnumFee([n.checkFee, n.price, n.jobFee]);
+
+                            n.fixFee = Number(n.checkFee.toFixed(2));//新增一个显示fee数据
+                            return n;
+                        })
+                        that.tasks = data;
+                        refresh();
+                        //that.tasks.forEach(function (n) {
+                        //    that.totalFee += n.fee
+                        //});
+                    }));
+                },
+                watch: {
+                    totalFee: function (val, oldVal) {
+                        if (this.sumFlag > 0) {
+                            var that = this;
+                            var initTotalFee = 0;
+                            that.tasks.forEach(function (n) {
+                                initTotalFee += n.checkFee;
+                            });
+                            var tLength = this.tasks.length;
+                            this.sumWriteFlag = 0;
+                            this.tasks = this.tasks.map(function (n) {
+                                var num;
+                                if (initTotalFee == 0) {    //上次的总值为0，平分现在的 总值
+                                    num = val / tLength;
+                                } else {                    //上次有值，则按比例平分总值
+                                    num = val * (n.checkFee / initTotalFee);
+                                }
+                                n.checkFee = (num != 0 ? num : n.checkFee);
+                                n.fixFee = Number(n.checkFee.toFixed(2));
+                                return n;
+                            })
+                        } else {
+                            this.sumFlag++;
+                        }
+                    },
+                    tasks: {
+                        handler: function (val, oldVal) {       //当fixFee改变时，进去
+                            console.log(this.sumWriteFlag)
+                            if (this.sumWriteFlag > 0) {
+                                var temp = 0;
+                                this.tasks.forEach(function (n) {
+                                    n.checkFee = Number(n.fixFee);               //让真正的fee值改变
+                                    //会进来两次watch，是因为fixFee手动输入改变后，会更改fee，会再次进去
+                                    temp += n.checkFee;
+                                })
+                                this.sumFlag = 0;
+                                this.totalFee = temp;               //让总值改变
+                            } else {
+                                this.sumWriteFlag++;
+                            }
+
+
+                        },
+                        deep: true
+                    }
+                }
+            })
+            //if ($("#provider").text().includes("...")) {
+            //    $("#Do_Submit").attr("class", "layui-btn");
+            //}
+            //}
+        }
+
+
+
+		@*function submit() {
+            //todo:提交验证
+            layer.confirm('确认核算吗？', {
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                isSure();
+            }, function () {
+            });
+
+            function isSure() {
+                var OutRule = [];
+                var data = app.tasks.map(function (o,index) {
+                    var arr = [o.checkFee, o.estimateHours, o.feeFactor, o.jobFee, o.price];
+                    var isInRule = true;
+                    arr.forEach(function (x) {
+                        if (isNaN(x)) {
+                            isInRule = false;
+                        }
+                    })
+                    if (!isInRule) {
+                        OutRule.push(index)
+                    }
+                    return {
+                        id: o.id,
+                        checkFee: o.checkFee.toFixed(2),
+                        MakeInvoice: o.makeInvoice,
+                        estimateHours: o.estimateHours,
+                        feeFactor: o.feeFactor,
+                        jobFee: o.jobFee,
+                        price:o.price
+                    };
+                });
+                if (OutRule.length > 0) {
+                    layer.tips('请仔细检查这一行，为保障报表的正确性，只允许输入阿拉伯数字', $('#searchTable tbody tr').eq(OutRule[0]).find('td').eq(5),{
+                        tips: 1
+                    });
+                }
+                else {
+                    func.runAsync(abp.services.app.processTask.addFee(data).done(function () {
+				        parent.layer.msg("@L("提交成功")");
+                        parent.layer.closeAll("iframe");
+                        parent.func.reload("ProcessTask");
+			        }))
+                }
+            }
+
+
+        }*@
+        //function doSubmit(obj) {
+        //    var that = obj;
+        //    if (app.tUnitName.length != 1) {
+        //        $(that).atrr("class", "layui-btn layui-btn-disabled")
+        //    } else {
+
+        //    }
+        //}
+        //function checkFee() {
+        //    var OutRule = [];
+        //    var data = app.tasks.map(function (o, index) {
+        //        var arr = [o.checkFee, o.estimateHours, o.feeFactor, o.jobFee, o.price];
+        //        var isInRule = true;
+        //        arr.forEach(function (x) {
+        //            if (isNaN(x)) {
+        //                isInRule = false;
+        //            }
+        //        })
+        //        if (!isInRule) {
+        //            OutRule.push(index)
+        //        }
+        //        return {
+        //            id: o.id,
+        //            checkFee: o.checkFee.toFixed(2),
+        //            MakeInvoice: o.makeInvoice,
+        //            estimateHours: o.estimateHours,
+        //            feeFactor: o.feeFactor,
+        //            jobFee: o.jobFee,
+        //            price: o.price
+        //        };
+        //    });
+        //    if (OutRule.length > 0) {
+        //        layer.tips('请仔细检查这一行，为保障报表的正确性，只允许输入阿拉伯数字', $('#searchTable tbody tr').eq(OutRule[0]).find('td').eq(5), {
+        //            tips: 1
+        //        });
+        //    }
+        //    else {
+        //        function goahead() {
+        //            func.runAsync(abp.services.app.processTask.sendFee(data, { error: failF, abpHandleError: false }).done(function () {
+        //                abp.message.success(L("发送成功"));
+        //            }))
+        //            function failF(err) {
+        //                if (err.code != -1) {
+        //                    abp.ajax.showError(err)
+        //                } else {
+        //                    var tenantId = abp.session.tenantId;
+        //                    var src = '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/Register?inviter=" + tenantId + "&companyName=" + encodeURIComponent(app.tUnitName[0]));
+        //                    layer.open({
+        //                        title: '对方未加入'
+        //                        , content: `<div style="text-align:center;"><span>${err.message}</span><img src="${src}"/></div>`
+        //                        , area: '300px'
+        //                        , offset: '100px'
+        //                        , btn: ''
+        //                    });
+        //                }
+        //            }
+        //        }
+        //        abp.message.confirm(L('确认发送给加工点?' ), function () {
+        //            //permission(goahead, '发送')
+        //            goahead();
+        //        })
+        //    }
+        //}
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+            })
+
+        }
+    </script>
+}

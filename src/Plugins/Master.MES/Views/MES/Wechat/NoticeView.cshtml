@@ -1,0 +1,12 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@model Master.Notices.Notice
+@{ 
+    //往来单位公告查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "公告信息";
+}
+
+<div style="padding:10px;">
+    <h1 style="text-align:center;margin:1.5em;">@Model.NoticeTitle</h1>
+    @Html.Raw(Model.NoticeContent)
+</div>

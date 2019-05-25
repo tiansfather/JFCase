@@ -1,0 +1,68 @@
+﻿@section styles{
+<style>
+        #codeB{
+            display:block;
+            padding:10px;
+        }
+        #codeImg{
+            display:block;
+            margin:10px auto;
+        }
+    h1 {
+        font-size: 20px;
+        color: #000;
+        font-weight: 600;
+    }
+    .my-print-wrap {
+        position: absolute;
+        padding-left: 25px;
+        text-align: left;
+    }
+    .my-btn {
+        width: 26px;
+        padding: 0 5px;
+        overflow: hidden;
+        transition: width 0.3s;
+        -moz-transition: width 0.3s;
+        -webkit-transition: width 0.3s;
+        -o-transition: width 0.3s;
+    }
+    .my-btn:hover{
+        width:60px;
+    }
+    @@media print {
+       .my-print-wrap{
+            display: none !important;
+        }
+    }
+</style>
+}
+    <div style="text-align:center;margin-top:20px;" id="app">
+        <div class="my-print-wrap">
+            <button class="my-btn layui-btn layui-btn-sm" @@click="window.print()">
+                <i class="layui-icon layui-icon-print"></i> &nbsp;打印
+            </button>
+        </div>
+        <div>
+            <img id="codeImg" :src="qrCode" width="250" />
+            <b id="codeB">微信扫描二维码绑定设备</b>
+        </div>
+        
+    </div>
+
+    @section scripts{
+        <script>
+			var equipmentId = $.getUrlParam("id");
+            config.ready = function () {
+                var app = new Vue({
+                    el: '#app',
+                    computed: {
+                        qrCode: function () {
+                            return '/api/qrcode?pixel=10&url=' + encodeURIComponent(location.origin + "/MES/BindEquipment?id=" + equipmentId);
+                        }
+                    }
+                });
+
+            }
+        </script>
+    }

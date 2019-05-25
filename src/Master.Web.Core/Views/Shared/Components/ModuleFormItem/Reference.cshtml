@@ -1,0 +1,35 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@using Abp.Domain.Entities
+@using Newtonsoft.Json
+@using Master.Json
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleFormItemViewModel
+@{
+    var column = Model.ColumnInfo;
+
+    var relativeModuleKey = column.RelativeDataString;//关联模块Key
+    object referenceData = new List<object>();
+    if (Model.Data.ContainsKey(column.ColumnKey + "_data"))
+    {
+        referenceData = Model.Data[column.ColumnKey + "_data"];
+    }
+
+    var maxReferenceNumber = column.MaxReferenceNumber;
+    var referenceItemTpl = column.ReferenceItemTpl;
+    var searchColumns = column.ReferenceSearchColumns;
+    var searchWhere = column.ReferenceSearchWhere;
+    if (string.IsNullOrEmpty(maxReferenceNumber)) { maxReferenceNumber = "1"; }//默认引用数量为1
+    if (string.IsNullOrEmpty(referenceItemTpl)) { referenceItemTpl = "id"; }//默认引用的显示数据
+                                                                            //var searchUrl = column.RelativeDataType == RelativeDataType.Module ? $"/api/services/app/bringback/getModuleData?moduleKey={column.RelativeDataString}&searchColumns={searchColumns}" : column.RelativeDataString;
+
+    var renderer = !string.IsNullOrEmpty(column.Renderer) ? column.Renderer : "lay-tableselect";
+    var setting = new JsonSerializerSettings();
+    setting.ContractResolver = new MyContractResolver();
+}
+
+
+<div is="@renderer" value="@(Model.Value?.ToString())" :column-Info="{ColumnKey:'@column.ColumnKey',ColumnName:'@column.ColumnName',VerifyRules:'@column.VerifyRules',RelativeDataType:'@column.RelativeDataType',RelativeDataString:'@column.RelativeDataString',MaxReferenceNumber:'@maxReferenceNumber',ReferenceItemTpl:'@referenceItemTpl',ReferenceSearchColumns:'@searchColumns',ReferenceSearchWhere:'@searchWhere'}"  :data='@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(referenceData,setting))'></div>
+

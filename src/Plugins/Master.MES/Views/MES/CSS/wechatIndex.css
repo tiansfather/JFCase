@@ -1,0 +1,78 @@
+ 
+body {
+    height: 100vh;
+    background-color: #f4f4f4;
+    font-size: 40px;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.content {
+    padding: 40px 30px;
+    width: 65vw;
+    margin: auto;
+    background-color: #ccc;
+    color: white;
+}
+
+.content-daohang {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: calc(30vw - 40px);
+    height: calc(30vw - 40px);
+    float: left;
+    margin: 30px 30px;
+}
+
+li:nth-child(odd) .content-daohang {
+    /* margin-right: 10px;*/
+}
+
+.content-daohang i, .content-daohang span {
+    text-align: center;
+    display: block;
+}
+
+.weui-tab__bd .weui-tab__bd-item.weui-tab__bd-item--active {
+    display: flex;
+}
+
+ul {
+    overflow: hidden;
+    list-style: none;
+}
+
+.iconfont {
+    font-size: 100px;
+    color: white;
+}
+
+.weui-tabbar__label {
+    font-size: 50px;
+}
+
+.weui-tabbar {
+    min-height: 150px;
+}
+
+.my--tabbar__label {
+    font-size: 60px;
+    color: #000;
+    font-weight: bold;
+}
+
+.logo-wrap {
+    position: absolute;
+    width: 90vw;
+    left: 5vw;
+    text-align: center;
+    top: 5vh;
+}
+ 

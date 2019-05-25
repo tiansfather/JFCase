@@ -1,0 +1,50 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleFormItemViewModel
+@{
+	var column = Model.ColumnInfo;
+	//展示方式
+	var controlFormat = string.IsNullOrWhiteSpace(column.ControlFormat) ? "date" : column.ControlFormat;
+	var inline = false;
+	var value = Model.Value?.ToString();
+	if (!string.IsNullOrEmpty(value) && DateTime.TryParse(value, out _))
+	{
+		if (controlFormat == "date")
+		{
+			value = Convert.ToDateTime(value).ToString("yyyy-MM-dd");
+		}
+		else if (controlFormat == "datetime")
+		{
+			value = Convert.ToDateTime(value).ToString("yyyy-MM-dd HH:mm:ss");
+
+		}
+	}
+	else
+	{
+		value = "";
+
+	}
+	var renderer = !string.IsNullOrEmpty(column.Renderer) ? column.Renderer : "lay-datetime";
+}
+
+<div is="@renderer" value="@value" :column-Info="{ColumnKey:'@column.ColumnKey',ColumnName:'@column.ColumnName',VerifyRules:'@column.VerifyRules',controlFormat:'@controlFormat',Tips:'@column.Tips'}"></div>
+
+
+@*<div class="@(inline?"layui-inline":"layui-form-item")">
+	<label class="layui-form-label">@column.ColumnName</label>
+	<div class="@(inline?"layui-input-inline":"layui-input-block")">
+		<input type="text" class="laydate layui-input" controlFormat="@controlFormat" name="@column.ColumnKey" id="@column.ColumnKey" lay-verify="@column.VerifyRules" placeholder="@column.ColumnName" autocomplete="off" value="@value">
+	</div>
+</div>
+<script>
+    layui.use(['laydate'], function () {
+        layui.laydate.render({
+            elem:'#@column.ColumnKey',
+            type: '@controlFormat',
+            calendar: true
+        });
+    })
+</script>*@

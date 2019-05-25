@@ -1,0 +1,687 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    @section styles{
+        @*<link href="//at.alicdn.com/t/font_883593_dtzlvlvoj2d.css" rel="stylesheet" />在线地址*@
+        <style>
+            /*来自原来的rcss样式------------开单任务 */
+            .layui-card-body {
+                padding: 0;
+            }
+
+            .layui-anim {
+                background: #f2f2f2;
+            }
+            /*-----------------------------------------------------------*/
+            #my-card-search {
+                width: calc(100% - 190px);
+                z-index: 999;
+                display: inline-block;
+                position: absolute;
+                left: 15px;
+                top: 13px;
+            }
+
+            #ProcessTask {
+                margin: 0;
+            }
+
+            .layui-table-tool {
+                height: 80px;
+            }
+            /*--------------------------------------------------------------------------------*/
+            th {
+                font-family: Arial,Microsoft YaHei,Pingfang SC,Helvetica Neue,Helvetica,"sans-serif";
+                font-weight: bold !important;
+                font-size: 13px !important;
+            }
+
+            .xm-form-select .xm-cz-group {
+                /*max-width: 280px !important;*/
+            }
+            /*--------------------------------------------合计行高度-------------------------------*/
+            /*html, body, .layui-fluid, .layui-anim, .layui-card, .layui-form {
+                height: 100%;
+                box-sizing: border-box;
+            }
+
+            .layui-card {
+                overflow: hidden;
+            }*/
+            /*---下拉框高度塌陷----*/
+            .status-first .layui-form-selected dl {
+                min-height: 264px;
+            }
+
+            .status-other .layui-form-selected dl {
+                min-height: 156px;
+            }
+
+            .my-bg-green {
+                background: #5FB878;
+            }
+
+            .form-title {
+                color: #3788ff;
+                float: right;
+                margin: 0;
+                margin-top: 9px;
+            }
+            /*.form-title span {
+                display: inline-block;
+                width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }*/
+            .form-h2_title {
+                position: absolute;
+                left: 50%;
+                font-size: 20px;
+                color: #393D49;
+                font-weight: 600;
+            }
+        </style>
+    }
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div id="my-card-search" class="my-search">
+            <form class="layui-form layui-form-pane" lay-filter="ProcessTaskForm" onsubmit="return doSearch();" id="app" v-cloak>
+                <div>
+                    <div class="my-inline-block">
+                        <button :tips="orderObj.titleArr[orderObj.showIndex].tips"
+                                type="button"
+                                class="layui-btn layui-btn-sm"
+                                :style="{background:orderObj.titleArr[orderObj.showIndex].color}"
+                                @@click="changeOrderMode">
+                            {{orderObj.titleArr[orderObj.showIndex].title}}
+                        </button>
+                    </div>
+                    <div class="my-inline-block">
+                        @*<button class="layui-btn  my-search-btn" type="button" tips="高级查询" onclick="fReportSearch()">查询</button>*@
+                        <button fornonerow="1" buttonname="高级查询" class="layui-btn layui-btn-sm" type="button" tips="高级查询"
+                                :params="params"
+                                lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/ReportSearch&modelname=ProcessTask&pagename=ProcessTask" onclick="func.callModuleButtonEvent()">
+                            高级查询
+                        </button>
+                    </div>
+                    <div class="my-inline-block">
+                        @if (await PermissionChecker.IsGrantedAsync("Module.ProcessTask.Button.Del"))
+                        {
+                            <a class="layui-btn layui-btn-danger layui-btn-sm" buttonname="删除" modulekey="ProcessTask" params="" lay-event="Delete" confirmmsg="确认删除？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.processTask.deleteEntity" onclick="func.callModuleButtonEvent()">删除</a>
+                        }
+
+                    </div>
+                    @if (await PermissionChecker.IsGrantedAsync("Module.ProcessTask.Button.ManyPrint"))
+                    {
+                        <div class="my-inline-block">
+                            <a class="layui-btn layui-btn-sm" buttonname="打印" modulekey="ProcessTask" params="{&quot;area&quot;: [&quot;100%&quot;, &quot;101%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/SheetView" onclick="printMany(this)">多项打印</a>
+                        </div>
+                    }
+
+                    <div class="my-inline-block form-title" v-if="searchTitle.length">
+                        <span>查询条件:&nbsp;&nbsp;</span>
+                        <span>{{searchTitle.join('&nbsp;/&nbsp;')}}</span>
+                        @*<span v-if="searchTitle.creationtime">{{searchTitle.creationtime}}&nbsp;/&nbsp;</span>
+            <span v-if="searchTitle.projectsn">{{searchTitle.projectsn}}&nbsp;/&nbsp;</span>
+            <span v-if="searchTitle.processtypename">{{searchTitle.processtypename}}&nbsp;/&nbsp;</span>
+            <span v-if="searchTitle.inner">{{searchTitle.inner}}</span>*@
+                    </div>
+                    <div class="my-inline-block form-h2_title">
+                        <h2>
+                            {{orderObj.showIndex?'已开单':'待开单'}}任务
+                        </h2>
+                    </div>
+                </div>
+                <div>
+                    <div class="my-inline-block">
+                        <div class="layui-input-inline">
+                            <input type="text" id="projectSNSearch" autocomplete="off" class="layui-input" placeholder="模具编号/单号" @@keyup.enter="doSearch()">
+                        </div>
+                        <button class="layui-btn layui-btn-sm" type="button" onclick="doSearch()">查询</button>
+                    </div>
+                    <div class="my-inline-block" v-show="orderObj.showIndex==1">
+                        <div class="layui-input-inline status-first">
+                            <select lay-filter="processTaskStatus">
+                                <option value="">开单状态</option>
+                                <option value="verify">已回单 {{StatusSelect.verifyCount}}</option>
+                                <option value="send">已发送 {{StatusSelect.sendCount}}</option>
+                                <option value="processorReaded">已查收 {{StatusSelect.processorReadedCount}}</option>
+                                <option value="1">待上机 {{StatusSelect.waitForProcessCount}}</option>
+                                <option value="2">已到料 {{StatusSelect.receivedCount}}</option>
+                                <option value="3">加工中 {{StatusSelect.processingCount}}</option>
+                                <option value="4">已完成 {{StatusSelect.completeCount}}</option>
+                                <option value="5">暂停中 {{StatusSelect.suspendCount}}</option>
+                                <option value="-1">已取消 {{StatusSelect.canceledCount}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="my-inline-block" v-show="orderObj.showIndex==1">
+                        <div class="layui-input-inline status-other">
+                            <select lay-filter="processTaskStatusOther">
+                                <option value="">生产状态</option>
+                                <option value="0">延期上机</option>
+                                <option value="1">延期完工</option>
+                                <option value="2">工时超预期</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <table id="ProcessTask" lay-filter="ProcessTask" class="layui-table "></table>
+    </div>
+</div>
+
+
+@section scripts{
+
+    @await Html.PartialAsync("/Views/MES/Common/partCommon.cshtml")
+
+    <script type="text/html" id="tableSearchTool">
+        <div></div>
+
+    </script>
+    <script type="text/html" id="receiveDateTemplet">
+        <div onclick="processReportTimes()">
+            {{#if(d.receiveDate){}}
+            <span>{{d.receiveDate.slice(5)}}</span>
+            {{#}else{}}
+            <span class="layui-badge layui-bg-blue">未报工</span>
+            {{#}}}
+        </div>
+    </script>
+    <script type="text/html" id="startDateTemplet">
+        <div onclick="processReportTimes()">
+            {{#if(d.startDate){}}
+            <span>{{d.startDate.slice(5)}}</span>
+            {{#}else{}}
+            <span class="layui-badge layui-bg-blue">未报工</span>
+            {{#}}}
+        </div>
+    </script>
+    <script type="text/html" id="endDateTemplet">
+        <div onclick="processReportTimes()">
+            {{#if(d.endDate){}}
+            <span>{{d.endDate.slice(5)}}</span>
+            {{#}else{}}
+            <span class="layui-badge layui-bg-blue">未报工</span>
+            {{#}}}
+        </div>
+
+    </script>
+    <script type="text/html" id="ActualHoursTemplet">
+        {{#if(d.actualHours){}}
+        <span>{{d.actualHours}}</span>
+        {{#}else{}}
+        <div style="">未完成</div>
+        {{#}}}
+    </script>
+    <script type="text/html" id="statusTpl">
+        {{#if(d.isVerified){}}
+        <span class="layui-badge layui-bg-blue">已回单</span>
+        {{#}else{}}
+        <span class="layui-badge layui-bg-gray">未回单</span>
+        {{#}}}
+        {{#if(d.processorReaded){}}
+        <span class="layui-badge my-bg-green">已查收</span>
+        {{#}else if(d.sendProcessor){}}
+        <span class="layui-badge layui-bg-blue">已发送</span>
+        {{#}else if(d.printed){}}
+        <span class="layui-badge layui-bg-blue">已打印</span>
+        {{#}else if(d.inner){}}
+        <span class="layui-badge layui-bg-gray">未打印</span>
+        {{#}else{}}
+        <span class="layui-badge layui-bg-gray">未发送</span>
+        {{#}}}
+    </script>
+    <script type="text/html" id="progressTpl">
+        {{#
+            var color='layui-bg-blue';var progress=0;
+            if(d.progress){
+                color='my-bg-green';
+                progress=d.progress;
+            }else if(d.processTaskStatus==3){
+                if(d.startDate&&d.estimateHours){
+                    var D=new Date();
+                    var S=new Date(d.startDate);
+                    S.setFullYear(D.getFullYear());
+                    var spendTime=(D-S)/(1000*60*60);
+                    progress=spendTime/d.estimateHours;
+                    console.log(d.estimateHours,spendTime);
+                    if(progress>1){
+                        color='layui-bg-orange';
+                    }
+                }
+            }
+        }}
+        <div class="layui-progress layuiadmin-order-progress" lay-filter="progress-{{ d.id }}" lay-showPercent="yes">
+            <div class="layui-progress-bar {{color}}" style="width:{{ progress*100 }}%" lay-percent="{{ progress*100 }}%"></div>
+        </div>
+    </script>
+    <script type="text/html" id="signs">
+        {{# if(d.emergency){ }}
+        <span class="layui-badge layui-bg-red">急</span>
+        {{# }if(d.inner){ }}
+        <span class="layui-badge layui-bg-blue">内</span>
+        {{# }if(d.cha){  }}
+        <span class="layui-badge layui-bg-orange">插</span>
+        {{# }if(d.xiu){  }}
+        <span class="layui-badge layui-bg-cyan">修</span>
+        {{# }if(d.fromMobile){  }}
+        <span class="layui-badge layui-bg-green">移</span>
+
+        {{# } }}
+
+    </script>
+    <script type="text/html" id="operate">
+        {{# if(!(d.processTaskStatus==0)){ }}
+        <a dataid="{{d.id}}" buttonname="任务详情" modulekey="ProcessTask" class="layui-btn layui-btn-xs " params="{&quot;area&quot;: [&quot;100%&quot;, &quot;101%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/ShowTask" onclick="func.callModuleButtonEvent()">详情</a>
+        {{#if(!d.inner&&abp.auth.isGranted('Module.ProcessTask.Button.Verify')){}}
+        <a dataid="{{d.id}}" buttonname="回单审核" modulekey="ProcessTask" class="layui-btn layui-btn-xs layui-btn-warm" params="{&quot;area&quot;: [&quot;60%&quot;, &quot;80%&quot;],&quot;btn&quot;:[]}" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/Receiptaudit" onclick="func.callModuleButtonEvent()">
+            回单审核
+            <span class="layui-badge layui-bg-gray" style="border-radius: 50%;">{{d.rateInfoCount}}</span>
+        </a>
+        {{#}}}
+        {{# }else{  }}
+        {{# if((eval(abp.setting.values["MES.MustConfirmProcess"])&& !abp.auth.isGranted('Module.JGKD.Button.ConfirmProcess'))||!abp.auth.isGranted('Menu.MES.Tenancy.' + 'JGKD')){  }}
+        @* 审核模式&&无审核权限||没有开单页面权限 *@
+        <button class="layui-btn layui-btn-xs layui-btn-disabled" disabled="disabled">
+            {{#  }else{ }}
+            <button class="layui-btn layui-btn-xs" onclick="editSheet({{d.id}})">
+                {{# } }}
+                {{eval(abp.setting.values["MES.MustConfirmProcess"])?"审核":"开单"}}
+            </button>
+            {{# } }}
+    </script>
+
+    <script>
+        function printMany(btn) {
+            var d = layui.table.checkStatus("ProcessTask").data;
+            d.length && $(btn).attr('buttonactionurl', $(btn).attr('buttonactionurl')+'&taskid='+ d[0].id);
+            func.callModuleButtonEvent()
+        }
+        function editSheet(taskId) {
+            top.layui.index.openTabsPage('/Home/Show?name=../MES/JGKD&taskid=' + taskId, '加工开单')
+        }
+		var tenantId = $.getUrlParam("tenantId");
+        //    params="{&quot;area&quot;: [&quot;90%&quot;, &quot;90%&quot;],&quot;btn&quot;:[&quot;存为模板&quot;,&quot;查询&quot;,&quot;关闭&quot;]}"
+		//var oriWhereStr = tenantId ? "ProcessTaskStatus!=0 and tenantId=" + tenantId : "ProcessTaskStatus!=0";
+		var oriWhereStr = tenantId ? "tenantId=" + tenantId : "1=1";
+		oriWhereStr = $.getUrlParam('prform') ? $.getUrlParam('prform') + ' and ' + oriWhereStr : oriWhereStr;
+		var SearchData = [];
+		var andWhereStr = "";
+
+		window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhereStr, whereFilter: oriWhereStr };
+        var currentFilter = {};
+        config.ready = function () {
+            window.app = new Vue({
+                el: '#app',
+                data: {
+                    orderObj: {
+                        titleArr: [
+                            { id: 0, title: '已开单', color: '#009688', tips: '当前为未开单状态，单击查询已开单任务' },
+                            { id: 1, title: '未开单', color: '#1E9FFF', tips: '当前为已开单状态，单击前往快速开单' }],
+                        showIndex: 1,
+                    },
+                    searchTitle: [],
+                    StatusSelect: {}
+                },
+                computed: {
+                    params: function () {
+                        return JSON.stringify({ area: ["90%", "90%"], btn: ["查询", "关闭"], resize: false })
+                    }
+                },
+                methods: {
+                    changeOrderMode: function () {
+                        if (this.orderObj.showIndex == 0) {
+                            console.log('当前table查的是已开单，前往未开单状态');
+                            this.orderObj.showIndex = 1;
+                            doSearch();
+                        } else {
+                            console.log('当前table查的是未开单，前往已开单状态');
+                            this.orderObj.showIndex = 0
+                            doSearch();
+                        }
+                    }
+                },
+                mounted: function () {
+                    var st = JSON.parse($.getUrlParam('title')) || {};
+                    this.searchTitle = [st.projectsn, st.processtypename, st.inner];
+                    this.searchTitle = this.searchTitle.filter(function (elem) {
+                        return (elem);
+                    })
+                    //console.log(layui.form)
+                    //refresh();
+                    //设置开单状态统计数目
+                    var that = this;
+                    abp.services.app.processTask.getSummaryCount().done(function (res) {
+                        that.StatusSelect = res;
+                        function setStatusSelect() {
+                            layui.form.render()
+                            $('.status-first dd[lay-value]').each(function (i) {
+                                if (i > 0) {
+                                    var h = $(this).html().split(' ');
+                                    h = h[0] + '<span style="float: right;color: blue;">' + h[1] + '</span>';
+                                    $(this).html(h);
+                                }
+                            })
+                        }
+                        Vue.nextTick(setStatusSelect);
+                    })
+                }
+            })
+			layui.use(['formSelects', 'element'], function () {
+				var element = layui.element;
+				var formSelects = layui.formSelects;
+				var laytpl = layui.laytpl;
+				window.ProcessTask = [{
+					elem: '#ProcessTask',
+					toolbar: '#tableSearchTool',
+					defaultToolbar: ['filter', 'print', 'exports'],
+					cellMinWidth: '80',
+					height: 'full-31',
+					url: '/api/services/app/ProcessTask/GetPageResult',
+					where: { where: oriWhereStr + andWhereStr },
+					page: { limit: 50, limits: [50, 100, 200, 500] },
+					id: 'ProcessTask',
+					even: true,
+					totalRow: true,
+					done: config.onTableDone,
+					initSort: { field: 'Id', type: 'desc' }
+				}, [[
+					{ align: 'center', type: 'checkbox', fixed: 'left', totalRowText: '合计', gudinglie: false },
+                    { align: 'center', width: 135,field: 'processSN', templet: '#prcSN2JGKD', title: '单号', sort: true, filterField: 'ProcessSN' },
+					{ align: 'center', field: 'isVerified', templet: '#statusTpl', title: '状态',width:150 },
+					{ align: 'center', field: 'partName', title: '零件', sort: true, filterField: 'Part.PartName' },
+					{ align: 'center',width: 135, field: 'partSN', title: '零件编号', sort: true, filterField: 'Part.PartSN' },
+					{ align: 'center',width: 135, field: 'partSpecification', title: '规格', sort: true, filterField: 'Part.PartSpecification' },
+					{ align: 'center', field: 'partNum', sort: true, title: '数量', totalRow: true },
+					{ align: 'center', field: 'projectSN', title: '模具编号', sort: true, filterField: 'Part.Project.ProjectSN' },
+					{ align: 'center', field: 'projectCharger', title: '模具组长', sort: true, filterField: 'projectCharger' },
+					{ align: 'center',width: 135, field: 'unitName', title: '加工点/单位', sort: true, filterField: 'Supplier.UnitName' },
+                        { align: 'center', field: 'inner', title: '标记', templet: '#signs', },
+                        { align: 'center', width: 135, field: 'reason', title: '备注', sort: true, filterField: 'Reason' },
+					{ align: 'center', field: 'equipmentSN', title: '设备', sort: true, filterField: 'equipment.equipmentSN' },
+						{ align: 'center', field: 'processTypeName', title: '工序', sort: true, filterField: 'ProcessType.ProcessTypeName' },
+						{ align: 'center', width: 135, field: 'appointDate',  sort: true, title: '计划开始', filterField: 'AppointDate' },
+						{ align: 'center', width: 135, field: 'requireDate',  sort: true, title: '计划结束', filterField: 'RequireDate' },
+					{ align: 'center', field: 'estimateHours', title: '预计工时', sort: true, totalRow: true },
+                        { align: 'center', field: 'feeType', templet: '#feeTypeTolbar', title: '计价方式', sort: true },
+                        { align: 'center', field: 'price', title: '单价', sort: true},
+                        {
+                            align: 'center', field: 'jobFee', title: '初始金额', templet: function (d) {
+                                if (typeof d.jobFee == "number"||typeof d.jobFee=='string') {
+                                    var y = String(d.jobFee).indexOf(".") + 1;//获取小数点的位置
+                                    var count = String(d.jobFee).length - y;
+                                    if (count> 1) {
+                                        return Number(d.jobFee).toFixed(1)
+                                    } else {
+                                        return d.jobFee
+                                    }
+                                } else {
+                                    return ''
+                                }
+                            }, sort: true, totalRow: true
+                        },
+                        {
+                            align: 'center', field: 'fee', title: '实际金额', sort: true, totalRow: true, templet: function (d) {
+                                if (typeof d.fee == "number" || typeof d.fee == 'string') {
+                                    var y = String(d.fee).indexOf(".") + 1;//获取小数点的位置
+                                    var count = String(d.fee).length - y;
+                                    if (count > 1) {
+                                        return Number(d.fee).toFixed(1)
+                                    } else {
+                                        return d.fee
+                                    }
+                                } else {
+                                    return ''
+                                }
+                            } },
+					{ align: 'center', field: 'feeFactor', title: '长度/数量/重量/平方', sort: true },
+					{ align: 'center', field: 'files', title: '最近报工图片', sort: true, templet: '#filesImg' },
+                    { align: 'center', width: 135, field: 'progress', templet: '#progressTpl', title: '进度', sort: true },
+                    { align: 'center', width: 135, field: 'receiveDate', templet: '#receiveDateTemplet', sort: true, title: '到料时间', filterField: 'ReceiveDate' },
+					{ align: 'center', width: 135, field: 'startDate', templet: '#startDateTemplet', sort: true, title: '上机时间', filterField: 'StartDate' },
+					{ align: 'center', width: 135, field: 'endDate', templet: '#endDateTemplet', sort: true, title: '下机时间', filterField: 'EndDate' },
+                        { align: 'center', field: 'actualHours', templet: '#ActualHoursTemplet', sort: true, title: '实际工时', filterField: 'ActualHours', totalRow: true },
+                        { align: 'center', field: 'creatorName', sort: true, title: '创建人', filterField: 'CreatorUser.Name' },
+                    { align: 'center', field: 'poster', sort: true, title: '开单人', filterField: 'Poster' },
+                    { align: 'center', field: 'verifier', sort: true, title: '审核人', filterField: 'Verifier' },
+                        { align: 'center',width:135, field: 'kaiDate', sort: true, title: '开单时间', filterField: 'KaiDate' },
+                        { align: 'center', width: 135, field: 'creationTime', sort: true, title: '建立时间', filterField: 'CreationTime' },
+					{ align: 'left', toolbar: '#operate', title: '操作', width: '130', fixed: 'right' }
+				]]]
+                ProcessTask[0].where.where += ' and ProcessTaskStatus!=0 ';
+				layuiExt.reRender('ProcessTask')
+				//myRender(proCols);
+				//render('ProcessTask', proCols);
+                layui.form.on('select(processTaskStatus)', function (data) {
+					currentFilter.processTaskStatus = data.value;
+					doSearch();
+				});
+
+                layui.form.on('select(processTaskStatusOther)', function (data) {
+					currentFilter.processTaskStatusOther = data.value;
+					doSearch();
+				});
+			})
+        }
+
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+            })
+        }
+
+        function GJSearch() {
+            andWhereStr = func.makeQuery(SearchData);
+            var where = { where: filterObject.oriWhere + andWhereStr, tableFilter: JSON.stringify(filterObject.tableFilter) };
+            //var key2name = { "Part.Project.ProjectSN": "projectsn", "CreationTime": "creationtime", "ProcessType.ProcessTypeName":"processtypename"}
+            SearchData.forEach(function (n) {
+                if (n.key == "KaiDate") {//把开单时间拿出来放到查询条件中显示
+                    var hadBol = (/^[0-9]{4}-[0-9]{2}-[0-9]{2}/).test(app.searchTitle[0]);
+                    app.searchTitle.splice(0, hadBol?1:0, n.data)
+                    //Vue.set(app.searchTitle, 'creationtime', n.data)
+                }
+            })
+            console.log(SearchData, andWhereStr, where)
+			ProcessTask[0].where = where;
+			layuiExt.reRender('ProcessTask')
+        }
+        var OtherStatusObj = {
+            obj: { "延期上机": 0, "延期完工": 1, "工期超预期": 2 },
+            arr: [
+                "((Convert.ToDateTime(AppointDate)-Convert.ToDateTime(StartDate==null?DateTime.Now.ToString():StartDate.ToString())).TotalDays<-1  and AppointDate!=null)",
+                "(Convert.ToDateTime(RequireDate) - Convert.ToDateTime(EndDate == null ? DateTime.Now.ToString() : EndDate.ToString())).TotalDays < -1  and RequireDate != null",
+                "(Convert.ToDateTime(EndDate == null ? DateTime.Now.ToString() : EndDate.ToString()) - Convert.ToDateTime(StartDate == null ? DateTime.Now.ToString() : StartDate.ToString())).TotalHours > Convert.ToDouble(EstimateHours)  and EstimateHours != null"
+            ]
+        }
+        func.makeQueryArray = function (data) {
+            var sql = '',
+                arr = data.data.split(','),
+                signObj = {
+                    "已回单": { status: 'Verify', bool: true },
+                    "未回单": { status: 'Verify', bool: false },
+                    "已发送": { status: 'SendProcessor', bool: true },
+                    "未发送": { status: 'SendProcessor', bool: false },
+                    "已打印": { status: 'Print', bool: true },
+                    "未打印": { status: 'Print', bool: false },
+                    "厂内": { status: 'Inner', bool: true },
+                    "厂外": { status: 'Inner', bool: false },
+                    "加急": { status: 'Emergency', bool: true },
+                    "插单": { status: 'Cha', bool: true },
+                    "修模": { status: 'Xiu', bool: true },
+                    "移动端": { status: 'FromMobile', bool: true },
+                    "非移动端": { status: 'FromMobile', bool: false }
+                },
+                feetypeArr = ["承包", "按时间", "按平方", "按长度", "按重量", "按数量"],
+                aStatus = { "待上机": 1, "已到料": 2, "加工中": 3, "已完成": 4, "暂停中": 5, "已取消": -1 },
+                HandleSign = (function () {
+                    var obj = {};
+                    var str = '';
+                    for (var i in signObj) {
+                        if (signObj[i].bool) {
+                            str="(status!=null && Status.Contains(\"" + signObj[i].status + "\"))"
+                        } else {
+                            str="(Status==null or !Status.Contains(\"" + signObj[i].status + "\"))"
+                        }
+                        obj[i] = str;
+                    }
+                    return obj
+                })()
+            if (data.key == 'ProcessTaskStatus') {
+                arr.forEach(function (item, index) {
+                    sql += (index == 0 ? '' : ' or ') + 'ProcessTaskStatus = ' + aStatus[item]
+                })
+            } else if (data.key == "AboutReportDate") {
+                arr.forEach(function (item, index) {
+                    sql += (index == 0 ? '' : ' or ') + OtherStatusObj.arr[OtherStatusObj.obj[item]]
+                })
+            } else if (data.key == "FeeType") {
+                arr.forEach(function (item, index) {
+                    sql += (index == 0 ? '' : ' or ') + 'feetype=' + feetypeArr.indexOf(item)
+                })
+            } else if (data.key == "Sign" || data.key == "State") {
+                arr.forEach(function (item, index) {
+                    sql += (index == 0 ? '' : ' or ') + HandleSign[item]
+                })
+
+            }
+            return sql;
+        }
+        function doSearch() {
+			var where = { where: filterObject.oriWhere + andWhereStr, tableFilter: JSON.stringify(filterObject.tableFilter) };
+
+			var projectsn = $('#projectSNSearch').val();//输入框的查询
+			if (projectsn) {
+				//where.where += " and Part.Project.ProjectSN.Contains(\"" + projectsn + "\")";
+				where.where += " and (Part.Project.ProjectSN.Contains(\"" + projectsn + "\") or (ProcessSN!=null and ProcessSN.Contains(\"" + projectsn + "\")) )";
+            }
+            if (!(app.orderObj.showIndex == 0)) {
+                where.where += ' and ProcessTaskStatus!=0 ';
+
+                var procesTaskStatus = currentFilter.processTaskStatus;
+                if (procesTaskStatus) {
+                    if (procesTaskStatus == 'send') {
+                        where.where += ' and Status!=null && Status.Contains("SendProcessor") ';
+                    } else if (procesTaskStatus == 'verify') {
+                        where.where +='and (status!=null && Status.Contains("Verify"))'
+                    } else if (procesTaskStatus == 'processorReaded') {
+                        where.where += 'and (status!=null && Status.Contains("ProcessorReaded"))';
+                    }else {
+                        where.where += ' and ProcessTaskStatus=' + procesTaskStatus;
+                    }
+                }
+                var processTaskStatusOther = currentFilter.processTaskStatusOther;
+                if (OtherStatusObj.arr[processTaskStatusOther]) {
+                    where.where += ' and ' + OtherStatusObj.arr[processTaskStatusOther];
+                }
+                //switch (processTaskStatusOther) {
+                //    //延期上机
+                //    case "1":
+                //        //where.where += ' and ((  TIMESTAMPDIFF(DAY, AppointDate, (case when StartDate is NULL then NOW() else StartDate END))>0 and AppointDate is not null) )';
+
+                //        where.where += ' and  (Convert.ToDateTime(AppointDate)-Convert.ToDateTime(StartDate==null?DateTime.Now.ToString():StartDate.ToString())).TotalDays<0  and AppointDate!=null';
+                //        break;
+                //    //超期完成
+                //    case "2":
+                //        //where.where += ' and ((  TIMESTAMPDIFF(DAY, RequireDate, (case when EndDate is NULL then NOW() else EndDate END)) >0  and RequireDate is not null) )';
+
+                //        where.where += ' and (Convert.ToDateTime(RequireDate)-Convert.ToDateTime(EndDate==null?DateTime.Now.ToString():EndDate.ToString())).TotalDays<0  and RequireDate!=null';
+
+                //        break;
+                //    //延期工时
+                //    case "3":
+                //        //where.where += ' and ((  TIMESTAMPDIFF(HOUR, EstimateHours, (case when EndDate is NULL then NOW() else EndDate END)) >0 and EstimateHours is not null) )';
+
+                //        where.where += ' and (Convert.ToDateTime(EndDate==null?DateTime.Now.ToString():EndDate.ToString())-Convert.ToDateTime(StartDate==null?DateTime.Now.ToString():StartDate.ToString())).TotalHours>Convert.ToDouble(EstimateHours)  and EstimateHours!=null';
+                //        break;
+                //}
+
+            } else {
+                where.where  +=' and ProcessTaskStatus=0';
+            }
+
+
+
+			var processsn = $("input[name='processsn']").val();
+			if (processsn) {
+				where.where += ' and ProcessSN.Contains(\"' + processsn + '\") ';
+			}
+			filterObject.whereFilter = where.where;
+			console.log(where);
+			//layui.table.reload('ProcessTask', {
+			//    where: where
+
+			//})
+			ProcessTask[0].where = where;
+			filterObject.aShaiXuanDone = [];//清除已筛选的列
+			layuiExt.reRender('ProcessTask');
+
+			return false;
+		}
+		//function fReportSearch() {
+
+		//    layer.open({
+		//        type: 2,
+		//        title:'高级筛选',
+		//        area: ['100%','100%'],
+		//        content: $('#reportSearchArea')
+		//    });
+		//}
+        @* <div style="position: absolute;top: 0px;left: 0px;width: 100%;">
+            <div id="shaixuanSelect" style="width:240px;z-index:999;position:absolute;top:0;left:0;display:none">
+                <select name="filterSelect" xm-select="filterSelect" xm-select-search="" xm-select-height="36px"></select>
+            </div>
+
+        </div> *@
+                @* <div class="my-inline-block">
+            <button class="layui-btn layui-btn-danger layui-btn-sm" type="button" buttonname="审核" modulekey="ProcessTask" params="" confirmmsg="确认审核？" buttonactiontype="Form" buttonactionurl="/Home/Show?name=../MES/ProcessTask_Verify" onclick="func.callModuleButtonEvent()">审核</button>
+        </div> *@
+                @* <div class="layui-inline" style="margin:0">
+            <a class="layui-btn layui-btn-danger my-search-btn" buttonname="计算工时" modulekey="ProcessTask" params="" lay-event="ReDo" confirmmsg="确认计算？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.processTask.reActualHours" onclick="func.callModuleButtonEvent()">计算工时</a>
+        </div> *@
+		//合计行位置
+		//config.onTableDone = function () {
+		//	$('.layui-progress .layui-progress-bar').each(function () {
+		//		$(this).width($(this).attr('lay-percent'));
+		//	});
+		//	$('.layui-table-total').css({
+		//		'width': '0px',
+		//		'overflow': 'hidden',
+		//		'position': 'absolute',
+		//		'z-index': '9999',
+		//		'bottom': '72px'
+		//	})
+		//	callback();
+		//	bottomCallBack();
+		//	function callback() {
+		//		console.log('callBack')
+		//		$('.layui-table-total').width($('.layui-table-box').width());
+		//		$('.layui-table-main').height($('.layui-card').height() - 150);
+		//	}
+		//	$('.layui-table-box').resize(callback);
+		//	$('body').resize(bottomCallBack);
+		//	//$('.layui-table-main table tbody ').resize(bottomCallBack);
+		//	$(window).resize();
+		//}
+		////合计行bottom定位
+		//function bottomCallBack() {
+		//	console.log('botm')
+		//	//console.log(document.getElementsByClassName('layui-table-main')[0].scrollWidth);
+		//	//console.log($('.layui-table-main').width())
+		//	if (document.getElementsByClassName('layui-table-main')[0].scrollWidth <= $('.layui-table-main').width()) {
+		//		$('.layui-table-total').css('bottom', '56px')
+		//	} else {
+		//		$('.layui-table-total').css('bottom', '72px')
+		//	}
+		//}
+		//(function () {
+		//	document.addEventListener('mouseup', function () { setTimeout(bottomCallBack, 50) }, false)
+		//})()
+
+    </script>
+
+}

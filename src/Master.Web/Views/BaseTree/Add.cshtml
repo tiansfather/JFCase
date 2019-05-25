@@ -1,0 +1,74 @@
+﻿
+@{
+	Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+
+<form class="layui-form layui-form-pane" id="app">
+	<div class="layui-form-item">
+		<label class="layui-form-label">@L("分类名称")</label>
+		<div class="layui-input-block">
+			<input type="text" v-model="currentItem.displayName" name="DisplayName" lay-verify="required" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">@L("上级分类")</label>
+		<div cyType="dropDownTool" cyProps="url:'/api/services/app/BaseTree/GetTreeJson?discriminator=@ViewBag.TreeKey',search:'false',checkbox:'false',key_name:'briefName'"
+			 name="ParentId" value="@ViewBag.ParentId" class="layui-input-inline" style="position:relative">
+		</div>
+		<div class="layui-form-mid layui-word-aux">@L("留空表示根级")</div>
+	</div>
+	@*<div class="layui-form-item">
+		<label class="layui-form-label">@L("分类编码")</label>
+		<div class="layui-input-block">
+			<input type="text" name="BriefCode" v-model="currentItem.briefCode" lay-verify="required" autocomplete="off" class="layui-input">
+		</div>
+	</div>*@
+	<div class="layui-form-item">
+		<label class="layui-form-label">@L("排序")</label>
+		<div class="layui-input-block">
+			<input type="text" name="Sort" v-model="currentItem.sort" lay-verify="number|required" autocomplete="off" class="layui-input">
+		</div>
+	</div>
+	<div class="layui-form-item layui-form-text">
+		<label class="layui-form-label">@L("备注")</label>
+		<div class="layui-input-block">
+			<textarea placeholder="" class="layui-textarea" name="Remarks" v-model="currentItem.remarks"></textarea>
+		</div>
+	</div>
+	<div class="layui-form-item" style="display:none">
+		<div class="layui-input-block">
+			<button class="layui-btn" type="button" lay-submit=""  id="submitBtn">@L("提交")</button>
+		</div>
+	</div>
+</form>
+
+@section scripts{ 
+	<script>
+		var app;
+		config.ready = function () {
+			layui.form.on('submit', function () {
+				app.currentItem.parentId = $("input[name='ParentId']").val() ? parseInt($("input[name='ParentId']").val()) : null;
+				func.runAsync(abp.services.app.baseTree.submit(app.currentItem).done(function () {
+					parent.layer.closeAll('iframe');
+					parent.baseTree.reload();
+				}));
+			})
+			app = new Vue({
+				el: '#app',
+				data: {
+					currentItem: {discriminator:'@ViewBag.TreeKey',sort:0}
+				},
+				mounted: function () {
+					this.$nextTick(function () {
+						$('div[cytype="dropDownTool"]').dropDownTool();
+					})
+
+				}
+			})
+		}
+
+		function submit() {
+			$("#submitBtn").click();
+		}
+	</script>
+}

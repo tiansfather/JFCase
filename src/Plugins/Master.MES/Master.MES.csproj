@@ -1,0 +1,395 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RuntimeFrameworkVersion>2.1.5</RuntimeFrameworkVersion>
+    <RootNamespace>Master</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.1\Master.MES.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="plugins\**" />
+    <Compile Remove="新文件夹\**" />
+    <EmbeddedResource Remove="plugins\**" />
+    <EmbeddedResource Remove="新文件夹\**" />
+    <None Remove="plugins\**" />
+    <None Remove="新文件夹\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="EntityFrameworkCore\MESDbContextOptionsConfigurer.cs" />
+    <Compile Remove="EntityFrameworkCore\Seed\BaseData\Equipment2BaseModules.cs" />
+    <Compile Remove="MES\Dtos\MESUnitImportDto.cs" />
+    <Compile Remove="MES\Jobs\定时任务\延期流标.cs" />
+    <Compile Remove="MES\Service\MESHelpsAppService.cs" />
+    <Compile Remove="MES\TemplateManager.cs" />
+    <Compile Remove="Migrations\20181130021010_MESHostTactic.cs" />
+    <Compile Remove="Migrations\20181212003045_MESEquipment.cs" />
+    <Compile Remove="Migrations\20181220022802_ProcessQuote.cs" />
+    <Compile Remove="Migrations\20190123062336_MESHelps.cs" />
+    <Compile Remove="Migrations\20190302062941_MES_JSONUpdate.cs" />
+    <Compile Remove="Migrations\20190419040113_MES_ProcessQuoteAdvance.cs" />
+    <Compile Remove="Migrations\20190423085813_MES_BOMUpdate.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+    <None Remove="Localization\SourceFiles\Master-en.json" />
+    <None Remove="Localization\SourceFiles\Master.json" />
+    <None Remove="menu.json" />
+    <None Remove="MES\Template\defaultTemplate.html" />
+    <None Remove="MES\Template\PartSheet\defaultTemplate.html" />
+    <None Remove="MES\Template\ProcessSheet\defaultTemplate.html" />
+    <None Remove="Views\Account\Login.cshtml" />
+    <None Remove="Views\EquipmentOperatorHistory\Index.cshtml" />
+    <None Remove="Views\Home\Default.cshtml" />
+    <None Remove="Views\Home\Default_Process.cshtml" />
+    <None Remove="Views\Home\Index.cshtml" />
+    <None Remove="Views\MES\BindCustomerReminder.cshtml" />
+    <None Remove="Views\MES\BindError.cshtml" />
+    <None Remove="Views\MES\BindReminder.cshtml" />
+    <None Remove="Views\MES\Board.cshtml" />
+    <None Remove="Views\MES\Bom.cshtml" />
+    <None Remove="Views\MES\CloudEquipment.cshtml" />
+    <None Remove="Views\MES\Common.cshtml" />
+    <None Remove="Views\MES\Common\partCommon.cshtml" />
+    <None Remove="Views\MES\CompanyManager.cshtml" />
+    <None Remove="Views\MES\CSS\helpVideoPlay.css" />
+    <None Remove="Views\MES\CSS\navX.css" />
+    <None Remove="Views\MES\CSS\wechatIndex.css" />
+    <None Remove="Views\MES\CSS\wechatList.css" />
+    <None Remove="Views\MES\Customer\Project.cshtml" />
+    <None Remove="Views\MES\Edition.cshtml" />
+    <None Remove="Views\MES\Equipment.cshtml" />
+    <None Remove="Views\MES\EquipmentCode.cshtml" />
+    <None Remove="Views\MES\EquipmentCode2.cshtml" />
+    <None Remove="Views\MES\EquipmentTasks.cshtml" />
+    <None Remove="Views\MES\EquipmentTimeLine.cshtml" />
+    <None Remove="Views\MES\FieldControl.cshtml" />
+    <None Remove="Views\MES\FieldTask.cshtml" />
+    <None Remove="Views\MES\Helps.cshtml" />
+    <None Remove="Views\MES\HelpsEdit.cshtml" />
+    <None Remove="Views\MES\HelpVideo.cshtml" />
+    <None Remove="Views\MES\HelpVideoPlay.cshtml" />
+    <None Remove="Views\MES\images\bg3.jpg" />
+    <None Remove="Views\MES\images\Unbound .png" />
+    <None Remove="Views\MES\Invite.cshtml" />
+    <None Remove="Views\MES\JGKD.cshtml" />
+    <None Remove="Views\MES\js\esign.js" />
+    <None Remove="Views\MES\js\JGKD.js" />
+    <None Remove="Views\MES\Notice.cshtml" />
+    <None Remove="Views\MES\PartSetting.cshtml" />
+    <None Remove="Views\MES\PartSheet.cshtml" />
+    <None Remove="Views\MES\PartTask.cshtml" />
+    <None Remove="Views\MES\PartTemplateEdit.cshtml" />
+    <None Remove="Views\MES\PartTimeLine.cshtml" />
+    <None Remove="Views\MES\ProcessCost.cshtml" />
+    <None Remove="Views\MES\ProcessCost_Dui.cshtml" />
+    <None Remove="Views\MES\ProcessCost_Duii.cshtml" />
+    <None Remove="Views\MES\ProcessQuote.cshtml" />
+    <None Remove="Views\MES\ProcessQuoteDetailView.cshtml" />
+    <None Remove="Views\MES\ProcessQuoteProcessor.cshtml" />
+    <None Remove="Views\MES\ProcessQuote_Show.cshtml" />
+    <None Remove="Views\MES\ProcessReportForm.cshtml" />
+    <None Remove="Views\MES\ProcessTask.cshtml" />
+    <None Remove="Views\MES\ProcessTaskProcessor.cshtml" />
+    <None Remove="Views\MES\ProcessTaskReport.cshtml" />
+    <None Remove="Views\MES\ProcessTaskReportProcessor.cshtml" />
+    <None Remove="Views\MES\ProcessTask_Verify.cshtml" />
+    <None Remove="Views\MES\ProcessType.cshtml" />
+    <None Remove="Views\MES\ProcessTypeChoose.cshtml" />
+    <None Remove="Views\MES\ProForm2ProTask.cshtml" />
+    <None Remove="Views\MES\Project.cshtml" />
+    <None Remove="Views\MES\RankList.cshtml" />
+    <None Remove="Views\MES\Rcss.css" />
+    <None Remove="Views\MES\Receiptaudit.cshtml" />
+    <None Remove="Views\MES\Register.cshtml" />
+    <None Remove="Views\MES\RegisterCode.cshtml" />
+    <None Remove="Views\MES\RemindLog.cshtml" />
+    <None Remove="Views\MES\RemindLogs.cshtml" />
+    <None Remove="Views\MES\RemindTactic.cshtml" />
+    <None Remove="Views\MES\RemindTactics.cshtml" />
+    <None Remove="Views\MES\RemindTacticsHost.cshtml" />
+    <None Remove="Views\MES\RemindTacticsSubmit.cshtml" />
+    <None Remove="Views\MES\Report - 复制.cshtml" />
+    <None Remove="Views\MES\Report.cshtml" />
+    <None Remove="Views\MES\ReportSearch.cshtml" />
+    <None Remove="Views\MES\ReportView.cshtml" />
+    <None Remove="Views\MES\Setting.cshtml" />
+    <None Remove="Views\MES\Setting\JGKDReason.cshtml" />
+    <None Remove="Views\MES\Setting\StandardPart.cshtml" />
+    <None Remove="Views\MES\SheetView.cshtml" />
+    <None Remove="Views\MES\ShowTask.cshtml" />
+    <None Remove="Views\MES\TaskTemplateEdit.cshtml" />
+    <None Remove="Views\MES\TenantNotice.cshtml" />
+    <None Remove="Views\MES\Wechat\BindEquipment.cshtml" />
+    <None Remove="Views\MES\Wechat\ClaimUnit.cshtml" />
+    <None Remove="Views\MES\Wechat\customer\Index.cshtml" />
+    <None Remove="Views\MES\Wechat\customer\timeline.css" />
+    <None Remove="Views\MES\Wechat\Equipment.cshtml" />
+    <None Remove="Views\MES\Wechat\EquipmentTasks.cshtml" />
+    <None Remove="Views\MES\Wechat\EquipmentTransition.cshtml" />
+    <None Remove="Views\MES\Wechat\EquipmentTransitionCode.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\fee.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\Index.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\JGKD.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\processInfo.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\ProcessTask.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\ProcessTaskReport.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\ProcessTask_old.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\ProcessTask_Verify.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\ReceiptAudit.cshtml" />
+    <None Remove="Views\MES\Wechat\factory\VerifyWechat.cshtml" />
+    <None Remove="Views\MES\Wechat\Invite.cshtml" />
+    <None Remove="Views\MES\Wechat\NoticeView.cshtml" />
+    <None Remove="Views\MES\Wechat\PartReportView.cshtml" />
+    <None Remove="Views\MES\Wechat\PartTask.cshtml" />
+    <None Remove="Views\MES\Wechat\PartTasks.cshtml" />
+    <None Remove="Views\MES\Wechat\ProcessTaskWechat - 复制.cshtml" />
+    <None Remove="Views\MES\Wechat\ProcessTaskWechat.cshtml" />
+    <None Remove="Views\MES\Wechat\process\CountingView.cshtml" />
+    <None Remove="Views\MES\Wechat\process\handWrite.cshtml" />
+    <None Remove="Views\MES\Wechat\process\Index.cshtml" />
+    <None Remove="Views\MES\Wechat\process\ProcessorReport.cshtml" />
+    <None Remove="Views\MES\Wechat\process\ProcessorTask.cshtml" />
+    <None Remove="Views\MES\Wechat\process\ProcessQuoteDetailView.cshtml" />
+    <None Remove="Views\MES\Wechat\process\ProcessQuoteProcessor.cshtml" />
+    <None Remove="Views\MES\Wechat\process\ProcessTask.cshtml" />
+    <None Remove="Views\MES\Wechat\process\ProcessTaskReport.cshtml" />
+    <None Remove="Views\MES\Wechat\process\profile.cshtml" />
+    <None Remove="Views\MES\Wechat\process\ProfileEquipment.cshtml" />
+    <None Remove="Views\MES\Wechat\process\TaskView.cshtml" />
+    <None Remove="Views\MES\Wechat\Project.cshtml" />
+    <None Remove="Views\MES\Wechat\ShowTask.cshtml" />
+    <None Remove="Views\MES\Wechat\WeChatIndex.cshtml" />
+    <None Remove="Views\ProcessQuote\ProcessorShow.cshtml" />
+    <None Remove="Views\ProcessQuote\Show.cshtml" />
+    <None Remove="Views\ProcessQuote\Submit.cshtml" />
+    <None Remove="Views\WeiXin\GuanZhu.cshtml" />
+    <None Remove="Views\WeiXin\qrcode.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\SourceFiles\Master-en.json" />
+    <EmbeddedResource Include="Localization\SourceFiles\Master.json" />
+    <EmbeddedResource Include="MES\Template\PartSheet\defaultTemplate.html" />
+    <EmbeddedResource Include="MES\Template\ProcessSheet\defaultTemplate.html" />
+    <EmbeddedResource Include="Views\EquipmentOperatorHistory\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Home\Index.cshtml" />
+    <EmbeddedResource Include="Views\MES\BindCustomerReminder.cshtml" />
+    <EmbeddedResource Include="Views\MES\Board.cshtml" />
+    <EmbeddedResource Include="Views\MES\Bom.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\CompanyManager.cshtml" />
+    <EmbeddedResource Include="Views\MES\CSS\helpVideoPlay.css" />
+    <EmbeddedResource Include="Views\MES\Customer\Project.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\EquipmentCode.cshtml" />
+    <EmbeddedResource Include="Views\MES\PartTimeLine.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\Helps.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\TenantNotice.cshtml" />
+    <EmbeddedResource Include="Views\MES\HelpVideo.cshtml" />
+    <EmbeddedResource Include="Views\MES\HelpVideoPlay.cshtml" />
+    <EmbeddedResource Include="Views\MES\JGKD.cshtml" />
+    <EmbeddedResource Include="Views\MES\PartTemplateEdit.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessQuoteProcessor.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessCost_Duii.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessTaskProcessor.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessTaskReportProcessor.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessType.cshtml" />
+    <EmbeddedResource Include="Views\MES\HelpsEdit.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProForm2ProTask.cshtml" />
+    <EmbeddedResource Include="Views\MES\RankList.cshtml" />
+    <EmbeddedResource Include="Views\MES\Setting\JGKDReason.cshtml" />
+    <EmbeddedResource Include="Views\MES\TaskTemplateEdit.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\customer\Index.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\customer\timeline.css" />
+    <EmbeddedResource Include="Views\MES\Wechat\EquipmentTransition.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\Wechat\BindEquipment.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\Wechat\EquipmentTransitionCode.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\factory\fee.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\factory\processInfo.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\factory\ReceiptAudit.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\factory\VerifyWechat.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\Invite.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\Wechat\PartReportView.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\PartTask.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\MES\Wechat\Equipment.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <EmbeddedResource Include="Views\MES\Common\partCommon.cshtml" />
+    <EmbeddedResource Include="Views\MES\CSS\wechatList.css" />
+    <EmbeddedResource Include="Views\MES\CSS\wechatIndex.css" />
+    <EmbeddedResource Include="Views\MES\CSS\navX.css" />
+    <EmbeddedResource Include="Views\MES\EquipmentTimeLine.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\FieldTask.cshtml" />
+    <EmbeddedResource Include="Views\MES\Notice.cshtml" />
+    <EmbeddedResource Include="Views\MES\Invite.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\PartSetting.cshtml" />
+    <EmbeddedResource Include="Views\MES\PartSheet.cshtml" />
+    <EmbeddedResource Include="Views\MES\PartTask.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessQuote.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessQuoteDetailView.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessQuote_Show.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessTask_Verify.cshtml" />
+    <EmbeddedResource Include="Views\MES\Receiptaudit.cshtml" />
+    <EmbeddedResource Include="Views\MES\EquipmentCode2.cshtml" />
+    <EmbeddedResource Include="Views\MES\Setting\StandardPart.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\Edition.cshtml" />
+    <EmbeddedResource Include="Views\MES\Equipment.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\FieldControl.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessReportForm.cshtml" />
+    <EmbeddedResource Include="Views\MES\Project.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Account\Login.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Home\Default_Process.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\Home\Default.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MES\menu.json" />
+    <EmbeddedResource Include="Views\MES\images\bg3.jpg" />
+    <EmbeddedResource Include="Views\MES\js\JGKD.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\ProcessCost.cshtml" />
+    <EmbeddedResource Include="Views\MES\BindError.cshtml" />
+    <EmbeddedResource Include="Views\MES\BindReminder.cshtml" />
+    <EmbeddedResource Include="Views\MES\CloudEquipment.cshtml" />
+    <EmbeddedResource Include="Views\MES\Common.cshtml" />
+    <EmbeddedResource Include="Views\MES\images\Unbound .png" />
+    <EmbeddedResource Include="Views\MES\ProcessCost_Dui.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessTask.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessTaskReport.cshtml" />
+    <EmbeddedResource Include="Views\MES\ProcessTypeChoose.cshtml" />
+    <EmbeddedResource Include="Views\MES\Rcss.css" />
+    <EmbeddedResource Include="Views\MES\Register.cshtml" />
+    <EmbeddedResource Include="Views\MES\RemindLog.cshtml" />
+    <EmbeddedResource Include="Views\MES\RemindTactic.cshtml" />
+    <EmbeddedResource Include="Views\MES\RemindTacticsHost.cshtml" />
+    <EmbeddedResource Include="Views\MES\RemindTacticsSubmit.cshtml" />
+    <EmbeddedResource Include="Views\MES\Report - 复制.cshtml" />
+    <EmbeddedResource Include="Views\MES\Report.cshtml" />
+    <EmbeddedResource Include="Views\MES\ReportSearch.cshtml" />
+    <EmbeddedResource Include="Views\MES\ReportView.cshtml" />
+    <EmbeddedResource Include="Views\MES\Setting.cshtml" />
+    <EmbeddedResource Include="Views\MES\SheetView.cshtml" />
+    <EmbeddedResource Include="Views\MES\ShowTask.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\ClaimUnit.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\Wechat\factory\Index.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\factory\JGKD.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\ProcessTask.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\factory\ProcessTaskReport.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\factory\ProcessTask_Verify.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\PartTasks.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\EquipmentTasks.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\ProcessTaskWechat.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\CountingView.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\ProfileEquipment.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\handWrite.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\Index.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\ProcessorReport.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\ProcessorTask.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\ProcessQuoteProcessor.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\Profile.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\process\TaskView.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\Project.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MES\Wechat\NoticeView.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\ShowTask.cshtml" />
+    <EmbeddedResource Include="Views\MES\Wechat\WeChatIndex.cshtml" />
+    <EmbeddedResource Include="Views\ProcessQuote\ProcessorShow.cshtml" />
+    <EmbeddedResource Include="Views\ProcessQuote\Show.cshtml" />
+    <EmbeddedResource Include="Views\ProcessQuote\Submit.cshtml" />
+    <EmbeddedResource Include="Views\WeiXin\GuanZhu.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WeiXin\qrcode.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\MES\js\esign.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common.csproj" />
+    <ProjectReference Include="..\..\Master.Core\Master.Core.csproj" />
+    <ProjectReference Include="..\..\Master.EntityFrameworkCore\Master.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\Master.Web.Core\Master.Web.Core.csproj" />
+    <ProjectReference Include="..\Master.MouldTry\Master.MouldTry.csproj" />
+    <ProjectReference Include="..\Master.Scheduler\Master.Scheduler.csproj" />
+    <ProjectReference Include="..\Master.Storage\Master.Storage.csproj" />
+    <ProjectReference Include="..\Master.WeiXin\Master.WeiXin.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y &quot;$(TargetDir)Master.MES.dll&quot; &quot;$(SolutionDir)\src\Master.Web\plugins\Master.MES.dll&quot;&#xD;&#xA;copy /y &quot;$(TargetDir)Master.WeiXin.dll&quot; &quot;$(SolutionDir)\src\Master.Web\plugins\Master.WeiXin.dll&quot;" />
+  </Target>
+
+</Project>

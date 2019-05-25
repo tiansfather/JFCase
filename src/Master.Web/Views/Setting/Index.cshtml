@@ -1,0 +1,81 @@
+﻿@using Abp.Configuration
+@using Master.Web.Components
+@using Master.Configuration
+@inject ILocalizationContext LocalizationContext
+@model IReadOnlyList<SettingDefinition>
+@{
+	ViewData["Title"] = "Index";
+	var settingGroups = Model.Where(o => o.Group != null).GroupBy(o => o.Group);
+	var settingValues = ViewBag.SettingValues as Dictionary<string, object>;
+	var settingKeys = Model.Where(o => o.Group != null).Select(o => o.Name);
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div id="app" v-cloak>
+			<form class="layui-form">
+				<div class="layui-tab layui-tab-brief" lay-filter="settingTab">
+					<ul class="layui-tab-title">
+						@foreach (var group in settingGroups)
+						{
+							<li class="">@group.Key.DisplayName.Localize(LocalizationContext)</li>
+						}
+					</ul>
+					<div class="layui-tab-content">
+
+						@foreach (var group in settingGroups)
+						{
+							<div class="layui-tab-item ">
+								@foreach (var settingDefinition in group)
+								{
+									<vc:module-form-item param="@(new ModuleFormItemViewParam(){ColumnInfo=settingDefinition.BuildColumnInfo(),Data=settingValues,FormType=Master.Module.FormType.Edit} )"></vc:module-form-item>
+								}
+							</div>
+						}
+
+
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-bottom:20px">
+					<div class="layui-input-block">
+						<button class="layui-btn layui-btn-sm" type="button" lay-submit="">@L("提交")</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+		
+
+
+		@section scripts{
+			<script>
+		var app;
+		var settingKeys=@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(settingKeys));
+		config.ready = function () {
+			$(".layui-tab-title li:first").addClass("layui-this");
+			$(".layui-tab-content div:first").addClass("layui-show");
+			app = new Vue({
+				el: '#app',
+				created: function () {
+					this.$nextTick(function () {
+						layui.form.render();
+					})
+				}
+			});
+
+			layui.form.on('submit', function (data) {
+				var settingValues = [];
+				$.each(settingKeys, function (i, v) {
+					settingValues.push({ name: v, value: (typeof(data.field[v])=="undefined"? "false":data.field[v]) });
+				});
+
+				func.runAsync(abp.services.app.setting.updateSettings(settingValues).done(function () {
+					abp.message.success(L('提交成功'));
+				}))
+
+				console.log(settingValues);
+			})
+		}
+			</script>
+		}

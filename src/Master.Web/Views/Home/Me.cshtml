@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewData["Title"] = "个人中心";
+}
+
+<h2>Host</h2>
+
+@section scripts{
+    <script>
+        //请求用户信息的接口
+        abp.services.app.user.getById(abp.session.userId).done(function (data) {
+            data.avata//头像
+            data.name//姓名
+            data.workLocation//律师事务所
+            data.creationTime//注册时间
+            data.caseCount//完成案例数
+        })
+    </script>
+    }

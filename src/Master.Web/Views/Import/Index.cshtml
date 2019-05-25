@@ -1,0 +1,434 @@
+﻿@using Master.Imports
+@{
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+    var fields = ViewBag.Fields as List<ImportFieldInfo>;
+}
+
+@section styles{
+    <style>
+        tr.binded {
+            background: #43af43 !important;
+        }
+    </style>
+}
+<div style="display:none">
+    <input type="file" name="image" id="fileSelector" />
+</div>
+<div id="app" v-cloak>
+    @*第一步,内容复制*@
+    <div class="layui-form layui-form-pane" v-show="step==0">
+        <div class="layui-form-item">
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                    <th v-for="(item,index) in fields" style="font-size:12px;">
+                       {{item.displayName}}<span style="color:red;font-weight:bold" v-if="item.required">【必填】</span>
+                    </th>
+                </thead>
+            </table>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">请将Excel数据区域内容复制至下方，注意表头也要包含在内,表头格式不必完全一样<small>(本系统只支持微软EXCEL格式，不支持WPS格式，请转存为Excel 97/2000格式)</small></label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" class="layui-textarea" id="content" style="height:400px" name="content" v-model="content"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            @*<button class="layui-btn layui-btn-normal" type="button" @@click="selectFile">直接上传Excel文件，仅支持xlsx文件</button>*@
+            <button class="layui-btn layui-btn-normal" type="button" id="excelUploadBtn">直接上传Excel文件</button>
+            <button class="layui-btn" type="button" @@click="goToStep1">下一步</button>
+        </div>   
+
+    </div>
+    @*第二步,表头映射*@
+    <div v-show="step==1">
+        <blockquote class="layui-elem-quote">映射设置<button class="layui-btn layui-btn-danger layui-btn-xs" @@click="resetMapping">重置映射</button></blockquote>
+        <table class="layui-table" lay-size="sm">
+            <thead>
+                <tr>
+                    <th>@L("系统表头")</th>
+                    <th>@L("对应导入表头")</th>
+                    <th>@L("使用默认值")</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item,index) in fields" :class="{'binded':item.fieldIndex!=null}">
+                    <td>{{item.displayName}}<span style="color:red;font-weight:bold" v-if="item.required">【必填】</span></td>
+                    <td>
+                        <select v-model="item.fieldIndex">
+                            <option :value="null">@L("忽略")</option>
+                            <option v-for="(h,i) in headers" :value="i">{{h}}</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div v-show="item.fieldIndex==null">
+                            <select v-if="item.availableValues" v-model="item.defaultValue">
+                                <option v-for="(value,key) in item.availableValues" :value="key">{{value}}</option>
+                            </select>
+                            <input v-else type="text" v-model="item.defaultValue" />
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="layui-form-item">
+            <button class="layui-btn layui-btn-primary" type="button" @@click="step=0">上一步</button>
+            <button class="layui-btn" type="button" @@click="goToStep2">下一步</button>
+        </div>
+    </div>
+    @*第三步，数据预览调整*@
+    <div v-show="step==2">
+        <blockquote class="layui-elem-quote">数据预览调整，可以直接在表格内编辑</blockquote>
+        <table id="dataTable" lay-filter="dataTable"></table>
+        <div class="layui-form-item">
+            <button class="layui-btn layui-btn-primary" type="button" @@click="goToStep1">上一步</button>
+            <button class="layui-btn" type="button" @@click="goToStep3">导入</button>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    @*<script type="text/javascript" src="/lib/spreadjs/gc.spread.sheets.all.12.0.0.min.js"></script>
+    <script type="text/javascript" src="/lib/spreadjs/interop/gc.spread.excelio.12.0.0.min.js"></script>*@
+    <script type="text/html" id="statusTpl">
+        {{#if(d.success==null){}}
+        <span class="layui-badge layui-bg-gray">待验证</span>
+        {{#} else if(d.success){}}
+        <span class="layui-badge layui-bg-green">{{d.message || '验证成功'}}</span>
+        {{#}else{}}
+        <span class="layui-badge">{{app.getCheckMessage(d)}}</span>
+        {{#}}}
+    </script>
+    <script type="text/html" id="toolbar">
+        @*<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>*@
+    </script>
+    <script>
+		var app;
+        config.ready = function () {
+            //监听文件选择事件
+            $("#fileSelector").change(function () {
+                var file = this.files[0];
+                importFile(file);
+            });
+            func.renderUpload("#excelUploadBtn", {
+                trigger: 'click', callback: function (obj) {
+                    var fileId = obj.fileId;
+                    func.runAsync(abp.services.app.import.readFromExcel(fileId).done(function (data) {
+                        console.log(data);
+                        app.rows = data;
+                        app.headers = app.rows[0].split('\t');
+                        app.from = 2;
+                        app.step = 1;
+                    }))
+                }
+            })
+			//监听工具条
+			layui.table.on('tool(dataTable)', function (obj) {
+				var data = obj.data;
+				if (obj.event === 'del') {
+					layer.confirm('真的删除行么', function (index) {
+						obj.del();
+						//todo:删除后table数据不更新
+						layer.close(index);
+					});
+				}
+			});
+
+			app = new Vue({
+				el: '#app',
+				data: {
+					type: '@ViewBag.Type',
+					parameter:@Html.Raw(ViewBag.Parameter),
+					content: '',
+					fields:@Html.Raw(Common.JSONConvert.SerializeCamelCase(fields)),
+					step: 0,
+					rows: [],
+                    headers: [],
+                    floatingObjects:[],//图片数据
+                    from:1//1为内容输入，2为excel导入
+				},
+				created: function () {
+					//如果有之前的导入映射，则覆盖现有导入映射
+					var mapping = layui.data('ImportMapping')[this.type];
+					if (mapping) {
+						$.each(this.fields, function (i, v) {
+							var mappingField = mapping.filter(function (o) { return o.fieldName == v.fieldName })[0];
+							if (mappingField) {
+								//覆盖原映射
+								v.fieldIndex = mappingField.fieldIndex;
+								v.defaultValue = mappingField.defaultValue;
+							}
+						})
+					}
+				},
+                methods: {
+                    //选择上传文件
+                    selectFile: function () {
+                        $("#fileSelector").data("action", this.id);
+                        $("#fileSelector").click();
+                    },
+					//重置映射
+					resetMapping: function () {
+						abp.message.confirm(L('确认重置映射?'), function () {
+							$.each(app.fields, function (i, v) {
+								v.fieldIndex = null;
+								v.defaultValue = null;
+							})
+						})
+                    },
+                    checkData: function (data) {
+                        //验证
+                        var valid = true;
+                        for (var rowIndex in data) {
+                            var row = data[rowIndex];
+                            for (var i in app.fields) {
+                                var field = app.fields[i];
+                                if (field.required && !row[field.fieldName]) {
+                                    row["message"] = field.displayName + "是必填项";
+                                    row["success"] = false;
+                                    valid = false;
+                                    break;
+                                } 
+                            }
+                        }
+                        if (!valid) {
+                            //console.log(data);
+                            layui.table.reload('dataTable', { data: data });
+                            return false;
+                        }
+                        return true;                        
+                    },
+                    resetCheckResult: function (data) {
+                        //重置验证结果
+                        for (var rowIndex in data) {
+                            var row = data[rowIndex];
+                            row["message"] = "";
+                            row["success"] = null;
+                            row["field"] = "";
+                        }
+                    },
+                    getCheckMessage: function (rowData) {
+                        //获取错误提示信息
+                        if (rowData.fieldName) {
+                            var displayName = app.fields.filter(function (o) { return o.fieldName == rowData.fieldName })[0].displayName;
+                            return "【"+displayName + "】数据格式错误";
+                        } else {
+                            return rowData.message;
+                        }
+                    },
+                    goToStep1: function () {
+                        if (this.from == 1) {
+                            if (!this.content) {
+                                abp.message.error(L('请填入导入内容'));
+                            } else {
+                                app.rows = app.content.split('\n');
+                                app.headers = app.rows[0].split('\t');
+                                app.step = 1;
+                            }
+                        } else {
+                            //excel导入方式
+                            app.step = 1;
+                        }
+						
+					},
+					goToStep2: function () {
+						app.step = 2;
+						//保存映射配置
+						layui.data('ImportMapping', {
+							key: app.type
+							, value: app.fields
+						});
+						//预览表格渲染
+						app.renderTable();
+					},
+					goToStep3: function () {
+						abp.message.confirm('确认导入?', function () {
+							//获取表格内数据
+							var param = {
+								type: app.type, parameter: app.parameter, data: layui.table.cache.dataTable
+                            };
+                            //重置验证结果
+                            app.resetCheckResult(param.data);
+                            //数据验证
+                            if (!app.checkData(param.data)) {
+                                return false;
+                            }
+							func.runAsync(abp.services.app.import.doImport(param).done(function (data) {
+								console.log(data);
+                                if (data.success) { 
+                                    var msg = data.importResultDetails.filter(x => x.message);
+                                    var msgStr = "";
+                                      msg.forEach(o => {
+                                          if (o.message) {
+                                              msgStr += '<li>行'+(o.row+1) + o.message + '</li>';
+                                          }
+                                    })
+                                    if (msgStr) {
+                                       
+                                        parent.layer.open({
+                                            type: 1,
+                                           // skin: 'layui-layer-rim', //加上边框
+                                            title: false,
+                                            area: ['auto', '500px'], //宽高
+                                            content: "<ul>" + msgStr + "</ul>"
+                                        });
+                                    }
+
+									parent.layer.msg(L("导入成功"));
+									parent.layer.closeAll("iframe");
+                                    parent.config.refresh();
+                                    parent.config.reloadTable();
+								} else {
+									//将错误显示在页面中
+									//修改表格数据
+									var tableData = layui.table.cache.dataTable;
+									$.each(tableData, function (i, v) {
+										v["success"] = data.importResultDetails[i].success;
+                                        v["message"] = data.importResultDetails[i].message;
+                                        v["fieldName"] = data.importResultDetails[i].fieldName;
+									})
+
+									layui.table.reload('dataTable', { data: tableData });
+								}
+							}));
+						})
+					},
+					renderTable: function () {
+						//构建表头
+						var cols = [{ field: '', title: '状态', templet: '#statusTpl', fixed: 'left',width:'200' }]
+                        cols = cols.concat(app.fields.map(function (o) {
+                            //如果是图片，使用图片模板展示，不然直接显示内容
+                            var template = function (d) {
+                                if (o.columnTypes == 10) {
+                                    return "<img src='" + d[o.fieldName]+"' width=50 height=50/>";
+                                } else {
+                                    var content = d[o.fieldName];
+                                    return content || "";
+                                }
+                            }
+                            return { field: o.fieldName, title: o.displayName, edit: o.columnTypes == 10?'': 'text', templet: template};
+						}));
+						cols.push({title:'操作',toolbar:'#toolbar',fixed:'right'});
+						var datas = [];
+						//构建数据，从第二行开始，因为第一行是表头
+						for (var i = 1; i < app.rows.length; i++) {
+							if (!app.rows[i].trim()) { continue; }
+							var row = app.rows[i].split('\t');
+							var obj = {};
+							$.each(app.fields, function (i, v) {
+								obj.success = null;//给状态先赋一个null值
+								obj[v.fieldName] = v.fieldIndex!=null ? row[v.fieldIndex] : v.defaultValue;
+							})
+							datas.push(obj);
+						}
+						layui.table.render({
+                            cellMinWidth: 100,
+                            limit:1000,
+							elem: '#dataTable'
+							, cols: [cols]
+							, data: datas
+						});
+					}
+				}
+			});
+
+        }
+
+        function importFile(file) {
+            var fileName = file.name;
+            var index = fileName.lastIndexOf('.');
+            var fileExt = fileName.substr(index + 1).toLowerCase();
+
+            if (fileExt === 'xlsx') {
+                importSpreadFromExcel(file);
+            } else {
+                abp.message.error("仅支持xlsx格式");
+            }
+
+            //if (fileExt === 'json' || fileExt === 'ssjson') {
+            //    importSpreadFromJSON(file);
+            //} else if (fileExt === 'xlsx') {
+            //    importSpreadFromExcel(file);
+            //} else {
+            //    alert(getResource("messages.invalidImportFile"));
+            //}
+        }
+        function importSpreadFromExcel(file, options) {
+            var excelIO = new GC.Spread.Excel.IO();
+            excelIO.open(file, function (json) {
+                window.data = json;
+                var sheet = getActiveSheet(json);
+                if (sheet.rows.length == 0){
+                    abp.message.error("当前工作表中没有数据");
+                    return;
+                }
+                console.log(sheet);
+                var rows = [];
+                //读取表头和数据内容 
+                for (var i = 0; i < sheet.rows.length; i++) {
+                    rows.push(readRowTextData(sheet.data.dataTable[i]));
+                }
+                //填充图片信息至rows
+                app.floatingObjects = sheet.floatingObjects;
+                for (var index in sheet.floatingObjects) {
+                    var startRow = sheet.floatingObjects[index].startRow;
+                    var startColumn = sheet.floatingObjects[index].startColumn;
+                    rows[startRow][startColumn] = sheet.floatingObjects[index].src;
+                }
+                //app rows中每一行是按\t分隔的字符串
+                app.rows = rows.map(function (o) { return o.join('\t');})
+                app.headers = app.rows[0].split('\t');
+                //设置导入方式为excel
+                app.from = 2;
+                app.goToStep1();
+                  
+            }, function (e) {
+                console.log(e);
+                }, options);
+            //获取当前激活的工作表
+            function getActiveSheet(json) {
+                for (var sheetName in json.sheets) {
+                    if (json.sheets[sheetName].index == json.activeSheetIndex) {
+                        return json.sheets[sheetName];
+                    }
+                }
+            }
+            //读取行文本数据
+            function readRowTextData(rowInfo) {
+                var result = [];
+                for (var cellIndex in rowInfo) {
+                    var cell = rowInfo[cellIndex];//单元格数据
+                    var cellValue = "";
+                    if (!cell.value) { result.push(""); continue; }
+                    if (cell.value.richText) {
+                        //如果是富文本类型
+                        cellValue=cell.value.richText.map(function (o) { return o.text; }).join('');
+                    } else {
+                        cellValue=cell.value.toString();
+                    }
+                    //对cellvalue进行特殊格式的处理
+                    try {
+                        console.log(cellValue);
+                        if (cellValue && cellValue.indexOf('OADate') > 0) {
+                            var d = /\/OADate\((\d+)\)\//.exec(cellValue)[1];
+                            cellValue = ConvertOaDateToDateTime(d).pattern('yyyy-MM-dd');
+                        }
+                    } catch (ex) {
+                        console.log(ex);
+                    }
+                    
+                    result.push(cellValue);
+                }
+                return result;
+            }
+        }
+        //将oadate转换成正常日期格式
+        function ConvertOaDateToDateTime(oadate) {
+            var d = new Date()
+            d.setTime(Math.round(oadate * 24 * 60 * 60 * 1000) + Date.parse("1899-12-30"))
+            return d;
+        }
+    </script>
+}

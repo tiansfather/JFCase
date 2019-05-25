@@ -1,0 +1,354 @@
+﻿
+@{
+    ViewData["Title"] = "ProcessTypeChoose";
+}
+@section styles{ 
+    <style>
+        body{
+            /*overflow:hidden;*/
+        }
+        #app {
+            /*overflow: hidden;*/
+            /*padding: 10px 37px;*/
+        }
+        .app-child {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .item{
+            color:black;
+            width:120px;height:40px;
+            line-height:40px;
+            font-weight:bold;
+            text-align:center;
+            margin:10px;
+            float:left;
+            border:1px solid #ccc;
+            background:#b6ff00;
+            cursor:pointer;
+        }
+        .my-wrap {
+            padding: 0 28px;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+        .my-wrap2 {
+            padding: 10px 0;
+            min-width: 400px;
+            box-sizing: border-box; 
+        }
+        .my-button {
+            margin-bottom: 15px;
+            clear: both;
+            display:flex;
+        }
+        .my-button-btn {
+            border-radius: 0;
+            background: #fff;
+            color: #ccc;
+            font-size: 28px;
+            border-top: 1px solid #e6e6e6;
+            box-sizing: border-box;
+            border-bottom: 1px solid #e6e6e6;
+            line-height: 38px;
+            height: 38px;
+            width: 40px;
+        }
+        .my-button-btn.layui-btn:hover {
+            color: #009688;
+        }
+        .layui-form-pane .layui-form-label {
+            padding:8px;
+        }
+        .my-type-p{
+            border-left: 1px solid #e6e6e6;
+            padding-left: 10px;
+            line-height: 38px;
+            background: #fbfbfb;
+            height: 38px;
+        }
+        .my-btn-group{
+            display:flex;
+            justify-content:flex-end;
+            align-items:center;
+            padding-right:50px;
+        }
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s;
+        }
+
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+    </style>
+}
+<div id="app" v-cloak>
+    <div class="app-child">
+        <div class="layui-form-item my-wrap" v-show="showPage==1">
+            <div class="item" style="background:#009688;color:#fff;font-size:24px;" @@click="addProcessType">+</div>
+            <div class="item" v-for="(item,index) in processTypes" @@click="selProcessType(item)">{{item.processTypeName}}</div>
+
+        </div>
+
+        <transition name="fade">
+            <div class="layui-form layui-form-pane my-wrap2" v-show="showPage==2">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">工序名</label>
+                    <div class="layui-input-block">
+                        <p class="my-type-p">{{repoartData.processTypeName}}</p>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">预计工时</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="estimateHours" autocomplete="off" class="layui-input" v-model="repoartData.estimateHours" lay-verify="passnumber" lay-vertype="tips">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">预约日期</label>
+                    <div class="layui-input-block">
+                        <input type="text" v-model="repoartData.appointDate" autocomplete="off" class="layui-input layui-date" lay-key="2" id="date1">
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:flex-start;">
+                    <label class="layui-form-label">计划天数</label>
+                    <div class="my-button">
+                        <button class="layui-btn  layui-btn-sm my-button-btn " :class="{'layui-disabled':date<=1}" @@click="date>1?date--:1">-</button>
+                        <input type="text" autocomplete="off" v-model="date" lay-verify="number" class="layui-input" style="width:100px;border-radius:0;" />
+                        <button class="layui-btn layui-btn-sm my-button-btn " @@click="date++">+</button>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">要求完成日期</label>
+                    <div class="layui-input-block">
+                        <input type="text" v-model="repoartData.requireDate" autocomplete="off" class="layui-input layui-date" lay-key="1" id="date2">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">工艺要求</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入加工内容与要求" class="layui-textarea" v-model="repoartData.taskInfo"></textarea>
+                    </div>
+                </div>
+                <div class="my-btn-group">
+                    <button class="layui-btn layui-btn-primary " type="button" lay-submit="" lay-filter="continue">继续添加</button>
+                    <button class="layui-btn layui-btn-normal" type="button" lay-submit="" lay-filter="confim">确认</button>
+                </div>
+
+            </div>
+        </transition>
+    </div>
+       
+</div>
+@section scripts{ 
+    <script>
+        var app, partId, partSetting;
+        partId = $.getUrlParam("partId");
+        partSetting=$.getUrlParam('partsetting')
+        config.ready = function () { 
+            app = new Vue({
+                el: '#app',
+                data: {
+                    processTypes: [],
+                    date:1,
+                    repoartData: {
+                        processTypeId: '',
+                        taskInfo: '参考附件',
+                        estimateHours: '',
+                        appointDate: '',//起始
+                        requireDate: '',//结束
+                        processTypeName:''
+                    },
+                    showPage:1
+                },
+                methods: {
+                    addProcessType: function () {
+                        layer.prompt({title:'请输入新增工艺'},function (value, index, elem) {
+                            func.runAsync(abp.services.app.processType.addProcessType(value).done(function (data) {
+                                app.processTypes.splice(0,0, data);
+                                layer.close(index);
+                            }))
+                            
+                        });
+                    },
+                    selProcessType: function (item) {
+                        console.log(partSetting)
+                        if (partSetting) {
+                            parent.fSetProcessByOpen(item,partSetting)
+                            parent.layui.layer.closeAll();
+                        } else {
+                            console.log(item)
+                            this.repoartData.processTypeId = item.id;
+                            this.repoartData.processTypeName = item.processTypeName;
+                            this.showPage = 2;
+                        }
+                        
+                        //abp.message.confirm("确认添加" + item.processTypeName + "到加工路线?", function () {
+                        //    parent.selProcessTypeCallback(repoartData);
+                        //    parent.layer.closeAll("iframe");
+
+                        //})
+                        //parent.layer.closeAll();
+                        //parent.layer.open({
+                        //    type: 2,
+                        //    title: "选择工序",
+                        //    shadeClose: false,
+                        //    shade: 0.8,
+                        //    area: ['500px', '500px'],
+                        //    content: "/Home/Show?name=../MES/ProcessTypeChoose",
+                        //    btn: false
+                        //});
+                    },
+                    GetDateStr: function (startDay, AddDayCount) {
+                        console.log(startDay, AddDayCount)
+                        AddDayCount = parseInt(AddDayCount) ? parseInt(AddDayCount):1;
+                        var dd = new Date(startDay);
+                        dd.setDate(dd.getDate() + AddDayCount-1);//获取AddDayCount天后的日期
+                        var y = dd.getFullYear();
+                        var m = (dd.getMonth() + 1) < 10 ? "0" + (dd.getMonth() + 1) : (dd.getMonth() + 1);//获取当前月份的日期，不足10补0
+                        var d = dd.getDate() < 10 ? "0" + dd.getDate() : dd.getDate();//获取当前几号，不足10补0
+                        console.log(y + "-" + m + "-" + d)
+                        console.log(y + "-" + m + "-" + d)
+                        return y + "-" + m + "-" + d;
+                    }  
+
+                },
+                mounted: function () {
+                    var that = this;
+                    func.runAsync(abp.services.app.processType.getAll().done(function (data) {
+                        that.processTypes = data;
+                        console.log(data);
+                        //$("#app").show();
+                    }));
+
+                },
+                watch: {
+                    date: function (newV, oldV) {
+                        console.log('date改变了', this.repoartData.appointDate,newV,oldV)
+                        var that = this;
+                        if (this.repoartData.appointDate) {
+                            var value = this.GetDateStr(this.repoartData.appointDate, newV);
+                            this.$nextTick(function () {
+                                layui.laydate.render({
+                                    elem: '#date2',
+                                    value: value,
+                                    done: function (value) {
+                                        that.repoartData.requireDate = value;
+                                    }
+                                });
+                                that.repoartData.requireDate = value;
+
+                            })
+                            
+                        }
+                        
+                    }
+                }
+            });
+            var form = layui.form;
+            form.verify({
+                passnumber: [
+                    /^(\s*|\d+)$/
+                    , '只能填写数字'
+                ]
+            });
+            form.on('submit(confim)', function () {
+                selProcessTypeCallback(app.repoartData, function () {
+                    layer.msg('添加完成')
+                    parent.layer.closeAll("iframe");});
+            })
+            form.on('submit(continue)', function () {
+                selProcessTypeCallback(app.repoartData, function () {
+                    layer.msg('添加完成，请继续添加')
+                    app.showPage = 1; });
+            })
+            //日期配置
+            function frenderDate() {
+                layui.laydate.render({
+                    elem: '#date1',
+                    done: function (value) {
+                        app.repoartData.appointDate = value;
+                        if (app.date) {
+                            var value = app.GetDateStr(value, app.date);
+                            layui.laydate.render({
+                                elem: '#date2',
+                                value: value,
+                                done: function (value) {
+                                    app.repoartData.requireDate = value;
+                                }
+                            });
+                            app.repoartData.requireDate = value;
+                        }
+                        
+                    }
+                });
+                layui.laydate.render({
+                    elem: '#date2',
+                    done: function (value) {
+                        app.repoartData.requireDate = value;
+                    }
+                });
+            }
+            frenderDate();
+        }
+        //选择工序回调
+        function selProcessTypeCallback(repoartData, fn) {
+            //tbScrTop = $('.layui-table-body.layui-table-main').scrollTop();
+            repoartData.partId = partId;
+            var appointDate = '';
+            var requireDate = '';
+            if (repoartData.appointDate) {
+                var a = repoartData.appointDate.split('-');
+                appointDate = a[1] + '.' + a[2]
+            }
+            if (repoartData.requireDate) {
+                var r = repoartData.requireDate.split('-');
+                requireDate = '-' + r[1] + '.' + r[2]
+            }
+            var processTypeName = repoartData.processTypeName;
+            delete (repoartData.processTypeName);
+
+            //上传
+            func.runAsync(abp.services.app.processTask.submitSimpleProcessType(repoartData).done(function (data) {
+                console.log(data)
+                var parentPageName = parent.location.search.split('&')[0].split('/');
+                parentPageName = parentPageName[parentPageName.length - 1];
+                var eventName = `editSheet(${data})`, tips ='双击编辑加工单';
+                if (parentPageName == 'JGKD') {
+                    eventName = `typeNameDbClick(this,${data})`;
+                    tips = '双击切换加工单';
+                }
+                var myTypeNameColor = func.getProcessTaskStatusColor(0).color;
+                if (abp.setting.getBoolean('MES.DefaultSourceInner')) {//如果设置里默认是厂内，则直接开单，将边框状态设为1的颜色
+                    myTypeNameColor = func.getProcessTaskStatusColor(1).color
+                }
+                parent.$(`ul[data-partid=${partId}]>.my-tasks_li-lock`).before(`
+        <li class="my-tasks-li"> 
+            <div class="my-li-typeName " style="border-color:${myTypeNameColor};" tips="${tips}" ondblclick="${eventName}">
+                <span class="my-lity-span" style=" white-space: nowrap">${processTypeName}</span> 
+                <div class="lity-date_wrap"> <span class=" my-lity_date-span">${appointDate}</span> <span class=" my-lity_date-span">${requireDate}</span> 
+                </div> 
+            </div>
+            <div class="my-li-date" data-itemid="${data}" data-ptstatus="0" title="点击报工" onclick="reportTimes(${data},0)">
+                <div class="anpai-div" title="安排时间,单击填写">
+                    <span class=" my-lidate-span"></span>
+                    <span class=" my-lidate-span"></span>
+                </div>
+                <div class="baogong-div" title="报工时间,单击填写">
+                    <span class=" my-lidate-span "></span>
+                    <span class=" my-lidate-span "></span>
+                </div>
+            </div> 
+            <i class="iconfont icon-qingkong1 my-li-delete"></i> 
+        </li>
+                `);
+                if (typeof fn == 'function') {
+                    fn();
+                }
+            }));
+            
+        }
+    </script>
+}

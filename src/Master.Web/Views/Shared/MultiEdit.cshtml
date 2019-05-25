@@ -1,0 +1,29 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@model ModuleFormViewParam
+@{
+	Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+	var m = Model;
+	m.FormType = FormType.MultiEdit;
+}
+
+
+<div id="app">
+	<vc:module-form param="@m"></vc:module-form>
+</div>
+
+@section scripts{
+	<script>
+		var app;
+		config.ready=function(){
+			app = new Vue({
+				el: '#app',
+				created: function () {
+					this.$nextTick(function () {
+						layui.form.render();
+					})
+				}
+			});
+		}
+	</script>
+}

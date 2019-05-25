@@ -1,0 +1,214 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@using Abp.Domain.Entities
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleFormItemViewModel
+@{
+	var column = Model.ColumnInfo;
+	//展示方式,default为弹出，formselect为下拉选择
+	var controlFormat = string.IsNullOrWhiteSpace(column.ControlFormat) ? "default" : column.ControlFormat;
+	var inline = false;
+
+	var relativeModuleKey = column.RelativeDataString;//关联模块Key
+	object referenceData = new List<object>();
+	if (Model.Data.ContainsKey(column.ColumnKey + "_data"))
+	{
+		referenceData = Model.Data[column.ColumnKey + "_data"];
+	}
+
+	var maxReferenceNumber = column.GetData<string>("maxReferenceNumber");
+	var referenceItemTpl = column.GetData<string>("referenceItemTpl");
+	var searchColumns = column.GetData<string>("referenceSearchColumns");
+	if (string.IsNullOrEmpty(maxReferenceNumber)) { maxReferenceNumber = "1"; }//默认引用数量为1
+	if (string.IsNullOrEmpty(referenceItemTpl)) { referenceItemTpl = "{{item.Id}}"; }//默认引用数量为1
+																					 //var searchUrl = column.RelativeDataType == RelativeDataType.Module ? $"/api/services/app/bringback/getModuleData?moduleKey={column.RelativeDataString}&searchColumns={searchColumns}" : column.RelativeDataString;
+}
+
+@if (column.RelativeDataType == RelativeDataType.Module && controlFormat == "default")
+{
+	<div class="@(inline?"layui-inline":"layui-form-item")">
+		<input type="hidden" name="@column.ColumnKey" value="@(Model.Value?.ToString())" />
+		<label class="layui-form-label">@column.ColumnName</label>
+		<div class="@(inline?"layui-input-inline":"layui-input-block")">
+			<table class="layui-table" lay-size="sm" lay-skin="line">
+				<thead>
+					<tr>
+						<th>@L("内容")</th>
+						<th>@L("操作")</th>
+					</tr>
+				</thead>
+				<tbody id="referenceList_@(column.ColumnKey)"></tbody>
+			</table>
+			<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="config.showRelativeModuleForm({'moduleKey':'@relativeModuleKey','columnKey':'@column.ColumnKey','maxReferenceNumber':'@maxReferenceNumber'})"><i class="layui-icon layui-icon-add-circle"></i></button>
+			@*<input type="text" name="@column.ColumnKey" lay-verify="@column.VerifyRules" autocomplete="off" placeholder="请输入@(column.ColumnName)" class="layui-input" value="@(Model.Value?.ToString())">*@
+		</div>
+	</div>
+	<script id="referenceTPL_@column.ColumnKey" type="text/html">
+		{{#  layui.each(d, function(index, item){ }}
+		<tr>
+			<td>@Html.Raw(referenceItemTpl)</td>
+			<td><button type="button" class="layui-btn layui-btn-xs layui-btn-danger " onclick="func.referenceDatas['@column.ColumnKey'].splice($(this).closest('tr').index(),1);func.bringBackFuncs['@column.ColumnKey']([])"><i class="layui-icon layui-icon-delete"></i> </button></td>
+		</tr>
+		{{#  }); }}
+	</script>
+	<script>
+    layui.use('laytpl', function () {
+        var laytpl = layui.laytpl;
+
+        var columnKey = '@column.ColumnKey';
+        var maxReferenceNumber =@maxReferenceNumber;
+
+        func.referenceDatas[columnKey] =@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(referenceData));
+
+        func.bringBackFuncs[columnKey] = function (data) {
+
+            //是否超过最大引用数量
+            if (func.referenceDatas[columnKey].length + data.length > maxReferenceNumber) {
+                layer.msg('最多只能选择' + maxReferenceNumber + "项", { icon: 5, anim: 6 });
+                return false;
+            } else {
+                //判断是否重复引用
+                var isDuplicate = false
+                    duplicateId=0;//是否重复
+                $.each(data, function (i, v) {
+                    for (var i = 0; i < func.referenceDatas[columnKey].length; i++) {
+                        if (func.referenceDatas[columnKey][i].Id == v.Id) {
+                            isDuplicate = true;
+                            duplicateId = v.Id;
+                            return false;
+                        }
+                    }
+                })
+
+                if (isDuplicate) {
+                    layer.msg('Id为' + duplicateId + "的项重复了", { icon: 5, anim: 6 });
+                    return false;
+                }
+
+                func.referenceDatas[columnKey] = func.referenceDatas[columnKey].concat(data);
+                //赋值
+                $("[name='" + columnKey + "']").val(func.referenceDatas[columnKey].map(function (o) { return o.Id; }).join(','));
+                laytpl($("#referenceTPL_" + columnKey).html()).render(func.referenceDatas[columnKey], function (html) {
+                    console.log(html);
+                    $("#referenceList_" + columnKey).html(html);
+                })
+                return true;
+            }
+
+        }
+        func.bringBackFuncs[columnKey]([]);//页面加载后直接执行
+
+    })
+
+	</script>
+
+}
+else
+{
+	//下拉方式
+	<div class="@(inline?"layui-inline":"layui-form-item")">
+		<label class="layui-form-label">@column.ColumnName</label>
+		<div class="@(inline?"layui-input-inline":"layui-input-block")">
+			<select name="@column.ColumnKey" lay-filter="@column.ColumnKey" xm-select-max="@maxReferenceNumber" xm-select-search="">
+				<option value="">@L("未选择")</option>
+			</select>
+
+		</div>
+	</div>
+	<script id="referenceTPL_@column.ColumnKey" type="text/html">
+		{{#  layui.each(d, function(index, item){ }}
+		@Html.Raw(referenceItemTpl)
+		{{#  }); }}
+	</script>
+	<script>
+
+
+        layui.use(['formSelects', 'laytpl'], function () {
+            var formSelects = layui.formSelects,
+                laytpl = layui.laytpl;
+            var columnKey = '@column.ColumnKey';
+            var searchUrl = "@Html.Raw(column.RelativeDataType==RelativeDataType.Module?$"/api/services/app/bringback/getModuleData?moduleKey={column.RelativeDataString}&searchColumns={searchColumns}":column.RelativeDataString)";//数据来源Url,模块引用和直接url引用
+            var referenceDatas =@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(referenceData));//引用数据
+
+            //加载引用初始值
+            $.each(referenceDatas, function (i, item) {
+                laytpl($("#referenceTPL_" + columnKey).html()).render([item], function (html) {
+                    $("select[name='" + columnKey + "']").append("<option value='" + item.Id + "' selected='selected'>" + html.trim() + "</option>");
+                })
+            })
+            //渲染组件,由于需要用js将option动态加入，所以xm-select此属性需要在option加载后添加
+            $("select[name='" + columnKey + "']").attr("xm-select", columnKey);
+                //.attr("xm-select-search", searchUrl);
+            formSelects.render(columnKey);
+            formSelects.config('@column.ColumnKey', {
+                searchUrl: searchUrl,
+                success: function (id, url, searchVal, result) {      //使用远程方式的success回调
+                    console.log(id);        //组件ID xm-select
+                    console.log(url);       //URL
+                    console.log(searchVal); //搜索的value
+                    console.log(result);    //返回的结果
+                },
+                beforeSuccess: function (id, url, searchVal, result) {
+                    console.log(result);
+                    //我要把数据外层的code, msg, data去掉
+                    result = result.data;
+                    //我要反转name
+                    $.each(result, function (index, item) {
+                        item.value = item.Id;
+                        laytpl($("#referenceTPL_" + columnKey).html()).render([item], function (html) {
+                            console.log(html);
+                            item.name = html.trim();
+                        })
+                        //item.name && (item.name = item.name.split('').reverse().join(''))
+                    });
+                    //然后返回数据
+                    return result;
+                }
+            });
+            //
+
+            @*formSelects.on('@column.ColumnKey', function (id, vals, val, isAdd, isDisabled) {
+                //id:           点击select的id
+                //vals:         当前select已选中的值
+                //val:          当前select点击的值
+                //isAdd:        当前操作选中or取消
+                //isDisabled:   当前选项是否是disabled
+
+                //如果return false, 那么将取消本次操作
+                //return false;
+                $("input[name='@column.ColumnKey']").val(vals);
+            });*@
+            @*formSelects.render('@column.ColumnKey', {
+                init: ["1", "2"],               //默认值
+                skin: "danger",                 //多选皮肤
+                height: "auto",                 //是否固定高度, 38px | auto
+                radio: false,                   //是否设置为单选模式
+                direction: "auto",
+                create: function (id, name) {
+                    console.log(id);    //多选id
+                    console.log(name);  //创建的标签名称
+
+                    return Date.now();  //返回该标签对应的val
+                },
+                //filter: fun...,         //同formSelects.filter
+                max: 3,                 //多选最多选择量
+                //maxTips: fun...,        //同formSelects.maxTips
+                //on: fun...,             //同formSelects.on
+                searchType: "title",    //搜索框的位置
+                template: function (name, value, selected, disabled) {
+                    console.log(name);      //选项名
+                    console.log(value);     //选项值
+                    console.log(selected);  //是否被选中
+                    console.log(disabled);  //是否被禁用
+
+                    //例如: 反转字符串
+                    //return name.split('').reverse().join('');
+                    return name;        //返回一个html结构, 用于显示选项
+                },
+                showCount: 0,           //多选的label数量, 0,负值,非数字则显示全部
+            });*@
+        })
+	</script>
+}

@@ -1,0 +1,634 @@
+﻿
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    @section styles{
+        @*<link href="/Views/MES/Rcss.css" rel="stylesheet" />*@
+        <style>
+            html {
+                width: 100%;
+            }
+
+            .weui-tab {
+                width: 100%;
+            }
+
+            .weui-navbar {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: flex;
+                position: fixed;
+                z-index: 500;
+                top: 0;
+                width: 100%;
+                background-color: #fafafa;
+            }
+
+            .weui-navbar__item.weui-bar__item--on {
+                color: #666;
+                background-color: #f1f1f1;
+            }
+
+            .weui-navbar__item {
+                color: #888;
+            }
+
+            .weui-navbar__item {
+                position: relative;
+                display: block;
+                -webkit-box-flex: 1;
+                -webkit-flex: 1;
+                flex: 1;
+                padding: 13px 0;
+                text-align: center;
+                font-size: 15px;
+                -webkit-tap-highlight-color: rgba(0,0,0,0);
+            }
+
+            a {
+                text-decoration: none;
+                -webkit-tap-highlight-color: rgba(0,0,0,0);
+            }
+
+            .layui-anim-upbit {
+                animation-name: layui;
+                -webkit-animation-name: layui;
+            }
+            /*来自原来的rcss样式 */
+            .layui-card-body {
+                padding: 0;
+            }
+
+            .grid-item {
+                width: 280px;
+                margin-bottom: 10px;
+            }
+
+            .my-grid {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .flow-wrap {
+                padding: 20px;
+            }
+
+            .error-div {
+                box-sizing: border-box;
+                width: 240px;
+                height: 180px;
+                border: 1px solid #939393;
+            }
+
+            .over-time-div {
+                box-sizing: border-box;
+                border: 2px solid red;
+                width: 244px;
+            }
+
+            .append-btn-wrap {
+                text-align: center;
+                height: 350px;
+                line-height: 250px;
+            }
+
+            .c-card__name-span {
+                font-size: 12px;
+                float: right;
+                margin-right: 15px;
+                border: 1px solid;
+                padding: 0 3px;
+                line-height: 23px;
+            }
+            /*---------------------------------------------------*/
+            .my-search {
+                display: flex;
+                align-items: center;
+            }
+
+            .my-switch-mode_wrap {
+                position: fixed;
+                top: 25px;
+                right: 100px;
+                z-index: 9999;
+                transition: all .3s;
+            }
+
+                .my-switch-mode_wrap:hover {
+                    top: 22px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                }
+
+            .c-card {
+                background-color: white;
+                border-radius: 2px;
+                box-shadow: 0 0 4px rgba(0, 0, 0, 0.12);
+                height: auto;
+                margin-top: 20px;
+                min-height: 344px;
+                width: 80vw;
+            }
+
+            .c-card__thumbnail {
+                padding-bottom: 10px;
+                text-align: center;
+            }
+
+            .c-card .c-card__name {
+                color: #717171;
+                font-size: 18px;
+                font-weight: 400;
+                line-height: 27px;
+                padding: 5px 0 0 20px;
+            }
+
+            .c-card .c-card__location {
+                color: #acaaaa;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 27px;
+                padding-left: 18px;
+            }
+
+            .c-card .c-card__description {
+                color: #acaaaa;
+                font-size: 13px;
+                font-weight: 400;
+                line-height: 16px;
+                padding: 10px 0 20px 20px;
+            }
+
+            .c-card .c-card__rating {
+                padding: 0 0 15px 15px;
+            }
+
+            .c-unit {
+                padding-left: 18px;
+                color: #989898;
+                font-size: 12px;
+                line-height: 18px;
+            }
+
+                .c-unit p {
+                    line-height: 18px;
+                    white-space: nowrap;
+                    display: inline-block;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+            .c-unit-p1 {
+                width: 71%;
+            }
+
+            .c-unit-p2 {
+                width: 25%;
+            }
+
+            .yanqi-msg {
+                display: flex;
+            }
+
+            .yanqi-msg .error {
+                border: 2px solid red;
+                box-sizing: border-box;
+                width: 30px;
+                height: 24px;
+                margin-right: 5px;
+                margin-left: 10px;
+                float: left;
+            }
+
+            .yanqi-msg span {
+                font-size: 10px;
+            }
+
+            .receiptaudit-wrap {
+                cursor: pointer;
+                background: rgba(191, 191, 191, 0.1);
+            }
+
+            .gobackhome {
+                font-size: 20px;
+                margin-left: 20px;
+                z-index: 999;
+            }
+            .watermark-wrap {
+                width: 240px;
+                height: 100%;
+                border: none;
+                position: absolute;
+                background-repeat: no-repeat;
+            }
+        </style>
+        <link rel="stylesheet" href="/lib/iconfont/wechaticon.css" asp-append-version="true">
+    }
+}
+
+
+@*<div class="weui-tab__bd">
+    <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">*@
+
+
+<div class="weui-tab">
+    <div class="weui-navbar">
+        <a class="weui-navbar__item weui-bar__item--on" href="javascript:;">全部</a>
+        <a class="weui-navbar__item" href="javascript:;">到料</a>
+        <a class="weui-navbar__item" href="javascript:;">上机</a>
+        <a class="weui-navbar__item" href="javascript:;">加工</a>
+        <a class="weui-navbar__item" href="javascript:;">下机</a>
+        <a class="weui-navbar__item" href="javascript:;">暂停</a>
+    </div>
+</div>
+@*<div class="weui-tab__bd">
+    <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">*@
+
+<div class="layui-fluid" id="LAY-app-message" style="margin-top: 50px;background: #fff;">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="LAY-app-message-btns">
+                <form class="layui-form layui-form-pane " onsubmit="doSearch(); return false;">
+                    <div class="my-search">
+
+                        <div class="my-inline-block">
+                            <div class="layui-input-inline">
+                                <input type="text" id="projectSNSearch" autocomplete="off" class="layui-input" placeholder="模具编号/单号">
+                            </div>
+                            <button class="layui-btn  layui-btn-sm" type="button" onclick="doSearch()">查询</button>
+                        </div>
+
+                    </div>
+                </form>
+                <div class="my-inline-block yanqi-msg">
+                    <a href="~/MES/Index/factory" class="gobackhome">
+                        <i class="iconfont icon-fanhui"></i>
+                    </a>
+                    <div style="margin-left:20px;">
+                        <div class="error"></div>
+                        <span>延期上机，延期完工</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class=" flow-wrap">
+                <div class="grid my-grid" style="">
+                </div>
+                <div class="append-btn-wrap">
+                    <i style="font-size:30px;" class="dom-append-i layui-icon layui-icon-loading-1 layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+                    <span class="dom-append-span" style="display:none">已无更多内容</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>
+    </div>*@
+@section scripts{
+    <script src="~/lib/masonry/masonry.min.js"></script>
+    <script src="~/lib/masonry/imagesLoaded.min.js"></script>
+
+    <script type="text/html" id="exhibition">
+        {{#
+            layui.each(d, function(index, item){
+
+        }}
+        <div class="grid-item">
+            {{#if(item.isDeleted){}}
+            <div class="watermark-wrap"><img src="" class="deleted" alt="失效" /></div>
+            {{#}}}
+            <div class="c-card">
+                <div class="c-card__thumbnail">
+                    {{# if(item.overtime){ }}
+                    <div class="over-time-div">
+                        {{# }else{  }}
+                        <div>
+                            {{# } }}
+                            <img src="{{item.file}}?w=240" width="240" />
+
+                        </div>
+                    </div>
+
+                    {{# if(item.reportType=='下机'){  }}
+                    <a href="/MES/wechat/Receiptaudit?taskid={{item.taskId}}">
+                        {{# }else{ }}
+                        <div>
+                            {{# } }}
+                            <div class="c-card__name">
+                                <span>模具编号:{{item.projectSN}}</span>
+                                <span class="c-card__name-span" title="{{item.reportType}}">{{item.reportType}}</span>
+                            </div>
+                            <p class="c-card__location"><span class="glyphicon glyphicon-map-marker" title="{{item.partName}}">零件:{{item.partName}}</span></p>
+                            <div class="c-unit">
+                                <p class="c-unit-p1" title="{{item.projectCharger||''}}">模具组长：{{item.projectCharger||''}}</p>
+
+                            </div>
+                            <div class="c-unit">
+                                <p class="c-unit-p1" title="{{item.unitName}}">{{item.unitName}}</p>
+                                <p class="c-unit-p2" title="{{item.processTypeName}}">{{item.processTypeName}}</p>
+                            </div>
+                            <div class="c-unit">
+                                <p class="c-unit-p1" title="{{item.reportTime}}">{{item.reportTime}}</p>
+                                <p class="c-unit-p2" title="{{item.reporterName}}">{{item.reporterName}}</p>
+                            </div>
+                            <div class="c-card__description">
+                                <p>
+                                    {{item.remarks}}
+                                </p>
+                            </div>
+                        </div>
+
+                    </a>
+                </div>
+                {{#  }); }}
+</script>
+    <script>
+
+        var reportType = "";
+        $("div.weui-navbar").on("click", "a.weui-navbar__item", function (e) {
+            reportType = $(this).html();
+            $(".weui-bar__item--on").removeClass("weui-bar__item--on");
+            $(this).addClass("weui-bar__item--on");
+            if (reportType == "全部") {
+                reportType = "";
+            }
+            doSearch();
+        })
+        //高级查询设置
+        var SearchData = [];
+
+        var andWhereStr = "";
+
+        var page = 1;//当前打开页
+        var PageCount;//共有n页
+        var getHtml;
+        var $grid;
+        var firstSwitchFlag = true;
+        var searchFlag = false;
+
+        var addEd = false;
+
+        var manyState = layui.data('manyState');
+        if (manyState && manyState.reportState) {
+            switchMode();
+            //layui.data('manyState', {key: 'reportState', value: true });
+        } else {
+            layui.data('manyState', {
+                key: 'reportState'
+                , value: false
+            });
+        }
+        var sDelImgUrl = (function () {//设置失效水印
+            function setWaterMark(txt, w, h, color = "red") {
+                var tpl = '<canvas id = "watermark" width = "130px" height = "100px" style="display:none;" ></canvas>';
+                $(document.body).append(tpl);
+                var cw = $('#watermark')[0];
+                var ctx = cw.getContext("2d");   //返回一个用于在画布上绘图的环境
+                ctx.clearRect(0, 0, ctx.width, ctx.height);  //绘制之前画布清除
+                ctx.font = "20px 黑体";
+                ctx.rotate(-20 * Math.PI / 180);
+                ctx.fillStyle = color;
+                ctx.fillText(txt, 20, 70);
+                ctx.rotate('20*Math.PI/180');  //坐标系还原
+
+                var tplr = '<canvas id = "repeat-watermark" style="display:none;"></canvas>';
+                $(document.body).append(tplr);
+                var crw = $('#repeat-watermark')[0];
+                crw.width = w;
+                crw.height = h;
+                ctxr = crw.getContext("2d");
+                ctxr.clearRect(0, 0, crw.width, crw.height);  //清除整个画布 
+                var pat = ctxr.createPattern(cw, "repeat");    //在指定的方向上重复指定的元素  
+                ctxr.fillStyle = pat;
+                ctxr.fillRect(0, 0, crw.width, crw.height);
+                return crw.toDataURL();
+            }
+            return setWaterMark("失效", 260, 300, 'red')
+        })();
+        function setDeletedImg() {
+            $('.watermark-wrap').css({ 'background-image': 'url(' + sDelImgUrl + ')', 'background-color': 'rgba(244, 240, 240, .3)' })
+
+        }
+
+        function getReportTypeId(reportType) {
+            var reportTypeId = 0;
+            switch (reportType) {
+                case "到料":
+                    reportTypeId = 1;
+                    break;
+                case "上机":
+                    reportTypeId = 2;
+                    break;
+                case "下机":
+                    reportTypeId = 5;
+                    break;
+                case "加工":
+                    reportTypeId = 3;
+                    break;
+                case "暂停":
+                    reportTypeId = 4;
+                    break;
+                case "重新开始":
+                    reportTypeId = 6;
+                    break;
+
+            }
+            return reportTypeId;
+        }
+        function getData(fn, searchVal) {
+            var where = "";
+            if (searchVal) {
+                //var where = ' ProcessTask.Part.Project.ProjectSN.Contains("' + searchVal + '")';
+                where = "(ProcessTask.Part.Project.ProjectSN.Contains(\"" + searchVal + "\") or ProcessTask.ProcessSN.Contains(\"" + searchVal + "\") )";
+
+            } else {
+                where = '1=1'
+            }
+            if (reportType != "") {
+                where += " and reportType = " + getReportTypeId(reportType) + " ";
+            }
+            var options = { limit: 11, page: page, where: where };
+            page++;
+            abp.services.app.processTaskReport.getPageResult(options).done(function (data) {
+                if (!PageCount) {
+                    PageCount = Math.ceil(data.count / options.limit);
+                }
+                console.log(data);
+                var aExhibition = [];
+
+                function fGetStatus(type, reporttime, planAppoint, planrequire) {
+                    function fJudgeOvertime(report, plan) {
+                        if (plan) {
+                            console.log(plan)
+                            var report = report.split(' ')[0].split('-');
+                            var plan = plan.split('-');
+                            if (report[0] > plan[0]) {
+                                return true;
+                            } else if (report[0] >= plan[0] && report[1] > plan[1]) {
+                                return true;
+                            } else if (report[0] >= plan[0] && report[1] >= plan[1] && report[2] > plan[2]) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                    if (type == '上机') {
+                        return fJudgeOvertime(reporttime, planAppoint)
+                    } else if (type == '下机') {
+                        return fJudgeOvertime(reporttime, planrequire)
+                    } else {
+                        return false;
+                    }
+                }
+                data.data.forEach(function (n) {
+                    n.files.forEach(function (m) {
+                        aExhibition.push({
+                            file: m.filePath,
+                            processSN: n.processSN,
+                            partName: n.partName + '(' + n.partSN + ')',
+                            partSpecification: n.partSpecification,
+                            partNum: n.partNum,
+                            projectSN: n.projectSN,
+                            unitName: n.unitName,
+                            processTypeName: n.processTypeName,
+                            reporterName: n.reporterName,
+                            reportType: n.reportType,
+                            reportTime: n.reportTime,
+                            remarks: n.remarks,
+                            overtime: fGetStatus(n.reportType, n.reportTime, n.appointDate, n.requireDate),
+                            taskId: n.taskId,
+                            isDeleted: n.isDeleted,
+                            projectCharger: n.projectCharger
+                        })
+                    })
+                })
+                var getTpl = exhibition.innerHTML;
+                layui.laytpl(getTpl).render(aExhibition, function (html) {
+                    getHtml = html;
+                    if (typeof fn == 'function') {
+                        fn();
+                    }
+                    //
+                });
+            });
+        };
+        function fImgError() {
+            $("img").error(function () {
+                console.log('error')
+                $(this).parent().addClass('error-div')
+                $(this).hide();
+            });
+        }
+
+        function addMore(searchVal) {
+            if (searchVal) {
+                getData(sclBotCallBack, searchVal);
+            } else {
+                getData(sclBotCallBack);
+            }
+            function sclBotCallBack() {
+                var $items = $(getHtml);
+                $grid.append($items);
+                fImgError();
+                $grid.imagesLoaded(function () {
+                    $grid.masonry('appended', $items);
+                    setDeletedImg();
+                    addEd = false;
+                });
+            }
+        }
+        var judiNum = 200;
+        config.ready = function () {
+            switchMode();
+        }
+        function switchMode() {
+            if (firstSwitchFlag) {
+                //$('.flow-wrap').toggle();
+                //$('.yanqi-msg').toggle();
+                getData(configCallBack);
+                function configCallBack() {
+                    $('.grid').append(getHtml);
+                    fImgError();
+                    $grid = $('.grid').imagesLoaded(function () {
+                        $('.grid').masonry({
+                            itemSelector: '.grid-item',
+                            columnWidth: 280
+                        });
+                        setDeletedImg();
+                    });
+                }
+                firstSwitchFlag = false;
+            }
+
+
+            function fWindowScroll() {
+                if ($(document).scrollTop() <= 0) {
+                    //console.log("滚动条已经到达顶部为0");
+                }
+                if ($(document).scrollTop() >= $(document).height() - $(window).height() - judiNum) {
+                    if (page < PageCount) {
+                        if (!addEd) {
+                            if (searchFlag) {
+                                addMore($('#projectSNSearch').val());
+                            } else {
+                                addMore();
+                            }
+                            addEd = true;
+                        }
+                        setTimeout(function () { }, 2000);
+
+                    } else {
+                        clearTimeout();
+                        function fUnHad() {
+                            $('.dom-append-i').hide(100);
+                            $('.dom-append-span').show(100);
+                        }
+                        var a = setTimeout(fUnHad, 2000)
+
+                    }
+                }
+            }
+            $(window).scroll(fWindowScroll);
+
+
+        }
+
+
+        var tenantId = $.getUrlParam("tenantId");
+        var oriWhereStr = tenantId ? "tenantId=" + tenantId : "1=1";
+
+        window.filterObject = { aShaiXuanDone: [], tableFilter: [], oriWhere: oriWhereStr, whereFilter: oriWhereStr };
+        var currentFilter = {};
+
+
+
+        function doSearch() {
+            var projectsn = $('#projectSNSearch').val();//搜索框内容
+            var repoType = reportType;
+
+            if (projectsn != null && projectsn != "") {
+                layer.msg('展示模具编号为"' + projectsn + '"的报工信息');
+            }
+            page = 1;
+            firstSwitchFlag = true;
+            searchFlag = true;
+            PageCount = false;
+            $('.dom-append-i').show(100);
+            $('.dom-append-span').hide(100);
+
+            $('.grid .grid-item').remove();
+            addMore(projectsn);
+
+            $grid.masonry('layout');
+
+
+
+        }
+
+
+    </script>
+
+}

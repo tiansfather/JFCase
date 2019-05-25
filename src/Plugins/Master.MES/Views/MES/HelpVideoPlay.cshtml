@@ -1,0 +1,103 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{ 
+    ViewData["Title"] = "帮助视频";
+}
+@section styles{
+    <link href="/lib/dvideo/style.css" rel="stylesheet" />
+    <link href="/lib/dvideo/Dvideo.css" rel="stylesheet" />
+    <link href="/Views/MES/Css/helpVideoPlay.css" rel="stylesheet" />
+
+}
+<header>
+    <a href="#"><img src="~/assets/images/master-logo1.png?w=200&gap=false" alt="模来模往" /></a>
+    <h1>帮助视频</h1>
+</header>
+<div class="layui-row" id="app" v-show="lists.length">
+    <div class="ul-left">
+        <div>
+            <h2>视频专区</h2>
+        </div>
+        <div class="left-name">
+            <ul>
+                <li v-for="(list,index) in lists" @@click="setVideo(index)" class="left-li">
+                    <p :class="{active_li:showI==index}" v-html="list.videoName"></p>
+                </li>
+            </ul>
+        </div>
+        <div class="left-service">
+            <img src="~/assets/images/service.jpg?w=100" alt="客服热线" />
+            <p>拨打免费咨询热线：</p>
+            <p class="phone-p">15988939422</p>
+        </div>
+    </div>
+    <div class="span9">
+        <h2 v-html="showList?showList.videoName:''"></h2>
+        <br>
+        <p class="content" v-html="showList?''+showList.videoContent:''"></p>
+        <br>
+        <div id="videoWrap">
+            <div id="testVideo"></div>
+        </div>
+    </div>
+</div>
+<footer>
+    <p>版权所有   模来模往 备案号: 浙B2-20080268-9</p>
+    <p>客服热线：叶客服15988939422</p>
+</footer>
+
+
+@section scripts{
+    <script src="~/lib/dvideo/Dvideo.js"></script>
+    <script>
+        config.ready = function () {
+            window.app = new Vue({
+                el: '#app',
+                data: {
+                    lists: [],
+                    showI: 0
+                },
+                computed: {
+                    showList: function () {
+                        return this.lists[this.showI]
+                    }
+                },
+                methods: {
+                    setVideo: function (index) {
+                        var that = this;
+                        this.showI = index;
+                        Vue.nextTick(function () {
+                            //video.setVideoInfo(list.videoName, list.videoPath);
+                            video.videoEle.src = that.showList.videoPath || '';
+                            video.videoHeaderTitle.innerText = that.showList.videoName || '模来模往'
+                            video.videoHeaderTitle.title = that.showList.videoName || '模来模往';
+                            video.videoEle.poster = '';
+                        })
+                    }
+                },
+                created: function () {
+                    abp.services.app.video.getAllList().done(res => {
+                        this.lists = res;
+                        this.setVideo(0);
+                    })
+                }
+            })
+            window.video = new Dvideo({
+                ele: '#testVideo',
+                title: '模来模往',
+                isShowPoster: false,
+                showVideoDefinition: false,
+                nextVideoExtend: function () {
+                    console.log('您点击了下一页')
+                },
+                loop: false,
+                showNext: true,
+                width: '100%',
+                height: '500px',
+                src: '',
+                autoplay: false,
+                poster: ''
+            })
+        }
+
+    </script>
+}

@@ -1,0 +1,21 @@
+﻿{
+  "culture": "en",
+  "texts": {
+    "全部收缩": "Collapse",
+    "全部展开": "Expand",
+    "放大": "Zoom out",
+    "缩小": "Zoom in",
+    "自适应": "Fill",
+    "全屏": "Fullscreen",
+    "任务名": "Task Name",
+    "开始时间": "Start",
+    "跨度": "Duration",
+    "人员": "Person",
+    "天": "day",
+    "计划开始": "Plan Start",
+    "实际开始": "Actual Start",
+    "进度": "Progress",
+    "生产进度": "Manufacture Progress"
+   
+  }
+}

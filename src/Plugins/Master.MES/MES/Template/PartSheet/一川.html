@@ -1,0 +1,145 @@
+﻿<style>
+    body{
+        background:white;
+    }
+    header, .part-head-tr {
+        text-align: center;
+    }
+    header h2 {
+        color: #000;
+        font-weight: 700;
+        font-size: 24px;
+        line-height:2;
+    }
+    .print {
+        position: absolute;
+        top:10px;
+        right: 50px;
+    }
+
+    @media print {
+        .print {
+            display: none !important;
+        }
+    }
+    .part-table td{
+        width:120px;
+    }
+    .head-table {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .part-img{
+        text-align:center;
+    }
+    .part-img img {
+        padding: 10px 0; 
+        width: 150px;
+    }
+    .head-table th, .head-table td,.part-table-tr td{
+        padding:5px 0;
+    }
+    .part-table th {
+        border-top: 1px #ccc solid;
+    }
+    .layui-table td, .layui-table th {
+        padding: 0 5px;
+        color:#000;
+    }
+    .part-table b {
+        font-size: 18px;
+        font-weight: 800;
+    }
+</style>
+<div id="app" v-cloak>
+    <header>
+        <button class="layui-btn layui-btn-radius layui-btn-primary print" type="button" @click="print">打印</button>
+        <h2>一川模具加工过程卡</h2>
+        <table class="head-table" border="1">
+            <tr>
+                <th>模号</th>
+                <th>模具名称</th>
+                <th>模具组长</th>
+                <th>业务员</th>
+                <th>T0时间</th>
+                <th>模具设计</th>
+            </tr>
+            <tr>
+                <td>{{project.projectSN}}</td>
+                <td>{{project.projectName}}</td>
+                <td>{{project.projectCharger}}</td>
+                <td>{{project.salesman}}</td>
+                <td>{{project.t0Date}}</td>
+                <td>{{project.projectDesign}}</td>
+            </tr>
+        </table>
+    </header>
+    <table  class="part-table layui-table">
+        <tr class="part-head-tr">
+            <th colspan="2">零件名称</th>
+            <th :colspan="LongNum">加工方式</th>
+        </tr>
+        <tr v-for="item in partData" :key="item.id">
+            <td class="part-img"><img :src="qrCode(item.id)" :alt="item.partName" /></td>
+            <td><b>{{item.partName}}</b></td>
+            <template v-for="long in LongNum">
+                <td>{{getDByName(long-1,item.tasks,'processTypeName')}}</td>
+                <!--<td>上机:{{getDByName(long-1,item.tasks,'planStartDate')}}<br />下机:{{getDByName(long-1,item.tasks,'planEndDate')}}</td>-->
+            </template>
+        </tr>
+    </table>
+</div>
+<script>
+    var app;
+    config.ready = function () {
+
+        var projectSN = $.getUrlParam("projectsn");
+        app = new Vue({
+            el: '#app',
+            data: {
+                partData: [],
+                project: {}
+            },
+            computed: {
+                LongNum: function () {
+                    var maxLen=0;
+                    this.partData.forEach(function (n, i) {
+                        if (n.tasks.length > maxLen) {
+                            maxLen = n.tasks.length
+                        }
+                    })
+                    return maxLen>14?maxLen:14;
+                },
+            },
+            methods: {
+                print: function () {
+                    window.print();
+                },
+                getDByName: function (index,task,name) {
+                    return (index < task.length) ? task[index][name]+'('+task[index].taskInfo+')' :''
+                },
+                qrCode: function (id) {
+                    return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/MES/PartTasks?id=" + id);
+                }
+            },
+            created: function () {
+                var that = this;
+                func.runAsync(abp.services.app.part.getTaskPageResult({ page: 1, limit: 999, where: 'Project.ProjectSN.Contains("'+projectSN+'")' }).done(function (data) {
+                    console.log(data)
+                    that.partData = data.data;
+                }));
+                func.runAsync(abp.services.app.mESProject.getProjectInfo(projectSN).done(function (data) {
+                    that.project = data;
+                }));
+
+            }
+        })
+    }
+
+    function refresh() {
+        Vue.nextTick(function () {
+            layui.form.render();
+        })
+
+    }
+</script>

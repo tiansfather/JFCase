@@ -1,0 +1,218 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Senparc.Weixin.MP.Helpers.JsSdkUiPackage
+@inherits Master.Web.Components.MasterRazorPage<TModel>
+@{
+    //微信端模具厂查看费用
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "费用管理";
+}
+@section styles{
+    <link href="~/lib/swiper/swiper.min.css" rel="stylesheet" />
+    <style>
+        html, body {
+            background: #eee;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+        }
+        .month-picker {
+            left: 10px;
+            position: absolute;
+            top: 50%;
+            transform: translate(0,-50%);
+        }
+        .layui-tab-brief > .layui-tab-title{
+            background:#f2f2f2;
+        }
+        .layui-tab-brief > .layui-tab-title .layui-this {
+            background: #fff;
+        }
+        .layui-tab {
+            background: #fff;
+            margin: 0;
+        }
+        .layui-tab-content {
+            margin-left: 48px;
+        }
+    </style>
+}
+    <div id="app" v-cloak>
+        <div class="month-picker">
+            <mobeil-month-picker @@change="console.log($event)"></mobeil-month-picker>
+        </div>
+        <div class="layui-tab layui-tab-brief" lay-filter="processtype">
+            <ul class="layui-tab-title">
+                <li :class="{'layui-this':index==0}" v-for="type,index in processTypes" :lay-id="type.id" :key="type.id">{{type.processTypeName}}</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    通过追加class：layui-tab-brief 来设定简洁风格。
+                    值得注意的是，如果存在 layui-tab-item 的内容区域，在切换时自动定位到对应内容。如果不存在内容区域，则不会定位到对应内容。你通常需要设置过滤器，通过 element模块的监听tab事件来进行切换操作。详见文档左侧【内置组件 - 基本元素操作 element】{{a}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+@section scripts{
+    <script src="~/lib/swiper/swiper.min.js"></script>
+    <style>
+        .r-month {
+            padding: 10px 5px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+            .r-month li {
+                position: relative;
+                color: black;
+                width: 28px;
+                height: 28px;
+                line-height: 28px;
+                text-align: center;
+            }
+
+                .r-month li .year {
+                    line-height: 1;
+                    font-size: 12px;
+                    left: -5px;
+                    bottom: 2px;
+                    position: absolute;
+                    color: #fff;
+                    background: #FF5722;
+                    border-radius: 3px;
+                    padding: 0 2px;
+                }
+
+            .r-month .r-month-li-active, .m-icon-down, .m-icon-up {
+                background: #9775fb;
+                color: #fff;
+                border-radius: 50%;
+            }
+
+                .r-month .layui-icon, .r-month .r-month-li-active a {
+                    color: #fff;
+                }
+
+            .r-month .m-icon-down {
+                margin-top: 8px;
+            }
+
+            .r-month .m-icon-up {
+                margin-bottom: 8px;
+            }
+            .r-month .m-icon_up-disable {
+                background: #ccc;
+            }
+    </style>
+    <script type="text/x-template" id="mobeilMonthPicker">
+        <ul class="r-month">
+            <li class="m-icon-up" @@click="goBackMonth" :class="{'m-icon_up-disable':!hadUpIcon}">
+                <i class="layui-icon-up layui-icon"></i>
+            </li>
+            <li v-for="month in months" :key="month.y+''+month.m" :class="{'r-month-li-active':active.m==month.m&&active.y==month.y}" @@click="goActive(month)">
+                <span class="year" v-if="month.m==1">{{String(month.y).slice(2,4)}}</span>
+                <a href="javascript:;">{{month.m}}</a>
+            </li>
+            <li class="m-icon-down" @@click="addMoreMonth">
+                <i class="layui-icon-down layui-icon"></i>
+            </li>
+        </ul>
+
+    </script>
+    <script>
+        Vue.component('mobeil-month-picker', {
+            data: function () {
+                return {
+                    months: [],
+                    active: {}
+                }
+            },
+            template:'#mobeilMonthPicker',
+            computed: {
+                hadUpIcon: function () {
+                    var d = this.getToday, ms = this.months;
+                    return ms.length && (ms[0].y !== d.y || ms[0].m !== d.m)
+                },
+                getToday: function () {
+                    var d = new Date();
+                    return { y: d.getFullYear(), m: d.getMonth() + 1 }
+                },
+            },
+            methods: {
+                getPreMonth: function (y, m, sub) {
+                    return m - sub < 1 ? { y: (y - 1), m: (12 + (m - sub)) } : { y, m: (m - sub) }
+                },
+                getNextMonth: function (y, m, sub) {
+                    return m + sub > 12 ? { y: (y + 1), m: m + sub - 12 } : { y, m: m + sub }
+                },
+                goActive: function (month) {
+                    this.active = month
+                    this.$emit('change',month)
+                },
+                goBackMonth: function () {
+                    var ms = this.months, ms = ms[0]
+                    if (ms.y == this.getToday.y && ms.m == this.getToday.m) return;
+                    this.months.splice(6);
+                    for (var i = 1; i < 7; i++) {
+                        this.months.unshift(this.getNextMonth(ms.y, ms.m, i))
+                    }
+
+                },
+                addMoreMonth: function () {
+                    var ms = this.months, ms = ms[ms.length - 1]
+                    this.months.splice(0, 6);
+                    for (var i = 1; i < 7; i++) {
+                        this.months.push(this.getPreMonth(ms.y, ms.m, i))
+                    }
+
+                }
+            },
+            created: function () {
+                var d = this.getToday;
+                this.active = d;
+                for (var i = 0; i < 12; i++) {
+                    this.months.push(this.getPreMonth(d.y, d.m, i))
+                }
+            }
+        })
+    </script>
+    <script>
+        var elConfigReady= function() {
+            app = new Vue({
+                el: '#app',
+                data: {
+                    processTypes: [],
+                    a: ''
+                },
+                methods: {
+                    linstenTab: function () {
+                        var that = this;
+                        layui.element.on('tab(processtype)', function (data) {
+                            that.a = data.index
+                            console.log(this); //当前Tab标题所在的原始DOM元素
+                            console.log(data.index); //得到当前Tab的所在下标
+                            console.log(data.elem); //得到当前的Tab大容器
+                        });
+                    }
+                },
+                created: function () {
+                    this.linstenTab();
+                    abp.services.app.processType.getAll().done(res => {
+                        this.processTypes = res;
+
+                        Vue.nextTick(refresh);
+                    })
+                }
+
+            })
+        }
+        layui.use('element', elConfigReady)
+        function refresh() {
+            var element = layui.element;
+            element.init(); 
+            //element.render('nav');
+        }
+
+    </script>
+}

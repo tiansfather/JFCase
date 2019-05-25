@@ -1,0 +1,172 @@
+﻿<script>
+    Vue.component('weui-submit', {
+        props: ['submit'],
+        created: function () {
+            console.log(this.submit)
+        },
+        template: `
+    <footer class="weui-btn-area" style="position: fixed; bottom: 2px; width: 92%;z-index:9;">
+        <input type="button" value="提交" class="weui-btn weui-btn_primary" @@click.prevent="submit"/>  
+    </footer>`
+    })
+    Vue.component('weui-select', {
+        data: function () {
+            return {
+                key: this.key || 'weui-select' + Math.floor(Math.random() * 1000),
+                lastChangeValue: ''
+            }
+        },
+        props: ['value', 'title', 'items', 'multi', 'options'],
+        methods: {
+            load: function (arg) {
+                var that = this;
+                var defaultOp = {
+                    title: this.title,
+                    items: this.items,
+                    multi: this.multi,
+                    onChange: function () {
+                        that.lastChangeValue = this.data.values
+                        that.$emit('input', this.data.values)
+                    }
+                };
+                var options = $.extend(defaultOp, this.options)
+                Vue.nextTick(function () {
+                    if (arg) {
+                        $("#" + that.key).select("update", options);
+                    } else {
+                        $("#" + that.key).select(options);
+                    }
+                })
+            }
+        },
+        mounted: function () {
+            $("#" + this.key).val(this.value);
+            this.load();
+        },
+        watch: {
+            value: function (newVal, oldVal) {
+                if (newVal !== this.lastChangeValue) {
+                    $("#" + this.key).val(newVal);
+                }
+            },
+            items: function () {
+                this.load("update");
+            }
+        },
+        template: `<div><input class="weui-input" type="text" :id="key"  readonly=""></div>`
+    })
+</script>
+<script type="text/x-template" id="wxUploaderImg">
+    <div class="weui-cell">
+        <div class="weui-cell__bd ">
+            <div class="weui-uploader">
+                <div class="weui-uploader__hd">
+                    <p class="weui-uploader__title">图片上传</p>
+                    <div class="weui-cell_ft"></div>
+                </div>
+                <div class="weui-uploader__bd">
+                    <ul class="weui-uploader__files" id="imglist">
+                        <li v-for="file in files" class='weui-uploader__file' :style="{'background-image':'url('+ getPath(file) +')'}"></li>
+                        <li v-for="item in aLocalIds" class='weui-uploader__file' :class="{'weui-uploader__file_status':item.uploaded}" :style="{'background-image':'url('+ item.src +')'}">
+                            @*<img :src="item.src" :class="{uploaded:item.uploaded}" />*@
+                            <div v-if="item.uploaded" class="weui-uploader__file-content">
+                                <i class="weui-icon-success"></i>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="weui-uploader__input-box">
+                        <input class="weui-uploader__input" type="button" @@click="choose" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('wx-uploader-img', {
+        data: function () {
+            return { aLocalIds: [], serverIds: [] }
+        },
+        props: ["value","setting","files"],
+        template: '#wxUploaderImg',
+        methods: {
+            getPath: function (file) {
+                return typeof file == 'string' ? file : file.filePath
+            },
+            upload: function (index) {
+                var aLocalIds = this.aLocalIds, that = this;
+                wx.uploadImage({
+                    localId: aLocalIds[index].src, // 需要上传的图片的本地ID，由chooseImage接口获得
+                    isShowProgressTips: 1, // 默认为1，显示进度提示
+                    success: function (res) {
+                        aLocalIds[index].uploaded = true;//上传成功时改变css样式
+                        that.serverIds.push(res.serverId);// 返回图片的服务器端ID
+                        that.$emit('input', that.serverIds);//通过v-model绑定将整个数组丢出
+                    }
+                });
+            },
+            choose: function () {
+                var aLocalIds = this.aLocalIds, that = this, index = aLocalIds.length;
+                var sourceType = this.setting && this.setting.sourceType ?['camera','album']: ['camera']
+                wx.chooseImage({
+                    count: 6 - aLocalIds.length,
+                    sourceType: sourceType, // 可以指定来源是相册还是相机，默认二者都有
+                    success: function (res) {
+                        that.aLocalIds=aLocalIds.concat(res.localIds.map(function (n) {
+                            return { src: n, uploaded: false }
+                        }))
+                        //aLocalIds.push({ src: res.localIds[0], uploaded: false }); // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                        var i = 0;
+                        for (; i < res.localIds.length; i++) {
+                            that.upload(i+index);
+                        }
+                        
+                    }
+                });
+            }
+        }
+    })
+</script>
+<style>
+    .load-more-wrap {
+        font-size: 18px;
+        margin-top: 20px;
+        height: 80px;
+        display: flex;
+        background: #fff;
+        align-items: center;
+    }
+
+    .loading {
+        text-align: center;
+        font-size: 14px;
+        line-height: 50px;
+    }
+</style>
+<script type="text/x-template" id="waterLoad">
+    <div>
+        <div class="load-more-wrap" v-if="isLoadBtn">
+            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default" @@click="$emit('page-add', '')">加载更多</a>
+        </div>
+        <div class="loading" v-else>
+            <div v-if="!nomore">
+                <i class="weui-loading"></i>加载中
+            </div>
+            <div v-else>
+                已无更多数据
+            </div>
+        </div>
+    </div>
+
+</script>
+<script>
+    Vue.component('water-load', {
+        props: ['page', 'lists', 'limit', 'loaded', 'nomore'],
+        template: "#waterLoad",
+        computed: {
+            isLoadBtn: function () {
+                return (typeof this.loaded == 'boolean') ? this.loaded : (this.lists.length == this.page * this.limit)
+            }
+        }
+    })
+</script>

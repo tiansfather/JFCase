@@ -1,0 +1,547 @@
+﻿@section styles{
+<style>
+    .my-header {
+        height: 50px;
+        margin-bottom: 10px;
+    }
+
+    .my-tree-h2 {
+        padding-left: 10px;
+        color: #333;
+        font-size: 16px;
+        line-height: 30px;
+        font-weight: 600;
+    }
+
+    .my-process {
+        position: relative;
+        border: dotted 2px #b1b1b1;
+        overflow: auto;
+    }
+
+    .my-process-line {
+        margin: 0 auto;
+        position: relative;
+        width: 1000px;
+        height: 575px;
+    }
+
+        .my-process-line i {
+            font-size: 37px;
+            color: #289be5;
+        }
+
+    .my-line-img {
+        width: 60px;
+        text-align: center;
+    }
+
+    .my-line-span {
+        font-size: 12px;
+        text-align: center;
+        width: 60px;
+        padding: 4px 0;
+    }
+
+    .my-line-scale:hover {
+        transform: scale(1.1);
+        -ms-transform: scale(1.1); /* IE 9 */
+        -webkit-transform: scale(1.1); /* Safari and Chrome */
+        -o-transform: scale(1.1); /* Opera */
+        -moz-transform: scale(1.1); /*Firefox*/
+        cursor: pointer;
+    }
+
+    .my-line-scale {
+        position: absolute;
+    }
+
+    .my-line-noscale {
+        position: absolute;
+    }
+
+    .my-process-line .my-line-noscale i {
+        color: #ccc;
+    }
+
+    .my-ab-1 {
+        top: 100px;
+        left: 50px;
+    }
+
+    .my-ab-2 {
+        top: 100px;
+        left: 200px;
+    }
+
+    .my-ab-3 {
+        top: 100px;
+        left: 350px;
+    }
+
+    .my-ab-4 {
+        top: 50px;
+        left: 530px;
+    }
+
+    .my-ab-5 {
+        top: 150px;
+        left: 530px;
+    }
+
+    .xuxian:after {
+        position: absolute;
+        display: inline-block;
+        border-top: 6px solid transparent;
+        border-left: 6px solid #b1b1b1;
+        border-bottom: 6px solid transparent;
+        right: -7px;
+        top: -7px;
+        content: '';
+    }
+
+    .xuxian-rotate-90 {
+        transform: rotate(90deg);
+        -ms-transform: rotate(90deg); /* IE 9 */
+        -webkit-transform: rotate(90deg); /* Safari and Chrome */
+    }
+
+    .xuxian, .xuxian-noafter {
+        position: absolute;
+        border-top: dotted 2px #b1b1b1;
+    }
+
+    #xuxian-fine_1 {
+        border-top: dotted 1px #b1b1b1;
+    }
+
+    .xuxian-k-1 {
+        top: -2px;
+        left: 35px;
+        width: 70px;
+    }
+
+    .xuxian-k-2 {
+        top: 101px;
+        left: 35px;
+        width: 70px;
+    }
+
+    .xuxian-kuang {
+        position: absolute;
+        top: 118px;
+        left: 685px;
+        height: 101px;
+        width: 108px;
+        /*border: 1px solid;*/
+    }
+
+    .none-xuxian-left {
+        position: absolute;
+        top: 49px;
+        border-top: dotted 2px #b1b1b1;
+        width: 30px;
+    }
+
+    .none-xuxian-middle {
+        position: absolute;
+        left: 31px;
+        border-left: dotted 2px #b1b1b1;
+        height: 100px;
+    }
+    /*-右侧卡片栏-*/
+    .my-process {
+        display: flex;
+        justify-content: center;
+        min-height: 500px;
+    }
+    .my-process-cards {
+        /*display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;*/
+        margin-right: 10px;
+        border-radius: 5px;
+        max-width:200px;
+    }
+    .right-card-wrap {
+        min-width: 200px;
+        min-height: 140px;
+        max-height: 180px;
+        position: relative;
+        background: #f2f2f2;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 4px 4px 0px 0px rgba(0, 0, 0, 0.1);
+    }
+        .right-card-wrap::after {
+            height: 20px;
+            display: block;
+            content: "";
+            margin-bottom: 13px;
+        }
+    .mypc1-head {
+        cursor: pointer;
+        color: #000;
+        line-height: 26px;
+        border-bottom: 1px solid #ccc;
+        background: rgb(246, 246, 246);
+        padding: 0 10px
+    }
+
+    .mypc1-main {
+        padding: 0 10px;
+    }
+
+    .mypc1-main li {
+        line-height: 25px;
+    }
+
+    .mypc1-main li:hover {
+        color: blue;
+        cursor: pointer;
+    }
+</style>
+}
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card my-layui-card">
+        <div class="my-body menu0">
+            <div class="my-tree">
+                <h2 class="my-tree-h2">生产流程</h2>
+            </div>
+            <div class="my-process">
+                <div class="my-process-line">
+                    <div class="xuxian-kuang">
+                        <div class="none-xuxian-left"></div>
+                        <div class="none-xuxian-middle"></div>
+                        <div class="xuxian xuxian-k-1"></div>
+                        <div class="xuxian xuxian-k-2"></div>
+                    </div>
+                    <a href="/Home/Show?name=../MES/Board" target="_blank">
+                        <div class="my-line-scale" style="left:470px;top:475px;">
+                            <div class="my-line-img"><i class="iconfont icon-houtaiguanli"></i></div>
+                            <div class="my-line-span"><span>车间看板</span></div>
+                        </div>
+                    </a>
+                </div>
+                <div class="my-process-cards" v-if="adminList.length">
+                    <div class="right-card-wrap">
+                        <div class="mypc1-head" onclick="parent.index.showMenu('Admin')">
+                            <i class="iconfont icon-xingzheng"></i>行政管理
+                        </div>
+                        <div class="mypc1-main" v-cloak>
+                            <ul>
+                                <li v-for="(item,index) in adminList" @@click="openTabsPage(adminList[index])">{{item.title}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="right-card-wrap">
+                        <div class="mypc1-head">
+                            <i class="iconfont icon-xingzheng"></i>加工详情
+                        </div>
+                        <div class="mypc1-main" v-cloak>
+                            <ul>
+                                <li v-for="(item,index) in processorList" @@click="openTabsPage(processorList[index])">{{item.title}}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="my-body menu1" style="display:none;">
+            <div class="my-tree">
+                <h2 class="my-tree-h2">项目管理</h2>
+            </div>
+            <div class="my-process">
+                <div class="my-process-line">
+                </div>
+            </div>
+        </div>
+        <div class="my-body menu2" style="display:none;">
+            <div class="my-tree">
+                <h2 class="my-tree-h2">仓库管理</h2>
+            </div>
+            <div class="my-process">
+                <div class="my-process-line">
+                </div>
+            </div>
+        </div>
+        @*<div class="my-body menu3" style="display:none;">
+            <div class="my-tree">
+                <h2 class="my-tree-h2">行政管理</h2>
+            </div>
+            <div class="my-process">
+                <div class="my-process-line">
+                </div>
+            </div>
+        </div>*@
+    </div>
+</div>
+
+
+@section scripts{
+<script>
+    function goHref(href,name) {
+        top.layui.index.openTabsPage(href, name)
+    }
+    function editSheet(href, taskName) {
+        top.$(`li[data-name="${href}"] a`).click();
+        //top.layui.index.openTabsPage('/Home/Show?name=../MES/' + taskId, taskName)
+    }
+    window.onload = function () {
+        window.app = new Vue({
+            el: '#LAY-app-message',
+            data: {},
+            computed: {
+                adminList: function () {
+                    var adminList = [];
+                    parent.$('[menu-name="Admin"]').each(function () {
+                        var obj = {
+                            title: $(this).find('cite').text(),
+                            url: $(this).find('a').attr('lay-href')
+                        }
+                        adminList.push(obj);
+                    })
+                    return adminList;
+                },
+                processorList: function () {
+                    return [{ title: '加工任务', url: '/Home/Show?name=../MES/ProcessTaskProcessor' },
+                        { title: '报工详情', url: '/Home/Show?name=../MES/ProcessTaskReportProcessor' }]
+                }
+            },
+            methods: {
+                openTabsPage: function (list) {
+                    top.layui.index.openTabsPage(list.url, list.title)
+                    //top.layui.index.openTabsPage(this.adminList[index].url, this.adminList[index].title)
+                }
+            }
+        })
+        function showNowMenu() {
+            function fShow(num) {
+                $('.menu' + num).show(300);
+                $('.menu' + num).siblings().hide(300);
+
+            }
+            switch ($(this).attr('menuname')) {
+                case 'MES':
+                    fShow(0)
+                    break;
+                case 'Project':
+                    fShow(1)
+                    break;
+                case 'Storage':
+                    fShow(2)
+                    break;
+                //case 'Admin':
+                //    fShow(3)
+                //    break;
+                default:
+                    fShow(0)
+
+            }
+        }
+        parent.$('[menuname]').click(showNowMenu)
+        console.log(parent.$('[menuname]'))
+        //云生产
+        var oAllMenus = {
+            menu0: {
+                Icon:
+                    [{ x: 20, y: 20, icon: 'icon-icon-kaidan', href: getHref('JGKD'), desc: '加工开单' },
+                    { x: 20, y: 133, icon: 'icon-25', href: getHref('Project'), desc: '模具列表' },
+                    { x: 170, y: 133, icon: 'icon-iLinkapp-', href: getHref('Bom'), desc: 'BOM清单' },
+                    { x: 320, y: 133, icon: 'icon-workflow', href: getHref('PartTask'), desc: '加工路线' },
+                    { x: 470, y: 133, icon: 'icon-renwu', href: getHref('ProcessTask'), desc: '生产任务' },
+                    { x: 620, y: 133, icon: 'icon-baogong-', href: getHref('ProcessTaskReport'), desc: '报工记录' },
+                    { x: 800, y: 85, icon: 'icon-baobiao1', href: getHref('ProcessReportForm'), desc: '生产报表' },
+                    { x: 800, y: 191, icon: 'icon-celve', href: getHref('RemindTactic'), desc: '提醒策略' },
+                    { x: 20, y: 278, icon: 'icon-yewuguanli', href: false, desc: '业务管理' },
+                    { x: 20, y: 366, icon: 'icon-xiangmu', href: false, desc: '项目管理' },
+                    { x: 170, y: 278, icon: 'icon-wuliaoguanli', href: false, desc: '物料管理' },
+                    { x: 170, y: 366, icon: 'icon-ziyuan', href: false, desc: '仓库管理' },
+                        //{ x: 470, y: 278, icon: 'icon-yun', href: getHref('CloudEquipment'), desc: '云设备' },
+                    { x: 470, y: 278, icon: 'icon-shukongchechuang ', href: getHref('Equipment'), desc: '设备管理' },
+                    { x: 470, y: 366, icon: 'icon-shebei', href: getHref('FieldControl'), desc: '现场管理' },
+                    //{ x: 470, y: 475, icon: 'icon-houtaiguanli', href: 'Board', desc: '车间看板' },
+                    { x: 20, y: 475, icon: 'icon-caiwuguanli', href: false, desc: '财务管理' },
+                    { x: 170, y: 475, icon: 'icon-pinzhiguanli', href: false, desc: '品质管理' },
+                    //{ x: 820, y: 233, icon: 'icon-baobiao1', href: false, desc: '报表管理' },
+                    //{ x: 920, y: 433, icon: 'icon-baobiao1', href: false, desc: '注塑系统' },
+                    { x: 320, y: 475, icon: 'icon-pinpaishejichuangxintiyan', href: false, desc: '设计管理' },
+                        //{ x: 920, y: 333, icon: 'icon-baobiao1', href: false, desc: '模钢/模配/热处理' }
+                    ],
+                Xuxian:
+                    [{ x: 85, y: 163, width: 74, dir: 'x', after: true },
+                    { x: 235, y: 163, width: 74, dir: 'x', after: true },
+                    { x: 385, y: 163, width: 74, dir: 'x', after: true },
+                    { x: 535, y: 163, width: 74, dir: 'x', after: true },
+                    { x: 463, y: 80, width: 74, dir: 'y', after: true },
+                    { x: 83, y: 43, width: 413, dir: 'x', after: false },
+                    { x: 24, y: 227, width: 54, dir: 'y', after: true },
+                    { x: 174, y: 227, width: 54, dir: 'y', after: true },
+                    { x: 474, y: 227, width: 54, dir: 'y', after: true },
+                    { x: 15, y: 268, width: 70, dir: 'x', after: false, fine: 1 },//a-t
+                    { x: 165, y: 268, width: 70, dir: 'x', after: false, fine: 1 },//物料管理b-t
+                    { x: 465, y: 268, width: 70, dir: 'x', after: false, fine: 1 },//c-t
+                    { x: 15, y: 436, width: 70, dir: 'x', after: false, fine: 1 },//业务管理a-b
+                    { x: 165, y: 436, width: 70, dir: 'x', after: false, fine: 1 },//物料管理b-b
+                    { x: 465, y: 436, width: 70, dir: 'x', after: false, fine: 1 },//c-b
+                    { x: -68, y: 352, width: 166, dir: 'y', after: false, fine: 1 },//a-l
+                    { x: 2, y: 352, width: 166, dir: 'y', after: false, fine: 1 },//a-r
+                    { x: 82, y: 352, width: 166, dir: 'y', after: false, fine: 1 },//物料管理b-l
+                    { x: 152, y: 352, width: 166, dir: 'y', after: false, fine: 1 },//物料管理b-r
+                    { x: 382, y: 352, width: 166, dir: 'y', after: false, fine: 1 },
+                    { x: 452, y: 352, width: 166, dir: 'y', after: false, fine: 1 },
+                    { x: 15, y: 470, width: 370, dir: 'x', after: false, fine: 1 },
+                    { x: 15, y: 545, width: 370, dir: 'x', after: false, fine: 1 },
+                    { x: -23, y: 508, width: 74, dir: 'y', after: false, fine: 1 },
+                    { x: 348, y: 508, width: 74, dir: 'y', after: false, fine: 1 },
+                    ]
+            },
+            menu1: {
+                Icon:
+                    [
+                        { x: 20, y: 133, icon: 'icon-25', href: getHref('Project'), desc: '模具列表' },
+                        { x: 170, y: 133, icon: 'icon-pinpaishejichuangxintiyan', href: 'temp', desc: '产品设计' },
+                        { x: 320, y: 133, icon: 'icon-mojugongzuozhan-', href: 'temp', desc: '模具设计' },
+                        { x: 470, y: 133, icon: 'icon-iLinkapp-', href: getHref('Bom'), desc: 'BOM清单' },
+                        { x: 620, y: 133, icon: 'icon-jindu1', href: 'temp', desc: '模具进度' },
+                        { x: 770, y: 133, icon: 'icon-mingxi1', href: 'temp', desc: '跟踪明细' },
+                        { x: 920, y: 133, icon: 'icon-zonglan', href: 'temp', desc: '模具总览' },
+                    ],
+                Xuxian:
+                    [
+                        { x: 85, y: 163, width: 74, dir: 'x', after: true },
+                        { x: 235, y: 163, width: 74, dir: 'x', after: true },
+                        { x: 385, y: 163, width: 74, dir: 'x', after: true },
+                        { x: 535, y: 163, width: 74, dir: 'x', after: true },
+                        { x: 685, y: 163, width: 74, dir: 'x', after: true },
+                        { x: 835, y: 163, width: 74, dir: 'x', after: true },
+                    ]
+            },
+            menu2: {
+                Icon:
+                    [
+                        { x: 20, y: 160, icon: 'icon-iLinkapp-', href: false, desc: '采购BOM' },
+                        { x: 170, y: 20, icon: 'icon-qinggoudan', href: '/FlowForm/InputByFormKey?formKey=CGSQ&modulekey=MaterialBuyRequire&data=#', desc: '采购申请' },
+                        { x: 170, y: 160, icon: 'icon-caigouxuqiu', href: getHref('MaterialBuyRequire','Storage'), desc: '采购需求' },
+                        { x: 320, y: 160, icon: 'icon-xunjia', href: getHref('MaterialRequireQuote','Storage'), desc: '采购询价' },
+                        { x: 470, y: 160, icon: 'icon-caigou_feiyongshenqing', href: getHref('MaterialBuy','Storage'), desc: '采购' },
+                        { x: 620, y: 20, icon: 'icon-wupinlingyong', href: getHref('MaterialBuy','Storage'), desc: '采购领用' },
+                        { x: 620, y: 160, icon: 'icon-ruku1', href: getHref('MaterialBuy','Storage'), desc: '采购入库' },
+                        { x: 770, y: 160, icon: 'icon-kucunmingxichaxun', href: getHref('MaterialBuy','Storage'), desc: '采购明细账' },
+                        { x: 920, y: 160, icon: 'icon-caigouduizhangyuqingkuanguanli', href: false, desc: '采购对账' },
+                        { x: 170, y: 300, icon: 'icon-xuqiuku', href: getHref('MaterialOutRequire','Storage'), desc: '出库需求' },
+                        { x: 470, y: 300, icon: 'icon-mingxi1', href: getHref('StoreMaterial','Storage'), desc: '库存信息' },
+                        { x: 620, y: 300, icon: 'icon-ziyuan', href: getHref('Store','Storage'), desc: '仓库信息' },
+                        { x: 770, y: 300, icon: 'icon-chuku1', href: false, desc: '出库' }
+                    ],
+                Xuxian:
+                    [
+                        { x: 85, y: 187, width: 74, dir: 'x', after: true },
+                        { x: 235, y: 187, width: 74, dir: 'x', after: true },
+                        { x: 385, y: 187, width: 74, dir: 'x', after: true },
+                        { x: 535, y: 187, width: 74, dir: 'x', after: true },
+                        { x: 685, y: 187, width: 74, dir: 'x', after: true },
+                        { x: 835, y: 187, width: 74, dir: 'x', after: true },
+                        { x: 235, y: 47, width: 115, dir: 'x', after: false },
+                        { x: 685, y: 47, width: 115, dir: 'x', after: false },
+                        { x: 50, y: 327, width: 109, dir: 'x', after: true },
+                        { x: 235, y: 327, width: 222, dir: 'x', after: true },
+                        { x: 535, y: 327, width: 74, dir: 'x', after: true },
+                        { x: 685, y: 327, width: 74, dir: 'x', after: true },
+                        { x: 474, y: 258, width: 54, dir: 'y', after: true },
+                        { x: 300, y: 100, width: 101, dir: 'y', after: true },
+                        { x: 750, y: 100, width: 101, dir: 'y', after: true },
+                        { x: 2, y: 279, width: 98, dir: 'y', after: false },
+                    ]
+            },
+        }
+        //-------------------------------------------项目-------------------------------------------
+
+        //function fInitArgument(argu, de) {
+        //    //(要查看的值，默认值)
+        //    var a;
+        //    if (typeof argu == 'undefined') {
+        //        a = de;
+        //    } else {
+        //        a = argu;
+        //    }
+        //    return a;
+        //}
+        //画icon
+
+        function drawIcon(option, menu) {
+            var defaultOption = { x: 0, y: 0, icon: 'iconfont', href: true, desc: '' };
+            var finalOption = $.extend(defaultOption, option);
+
+            var scale = 'my-line-noscale';//为false，即color为#ccc，不带hover放大样式
+            var click = '';
+            if (finalOption.href != false) {
+                scale = 'my-line-scale';
+                if (finalOption.href == 'temp') {
+                    click = '';
+                } else if (/\.Tenancy\./.test(finalOption.href)) {
+                    click = `onclick="editSheet('${finalOption.href}', '${finalOption.desc}')" `;
+                } else {
+                    click = `onclick="goHref('${finalOption.href}', '${finalOption.desc}')"`
+                }
+            }
+
+            var $a = `
+                    <div class="${scale}" ${click} style="left:${finalOption.x}px;top:${finalOption.y}px;">
+                        <div class="my-line-img"><i class="iconfont ${finalOption.icon}"></i></div>
+                        <div class="my-line-span"><span>${finalOption.desc}</span></div>
+                    </div>`;
+            $('.' + menu + ' .my-process-line').append($a);
+        }
+        //画虚线
+        function drawXuxian(option, menu) {
+            var defaultOption = { x: 0, y: 1, width: 74, dir: 'x', after: true, fine: 2 };
+            var finalOption = $.extend(defaultOption, option);
+            if (finalOption.dir == 'y') {
+                finalOption.dir = 'xuxian-rotate-90';
+            } else {
+                finalOption.dir = '';
+            }
+            if (finalOption.after) {//正常为有after伪类
+                finalOption.after = 'xuxian';
+            } else {
+                finalOption.after = 'xuxian-noafter';
+            }
+            switch (finalOption.fine) {//给过来不同宽度的fine值，返回对应id
+                case 1:
+                    finalOption.fine = 'xuxian-fine_1';
+                    break;
+                case 2:
+                    finalOption.fine = '';
+                    break;
+                    defalut:
+                    finalOption.fine = 'xuxian-fine_1';
+            }
+            var $b = `<div id="${finalOption.fine}" class="${finalOption.after} ${finalOption.dir}" style="width:${finalOption.width}px;left:${finalOption.x}px;top:${finalOption.y}px;"></div>`;
+            $('.' + menu + ' .my-process-line').append($b);
+        }
+
+        function drawAllIcon(arr, menu) {
+            arr.forEach(function (item) {
+                drawIcon({ x: item.x, y: item.y, icon: item.icon, href: item.href, desc: item.desc }, menu);
+            });
+        }
+
+        function drawAllXuxian(arr, menu) {
+            arr.forEach(function (item) {
+                drawXuxian({ x: item.x, y: item.y, width: item.width, dir: item.dir, after: item.after, fine: item.fine }, menu);
+            });
+        }
+        for (var i = 0; i < Object.keys(oAllMenus).length; i++) {
+            var indexName = 'menu' + i;
+            drawAllIcon(oAllMenus[indexName].Icon, indexName);
+            drawAllXuxian(oAllMenus[indexName].Xuxian, indexName);
+        }
+    }
+
+    function getHref(key,menu='MES',) {
+        var href =menu + '.Tenancy.' + key;
+        return abp.auth.isGranted('Menu.'+href) ? href : false;
+    }
+
+</script>
+}

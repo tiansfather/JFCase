@@ -1,0 +1,74 @@
+﻿
+@{
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "图片上传";
+}
+<style>
+	.layui-upload-file {
+		display: none;
+	}
+</style>
+<div class="weui-cells weui-cells_form" style="margin-bottom: 45px;">
+	<div class="weui-cell">
+		<div class="weui-cell__bd ">
+			<div class="weui-uploader">
+				<div class="weui-uploader__hd">
+					<p class="weui-uploader__title">图片上传</p>
+					<div class="weui-cell_ft"></div>
+				</div>
+				<div class="weui-uploader__bd">
+					<ul class="weui-uploader__files" id="imglist"></ul>
+					<div class="weui-uploader__input-box">
+						<input class="weui-uploader__input" type="button" id="chooseBtn" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts{ 
+    <script>
+		var guid = "@ViewBag.Guid";
+
+		config.ready = function () {
+			layui.use('upload', function () {
+				layui.upload.render({
+					elem: '#chooseBtn'
+					, url: '/file/upload/'
+					, accept: 'images'
+					, acceptMime: 'image/*'
+					, before: function () {
+						layui.layer.load()
+					}
+					, done: function (res) {
+						layui.layer.closeAll('loading');
+						//获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意：此乃 layui 2.1.0 新增
+						var item = this.item;
+						//如果上传失败
+						if (!res.result.success) {
+							layer.msg(res.result.msg, { icon: 5, anim: 6 });
+						}
+						//上传成功
+						else {
+							var fileResult = { fileName: res.result.fileName, filePath: res.result.filePath }
+							func.runAsync(abp.services.app.weiXin.setUploadInfo(guid, fileResult).done(function () {
+								location.href = "/weixin/success?msg=" + encodeURIComponent("提交成功");
+							}));
+							//app.files.push({ fileName: res.result.fileName, filePath: res.result.filePath });
+
+						}
+					}
+				});
+			})
+
+		}
+
+        function doSubmit() {
+            func.runAsync(abp.services.app.weiXin.login(guid).done(function () { 
+                location.href = "/weixin/success?msg=" + encodeURIComponent("提交成功");
+            }))
+
+        }
+    </script>
+}

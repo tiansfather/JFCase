@@ -1,0 +1,68 @@
+﻿@inherits Master.Web.Components.MasterRazorPage<TModel>
+
+@section styles{
+    <style>
+        html {
+            background: #fff;
+            color: #000;
+        }
+
+        header {
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .submit {
+            display: block;
+        }
+    </style>
+
+}
+<header>
+    <h1>帮助视频上传管理</h1>
+    <div id="app" v-cloak>
+        <button class="layui-btn layui-btn-normal submit" @@click="submit">保存</button>
+        <multi-data-add :items="items" :parts="parts"></multi-data-add>
+    </div>
+</header>
+
+
+@section scripts{
+    <script>
+        config.ready = function () {
+            window.app = new Vue({
+                el: '#app',
+                data: {
+                    items: [
+                        { type: 'text', title: '标题', key: 'videoName' },
+                        { type: 'text', title: '描述', key: 'videoContent' },
+                        {
+                            type: 'upload', title: '操作', key: 'upload',
+                            onChange: function (ev,index) {
+                                app.parts[index].videoPath=ev.filePath
+                            }
+                        },
+                        { type: 'text', title: '视频地址', key: 'videoPath' },
+                    ],
+                    parts: [{}]
+                },
+                methods: {
+                    submit: function () {
+                        func.runAsync(abp.services.app.video.submitVideos(this.parts).done(() => {
+                            layer.msg('上传成功了呢，走好您嘞！！！');
+                        }))
+                    }
+                },
+                created: function () {
+                    abp.services.app.video.getAllList().done(res => {
+                        this.parts = res;
+                    })
+                }
+            })
+        }
+
+    </script>
+}

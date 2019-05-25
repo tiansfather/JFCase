@@ -1,0 +1,121 @@
+﻿@section styles{
+    <style>
+        #app{
+            background:#fff;
+        }
+        .no-data{
+            display:none;
+            text-align:center;
+        }
+        .layui-timeline {
+            padding: 25px;
+        }
+        .p-status {
+            position: absolute;
+            right: 0;
+            border: 2px solid;
+            padding: 3px;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 18px;
+        }
+    </style>
+}
+<div id="app" v-cloak>
+    <ul class="layui-timeline">
+        <li class="layui-timeline-item" v-for="item in tasks">
+            <i class="layui-icon layui-timeline-axis" v-if="item.processTaskStatus!=3">&#xe63f;</i>
+            <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop layui-timeline-axis" v-else></i>
+            <div class="layui-timeline-content layui-text">
+                <p class="p-status" :style="{'border-color':fGetS(item.processTaskStatus).color}">{{fGetS(item.processTaskStatus).name}}</p>
+                <h3 class="layui-timeline-title">{{item.partName}}（{{item.partSN}}）--{{item.processTypeName}}</h3>
+                <p>
+                    模具组长：{{item.projectCharger}}
+                    &emsp;&emsp;模号：{{item.projectSN}}<br>
+
+                    安排上机日期：{{item.arrangeDate?new Date(item.arrangeDate).pattern('MM-dd HH:mm'):''}}
+                    安排下机日期：{{item.arrangeDate&&item.estimateHours?getFinishDate(item.arrangeDate,item.estimateHours):''}}<br>
+
+                    预计工时：{{item.estimateHours}}
+                    规格：{{item.partSpecification}}
+                    数量：{{item.partNum}}<br>
+                    上机时间：{{item.startDate?new Date(item.startDate).pattern('MM-dd HH:mm'):''}}
+                    进度：{{getProgress(item.processTaskProgressInfo)}}<br>
+                    <span v-if="item.actualHours">实际工时：{{item.actualHours}}</span>
+                </p>
+            </div>
+        </li>
+    </ul>
+    <div class="no-data">
+        <h2>无数据</h2>
+    </div>
+        
+</div>
+
+@section scripts{
+    <script>
+        config.ready = function () {
+            window.app = new Vue({
+                el: '#app',
+                data: {
+                    tasks: []
+                },
+                computed: {
+                    id: function () {
+                        return $.getUrlParam('id')
+                    }
+                },
+                methods: {
+                    getFinishDate: function (startDate,hours) {
+                        return new Date(new Date(startDate).getTime() + hours * 60 * 60 * 1000).pattern('MM-dd HH:mm')
+                    },
+                    getProgress: function (progress) {
+                        return progress ? Math.round(progress.progress) * 100 + '%' :''
+                    },
+                    handleDate: function (date) {
+                        var date1
+                        if (!date) {
+                            date1 = '';
+                        } else {
+                            date1=date.split('T')[0].slice(5) + '/' + date.split('T')[1]
+                        }
+                        return date1
+                    },
+                    fGetS: function (status) {
+                        return func.getProcessTaskStatusColor(status)
+                    }
+                },
+                created: function () {
+                    var that = this;
+                    var requestFinished = false;
+                    abp.services.app.equipment.getFinishedTasks(this.id,1).done(function (data) {
+                        if (data.length) {
+                            that.tasks.unshift(data[0])
+                            requestFinished = true;
+                        }
+                    })
+                    abp.services.app.equipment.getUnFinishedTasks(this.id).done(function (data) {
+                        console.log(data)
+                        //var a = b = [];
+                        data.forEach(function (n) {
+                            if (n.processTaskStatus == 3) {
+                                if (requestFinished) {
+                                    that.tasks.splice(1,0,n)
+                                } else {
+                                    that.tasks.unshift(n);
+                                }
+                            } else {
+                                that.tasks.push(n);
+                            }
+                        })
+                        //that.tasks =a.concat(b);
+                        if (data.length == 0) {
+                            $('.no-data').show();
+                        }
+                    })
+                }
+            });
+
+        }
+    </script>
+}

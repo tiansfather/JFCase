@@ -1,0 +1,21 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@using Abp.AutoMapper
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleFormItemViewModel
+@{
+	var column = Model.ColumnInfo;
+
+	var renderer = !string.IsNullOrEmpty(column.Renderer) ? column.Renderer : "lay-text";
+}
+
+<div is="@renderer" value="@(Model.Value?.ToString())" plugin-Name="@Model.PluginName" module-Key="@Model.ModuleKey" :column-Info="{ColumnKey:'@column.ColumnKey',ColumnName:'@column.ColumnName',VerifyRules:'@column.VerifyRules',Tips:'@column.Tips',EnableAutoComplete:@(column.EnableAutoComplete?"true":"false")}"></div>
+
+@*<div class="@(inline?"layui-inline":"layui-form-item")">
+	<label class="layui-form-label">@column.ColumnName</label>
+	<div class="@(inline?"layui-input-inline":"layui-input-block")">
+		<input type="text" name="@column.ColumnKey" lay-verify="@column.VerifyRules" autocomplete="off" placeholder="请输入@(column.ColumnName)" class="layui-input" value="@(Model.Value?.ToString())">
+	</div>
+</div>*@

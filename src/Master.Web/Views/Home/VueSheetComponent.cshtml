@@ -1,0 +1,944 @@
+﻿@* ------------------------------------layui的模板固定列-------------------------------- *@
+<script type="text/html" id="colsThGuding">
+    <div class="my-colsth-div {{ d.lockDone||'' }} my-colsth-guding" style="">
+        <i class="iconfont icon-lock my-colsth-i" onclick="layuiExt.guDingLie(this)" title="固定列"></i>
+    </div>
+</script>
+<script type="text/html" id="colsThShaixuan">
+    <div class="my-colsth-div {{ d.lockDone||'' }} my-colsth-shaixuan" onclick="layuiExt.shaiXuanLie(this)" style="">
+        <i class="iconfont icon-shaixuan my-colsth-i" title="筛选"></i>
+    </div>
+</script>
+<script type="text/html" id="shaixuanSelect">
+    <div id="domSelect" style="position: absolute;top: 0px;left: 0px;width: 100%;">
+        <div id="filterSelectOffset{{d.id}}" style="width:250px;z-index:999;position:absolute;top:0;left:0;">
+            <select name="filterSelect" xm-select="filterSelect{{d.id}}" xm-select-search="" xm-select-height="36px" xm-select-show-count="1"></select>
+        </div>
+    </div>
+</script>
+@* -------------------------------------------------------------------------- *@
+<script type="text/x-template" id="VueSearchInput">
+    @* 渲染出一个input和一个查询按钮，当按回车和点击按钮都会把input的值传出来 *@
+    <div>
+        <div class="layui-input-inline">
+            <input type="text" :name="attr.id" autocomplete="off" class="layui-input" :placeholder="attr.placeholder" style="height:30px;" v-on:input="searchText=$event.target.value" @@keyup.enter="$emit('search-click',searchText)">
+        </div>
+        <button class="layui-btn  layui-btn-sm" type="button" @@click="$emit('search-click',searchText)">查询</button>
+    </div>
+</script>
+<script>
+    Vue.component('search-toolbar-input', {
+        data: function () {
+            return {
+                searchText: ''
+            }
+        },
+        props: ['attr'],
+        template: '#VueSearchInput'
+    })
+</script>
+<script>
+
+    Vue.directive('focus', {   //聚焦指令，用于组件中，打开就聚焦的情况
+        // 当被绑定的元素更新到 DOM 中时……
+        update: function (el, binding) {
+            // 聚焦元素
+            if (binding.value) {
+                el.focus()
+            }
+
+        }
+    })
+    Vue.component('edit-date-td', { //表格日期
+        data: function () {
+            return { inputShow: false }
+        },
+        props: ['value', 'dataindex'],
+        template: '#editDateTd',
+        computed: {
+            indexClass: function () {
+                return ['tdes' + this.dataindex[0] + '-' + this.dataindex[1], 'tddate' + this.dataindex[0] + '-' + this.dataindex[1]];
+            }
+        },
+        methods: {
+            renderDate: function () {
+                var that = this;
+                setTimeout(reD, 0)
+                function reD() {
+                    layui.laydate.render({
+                        elem: '.' + that.indexClass[1],
+                        value: that.value,
+                        show: true,//直接显示
+                        done: function (value) {
+                            that.$emit('input', value)
+                            that.inputShow = false;
+                            console.log(value, that.inputShow)
+                        },
+                        closeStop: '.' + that.indexClass[0]//点击  所在元素阻止关闭事件冒泡。如果不设定，则无法弹出控件
+                    });
+                }
+
+                function fRemoveLock(e) {
+                    var e = e || window.event; //浏览器兼容性
+                    var elem = e.target || e.srcElement;
+                    var b = $(elem).parents('.layui-laydate').length != 1 && !$(elem).hasClass('.' + that.indexClass[1]) && !$(elem).hasClass('.' + that.indexClass[0]);
+                    if (b) {
+                        console.log('移除');
+                        $(document).off('click', fRemoveLock);
+                        that.inputShow = false;
+                    }
+                }
+                console.log('1')
+                $(document).on('click', fRemoveLock);
+            },
+            updateVal: function (event) {
+                this.$emit('input', event.target.value)
+                this.inputShow = false;
+            },
+            cancelUpdate: function () {
+                this.inputShow = false;
+            },
+            tableEdit: function (event) {
+                this.inputShow = true;
+                this.$nextTick(this.renderDate())
+            }
+        }
+    })
+    Vue.component('edit-td', {//表格普通文本输入
+        data: function () {
+            return { inputShow: false }
+        },
+        props: ['value', 'verify'],
+        template: '#editTd',
+        methods: {
+            updateVal: function (event) {
+                this.$emit('input', event.target.value)
+                this.inputShow = false;
+            },
+            cancelUpdate: function () {
+                this.inputShow = false;
+            },
+            tableEdit: function (event) {
+                this.inputShow = true;
+            }
+        }
+    })
+    Vue.component('edit-td-number', {//表格普通文本输入
+        data: function () {
+            return { inputShow: false }
+        },
+        props: ['value', 'verify'],
+        template: `
+        <td @@click="tableEdit">
+            <input v-show="inputShow" class="layui-input layui-table-edit" type="number" :value="value"
+                   @@blur="updateVal" @@keydown.esc="cancelUpdate" v-focus="inputShow" :lay-verify="verify" />
+            {{ value }}
+        </td>
+                <td v-if="item.type=='number'" :class="item.key.toLowerCase()">
+                    <input type="number" class="layui-input layui-table-edit" :value="part[item.key]" @@input="getSetNumberValue($event.target.value,index,item)">
+                </td>`,
+        methods: {
+            updateVal: function (event) {
+                this.$emit('input', event.target.value)
+                this.inputShow = false;
+            },
+            cancelUpdate: function () {
+                this.inputShow = false;
+            },
+            tableEdit: function (event) {
+                this.inputShow = true;
+            }
+        }
+    })
+    Vue.component('edit-area-td', {//表格文本域输入
+        data: function () {
+            return { inputShow: false }
+        },
+        props: {
+            value: [String, Number],
+            editWidth: { type: Number, default: 250 }
+        },
+        template: '#editAreaTd',
+        methods: {
+            updateVal: function (event) {
+                this.$emit('input', event.target.value)
+                this.inputShow = false;
+            },
+            cancelUpdate: function () {
+                this.inputShow = false;
+            },
+            tableEdit: function (event) {
+                this.inputShow = true;
+            }
+        }
+    })
+</script>
+<script type="text/x-template" id="editTd">
+    <td @@click="tableEdit">
+        <input v-show="inputShow"
+               class="layui-input layui-table-edit"
+               type="text"
+               :value="value"
+               @@blur="updateVal"
+               @@keydown.esc="cancelUpdate"
+               v-focus="inputShow"
+               :lay-verify="verify" />
+        {{ value }}
+    </td>
+</script>
+<script type="text/x-template" id="editAreaTd">
+    <td @@click="tableEdit">
+        <textarea v-show="inputShow"
+                  class="layui-textarea"
+                  type=""
+                  :value="value"
+                  @@blur="updateVal"
+                  @@keydown.esc="cancelUpdate"
+                  v-focus="inputShow"
+                  :style="{width:editWidth+'px'}">
+            </textarea>
+        <span v-show="!inputShow"> {{ value }}</span>
+    </td>
+</script>
+<script type="text/x-template" id="editDateTd">
+    <td @@click.stop="tableEdit"
+        :class="[indexClass[0]]">
+        <input v-show="inputShow"
+               :class="[inputShow?indexClass[1]:'']"
+               class="layui-input layui-table-edit"
+               type="text"
+               @@keydown.enter="updateVal"
+               @@keydown.esc="cancelUpdate"
+               v-focus="inputShow" />
+        {{ value }}
+    </td>
+</script>
+<style>
+    /*-------时间范围选择，包含本年本月等快捷按钮----------*/
+    .icon-rili1 {
+        position: absolute;
+        right: 0;
+        z-index: 99;
+        top: 0;
+        line-height: 30px;
+        width: 22px;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    #time-handle-wrap {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+    }
+
+    .ant-popover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1030;
+        cursor: auto;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+        white-space: normal;
+        font-size: 12px;
+        line-height: 1.5;
+        font-weight: 400;
+        text-align: left;
+    }
+
+    .datepanel {
+        background-color: #fff;
+        background-clip: padding-box;
+        border-radius: 4px;
+        box-shadow: 0 1px 6px rgba(0,0,0,.2);
+        border: 1px solid rgba(55,136,255,.5);
+        padding: 18px 26px;
+    }
+
+        .datepanel span:first-child {
+            width: 30px;
+            display: inline-block;
+        }
+
+        .datepanel div {
+            padding: 5px 0;
+        }
+
+    .ant-btn:hover {
+        border-color: #3788ff;
+    }
+
+    .ant-btn {
+        margin: 0 5px;
+        display: inline-block;
+        text-align: center;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        line-height: 1.15;
+        padding: 0 15px;
+        font-size: 12px;
+        border-radius: 4px;
+        height: 28px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        transition: all .3s cubic-bezier(.645,.045,.355,1);
+        position: relative;
+        color: #000;
+        background-color: #fff;
+        border-color: #d9d9d9;
+    }
+</style>
+<script type="text/html" id="handleDate">
+    <div class="ant-popover">
+        <div class="datepanel">
+            <div>
+                <span>周</span>
+                <span>
+                    <button type="button" class="ant-btn">
+                        <span>本 周</span>
+                    </button>
+                    <button type="button" class="ant-btn">
+                        <span>上 周</span>
+                    </button>
+                </span>
+            </div>
+            <div>
+                <span>月</span>
+                <span>
+                    <button type="button" class="ant-btn">
+                        <span>本 月</span>
+                    </button>
+                    <button type="button" class="ant-btn">
+                        <span>上 月</span>
+                    </button>
+                </span>
+            </div>
+            <div>
+                <span>季</span>
+                <span>
+                    <button type="button" class="ant-btn">
+                        <span>本 季</span>
+                    </button>
+                    <button type="button" class="ant-btn">
+                        <span>上 季</span>
+                    </button>
+                </span>
+            </div>
+            <div>
+                <span>年</span>
+                <span>
+                    <button type="button" class="ant-btn">
+                        <span>本 年</span>
+                    </button>
+                    <button type="button" class="ant-btn">
+                        <span>上 年</span>
+                    </button>
+                </span>
+            </div>
+            <div>
+                <span>其他</span>
+                <span>
+                    <button type="button" class="ant-btn">
+                        <span>近3天</span>
+                    </button>
+                    <button type="button" class="ant-btn">
+                        <span>近7天</span>
+                    </button>
+                    <button type="button" class="ant-btn">
+                        <span>近14天</span>
+                    </button>
+                    <button type="button" class="ant-btn">
+                        <span>今 天</span>
+                    </button>
+                    <button type="button" class="ant-btn">
+                        <span>昨 天</span>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+</script>
+<script type="text/x-template" id="layRangeDate">
+    <div style="position:relative;">
+        <div>
+            <input type="text" :name="handleKey" class="layui-input" :id="handleKey" placeholder="请选择时间范围" :lay-key="handleKey" :value="data" autocomplete="off" />
+        </div>
+        <i class="iconfont icon-rili1" @@click.stop="openHandleTime($event)"></i>
+    </div>
+</script>
+<script>
+    Vue.component('lay-range-date', {   //时间范围选择
+        template: '#layRangeDate',
+        props: ['colKey', 'data'],
+        computed: {
+            handleKey: function () {
+                return this.colKey || 'rangeDate' + $.newid()
+            }
+        },
+        created: function () {
+            var that = this;
+            this.$nextTick(function () {
+                layui.laydate.render({
+                    elem: '#' + that.handleKey
+                    , range: '|' //或 range: '~' 来自定义分割字符
+                    , value: this.data
+                    , position: 'fixed'
+                    , done: function (value, date, endDate) {
+                        that.$emit('choosed-date', value)
+                        //console.log(value); //得到日期生成的值，如：2017-08-18
+                        //console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+                        //console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+                    }
+                });
+            })
+        },
+        methods: {
+            openHandleTime: function (ev) {
+                var that = this;
+                $('.layui-laydate.layui-laydate-range').hide();//把layui的laydate关闭
+                console.log(ev)
+                var data = {};
+                var getTpl = handleDate.innerHTML
+                    , view = document.getElementById('time-handle-wrap');
+                layui.laytpl(getTpl).render(data, function (html) {
+                    view.innerHTML = html;
+                });
+                var id = this.handleKey,
+                    awidth = $('.ant-popover').width(),
+                    bwidth = $(ev.target).width(),
+                    bheight = $(ev.target).height(),
+                    antL = $(ev.target).offset().left,
+                    antT = $(ev.target).offset().top,
+                    t = antT + bheight;
+                if (awidth + antL > $(document).width()) {
+                    console.log('小了')
+                    $('.ant-popover').offset({ left: antL + bwidth - awidth, top: t })
+                } else {
+                    $('.ant-popover').offset({ left: antL, top: t })
+
+                }
+                //模板引擎
+                //插进去
+                //设置position
+                //点击关闭
+                function setDate() {
+                    var h = $(this).text().replace(/\s+/g, "");
+                    var t = func.getHandleDate({ type: h })
+                    layui.laydate.render({
+                        elem: '#' + id
+                        , range: '|' //或 range: '~' 来自定义分割字符
+                        , value: t
+                        , position: 'fixed'
+                    });
+                    that.$emit('choosed-date', t);
+                }
+                $('.ant-popover').on('click', '.ant-btn', setDate)
+                function removeHnadle() {
+                    console.log('点击外部关闭')
+                    $('.ant-popover').remove();
+                    $(document).off('click', removeHnadle)
+                }
+                $(document).on('click', removeHnadle)
+                //document.addEventListener('click', removeHnadle, false)
+            },
+        },
+        mounted: function () {
+            //时间处理的div放在这个wrap中
+            if (!$('body').children('#time-handle-wrap').length) {
+                $('body').append('<div id = "time-handle-wrap"></div >')
+            }
+            console.log($('body').children('#time-handle-wrap').length)
+        }
+    });
+</script>
+
+<script>
+    /*参数详解
+    columnInfo:[ColumnKey,ColumnName,RelativeDataType,RelativeDataString,ReferenceSearchColumns,ReferenceSearchWhere,ReferenceItemTpl,MaxReferenceNumber]
+    ColumnKey：字段名,UnitName,表格id
+    ColumnName:显示名称，往来单位
+    RelativeDataType:引用来源类型，可选"Module"或"Url",分别表示数据来源为模块或者url请求
+    RelativeDataString:请求来源地址，当选择"Module"时，内容为模块Key,如"Unit","User",当选择”Url"时，为接口地址，如"'/api/services/app/ProcessTask/GetPageResult'
+    ReferenceSearchColumns:在table中要显示的列信息，当选择”Module"，内容为模块中的列标志以，分隔，如"unitName,unitId",注意首字母小写，当选择"url"时,内容为layuitable的列定义，如"[{"title":"名称","field":"unitName"}]"
+    ReferenceSearchWhere:
+    ReferenceItemTpl:选中数据的显示字段,"unitName"
+    MaxReferenceNumber:最大引用数量，设为1是单选，其余是多选,小于0时不做限制
+    value:初始选中值:"1,2"
+    data:初始数据，"[{"id:"1","unitName":"a"},{"id:"2","unitName":"b"}]"
+    placeholder: '',    input提示内容
+    SearchPlaceholder: '搜索企业名称', 搜索框提示内容
+    */
+    Vue.component('lay-tableselect-base', {     //渲染出一个只有tableselect的input
+        template: '#layTableSelectBase',
+        props: ['columnInfo', 'data', 'value'],
+        data: function () {
+            return {
+                Handledata: this.data,
+                selectValue: this.value,
+                displayValue: this.data,
+            }
+        },
+        created: function () {
+            this.fStartRender();
+        },
+        methods: {
+            fStartRender: function () {
+                var that = this;
+                //处理数据
+                var columnInfo = this.columnInfo;
+                columnInfo.ReferenceSearchWhere = typeof columnInfo.ReferenceSearchWhere == "string" ? JSON.parse(columnInfo.ReferenceSearchWhere) : columnInfo.ReferenceSearchWhere;
+                if (typeof columnInfo.ReferenceSearchColumns == "string" && columnInfo.ReferenceSearchColumns.indexOf('[') != -1) {
+                    //当它既是string又包含[],认定他为JSON化的字符串，此情况只有模块返回为Url格式时，才会出现，其他情况不改变
+                    columnInfo.ReferenceSearchColumns = JSON.parse(columnInfo.ReferenceSearchColumns)
+                }
+                columnInfo.RelativeDataType = (columnInfo.RelativeDataType || "Url");
+                columnInfo.MaxReferenceNumber = columnInfo.MaxReferenceNumber || 1;
+                columnInfo.checkedKey = columnInfo.checkedKey || "id";
+                //判断模式，开始渲染表
+                if (columnInfo.RelativeDataType == 'Module') {
+                    //获取模块的所有列定义信息
+                    abp.services.app.moduleInfo.getColumnLayData(this.columnInfo.RelativeDataString)
+                        .done(function (data) {
+                            var cols = data.columns;
+                            if (columnInfo.ReferenceSearchColumns) {
+                                var searchColumns = columnInfo.ReferenceSearchColumns.split(',');
+                                cols = cols.filter(function (o) { return searchColumns.indexOf(o.field) >= 0 });
+                            }
+                            //console.log(cols);
+                            that.renderTableSelect(cols, '/api/services/' + data.plugin + '/' + columnInfo.RelativeDataString + '/GetPageResult', columnInfo.ReferenceSearchWhere);
+                        });
+                } else if (columnInfo.RelativeDataType == "Url") {
+                    //url方式返回数据均为驼峰形式
+                    this.$nextTick(function () {
+                        //console.log(that.columnInfo.ReferenceSearchColumns);
+                        that.renderTableSelect(columnInfo.ReferenceSearchColumns, columnInfo.RelativeDataString, columnInfo.ReferenceSearchWhere);
+                    })
+
+                }
+
+            },
+            renderTableSelect: function (cols, url, where) {
+                //console.log(cols, url, where)
+                where = where || {}
+                var that = this;
+                //根据最大引用数量判断是单选还是多选
+                if (this.columnInfo.MaxReferenceNumber == 1) {
+                    cols.splice(0, 0, { type: 'radio' });
+                } else {
+                    cols.splice(0, 0, { type: 'checkbox' });
+                }
+                layui.tableSelect.render({
+                    elem: '#' + this.columnInfo.ColumnKey,	//定义输入框input对象 必填
+                    checkedKey: this.columnInfo.checkedKey, //表格的唯一建值，非常重要，影响到选中状态 必填
+                    searchKey: this.columnInfo.searchKey || 'keyword',	//搜索输入框的name值 默认keyword
+                    searchPlaceholder: this.columnInfo.SearchPlaceholder || '关键词搜索',	//搜索输入框的提示文字 默认关键词搜索
+
+                    table: {	//定义表格参数，与LAYUI的TABLE模块一致，只是无需再定义表格elem
+                        url: url,
+                        where: where,
+                        cols: [cols]
+                    },
+                    done: function (elem, data) {
+                        //选择完后的回调，包含2个返回值 elem:返回之前input对象；data:表格返回的选中的数据 []
+                        //拿到data[]后 就按照业务需求做想做的事情啦~比如加个隐藏域放ID...
+                        //console.log(data);
+                        if (that.columnInfo.MaxReferenceNumber > 0 && data.data.length > that.columnInfo.MaxReferenceNumber) {
+                            layer.msg("最多只能选择" + that.columnInfo.MaxReferenceNumber + "项");
+                            return false;
+                        }
+                        that.selectValue = data.data.map(function (o) { return o[that.columnInfo.checkedKey]; }).join(',');
+                        that.displayValue = data.data.map(function (o) { return o[that.columnInfo.ReferenceItemTpl]; }).join(',');
+                        that.$emit('choose', { value: that.selectValue, displayValue: that.displayValue, data: data.data });
+                        //console.log(that.selectValue, ',行间' + $('#' + that.columnInfo.ColumnKey).attr('ts-selected'), that.displayValue)
+                    }
+                })
+            }
+        },
+        watch: {
+            value: {
+                handler: function (val, oldVal) {
+                    console.log(val, oldVal, 'tableshelect组件value')
+                    this.selectValue = val;
+                    this.displayValue = this.data;
+                },
+                deep: true
+            }
+            //selectValue: function (val, oldVal) {
+            //    console.log(val, oldVal, 'selectValue')
+            //    console.log('new: %s, old: %s', val, oldVal)
+            //},
+        },
+        beforeUpdate: function () {
+            this.fStartRender();
+        }
+    });
+</script>
+<script type="text/x-template" id="layTableSelectBase">
+    <div>
+        <input type="hidden" :name="columnInfo.ColumnKey" :value="selectValue" />
+        <input type="text" :placeholder="typeof columnInfo.placeholder=='string'?columnInfo.placeholder:'请选择'" autocomplete="off" class="layui-input" :id="columnInfo.ColumnKey" :ts-selected="selectValue" :value="displayValue" @@input="$emit('input', $event.target.value)">
+    </div>
+
+</script>
+
+<style>
+    /*------表单输入组件中加号的样式---------*/
+    .r-input-number {
+        position: relative;
+        display: inline-block;
+        width: 180px;
+        line-height: 38px;
+    }
+
+    .r-input-number__decrease {
+        position: absolute;
+        z-index: 1;
+        top: 1px;
+        width: 40px;
+        height: 38px;
+        text-align: center;
+        background: #f5f7fa;
+        color: #606266;
+        cursor: pointer;
+        font-size: 13px;
+        right: 1px;
+        border-radius: 0 4px 4px 0;
+        border-left: 1px solid #dcdfe6;
+    }
+
+    .r-input__inner {
+        -webkit-appearance: none;
+        background-color: #fff;
+        background-image: none;
+        border-radius: 4px;
+        border: 1px solid #dcdfe6;
+        box-sizing: border-box;
+        color: #606266;
+        display: inline-block;
+        height: 40px;
+        line-height: 40px;
+        outline: none;
+        transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+        width: 100%;
+        -webkit-appearance: none;
+        padding-left: 10px;
+        padding-right: 50px;
+    }
+
+    .layui-table-edit {
+        border: none;
+        box-shadow: none;
+        padding: 1px 5px;
+    }
+
+    .r-multi tbody td {
+        background: #fff !important;
+    }
+</style>
+<script type="text/x-template" id="multiDataAdd">
+    @* 表单 *@
+    <div class="r-multi">
+        <div calss="r-table-multi">
+            <div class="table-wrap">
+                <table class="layui-table " lay-size="sm">
+                    <thead>
+                        <tr>
+                            <td style="width:50px" v-if="!readonly">@L("操作")</td>
+                            <td style="width:50px">@L("序号")</td>
+                            <template v-for="item in items">
+                                <td :class="item.key.toLowerCase()" :style="{width:getTdWidth(item.width)}">
+                                    <span v-html="item.title"></span><span class="filter-span" v-if="item.verify">*</span>
+                                </td>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(part,index) in parts" v-if="!readonly">
+                            <td>
+                                <button class="layui-btn layui-btn-xs layui-btn-primary  layui-btn-danger" type="button" @@click="deletePart(index)">
+                                    <i class="layui-icon layui-icon-close" style="color:#fff" title="删除"></i>
+                                </button>
+                            </td>
+                            <td style="background:#fff;" v-html="index+1"></td>
+                            <template v-for="(item,itemIndex) in items">
+                                <td v-if="item.type=='readonly'" style="color:#888;" :class="item.key.toLowerCase()"><span v-html="part[item.key]"></span></td>
+                                <td v-if="item.type=='text'" :class="item.key.toLowerCase()">
+                                    <input type="text" class="layui-input layui-table-edit" :value="part[item.key]" @@input="getSetValue($event.target.value,index,item)">
+                                </td>
+                                <td v-if="item.type=='number'" :class="item.key.toLowerCase()">
+                                    <input type="number" class="layui-input layui-table-edit" :value="part[item.key]" @@input="getSetNumberValue($event.target.value,index,item)">
+                                </td>
+                                <td v-if="item.type=='date'" is="edit-date-td" :dataindex="[itemIndex+2,index]" :value="part[item.key]" @@input="getSetValue($event,index,item)" :class="item.key.toLowerCase()"></td>
+                                <td v-if="item.type=='area'" is="edit-area-td" :editWidth="100" :value="part[item.key]" @@input="getSetValue($event,index,item)" :class="item.key.toLowerCase()"></td>
+                                <td class="table-td" style="padding:0;" v-if="item.type=='tableSelect'" :class="item.key.toLowerCase()">
+                                    <div is="lay-tableselect-base" :column-info="tableSelectGetInfo(item.info,index,itemIndex)" :data="part[item.key]?part[item.key].displayValue:''" :value="part[item.key]?part[item.key].value:''" @@choose="getSetValue($event,index,item)" @@input="$emit('input',[index,item.key,$event] )"></div>
+                                </td>
+                                <td v-if="item.type=='upload'" :class="item.key.toLowerCase()">
+                                    <button @@click="renderUpload(item,index)" class="layui-btn layui-btn-sm layui-btn-normal" type="button">上传</button>
+                                </td>
+                                @*<td style="padding:0;" v-if="item.type=='select'">
+                                        <div class="layui-form">
+                                            <select :value="part[item.key]" :lay-filter="'_mulsel'+itemIndex+'-'+index" :_index="index" :_item-index="itemIndex">
+                                                <option disabled value="">请选择</option>
+                                                <option v-for="option in item.options" v-bind:value="option.value" v-html="option.text"></option>
+                                            </select>
+                                        </div>
+                                    </td>*@
+                                <td style="padding:0;" v-if="item.type=='select'" :class="item.key.toLowerCase()">
+                                    <div class="layui-form">
+                                        <select v-model="part[item.key]" :lay-filter="'_mulsel'+itemIndex+'-'+index" :_index="index" :_item-index="itemIndex">
+                                            <option value="">请选择</option>
+                                            <option v-for="option in selectOptions(item,part)" v-bind:value="option.value" v-html="option.text"></option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td v-if="item.type=='slot'" :class="item.key.toLowerCase()">
+                                    <slot :name="item.slot" :part="part" :item="item">元素失效</slot>
+                                </td>
+                            </template>
+                        </tr>
+                        <tr v-for="(part,index) in parts" v-if="readonly">
+                            <td style="background:#fff;" v-html="index+1"></td>
+                            <template v-for="(item,itemIndex) in items">
+                                <td v-if="item.type=='slot'" :class="item.key.toLowerCase()">
+                                    <slot :name="item.slot" :part="part" :item="item">元素失效</slot>
+                                </td>
+                                <td style="color:#888;" v-else>
+                                    <span>{{getReadonlyValue(part,item)}}</span>
+                                </td>
+                                @*<td v-if="item.type=='tableSelect'">
+                                        {{part[item.key]?(part[item.key].displayValue?part[item.key].displayValue:part[item.key]):''}}
+                                    </td>
+                                    <td v-else-if="item.type=='select'">
+                                        {{part[item.key]?(item.options.filter(function(x){return x.value==part[item.key]})[0]||{}).text:''}}
+                                    </td>
+                                    <td style="color:#888;" :class="item.key" v-else>{{part[item.key]}}</td>*@
+
+
+                            </template>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="r-input-number" v-if="canadd&&!readonly">
+            <span role="button" class="r-input-number__decrease" @@click="addPart">
+                <i title="添加" class="layui-icon-add-1 layui-icon"></i>
+            </span>
+            <div class="r-input">
+                <input type="text" autocomplete="off" class="r-input__inner" v-model="nAddNum" @@keyup.enter="addPart">
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('multi-data-add', {
+        data: function () {
+            return {
+                nAddNum: 1
+            }
+        },
+        props: {
+            items: Array,
+            parts: Array,
+            readonly: {
+                type: Boolean,
+                default: false
+            },
+            canadd: {
+                type: Boolean,
+                default: true
+            },
+            candel: {
+                type: Boolean,
+                default: true
+            },
+            maximum: {
+                type: Number,
+                default: 0
+            }
+        },
+        computed: {
+            setDefaultData: function () {
+                var obj = {};
+                this.items.forEach(function (elm, item) {
+                    if (elm.defaultData) {
+                        obj[elm.key] = elm.defaultData;
+                    }
+                })
+                return obj;
+            },
+            theSelectItemIndexArr: function () {
+                var arr = [];
+                this.items.forEach((el, index) => { if (el.type == 'select') { arr.push(index) } })
+                return arr
+            }
+        },
+        methods: {
+            setPartSelectOptions: function (part, key, value) {
+                //由父元素调用，设置不同part的select选项，
+                //例如：app.$refs.multiDataAdd.setPartSelectOptions(currentPart, 'measureMentUnitId', measureMentOptions)
+                if (func.typeof(part._selectOptions) === 'object') {
+                    //如果不是这个part的第一次，即已经有object类型的options，则向里补充就好
+                    Vue.set(part._selectOptions, key, value);
+                } else {
+                    //第一次需要放整个obj
+                    Vue.set(part, "_selectOptions", { [key]: value });
+                }
+            },
+            selectOptions: function (item, part) {
+                //当part里有_selectOptions的时候就要找找有没有当前key的options，有就用这个，没有就去找items里的options这个选项
+                //例如:parts:[{ids:1,_selectOptions:[{value:0,text:'个'},{value:1,text:'盒'}]}]
+                //_selectOptions对于读取数据的时候无任何含义
+                return part._selectOptions && part._selectOptions[item.key] ? part._selectOptions[item.key] : item.options
+            },
+            getTdWidth: function (width) {
+                //如果传进来字符串是纯数字，则换成px为单位，不是则显示原来的
+                return width ? (/^\d+$/.test(width) ? width + 'px' : width) : '100px'
+            },
+            getReadonlyValue: function (part, item) {
+                //通过不同类型获取不同的显示值
+                var hadV = !(typeof part[item.key] == "undefined");//这个key是否有值
+                if (item.type == 'tableSelect') {
+                    return hadV ? (part[item.key].displayValue ? part[item.key].displayValue : part[item.key]) : ''
+                } else if (item.type == 'select') {
+                    //有值的情况，必须有展示用的options，否则无法显示。
+                    return hadV ? (this.selectOptions(item, part).filter(function (x) { return x.value == part[item.key] })[0] || {}).text : ''
+                } else {
+                    return part[item.key]
+                }
+
+            },
+            getSetValue: function (ev, index, item) {//新数据,part的index,当前配置项
+                Vue.set(this.parts[index], item.key, ev);
+                item.onChange && item.onChange(ev, index);
+            },
+            getSetNumberValue: function (ev, index, item) {
+                this.getSetValue(ev, index, item)
+                var part = this.parts[index];
+                //console.log(this.parts)
+                item.formulaArr && item.formulaArr.forEach(fn => {
+                    fn(part)
+                })
+            },
+            tableSelectGetInfo: function (info, index, itemIndex) {
+                var fInfo = JSON.parse(JSON.stringify(info));
+                fInfo && (fInfo.ColumnKey += (index + '-' + itemIndex))
+                //info
+                return fInfo;
+            },
+            deletePart: function (index) {
+                this.parts.splice(index, 1);
+                Vue.nextTick(layui.form.render)
+            },
+            addPart: function () {
+                var addData = {};
+                $.extend(addData, this.setDefaultData)
+                for (var i = 0; i < this.nAddNum; i++) {
+                    if (!this.maximum || this.parts.length < this.maximum) {
+                        this.parts.splice(this.parts.length, 0, addData)
+                    } else {
+                        top.layer.msg('数据长度不允许超过' + this.maximum + '个')
+                    }
+                }
+
+                Vue.nextTick(this.renderSelect1)
+            },
+            renderUpload: function (item, index) {//上传配置
+                var that = this;
+                function callBack(res) {
+                    //上传可以增加一个用以改变同级part的另一个数据，用来放路径
+                    item.uploadFileName && Vue.set(that.parts[index], item.uploadFileName, res.fileName);
+                    item.uploadFilePath && Vue.set(that.parts[index], item.uploadFilePath, res.filePath);
+
+                    that.getSetValue(res, index, item)
+                    //Vue.set(this.parts[index], item.key, res.filePath);
+                    console.log(res)
+                }
+                window.upload = {
+                    callback: callBack
+                };
+                layer.open({
+                    type: 2,
+                    title: "文件上传",
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['500px', '400px'],
+                    content: '/File/CommonUpload?multiple=false&size=512000'
+                });
+            },
+            //renderSelect: function () {
+            //    var that = this;
+            //    var form = layui.form;
+            //    layui.form.render();
+            //    form.on('select()', function (data) {
+            //        var elem = $(data.elem);
+            //        var itemIndex = elem.attr('_item-index'),
+            //            partIndex = elem.attr('_index');
+            //        if (!itemIndex || !partIndex) return;
+            //        console.log(that.items[itemIndex])
+            //        that.getSetValue(data.value, partIndex, that.items[itemIndex])
+            //    });
+            //},
+            renderSelect1: function () {
+                var that = this;
+                var form = layui.form;
+                form.render();
+                function callBack(data) {
+
+                    var elem = $(data.elem);
+                    var itemIndex = elem.attr('_item-index'),
+                        index = elem.attr('_index');
+                    if (!itemIndex || !index) return;
+                    console.log(that.items[itemIndex])
+                    that.getSetValue(data.value, index, that.items[itemIndex])
+                }
+                this.parts.forEach((el, index) => {
+                    this.theSelectItemIndexArr.forEach((item, itemIndex) => {
+                        var selector = `_mulsel${itemIndex}-${index}`;
+                        //console.log($(`[lay-filter=${selector}]`));
+                        form.on(`select(${selector})`, callBack)
+                    })
+                })
+            }
+        },
+        mounted: function () {
+            //当传进来的parts===[{}];进行赋默认值
+            if (this.parts.length === 1 && $.isEmptyObject(this.parts[0]) && !$.isEmptyObject(this.setDefaultData)) {
+                Vue.set(this.parts, 0, this.setDefaultData)
+                //this.parts[0] =this.setDefaultData;
+            }
+            //预处理公式
+            this.items.forEach((elm, index) => {
+                if (func.typeof(elm.formula) == 'function') {
+                    let fn = function (part) {
+                        part[elm.key] = elm.formula(part);
+                    }
+                    elm.trigger.forEach((trigger, triggerIndex) => {
+                        let item = this.items.filter(item => item.key === trigger)[0]
+                        console.log(item)
+                        item.formulaArr ? item.formulaArr.push(fn) : item.formulaArr = [fn]
+                    })
+                }
+            })
+
+            Vue.nextTick(this.renderSelect1)
+        },
+        updated: function () {
+            //this.renderSelect();
+        },
+        template: '#multiDataAdd'
+    })
+</script>

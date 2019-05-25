@@ -1,0 +1,65 @@
+﻿
+@section styles{
+    <style>
+       body{
+           overflow:hidden;
+       }
+
+        #codeImg {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+}
+
+<div style="text-align:center;margin-top:20px;" id="app">
+    <img id="codeImg" :src="qrCode" width="250" />
+</div>
+
+@section scripts{
+    <script>
+		var guid = "@ViewBag.Guid";
+		config.ready = function () {
+			var app = new Vue({
+				el: '#app',
+				computed: {
+					qrCode: function () {
+						return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/ScanUploadCallback?guid=" + guid);
+					}
+				}
+			});
+
+			var loopFunc=function () {
+				abp.services.app.weiXin.getUploadInfo().done(function (data) {
+					console.log(data);
+					if (data) {						
+						parent.parent.upload.callback(data);
+						parent.parent.layer.closeAll('iframe');
+					} else {
+						window.setTimeout(loopFunc, 1000);
+					}
+
+
+				});
+			}
+			loopFunc();
+			//定时轮询
+			@*var loop=window.setInterval(function () {
+				abp.services.app.weiXin.getLoginInfo().done(function (data) {
+					console.log(data);
+					if (data) {
+						var authModel = {
+							authProvider: "@WeChatAuthProviderApi.Name",
+							providerKey: data,
+							providerAccessCode:""
+						};
+						window.clearInterval(loop);
+						parent.doExternalAuthentication(authModel);
+					}
+
+
+				});
+			}, 1000);*@
+		}
+    </script>
+}

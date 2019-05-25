@@ -1,0 +1,254 @@
+﻿@using Master.Web.Components
+@using Master.Module
+@inherits MasterRazorPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Master.Web.Core
+@model ModuleFormItemViewModel
+@{
+	var column = Model.ColumnInfo;
+	var value = Model.Value?.ToString();
+
+	//编辑界面文件默认值的显示 20180607 lijianbo
+}
+@if (column.MaxFileNumber == 1)
+{
+	//单个上传
+	<div class="layui-form-item">
+		<input type="hidden" name="@column.ColumnKey" value="@value" />
+		<label class="layui-form-label">@column.ColumnName</label>
+		<div class="layui-input-block">
+			<div class="layui-upload">
+				<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" id="@column.ColumnKey"><i class="layui-icon layui-icon-zzcloud-upload"></i>上传文件</button>
+				<button type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete file">@L("删除")</button>
+				<div class="layui-upload-list">
+					<p id="@(column.ColumnKey)_text"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+        $('.demo-delete.file').on('click', function () {
+            $("#@(column.ColumnKey)_text").html();
+            $('input[name=@(column.ColumnKey)]').val("");
+        });
+    layui.use('upload', function () {
+        var $ = layui.jquery
+            , upload = layui.upload;
+        var loadLayerIndex;
+        //普通上传
+        var uploadInst = upload.render({
+            elem: '#@column.ColumnKey',
+            accept:'file',
+            field:'file'
+            , url: '/file/upload/'
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#@(column.ColumnKey)_text').html(file.name); //图片链接（base64）
+                });
+                loadLayerIndex = top.layer.msg('@L("正在上传")...', {
+                    icon: 16
+                    , shade: 0.01, time: 0
+                });
+
+            }
+            , done: function (res) {
+                top.layer.close(loadLayerIndex);
+                //如果上传失败
+                if (!res.success) {
+                    return layer.msg('@L("上传失败")');
+                }
+                //上传成功
+                else {
+                    $('input[name=@(column.ColumnKey)]').val(res.result.fileid);
+
+                }
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#@(column.ColumnKey)_text');
+                demoText.html('<span style="color: #FF5722;">@L("上传失败")</span> <a class="layui-btn layui-btn-mini demo-reload">@L("重试")</a>');
+                demoText.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+
+    })
+	</script>
+
+}
+else
+{
+	//多文件上传
+	<div class="layui-form-item">
+		<input type="hidden" name="@column.ColumnKey" value="@value" />
+		<label class="layui-form-label">@column.ColumnName</label>
+		<div class="layui-input-block">
+			<div class="layui-upload">
+				<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" id="@(column.ColumnKey)Select"><i class="layui-icon layui-icon-search"></i>@L("选择多文件")</button>
+				<div class="layui-upload-list">
+					<table class="layui-table">
+						<thead>
+							<tr>
+								<th>@L("文件名")</th>
+								<th>@L("大小")</th>
+								<th>@L("状态")</th>
+								<th>@L("操作")</th>
+							</tr>
+						</thead>
+						<tbody id="@(column.ColumnKey)List">
+							@if (!string.IsNullOrEmpty(value))
+							{
+								var fileids = value.Split(',').ToList().ConvertAll(o => int.Parse(o));
+								var files = await FileManager.GetListByIdsAsync(fileids);
+								foreach (var file in files)
+								{
+									<tr class="pending">
+										<td><a href="/File/GetFile?fileid=@file.Id" target="_blank">@file.FileName</a></td>
+										<td>@(file.FileSize)kb</td>
+										<td></td>
+										<td><button fileID="@file.Id" type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete filelist">@L("删除")</button></td>
+									</tr>
+
+								}
+
+							}
+						</tbody>
+					</table>
+				</div>
+				<button type="button" class="layui-btn layui-btn-sm layui-btn-warm" id="@(column.ColumnKey)Action"><i class="layui-icon layui-icon-zzcloud-upload"></i>@L("开始上传")</button>
+			</div>
+		</div>
+	</div>
+	<script>
+        $('.demo-delete.filelist').on('click', function () {
+            var tempfileid= $(this).attr("fileID");
+            var fileids = $('input[name=@(column.ColumnKey)]').val();
+            var orifiles = fileids ? fileids.split(',') : [];
+            for (var i = 0; i < orifiles.length; i++)
+            {
+               if (orifiles[i] == tempfileid) {
+                   orifiles.splice(i, i + 1);
+                }
+            }
+            $('input[name=@(column.ColumnKey)]').val(orifiles.join(','));
+            $(this).parent().parent().remove();
+        });
+	</script>
+	<script>
+    layui.use('upload', function () {
+        var $ = layui.jquery
+            , upload = layui.upload;
+        var loadLayerIndex;
+        var demoListView = $('#@(column.ColumnKey)List')
+
+        var uploadListIns = upload.render({
+            elem: '#@(column.ColumnKey)Select',
+            accept:'file',
+            multiple: true,
+            @*number:@(column.MaxFileNumber),*@
+            bindAction:'#@(column.ColumnKey)Action',
+            auto:false,
+            field:'file',
+            url: '/file/upload/',
+            choose: function (obj) {
+                var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //读取本地文件
+                obj.preview(function (index, file, result) {
+                    var tr = $(['<tr id="upload-' + index + '" class="pending">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                        , '<td>@L("等待上传")</td>'
+                        , '<td>'
+                        , '<button type="button" class="layui-btn layui-btn-sm demo-reload layui-hide">@L("重传")</button>'
+                        , '<button type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete">@L("删除")</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+
+                    //单个重传
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+
+                    //删除
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index]; //删除对应的文件
+
+                        //判断数据是不是有
+                        var tempfileid = tr.find("td").eq(3).attr("fileid");
+                        if (tempfileid != null) {
+                            var fileids = $('input[name=@(column.ColumnKey)]').val();
+                            var orifiles = fileids ? fileids.split(',') : [];
+                            for (var i = 0; i < orifiles.length; i++) {
+
+                                if (orifiles[i] == tempfileid) {
+                                    orifiles.splice(i, i + 1);
+
+                                }
+                            }
+
+
+                            $('input[name=@(column.ColumnKey)]').val(orifiles.join(','));
+
+                        }
+
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                    });
+                    if (demoListView.find("tr.pending").size() < @(column.MaxFileNumber)) {
+                        demoListView.append(tr);
+                    }
+                    else {
+                        layer.alert('最多只能上传的数量为：@(column.MaxFileNumber)', {
+                            icon: 5,
+                            title: "提示"
+                        });
+
+                    }
+
+
+                });
+            },
+            before: function (obj) {
+                if (demoListView.find("tr.pending").size()==0) {
+                    return false;
+                }
+                loadLayerIndex = top.layer.msg('@L("正在上传")...', {
+                    icon: 16
+                    , shade: 0.01, time: 0
+                });
+            },
+            allDone: function (obj) { //当文件全部被提交后，才触发
+                top.layer.close(loadLayerIndex);
+            }
+            , done: function (res, index, upload) {
+                var s = res.success;
+              if(res.success){ //上传成功
+                var tr = demoListView.find('tr#upload-'+ index).removeClass("pending")
+                ,tds = tr.children();
+                tds.eq(2).html('<span style="color: #5FB878;">@L("上传成功")</span>');
+                  //tds.eq(3).html(''); //清空操作
+                  tds.eq(3).attr("fileid", res.result.fileid);
+
+                  //保存数据
+                  var fileids = $('input[name=@(column.ColumnKey)]').val();
+                  var orifiles = fileids?fileids.split(','):[];
+                  orifiles.push(res.result.fileid);
+                  $('input[name=@(column.ColumnKey)]').val(orifiles.join(','));
+                return delete this.files[index]; //删除文件队列已经上传成功的文件
+              }
+              this.error(index, upload);
+            }
+            ,error: function(index, upload){
+              var tr = demoListView.find('tr#upload-'+ index)
+              ,tds = tr.children();
+              tds.eq(2).html('<span style="color: #FF5722;">@L("上传失败")</span>');
+              tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+            }
+        });
+
+        })
+	</script>
+
+}

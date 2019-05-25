@@ -1,0 +1,66 @@
+﻿@using Master.Web.Components
+@{
+	ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			
+			<div class="layui-row">
+				<div class="layui-col-xs2">
+					<vc:base-tree param="@(new BaseTreeViewParam() { TreeKey="UnitType",TreeName="往来单位分类"})"></vc:base-tree>
+					
+				</div>
+				<div class="layui-col-xs10">
+					<div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+						<vc:module-button module-key="Unit"></vc:module-button>
+					</div>
+					<vc:module-table param="@(new ModuleTableViewParam() {ID="Unit",ModuleKey="Unit",Height="full-110" })"></vc:module-table>
+				</div>
+			</div>
+			
+
+		</div>
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		var searchKeys = {};
+        //layui加载完成后调用此方法，
+        config.ready = function () {
+            var element = layui.element;
+            var table = layui.table;
+
+			config.refresh();
+
+			//监听树选中事件
+			baseTree.onSelect = function (node) {
+				searchKeys.UnitTypeId = node.id;
+				config.reloadTable();
+			}
+        }
+        //当检索窗体提交后会调用此方法
+        config.reloadTable = function () {
+			layui.table.reload('Unit', {
+                where: getWhere()
+
+            })
+        }
+        config.onTableDone = function () {
+
+        }
+        //当编辑或删除或添加表单提交后会调用此方法
+        config.refresh = function () {
+
+        }
+		function getWhere() {
+			var where = { searchKeys: JSON.stringify(searchKeys) };
+			where.searchCondition = func.buildSearchCondition('Unit');
+
+            return where;
+
+        }
+	</script>
+}

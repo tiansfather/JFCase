@@ -1,0 +1,375 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    //微信端设备任务查看
+    Layout = "_WeUILayout";
+    ViewData["Title"] = "生产任务-模来模往";
+}
+@section styles{
+    <link href="/Views/MES/CSS/wechatIndex.css" rel="stylesheet" />
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" />
+    <link href="/Views/MES/Wechat/customer/timeline.css" rel="stylesheet" />
+    <style>
+        .iconfont {
+            margin-right: 10px;
+            color: #007aff;
+        }
+
+        #app {
+            position: relative;
+        }
+
+        header {
+            padding: 35px 0;
+            background: #fff;
+        }
+
+        .r-fanhui {
+            position: absolute;
+            left: 17px;
+            top: 15px;
+            font-size: 18px;
+        }
+
+        h1 {
+            text-align: center;
+            line-height: 50px;
+            font-size: 16px;
+            color: #3cc51f;
+            font-weight: 400;
+            margin: 0 15%;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .detail-wrap {
+            line-height: 2;
+            font-size: 14px;
+            background: #fff;
+            margin: 15px;
+            border-radius: 5px;
+        }
+
+        .detail-title {
+            padding: 0 20px;
+            color: #000;
+        }
+
+        .img-wrap {
+            text-align: center;
+        }
+
+        .detail-title_p {
+            text-align: left;
+            font-weight: 600
+        }
+
+        .detail-title-right {
+            float: right;
+            color: #007aff;
+        }
+
+        img {
+            width: 200px;
+            object-fit: cover;
+        }
+
+        small {
+            font-size: 13px;
+            color: #ddd;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 14px;
+            line-height: 50px;
+        }
+
+        #projectView .weui-cells .weui-cell:nth-child(2n) {
+            background-color: #fafafa;
+        }
+        .part-title {
+            display: flex;
+            justify-content: space-between;
+        }
+        .part-title p{
+            width: 80px;
+            text-align: center;
+        }
+    </style>
+}
+<div id="app">
+    <router-view></router-view>
+</div>
+
+@section scripts{
+    <script type="text/x-template" id="Manufacture">
+        <div>
+            <h1>模具查询系统——客户零距离</h1>
+            <div class="weui-cells" v-if="manufactures.length">
+                <a class="weui-cell weui-cell_access" href="javascript:;" @@click="go(facture.tenantId)" v-for="(facture,index) in manufactures" :key="facture.tenantId">
+                    <div class="weui-cell__bd">
+                        <span>{{facture.name}}</span>
+                    </div>
+                    <div class="weui-cell__ft" style="color:#01AAED">
+                        <span>{{facture.projectCount}}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </script>
+    <script type="text/x-template" id="project">
+        <div id="projectView">
+            <h1>模具查询系统——客户零距离</h1>
+            <i class="iconfont icon-fanhui r-fanhui" @@click="router.go(-1);"></i>
+            <div class="weui-search-bar" style="font-size:16px;">
+                <form class="weui-search-bar__form" @@submit.prevent="doSearch">
+                    <div class="weui-search-bar__box">
+                        <i class="weui-icon-search"></i>
+                        <input type="search" class="weui-search-bar__input" v-model="projectSN" placeholder="模具编号">
+                        <a href="javascript:" class="weui-icon-clear"></a>
+                    </div>
+                    <label class="weui-search-bar__label">
+                        <i class="weui-icon-search"></i>
+                        <span>搜索模具编号</span>
+                    </label>
+                </form>
+                <a href="javascript:" class="weui-search-bar__cancel-btn">取消</a>
+            </div>
+            <div>
+                <div class="weui-cells">
+                    <div class="weui-cell" v-for="(project,index) in projects" @@click="go(project)">
+                        <div class="weui-cell__bd" style="flex:3">
+                            <p>{{project.projectSN}}</p>
+                        </div>
+                        <div class="weui-cell__bd" style="flex:2">
+                            <p>{{project.projectName}}</p>
+                        </div>
+                        <div class="weui-cell__ft">
+                            <i class="iconfont "></i>
+                            {{project.status}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <water-load :loaded="projects.length==page*limit" :nomore="noMore" @@page-add="page++;loadData()"></water-load>
+        </div>
+    </script>
+    <script type="text/x-template" id="Part">
+        <div>
+            <h1>{{project.projectName||'模具'}}/{{project.projectSN}}</h1>
+            <i class="iconfont icon-fanhui r-fanhui" @@click="back"></i>
+            <div>
+                <div class="weui-cells__title part-title" style="display: flex;justify-content: space-between;">
+                    <div style="flex: 1;">
+                        <p><b>零件名</b></p>
+                    </div>
+                    <div style="flex: 1;">
+                        <p>最近报工</p>
+                    </div>
+                </div>
+                <div class="weui-cells">
+                    <div class="weui-cell" v-for="(list,index) in lists" @@click="go(list)">
+                        <div class="weui-cell__bd">
+                            <img :src="list.partImg+'?w=300&gap=false'" alt="暂无图片" style="width:80px;height:80px;" v-if="list.partImg" @@error="list.partImg=null" />
+                            <div v-else></div>
+                            <p style="width:80px;text-align:center;">{{list.partName}}</p>
+                        </div>
+                        <div class="weui-cell__bd">
+                            <img v-if="list.files" :src="list.files[0].filePath+'?w=300&gap=false'" alt="暂无图片" style="width:80px;height:80px;" @@error="list.files=null" />
+                            <div v-else></div>
+                            <p>{{list.lastReportTime?new Date(list.lastReportTime).pattern('MM/dd'):''}}&emsp;{{list.processTypeName}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="Reports">
+        <div id="reportWrap">
+            <h1>{{part.partName||'零件'}}/{{part.partSN}}</h1>
+            <i class="iconfont icon-fanhui r-fanhui" @@click="back"></i>
+            <ul class="r-timeline">
+                <li class="r-timeline-body" v-for="item in reports">
+                    <div class="r-timeline-time">
+                        <p>
+                            星期{{getWeek(item.reportTime)}}<br />
+                            {{new Date(item.reportTime).pattern('HH:mm')}}
+                        </p>
+
+                    </div>
+                    <div class="r-timeline-date">
+                        <p>{{new Date(item.reportTime).toDateString().split(' ')[1]}}</p>
+                        <b>
+                            {{new Date(item.reportTime).pattern('dd')}}
+                        </b>
+                    </div>
+                    <div class="r-timeline-content">
+                        <div class="r-content-view">
+                            <p>{{item.processTypeName}}</p>
+                            <em>{{func.getReportType(item.reportType,'')}}</em>
+                        </div>
+                        <div class="r-content-img">
+                            <img v-if="item.files" :src="item.files[0].filePath+'?w=300&gap=false'" alt="报工">
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <p v-if="reports.length==0" style="text-align:center;">暂无报工记录</p>
+        </div>
+    </script>
+    <script>
+        var myStore = {
+            project: { projectName: '模具名称', projectSN: '模具编号' },
+            part: { partName: '零件', partSN: '零件编号' }
+        }
+        var Manufacture = {
+            data: function () {
+                return { manufactures: [] }
+            },
+            methods: {
+                loadData: function () {
+                    abp.services.app.mESProjectCustomer.getManufactures().done(res => {
+                        this.manufactures = res
+                        if (res.length == 1) {
+                            //只有一个制造商直接调转
+                            // this.go(res[0].tenantId)
+                        }
+                    })
+                },
+                go: function (tenantId) {
+                    this.$router.push('/project?tenantId=' + tenantId)
+                }
+            },
+            created: function () {
+                this.loadData();
+            },
+            template: '#Manufacture'
+        }
+        var Project = {
+            data: function () {
+                return {
+                    projects: [],
+                    page: 1,
+                    limit: 10,
+                    projectSN: '',
+                    noMore: false
+                }
+            },
+            computed: {
+                where: function () {
+                    var oriWhere = this.$route.query.tenantId ? `tenantId=${this.$route.query.tenantId} and ` : ''
+                    return oriWhere + (this.projectSN ? `projectSN="${this.projectSN}"` : '1=1')
+                },
+                options: function () {
+                    return {
+                        page: this.page,
+                        limit: this.limit,
+                        where: this.where
+                    }
+                }
+            },
+            methods: {
+                doSearch: function () {
+                    //初始化各项数据
+                    this.projects = [];
+                    this.page = 1;
+                    this.noMore = false;
+                    this.loadData();
+                    return false;
+                },
+                loadData: function () {
+                    var that = this;
+                    abp.services.app.mESProjectCustomer.getPageResult(this.options).done(function (res) {
+                        if (res.data.length < that.limit) {//已无更多数据
+                            that.noMore = true;
+                        }
+                        that.projects = that.projects.concat(res.data);
+                    })
+                },
+                go: function (project) {
+                    window.myStore.project.projectSN = project.projectSN;
+                    window.myStore.project.projectName = project.projectName;
+                    this.$router.push('/part?projectId=' + project.id)
+                }
+            },
+            mounted: function () {
+                if (!this.projects.length) {
+                    this.loadData();
+                }
+            },
+            template: "#project",
+        };
+        var Part = {
+            data: function () {
+                return {
+                    project: myStore.project,
+                    lists: [],
+                }
+            },
+            computed: {
+            },
+            methods: {
+                loadData: function () {
+                    abp.services.app.mESProjectCustomer.getProjectPartInfos(this.$route.query.projectId).done((res) => {
+                        console.log(res)
+                        this.lists = res;
+                    })
+                },
+                go: function (part) {
+                    window.myStore.part.partSN = part.partSN;
+                    window.myStore.part.partName = part.partName;
+                    this.$router.push('/reports?partId=' + part.id)
+                },
+                back: function () {
+                    router.go(-1);
+                }
+            },
+            mounted: function () {
+                this.loadData();
+            },
+            template: "#Part"
+        };
+        var Reports = {
+            data: function () {
+                return {
+                    reports: [],
+                    part: myStore.part,
+                }
+            },
+            methods: {
+                getWeek: function (date) {
+                    return ['天', '一', '二', '三', '四', '五', '六'][new Date(date).getDay()]
+                },
+                loadData: function () {
+                    abp.services.app.mESProjectCustomer.getPartReportInfos(this.$route.query.partId).done((res) => {
+                        console.log(res)
+                        this.reports = res
+                    })
+                },
+                back: function () {
+                    router.go(-1);
+                }
+            },
+            mounted: function () {
+                this.loadData();
+            },
+            template: "#Reports",
+        };
+        var router = new VueRouter({
+            routes: [
+                { path: '/', redirect: 'Manufacture' },
+                { name: 'Manufacture', path: '/Manufacture', component: Manufacture },
+                { name: 'project', path: '/project', component: Project },
+                { name: 'part', path: '/part', component: Part },
+                { name: 'reports', path: '/reports', component: Reports },
+            ]
+        })
+        new Vue({
+            el: '#app',
+            router: router
+        })
+    </script>
+}

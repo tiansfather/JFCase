@@ -1,0 +1,43 @@
+﻿
+@{
+	ViewData["Title"] = "RemindTactics";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+	<div class="layui-card">
+		<div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>提醒记录</div>
+		<div class="layui-card-body ">
+			<table autoevent="1" id="RemindTactics" lay-filter="RemindLogs" class="layui-table " lay-data="{toolbar:'#toolbarTpl',cellMinWidth:'80',height:'full-130',where:{where:''}, page: { limit: 100, limits: [100, 200, 500, 1000] }, id:'RemindLogs', even:true,done:config.onTableDone, url: '/api/services/app/RemindLog/GetPageResult'}">
+				<thead>
+					<tr>
+						<th lay-data="{align:'center',field:'remindType'}">提醒类型</th>
+						<th lay-data="{align:'center',field:'name'}">被提醒人</th>
+						<th lay-data="{align:'center',field:'message'}">信息</th>
+						<th lay-data="{align:'center',field:'creationTime'}">时间</th>
+						<th lay-data="{align:'center',templet:'#successTpl'}">状态</th>
+					</tr>
+				</thead>
+			</table>
+
+		</div>
+	</div>
+</div>
+<script type="text/html" id="successTpl">
+    {{#if(d.success==null){}}
+    <span class="layui-badge layui-bg-gray">待发送</span>{{d.errMsg||''}}
+    {{#} else if(d.success==true){}}
+    <span class="layui-badge layui-bg-green">成功</span>
+    {{#}else{}}
+    <span class="layui-badge layui-bg-cyan">失败</span>
+    {{d.errCode}}:{{d.errMsg}}
+    {{#}}}
+</script>
+@section scripts{
+	<script>
+		config.ready = function () {
+			
+
+		}
+		
+	</script>
+}
