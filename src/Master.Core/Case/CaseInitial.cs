@@ -45,28 +45,7 @@ namespace Master.Case
         public virtual CaseSource CaseSource { get; set; }
         [InterColumn(ColumnName ="标题")]
         public string Title { get; set; }
-        /// <summary>
-        /// 纠纷类型
-        /// </summary>
-        public int JiuFenLeiXingId { get; set; }
-        public virtual BaseTree JiuFenLeiXing { get; set; }
-        /// <summary>
-        /// 纠纷原因
-        /// </summary>
-        public int JiuFenYuanYinId { get; set; }
-        public virtual BaseTree JiuFenYuanYin { get; set; }
-        /// <summary>
-        /// 判决结果
-        /// </summary>
-        public int PanJueJieGuoId { get; set; }
-        public virtual BaseTree PanJueJieGuo { get; set; }
-        /// <summary>
-        /// 专题
-        /// </summary>
-        public int ZhuanTiId { get; set; }
-        public virtual BaseTree ZhuanTi { get; set; }
-        public string Keywords { get; set; }
-        public string Labels { get; set; }
+        
         /// <summary>
         /// 案例概述
         /// </summary>
@@ -116,6 +95,10 @@ namespace Master.Case
         public bool IsActive { get; set; }
         [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus")]
         public CaseStatus CaseStatus { get; set; }
+
+        public virtual ICollection<CaseKey> CaseKeys { get; set; }
+        public virtual ICollection<CaseFine> CaseFines { get; set; }
+        public virtual ICollection<CaseCard> CaseCards { get; set; }
     }
 
     public enum CaseStatus
