@@ -63,6 +63,9 @@ namespace Master.EntityFrameworkCore
         public virtual DbSet<CaseInitial> CaseInitial { get; set; }
         public virtual DbSet<EmailLog> EmailLog { get; set; }
         public virtual DbSet<CaseSourceHistory> CaseSourceHistory { get; set; }
+        public virtual DbSet<CaseFine> CaseFile { get; set; }
+        public virtual DbSet<CaseKey> CaseKey { get; set; }
+        public virtual DbSet<CaseCard> CaseCard { get; set; }
         #endregion
 
         public MasterDbContext(DbContextOptions<MasterDbContext> options) 

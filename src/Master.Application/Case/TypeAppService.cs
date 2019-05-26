@@ -35,6 +35,7 @@ namespace Master.Case
             return await GetTypesByParentId(baseTree.Id);
         }
 
+        #region 案由
         /// <summary>
         /// 获取案由
         /// </summary>
@@ -48,6 +49,9 @@ namespace Master.Case
                 o.DisplayName
             });
         }
+        #endregion
+
+        #region 城市
         /// <summary>
         /// 获取所有城市
         /// </summary>
@@ -61,6 +65,9 @@ namespace Master.Case
                 o.DisplayName
             });
         }
+        #endregion
+
+        #region 法院
         /// <summary>
         /// 获取城市对应的法院
         /// </summary>
@@ -74,6 +81,55 @@ namespace Master.Case
                 o.Id,
                 o.DisplayName
             });
+        }
+        #endregion
+
+        #region 专题        
+        public virtual async Task<object> GetSubjects()
+        {
+            var nodes = await GetTypesByParentName("专题");
+            return nodes.Select(o => new
+            {
+                o.Id,
+                o.DisplayName
+            });
+        }
+        #endregion
+
+        #region 纠纷类型
+        /// <summary>
+        /// 获取案由下的纠纷类型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual async Task<object> GetAnYouTypes(int id)
+        {
+            var nodes = await GetTypesByParentId(id);
+            return nodes.Select(o => new
+            {
+                o.Id,
+                o.DisplayName
+            });
+        }
+
+        #endregion
+
+
+        public virtual async Task<object> GetTypeKeys(int id, string key)
+        {
+            var result = new List<object>();
+            var nodes = await GetTypesByParentId(id);
+            var currentNode = nodes.FirstOrDefault(o => o.DisplayName == key);
+            if (currentNode != null)
+            {
+                var subNodes = await GetTypesByParentId(currentNode.Id);
+                result.AddRange(subNodes.Select(o => new
+                {
+                    o.Id,
+                    o.DisplayName
+                }));
+            }
+            return result;
         }
     }
 }

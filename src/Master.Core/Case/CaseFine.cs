@@ -16,5 +16,8 @@ namespace Master.Case
         public string Status { get; set; }
         public bool IsActive { get; set; }
         public virtual ICollection<CaseKey> CaseKeys { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public string MediaPath { get; set; }
     }
 }
