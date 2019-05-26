@@ -12,13 +12,13 @@ namespace Master.Domain
     {
         [InterColumn(ColumnName = "姓名", VerifyRules = "required", Sort = 1)]
         public string Name { get; set; }        
-        [InterColumn(ColumnName ="律师事务所", VerifyRules = "required")]
+        [InterColumn(ColumnName ="律师事务所", VerifyRules = "required",Sort =2)]
         public string WorkLocation { get; set; }
-        [InterColumn(ColumnName = "登录用户名", VerifyRules = "required")]
+        [InterColumn(ColumnName = "登录用户名", VerifyRules = "required",Sort =3)]
         public string UserName { get; set; }
-        [InterColumn(ColumnName = "有效电子邮箱", VerifyRules = "required")]
+        [InterColumn(ColumnName = "有效电子邮箱", VerifyRules = "required",Sort =4)]
         public string Email { get; set; }
-        [InterColumn(ColumnName = "判例汇总",ValuePath ="Property",IsShownInAdd =false,IsShownInEdit =false,IsShownInAdvanceSearch =false)]
+        [InterColumn(ColumnName = "判例汇总",ValuePath ="Property",IsShownInAdd =false,IsShownInEdit =false,IsShownInAdvanceSearch =false,Sort =5)]
         public int InputCaseNumber { get; set; }
     }
 }

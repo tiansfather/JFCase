@@ -20,6 +20,9 @@ using Master.Entity;
 using Abp.UI;
 using Microsoft.AspNetCore.Http;
 using Master.Case;
+using static Common.VerifyCodeHelper;
+using Master.Core.Jobs;
+using Abp.BackgroundJobs;
 
 namespace Master.Authentication
 {
@@ -546,7 +549,11 @@ namespace Master.Authentication
                 var role =await roleManager.FindByNameAsync(StaticRoleNames.Tenants.Assistant);
                 await SetRoles(user, new int[] { role.Id });
                 //生成密码并发送邮件
-            }else if (moduleInfo.ModuleKey == nameof(Charger))
+                var password = Common.VerifyCodeHelper.GetSingleObj().CreateVerifyCode(VerifyCodeType.NumberVerifyCode, 6);
+                await SetPassword(user, password);
+                await RemindUserPassword(user, password);
+            }
+            else if (moduleInfo.ModuleKey == nameof(Charger))
             {
                 var role = await roleManager.FindByNameAsync(StaticRoleNames.Tenants.Charger);
                 await SetRoles(user, new int[] { role.Id });
@@ -558,6 +565,19 @@ namespace Master.Authentication
             }
 
             return user;
+        }
+
+        public virtual async Task RemindUserPassword(User user,string password)
+        {
+            var emailLog = new EmailLog()
+            {
+                Title = "请及时修改您的简法案例系统密码",
+                Content = $"您的登录名为{user.UserName},密码为{password},请及时登录系统更改",
+                ToEmail = user.Email
+            };
+            var emailLogId = await Resolve<EmailLogManager>().InsertAndGetIdAsync(emailLog);
+            var jobArg = new SendEmailJobArgs() { EmailLogId = emailLogId };
+            await Resolve<IBackgroundJobManager>().EnqueueAsync<SendEmailJob, SendEmailJobArgs>(jobArg);
         }
         #endregion
 

@@ -110,7 +110,53 @@ namespace Master.Web.Controllers
         {
             return View();
         }
-
+        /// <summary>
+        /// 案例加工
+        /// </summary>
+        /// <returns></returns>
+        [AbpMvcAuthorize]
+        public IActionResult Process(string encrypedId)
+        {
+            var id = int.Parse(SimpleStringCipher.Instance.Decrypt(encrypedId));
+            ViewBag.Id = id;
+            return View();
+        }
+        /// <summary>
+        /// 我的案例
+        /// </summary>
+        /// <returns></returns>
+        [AbpMvcAuthorize]
+        public IActionResult MyCase()
+        {
+            return View();
+        }
+        // <summary>
+        /// 我的精品
+        /// </summary>
+        /// <returns></returns>
+        [AbpMvcAuthorize]
+        public IActionResult MyArt()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 看观点
+        /// </summary>
+        /// <returns></returns>
+        [AbpMvcAuthorize]
+        public IActionResult ViewPoint()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 查案例
+        /// </summary>
+        /// <returns></returns>
+        [AbpMvcAuthorize]
+        public IActionResult ViewCase()
+        {
+            return View();
+        }
         public IActionResult Default()
         {
             var viewName= AbpSession.MultiTenancySide == Abp.MultiTenancy.MultiTenancySides.Tenant ? "Default" : "HostDefault";
@@ -118,7 +164,19 @@ namespace Master.Web.Controllers
         }
         
         
-        
+        public async Task<IActionResult> Test()
+        {
+            await Common.EmailHelper.SendMailAsync(
+                SettingManager.GetSettingValueAsync(SettingNames.mail_smtpServer).Result,
+                Convert.ToBoolean(SettingManager.GetSettingValueAsync(SettingNames.mail_ssl).Result),
+                SettingManager.GetSettingValueAsync(SettingNames.mail_username).Result,
+                SettingManager.GetSettingValueAsync(SettingNames.mail_pwd).Result,
+                SettingManager.GetSettingValueAsync(SettingNames.mail_nickname).Result,
+                SettingManager.GetSettingValueAsync(SettingNames.mail_fromname).Result,
+                "1018630493@qq.com", "Are you ready?", "Wating for you in the Conference");
+
+            return Content("ok");
+        }
 
         
     }

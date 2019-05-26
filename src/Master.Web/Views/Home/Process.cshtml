@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewData["Title"] = "加工页";
+}
+
+<h2>Host</h2>
+
+@section scripts{
+    <script>
+        var id=@ViewBag.Id;//此id为案源的id
+        //获取判例对应的数据
+        abp.services.app.workbench.getCaseInfo(id).done(function (data) {
+
+        })
+        //提交初加工
+        abp.servcies.app.workbench.updateInitial(updateInitialDto)
+        //发布初加工
+        abp.servcies.app.workbench.publishInitial(caseInitialId)
+        //提交精加工
+        abp.services.app.workbench.updateFine(caseInitialId, updateFineDto)
+        //发布精加工
+        abp.servcies.app.workbench.publishFine(caseInitialId)
+        //提交案例卡
+        abp.services.app.workbench.updateCard(caseInitialId, updateCardDto)
+        //发布案例卡
+        abp.servcies.app.workbench.publishCard(caseInitialId)
+    </script>
+    }

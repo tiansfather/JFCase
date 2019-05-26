@@ -63,7 +63,7 @@ namespace Master.Case
         /// <summary>
         /// 判例文件
         /// </summary>
-        [InterColumn(ColumnName ="判例原件",Templet = "<button class=\"layui-btn layui-btn-xs\" onclick=\"showPdf('{{d.sourceFile}}','{{d.sourceSN}}')\">查看</button>")]
+        [InterColumn(ColumnName ="判例原件",Templet = "<button class=\"layui-btn layui-btn-xs\" onclick=\"showPdf('{{d.sourceFile}}','{{d.sourceSN}}')\">查看</button>")]        
         public string SourceFile { get; set; }
         public bool IsActive { get; set; } = true;
         public string Status { get; set; }

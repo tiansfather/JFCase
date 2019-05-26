@@ -1,4 +1,5 @@
-﻿using Abp.UI;
+﻿using Abp.Domain.Repositories;
+using Abp.UI;
 using Master.Module;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -32,10 +33,12 @@ namespace Master.Case
         /// <returns></returns>
         public virtual async Task ClearCaseContent(int id)
         {
-            //清除初加工内容
-            await Resolve<CaseInitialManager>().GetAll().Where(o => o.CaseSourceId == id).DeleteAsync();
-            //todo:清除精加工内容
-            //todo:清除案例卡内容
+            var manager = Resolve<CaseInitialManager>();
+            var caseInitial = await manager.GetAll().Where(o => o.CaseSourceId == id).FirstOrDefaultAsync();
+            if (caseInitial != null)
+            {
+                await manager.Repository.HardDeleteAsync(caseInitial);
+            }
         }
     }
 }

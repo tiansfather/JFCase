@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Master.Web.Startup.Jobs
+namespace Master.Core.Jobs
 {
     public class DeleteOldFileJobs : PeriodicBackgroundWorkerBase, ISingletonDependency
     {

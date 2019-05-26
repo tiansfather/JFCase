@@ -14,6 +14,10 @@
             data.workLocation//律师事务所
             data.creationTime//注册时间
             data.caseCount//完成案例数
+            data.anYouId//所属领域Id，即案由
+            data.anYou//所属领域名称
         })
+        //更新用户信息接口
+        abp.services.app.user.updateUserInfo({ id: 1, workLocation: '长江律师事务所', anYouId:4 })
     </script>
     }

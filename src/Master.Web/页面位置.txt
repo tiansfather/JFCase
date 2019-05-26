@@ -1,3 +1,8 @@
 ﻿登录页：Account/Login
 个人中心：Home/Me
 工作台:Home/workbench
+案源库:Home/Source
+加工页:Home/Process
+我的案例：Home/MyCase
+我的精品：Home/MyArt
+看观点:Home/ViewPoint

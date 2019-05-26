@@ -317,6 +317,7 @@ namespace Master.Users
         }
 
 
+        #region 用户信息
         protected override object ResultConverter(User entity)
         {
             //获取用户已完成的案例
@@ -325,13 +326,36 @@ namespace Master.Users
             return new
             {
                 Avata = entity.GetPropertyValue("Avata"),
+                AnYou = entity.GetPropertyValue("AnYou"),//所属领域
+                AnYouId = entity.GetPropertyValue("AnYouId"),//所属领域Id
                 entity.Name,
                 caseCount,
                 entity.Id,
-                CreationTime=entity.CreationTime.ToString("yyyy-MM-dd"),
+                CreationTime = entity.CreationTime.ToString("yyyy-MM-dd"),
                 entity.WorkLocation
             };
+        } 
+
+        /// <summary>
+        /// 更新用户信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="anYouId"></param>
+        /// <returns></returns>
+        public virtual async Task UpdateUserInfo(UserUpdateDto userUpdateDto)
+        {
+            var user = await Manager.GetByIdAsync(userUpdateDto.Id);
+            user.WorkLocation = userUpdateDto.WorkLocation;
+            string anYou = "";
+            if (userUpdateDto.AnYouId != null)
+            {
+                var node = await Resolve<BaseTreeManager>().GetByIdAsync(userUpdateDto.AnYouId.Value);
+                anYou = node.DisplayName;                
+            }
+            user.SetPropertyValue("AnYou", anYou);
+            user.SetPropertyValue("AnYouId", userUpdateDto.AnYouId);
         }
+        #endregion
         /// <summary>
         /// 获取当前登录token用于前台判断账号登出
         /// </summary>

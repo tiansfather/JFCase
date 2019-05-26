@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewData["Title"] = "查案例";
+}
+
+<h2>Host</h2>
+
+@section scripts{
+    <script>
+        //请求案例分页
+        abp.services.app.viewCase.getPageResult().done(function (data) {
+            
+        })
+        //点击案例查看详情
+        abp.servcies.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
+            //caseSourceId为对应的案源id
+            //获取案例详情
+            abp.services.app.workbench.getCaseInfo(caseSourceId).done(function () {
+
+            })
+        })
+    </script>
+    }

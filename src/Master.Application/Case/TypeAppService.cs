@@ -22,7 +22,7 @@ namespace Master.Case
         {
             var types=await Resolve<BaseTreeManager>().FindChildrenAsync(id, "BaseType");
             
-            return types.MapTo<List<BaseTreeDto>>();
+            return types.MapTo<List<BaseTreeDto>>().OrderBy(o=>o.Sort).ToList();
         }
 
         public virtual async Task<List<BaseTreeDto>> GetTypesByParentName(string name)

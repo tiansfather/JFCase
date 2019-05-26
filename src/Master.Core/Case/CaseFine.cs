@@ -19,5 +19,6 @@ namespace Master.Case
         public string Title { get; set; }
         public string Content { get; set; }
         public string MediaPath { get; set; }
+        public DateTime UserModifyTime { get; set; } = DateTime.Now;
     }
 }

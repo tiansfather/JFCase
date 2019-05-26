@@ -121,12 +121,12 @@ namespace Common
         /// </summary>
         /// <param name="type">验证码类型：数字，字符，符合</param>
         /// <returns></returns>
-        public string CreateVerifyCode(VerifyCodeType type)
+        public string CreateVerifyCode(VerifyCodeType type,int length=4)
         {
             string verifyCode = string.Empty;
             Random random = new Random();
             //int length = random.Next(4, 6);
-            int length = 4;
+            //int length = 4;
             switch (type)
             {
                 case VerifyCodeType.NumberVerifyCode:

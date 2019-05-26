@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewData["Title"] = "我的精品";
+}
+
+<h2>Host</h2>
+
+@section scripts{
+    <script>
+        //请求当前用户所有精品
+        abp.services.app.myArt.getPageResult().done(function (data) {
+            
+        })
+        //获取用户汇总值
+        abp.services.app.myArt.getSummary();
+        //下架
+        abp.services.app.myArt.freeze(caseFineId);
+        //上架
+        abp.services.app.myArt.unFreeze(caseFineId);
+    </script>
+    }

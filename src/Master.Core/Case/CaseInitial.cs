@@ -43,6 +43,8 @@ namespace Master.Case
 
         public int CaseSourceId { get; set; }
         public virtual CaseSource CaseSource { get; set; }
+        public int? SubjectId { get; set; }
+        public virtual BaseTree Subject { get; set; }
         [InterColumn(ColumnName ="标题")]
         public string Title { get; set; }
         
@@ -99,6 +101,22 @@ namespace Master.Case
         public virtual ICollection<CaseKey> CaseKeys { get; set; }
         public virtual ICollection<CaseFine> CaseFines { get; set; }
         public virtual ICollection<CaseCard> CaseCards { get; set; }
+
+        /// <summary>
+        /// 诉情及判决
+        /// </summary>
+        [NotMapped]
+        public JudgeInfo JudgeInfo
+        {
+            get
+            {
+                return this.GetPropertyValue<JudgeInfo>("JudgeInfo");
+            }
+            set
+            {
+                this.SetPropertyValue("JudgeInfo", value);
+            }
+        }
     }
 
     public enum CaseStatus
@@ -109,5 +127,34 @@ namespace Master.Case
         下架,
         推荐,
         须修整
+    }
+
+    public class JudgeInfo
+    {
+        /// <summary>
+        /// 诉情
+        /// </summary>
+        public string JudgeContent { get; set; }
+        /// <summary>
+        /// 判决
+        /// </summary>
+        public string JudgeResult { get; set; }
+        /// <summary>
+        /// 支持率0-100
+        /// </summary>
+        public int SupportRate { get; set; }
+        /// <summary>
+        /// 是否有反诉
+        /// </summary>
+        public bool HasReverseJudge { get; set; }
+        /// <summary>
+        /// 反诉内容
+        /// </summary>
+        public string ReverseJudgeContent { get; set; }
+        public string ReverseJudgeResult { get; set; }
+        /// <summary>
+        /// 反诉支持率0-100
+        /// </summary>
+        public int ReverseSupportRate { get; set; }
     }
 }

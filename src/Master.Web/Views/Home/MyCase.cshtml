@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewData["Title"] = "我的案例";
+}
+
+<h2>Host</h2>
+
+@section scripts{
+    <script>
+        //请求当前用户所有案例
+        abp.services.app.myCase.getPageResult().done(function (data) {
+            
+        })
+        //获取用户汇总值
+        abp.services.app.myCase.getSummary();
+        //设置案例专题
+        abp.servcies.app.myCase.setSubject(caseInitialId, subjectId);
+        //下架
+        abp.services.app.myCase.freeze(caseInitialId);
+        //上架
+        abp.services.app.myCase.unFreeze(caseInitialId);
+    </script>
+    }

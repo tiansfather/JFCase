@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Master.Module;
 
@@ -40,6 +41,12 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
 
 
             return moduleButtons;
+        }
+
+        public override void SetButtonsInfosMoreData(ICollection<ModuleButton> ButtonInfos)
+        {
+            //var editBtn = ButtonInfos.Where(o => o.ButtonKey == "Edit").Single();
+            //ButtonInfos.Remove(editBtn);
         }
     }
 }
