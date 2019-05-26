@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewData["Title"] = "Operations";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief">
+
+            <table id="demo_E" lay-filter="demo_E"></table>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        config.ready = function () {
+
+
+        }
+        config.onTableDone = function () {
+
+        }
+    </script>
+
+    <script>
+
+
+        layui.use('table', function () {
+
+            var table = layui.table;
+
+            //执行渲染
+            table.render({
+                elem: '#demo_E' //指定原始表格元素选择器（推荐id选择器）
+                , url: '/api/services/app/AuditLog/GetPageResult'
+                , where: { OrderField: 'executionTime', OrderType:'desc'}
+                , height: 'full-100' //容器高度
+                , cols: [[{ field: 'methodName', width: "10%", title: '发起位置' }, { field: 'serviceName', width: "10%", title: '服务位置' }, { field: 'parameters', width: "20%", title: '参数' }, { field: 'executionTime', width: "10%", title: '执行时间' }, { field: 'executionDuration', width: "10%", title: '执行时间(毫秒)' }, { field: 'clientIpAddress', width: "10%", title: 'IP' }]] //设置表头
+                //,…… //更多参数参考右侧目录：基本参数选项
+                , page: true
+            });
+            
+
+        });
+        
+
+        layui.use(['element', 'layer'], function () {
+            var element = layui.element;
+            var layer = layui.layer;
+
+            //监听折叠
+            element.on('collapse(test)', function (data) {
+                layer.msg('展开状态：' + data.show);
+            });
+        });
+    </script>
+}
+

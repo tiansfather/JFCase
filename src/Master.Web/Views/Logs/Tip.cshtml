@@ -1,0 +1,60 @@
+﻿
+@{
+    var data = ViewData["Data"] as List<dynamic>;
+    var type = ViewData["type"] as string;
+
+    Layout = "~/Views/Shared/_LayoutDialog.cshtml";
+}
+
+@if (type == "ERROR")
+{
+
+    <div class="layui-collapse" lay-accordion>
+        @foreach (dynamic t in data)
+        {
+            <div class="layui-colla-item">
+                <h2 class="layui-colla-title"> @(((dynamic)t).title) </h2>
+                <div class="layui-colla-content"> @(((dynamic)t).content) </div>
+            </div>
+
+        }
+
+    </div>
+}
+else if (type == "WARN")
+{
+    <table class="layui-table">
+        <colgroup>
+            <col width="200">
+            <col>
+        </colgroup>
+        <thead>
+            <tr>
+                <th>记录时间</th>
+                <th>警告内容</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (dynamic t in data)
+            {
+                <tr>
+                    <td>@(((dynamic)t).title)</td>
+                    <td>@(((dynamic)t).content)</td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+
+}
+@section scripts{
+    <script>
+        //注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
+        layui.use('element', function () {
+            var element = layui.element;
+
+            //…
+        });
+
+    </script>
+}

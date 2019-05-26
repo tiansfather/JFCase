@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief">
+
+            <table id="demo_E" lay-filter="demo_E"></table>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        config.ready = function () {
+
+
+        }
+        config.onTableDone = function () {
+
+        }
+    </script>
+
+    <script>
+
+
+        layui.use('table', function () {
+
+            var table = layui.table;
+
+            //执行渲染
+            table.render({
+                elem: '#demo_E' //指定原始表格元素选择器（推荐id选择器）
+                , url: '/api/services/app/UserLoginAttempts/GetPageResult'
+                , height: 'full-100' //容器高度
+                , cols: [[{ field: 'userNameOrPhoneNumber', width: "25%", title: '用户名' }, { field: 'clientIpAddress', width: "25%", title: 'IP' }, { field: 'tenancyName', width: "25%", title: '账套名称' }, { field: 'creationTime', width: "25%", title: '登录时间' }]] //设置表头
+                //,…… //更多参数参考右侧目录：基本参数选项
+                , page: true
+            });
+
+        });
+
+        layui.use(['element', 'layer'], function () {
+            var element = layui.element;
+            var layer = layui.layer;
+
+            //监听折叠
+            element.on('collapse(test)', function (data) {
+                layer.msg('展开状态：' + data.show);
+            });
+        });
+    </script>
+}

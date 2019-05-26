@@ -1,0 +1,136 @@
+﻿
+@{
+    // Layout = null;
+}
+<input type="hidden" id="Logstype" value="" />
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+                <li class="layui-this" onclick="change('ERROR')">错误日志<span class="layui-badge">@ViewData["errorCount"]</span></li>
+                <li onclick="change('WARN')">警告日志<span class="layui-badge">@ViewData["warnCount"]</span></li>
+            </ul>
+            
+            <table id="demo_E" lay-filter="demo_E"></table>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+</script>
+
+@section scripts{
+    <script>
+        config.ready = function () {
+
+
+        }
+        config.onTableDone = function () {
+
+        }
+    </script>
+
+    <script>
+
+
+        //layui.use('table', function () {
+
+        //    var table = layui.table;
+
+        //    //执行渲染
+        //    table.render({
+        //        elem: '#demo_E' //指定原始表格元素选择器（推荐id选择器）
+        //        , url: '/Logs/GetLogs?type=ERROR'
+        //        , height: 'full-100' //容器高度
+        //        , cols: [[{ field: 'filename', width: "70%", title: '文件名称' }, { fixed: 'right', width: '30%', align: 'center', toolbar: '#barDemo' }]] //设置表头
+        //        //,…… //更多参数参考右侧目录：基本参数选项
+        //        , page: true
+        //    });
+        //    //监听工具条
+        //    table.on('tool(demo_E)', function (obj) {
+        //        var data = obj.data;
+        //        if (obj.event === 'detail') {
+        //            ShowGG(data.filePath);
+        //            //$.post("/Logs/LogContent?url=" + data.filePath, {}, function (data) {
+        //            //    ShowGG(data);
+        //            //})
+        //        }
+        //    });
+
+        //});
+
+        function change(t) {
+            $("#Logstype").val(t);
+            layui.use('table', function () {
+
+                var table = layui.table;
+
+                //执行渲染
+                table.render({
+                    elem: '#demo_E' //指定原始表格元素选择器（推荐id选择器）
+                    , url: '/api/services/app/SystemLog/GetLogs?type=' + t
+                    , height: 'full-150' //容器高度
+                    , cols: [[{ field: 'filename', width: "70%", title: '文件名称' }, {  width: '30%', align: 'center', toolbar: '#barDemo' }]] //设置表头
+                    //,…… //更多参数参考右侧目录：基本参数选项
+                    , page: true
+                });
+                //监听工具条
+                table.on('tool(demo_E)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event === 'detail') {
+                        ShowGG(data.filePath);
+                    }
+                });
+
+
+            });
+        }
+        $(function () { 
+            change("ERROR");
+        })
+        //示范一个公告层
+        function ShowGG(str) {
+            var type = $("#Logstype").val();
+            //iframe层-父子操作
+            layer.open({
+                type: 2,
+                area: ['80%', '80%'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: '/Logs/Tip?url=' + str + '&type=' + type
+            });
+
+            //layer.open({
+            //    type: 1 //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+            //    , id: 'layerDemo' //防止重复弹出
+            //    , content: AddClass(str)
+            //    , btn: '关闭全部'
+            //    , area: ['900px', '350px']
+            //    , btnAlign: 'c' //按钮居中
+            //    , shade: 0 //不显示遮罩
+            //    , yes: function () {
+            //        layer.closeAll();
+            //    }
+            //});
+            //layer.open({
+            //    type: 1,
+            //    skin: 'layui-layer-demo', //样式类名
+            //    area: ['900px', '350px'],
+            //    closeBtn: 0, //不显示关闭按钮
+            //    anim: 2,
+            //    shadeClose: true, //开启遮罩关闭
+            //    content: str
+            //});
+        }
+
+        layui.use(['element', 'layer'], function () {
+            var element = layui.element;
+            var layer = layui.layer;
+
+            //监听折叠
+            element.on('collapse(test)', function (data) {
+                layer.msg('展开状态：' + data.show);
+            });
+        });
+    </script>
+}
