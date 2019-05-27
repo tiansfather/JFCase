@@ -193,7 +193,7 @@ namespace Master.Users
 
         //    return result;
         //}
-        #region 冻结
+        #region 冻结及恢复
         public virtual async Task Freeze(IEnumerable<long> userIds)
         {
             var users = await Manager.GetListByIdsAsync(userIds);
@@ -208,6 +208,14 @@ namespace Master.Users
             foreach (var user in users)
             {
                 user.IsActive = true;
+            }
+        }
+        public virtual async Task Revert(IEnumerable<long> userIds)
+        {
+            var users = await Manager.GetAll().IgnoreQueryFilters().Where(o => userIds.Contains(o.Id)).ToListAsync();
+            foreach(var user in users)
+            {
+                user.IsDeleted = false;
             }
         }
         #endregion
@@ -297,7 +305,7 @@ namespace Master.Users
         }
         
         /// <summary>
-        /// 通过openid返回用户状态1:正常登录，-1:被冻结，2：未注册,3:审核中
+        /// 通过openid返回用户状态1:正常登录，-1:被注销，2：未注册,3:审核中
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
@@ -306,7 +314,7 @@ namespace Master.Users
             var user = await (Manager as UserManager).FindAsync(new Microsoft.AspNetCore.Identity.UserLoginInfo("Wechat", openId, ""));
             if (user != null)
             {
-                return user.IsActive ? 1 : -1;
+                return !user.IsDeleted ? 1 : -1;
             }
             else
             {

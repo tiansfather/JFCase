@@ -65,7 +65,7 @@
                         var headimgurl = data.headimgurl;//头像
                         //根据openid去寻找用户的账号信息
                         abp.services.app.user.getUserStatusByWeOpenId(openid).done(function (status) {
-                            //status的四种值：1:正常登录，-1:被冻结，2：未注册,3:审核中
+                            //status的四种值：1:正常登录，-1:被注销，2：未注册,3:审核中
                             //todo:根据不同状态进行不同操作
                             if (status == 1) {
                                 var authModel = {

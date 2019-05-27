@@ -2,9 +2,12 @@
 using Abp.AutoMapper;
 using Master.Authentication;
 using Master.Domain;
+using Master.Dto;
 using Master.Entity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +19,24 @@ namespace Master.Users
         {
             return nameof(NewMiner);
         }
+        public virtual async Task<object> GetSummary()
+        {
+            var manager = Manager as NewMinerManager;
+            var normalCount = await manager.GetAll().IgnoreQueryFilters().Where(o => !o.IsDeleted).CountAsync();
+            var rejectCount = await manager.GetAll().IgnoreQueryFilters().Where(o => o.IsDeleted && !o.Verified).CountAsync();
 
+            return new
+            {
+                normalCount,
+                rejectCount,
+            };
+        }
+        protected override async Task<IQueryable<NewMiner>> GetQueryable(RequestPageDto request)
+        {
+            var query=await base.GetQueryable(request);
+            //显示删除的
+            return query.IgnoreQueryFilters();
+        }
         public virtual async Task Register(NewMinerRegisterDto newMinerRegisterDto)
         {
             var newMiner = newMinerRegisterDto.MapTo<NewMiner>();

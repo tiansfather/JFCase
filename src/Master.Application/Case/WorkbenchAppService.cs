@@ -2,6 +2,7 @@
 using Abp.AutoMapper;
 using Abp.Runtime.Security;
 using Abp.UI;
+using Master.Authentication;
 using Master.Configuration;
 using Master.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +98,11 @@ namespace Master.Case
         /// <returns></returns>
         public virtual async Task Choose(int id)
         {
+            var user = await GetCurrentUserAsync();
+            if (!user.IsActive)
+            {
+                throw new UserFriendlyException("您的账号被冻结，目前不能加工案例，请联系管理员");
+            }
             var caseSource = await Manager.GetByIdAsync(id);
             if(caseSource==null || caseSource.CaseSourceStatus == CaseSourceStatus.下架)
             {

@@ -175,7 +175,7 @@ namespace Master.Authentication
         {
             var query = from userLogin in _userLoginRepository.GetAll()
                         join user in GetAll().IgnoreQueryFilters() on userLogin.UserId equals user.Id
-                        where userLogin.LoginProvider == login.LoginProvider && userLogin.ProviderKey == login.ProviderKey && !user.IsDeleted
+                        where userLogin.LoginProvider == login.LoginProvider && userLogin.ProviderKey == login.ProviderKey 
                         select user;
 
             return Task.FromResult(query.FirstOrDefault());
@@ -612,7 +612,8 @@ namespace Master.Authentication
             else if (moduleKey == nameof(Miner))
             {
                 var minerRole = roleManager.FindByNameAsync(StaticRoleNames.Tenants.Miner).Result;
-                query = query.Where(o => o.Roles.Count(r => r.RoleId == minerRole.Id) > 0);
+                //矿工需要显示已注销的
+                query = query.IgnoreQueryFilters().Where(o => o.Roles.Count(r => r.RoleId == minerRole.Id) > 0);
             }
             return query;
         }
@@ -624,6 +625,7 @@ namespace Master.Authentication
             await base.FillEntityDataAfter(data, moduleInfo, entity);
             data["RoleNames"] = string.Join(',', roles.Select(o => o.DisplayName));
             data["IsActive"] = user.IsActive;
+            data["IsDelete"] = user.IsDeleted;
             if (moduleInfo.ModuleKey == nameof(Assistant))
             {
                 data["InputCaseNumber"] =await Resolve<CaseSourceManager>().GetAll().CountAsync(o => o.CreatorUserId == user.Id);

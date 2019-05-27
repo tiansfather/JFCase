@@ -1,9 +1,12 @@
 ﻿using Abp.Authorization;
 using Master.Authentication;
 using Master.Domain;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Master.Users
 {
@@ -13,6 +16,22 @@ namespace Master.Users
         protected override string ModuleKey()
         {
             return nameof(Miner);
+        }
+
+        public virtual async Task<object> GetSummary()
+        {
+            var manager = Manager as UserManager;
+            var query = manager.GetFilteredQuery(ModuleKey());
+            var normalCount =await query.Where(o => o.IsActive && !o.IsDeleted).CountAsync();
+            var freezeCount = await query.Where(o => !o.IsActive && !o.IsDeleted).CountAsync();
+            var deleteCount= await query.Where(o => o.IsDeleted).CountAsync();
+
+            return new
+            {
+                normalCount,
+                freezeCount,
+                deleteCount
+            };
         }
     }
 }
