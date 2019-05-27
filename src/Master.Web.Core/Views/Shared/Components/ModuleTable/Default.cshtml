@@ -146,7 +146,8 @@
                 },
                 id: '@Model.ID',
                 even: true,
-                cols:[cols],
+                cols: [cols],
+                excel: {on:false},
                 done: function () {
                     //console.log('tableDone');
                     layui.soulTable.render(this);
