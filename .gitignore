@@ -4,6 +4,8 @@
 
 # Logs
 Logs/
+# Settings
+appsettings.json
 
 # Generated files
 project.lock.json
