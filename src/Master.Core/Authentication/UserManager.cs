@@ -247,17 +247,30 @@ namespace Master.Authentication
         /// <returns></returns>
         public virtual async Task<IReadOnlyList<Permission>> GetGrantedPermissionsAsync(User user)
         {
-            var permissionList = new List<Permission>();
-
-            foreach (var permission in _permissionManager.GetAllPermissions())
+            return await GetGrantedPermissionsAsync(user.Id);
+        }
+        /// <summary>
+        /// 获取用户拥有所有权限
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<IReadOnlyList<Permission>> GetGrantedPermissionsAsync(long userId)
+        {
+            var cacheKey = userId + "@" + (GetCurrentTenantId() ?? 0);
+            return await CacheManager.GetCache<string, IReadOnlyList<Permission>>("UserGrantedPermissions").GetAsync(cacheKey, async o =>
             {
-                if (await IsGrantedAsync(user.Id, permission))
+                var permissionList = new List<Permission>();
+                var permissionManager = Resolve<IPermissionManager>();
+                foreach (var permission in permissionManager.GetAllPermissions())
                 {
-                    permissionList.Add(permission);
+                    if (await IsGrantedAsync(userId, permission))
+                    {
+                        permissionList.Add(permission);
+                    }
                 }
-            }
 
-            return permissionList;
+                return permissionList;
+            });
         }
         /// <summary>
         /// 判断某用户是否有某权限
