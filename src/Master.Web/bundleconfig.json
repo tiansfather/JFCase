@@ -10,7 +10,8 @@
       "wwwroot/assets/layuiadmin/lib/extend/soulTable/soulTable.css",
       "wwwroot/lib/pace/pace-theme-minimal.css",
       "wwwroot/lib/dropdowntree/css/cyType.css",
-      "wwwroot/lib/dropdowntree/css/cyStyle.css"
+      "wwwroot/lib/dropdowntree/css/cyStyle.css",
+      "wwwroot/lib/element/element-ui.css"
     ]
   },
   {
@@ -39,7 +40,8 @@
       "wwwroot/lib/zTree/js/jquery.ztree.all.js",
       "wwwroot/lib/dropdowntree/js/dropDownTool.js",
       "wwwroot/lib/pace/pace.min.js",
-      "wwwroot/lib/vue-router/vue-router.min.js"
+      "wwwroot/lib/vue-router/vue-router.min.js",
+      "wwwroot/lib/element/element-ui.js"
     ]
   },
   {
@@ -66,7 +68,8 @@
       "wwwroot/lib/zTree/js/jquery.ztree.all.js",
       "wwwroot/lib/dropdowntree/js/dropDownTool.js",
       "wwwroot/lib/pace/pace.min.js",
-      "wwwroot/lib/vue-router/vue-router.js"
+      "wwwroot/lib/vue-router/vue-router.js",
+      "wwwroot/lib/element/element-ui.js"
     ]
   }
 ]

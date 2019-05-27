@@ -35,12 +35,36 @@
     @*<script src="~/AbpServiceProxies/GetAll?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
     <script src="~/AbpScripts/GetScripts" type="text/javascript"></script>
     @*<script>if (window.top !== window.self) { window.top.location = window.location; }</script>*@
-    
+    <link href="~/views/css/login.css" rel="stylesheet" />
 </head>
 <body>
-    <div id="app">
+    <div id="app" v-cloak>
         <!--这是扫码登录二维码-->
-        <img id="codeImg" :src="qrCode" width="250" />
+        <div class="code-wrap">
+            <img id="logo" src="~/assets/images/login/logo_u0.png" />
+            <div class="page-1" v-show="status!=2" @@click="status=2">
+                <img id="codeImg" :src="qrCode" width="250" />
+                <p class="code-title">请使用微信扫码登录</p>
+                <p class="code-describe">
+                    这里有假字说明这里有假字说明这<br>
+                    这里有假字说明这里有假字说明明这里有假字说明<br>
+                    这里有假字说明这字说明<br>
+                    ...
+                </p>
+            </div>
+            <div class="page-2" v-show="status==2&&!isCheck">
+                <p> 这是说明文字这是说明文字这是说明文字这是说明文字这是说明文字这是说明文字说明文字这是说明文字</p>
+                <div class="page-2-buttons">
+                    <el-button type="success" plain @@click="isCheck=true">我是</el-button>
+                    <el-button type="success" plain>不是</el-button>
+                </div>
+            </div>
+            <div class="page-3" v-show="status==2&&isCheck">
+                <p> 这是说明文字这是说明文字这是说明文字这是说明文字这是说明文字这是说明文字说明文字这是说明文字</p>
+                <fieldset><legend><a name="fieldset">个人信息</a></legend></fieldset>
+            </div>
+        </div>
+
     </div>
     
 
@@ -48,13 +72,17 @@
 	<script>
 		var guid = "@ViewBag.Guid";
 		var app = new Vue({
-				el: '#app',
-				computed: {
-					qrCode: function () {
-						return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/LoginCallback?guid=" + guid);
-					}
+            el: '#app',
+            data: {
+                status: 0,
+                isCheck:false
+            },
+			computed: {
+				qrCode: function () {
+					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/LoginCallback?guid=" + guid);
 				}
-			});
+			}
+		});
             //轮询请求
         var loopFunc = function () {
                 //获取用户信息
@@ -76,6 +104,8 @@
                                 };
                                 //window.clearInterval(loop);
                                 doExternalAuthentication(authModel);
+                            } else if (status == 2) {
+
                             }
                         })
 						

@@ -1,0 +1,64 @@
+@charset "UTF-8";
+body {
+  margin: 0px;
+  background-image: url(/assets/images/login/bg.png);
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.code-wrap {
+  width: 400px;
+  margin: 0 auto;
+  height: 600px;
+  /*background: rgba(134, 134, 134, 0.7);*/
+  background-image: url(/assets/images/login/背景_u3.png);
+  margin-top: 150px;
+  position: relative;
+  padding: 50px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.code-wrap #logo {
+  width: 80px;
+  height: 80px;
+  left: -100px;
+  position: absolute;
+}
+
+.code-wrap .page-1 {
+  text-align: center;
+}
+
+.code-wrap .page-1 #codeImg {
+  margin-top: 50px;
+}
+
+.code-wrap .page-1 .code-title {
+  font-family: '微软雅黑 Bold', '微软雅黑 Regular', '微软雅黑';
+  font-weight: 700;
+  font-style: normal;
+  font-size: 16px;
+  color: #333333;
+}
+
+.code-wrap .page-1 .code-describe {
+  font-size: 14px;
+  color: #333333;
+  font-family: '微软雅黑';
+  font-weight: 400;
+  font-style: normal;
+}
+
+.code-wrap .page-2 .page-2-buttons {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+/*# sourceMappingURL=login.css.map */
