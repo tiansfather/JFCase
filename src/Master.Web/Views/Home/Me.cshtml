@@ -3,12 +3,17 @@
     ViewData["Title"] = "个人中心";
 }
 
-<h2>Host</h2>
 <div id="app">
-    <jian-header></jian-header>
+    <com-headr ></com-headr>
 </div>
 @section scripts{
     <script>
+        new Vue({
+            el: '#app',
+            mounted: function () {
+                console.log($('#comHeadr')[0])
+            }
+        })
         //请求用户信息的接口
         abp.services.app.user.getById(abp.session.userId).done(function (data) {
             data.avata//头像

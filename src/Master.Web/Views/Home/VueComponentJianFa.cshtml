@@ -1,0 +1,65 @@
+﻿<style>
+    #jianHeader {
+        height: 80px;
+        background-color: rgba(198, 156, 109, 1);
+    }
+    .jian-header-wrap {
+        width: 1200px;
+        margin: 0 auto;
+        height:100%;
+    }
+    #jianHeader aside{
+        line-height: 80px;
+    }
+    #jianHeader .title-1{
+        font-family: '微软雅黑 Bold', '微软雅黑 Regular', '微软雅黑';
+        font-weight: 700;
+        font-style: normal;
+        font-size: 16px;
+        color: #754C24;
+        text-align: left;
+        line-height: 27px;
+    }
+</style>
+<script type="text/x-template" id="comHeader">
+    <header id="jianHeader">
+        <div class="jian-header-wrap">
+            <aside>
+                <img src="/assets/images/me/logo.png" style="height: 60px;">
+                <span class="title-1">案例工厂</span>
+            </aside>
+            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @@select="handleSelect">
+                <el-menu-item index="1">首页</el-menu-item>
+                <el-menu-item index="2">查案例</el-menu-item>
+                <el-menu-item index="3">看观点</el-menu-item>
+                <el-submenu index="4">
+                    <template slot="title">
+                        我的工作台
+                    </template>
+                    <el-menu-item index="2-1">我的案例</el-menu-item>
+                    <el-menu-item index="2-2">我的精品</el-menu-item>
+                    <el-menu-item index="2-3">工作台</el-menu-item>
+                </el-submenu>
+                @*<el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>*@
+            </el-menu>
+        </div>
+    </header>
+</script>
+<script>
+
+    Vue.component('com-headr', {//前台页面头
+        data() {
+            return {
+                activeIndex: '1',
+                activeIndex2: '1'
+            };
+        },
+        methods: {
+            handleSelect(key, keyPath) {
+                console.log(key, keyPath);
+            }
+        },
+        props: [],
+        template: '#comHeader',
+    })
+</script>
