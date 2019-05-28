@@ -330,7 +330,7 @@ namespace Master.Users
         {
             //获取用户已完成的案例
             var caseCount = Resolve<CaseInitialManager>().GetAll()
-                .Count(o => o.CreatorUserId == entity.Id && (o.CaseStatus == CaseStatus.展示中 || o.CaseStatus == CaseStatus.推荐));
+                .Count(o => o.CreatorUserId == entity.Id && (o.CaseStatus == CaseStatus.展示中 ));
             return new
             {
                 Avata = entity.GetPropertyValue("Avata"),

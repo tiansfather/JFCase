@@ -105,7 +105,7 @@
 			if (!button.RequirePermission || await PermissionChecker.IsGrantedAsync(button.ButtonPermissionName))
 			{
 				var clientCondition = !string.IsNullOrEmpty(button.ClientShowCondition) ? button.ClientShowCondition : "true";
-				@("{{# if(" + clientCondition + "){ }}")
+				@Html.Raw("{{# if(" + clientCondition + "){ }}")
 				<a dataid="{{d.id}}" class="layui-btn layui-btn-xs @button.ButtonClass" module-button="@button" title="@(!string.IsNullOrEmpty(button.TitleTemplet)?button.TitleTemplet:button.ButtonName)"></a>
 				@("{{# } }}")
 			}

@@ -30,7 +30,7 @@ namespace Master.Case
                 .Include(o=>o.Court1)
                 .Include(o=>o.Court2)
                 .Include(o=>o.CaseSourceHistories)
-                .Where(o => o.CaseSourceStatus == CaseSourceStatus.初始 && o.OwerId == null);
+                .Where(o => o.CaseSourceStatus == CaseSourceStatus.待选 && o.OwerId == null);
         }
         protected override async Task<IQueryable<CaseSource>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseSource> query)
         {
@@ -63,7 +63,7 @@ namespace Master.Case
         {
             return await Manager.GetAll()
                 .Where(o => o.OwerId == AbpSession.UserId)
-                .Where(o => o.CaseSourceStatus == CaseSourceStatus.加工中 || o.CaseSourceStatus == CaseSourceStatus.被选中)
+                .Where(o => o.CaseSourceStatus == CaseSourceStatus.加工中 || o.CaseSourceStatus == CaseSourceStatus.待加工)
                 .CountAsync();
         }
         /// <summary>
@@ -77,7 +77,7 @@ namespace Master.Case
                 .Include(o => o.Court1)
                 .Include(o => o.Court2)
                 .Where(o => o.OwerId == AbpSession.UserId)
-                .Where(o => o.CaseSourceStatus == CaseSourceStatus.加工中 || o.CaseSourceStatus == CaseSourceStatus.被选中)
+                .Where(o => o.CaseSourceStatus == CaseSourceStatus.加工中 || o.CaseSourceStatus == CaseSourceStatus.待加工)
                 .Select(o => new {
                     o.Id,
                     EncrypedId=SimpleStringCipher.Instance.Encrypt(o.Id.ToString(),null,null),
@@ -119,7 +119,7 @@ namespace Master.Case
                 throw new UserFriendlyException("您的工作台中已经有多个案例待加工，请完成后并发布，然后再添加新的判例。");
             }
             caseSource.OwerId = AbpSession.UserId;
-            caseSource.CaseSourceStatus = CaseSourceStatus.被选中;
+            caseSource.CaseSourceStatus = CaseSourceStatus.待加工;
         }
         /// <summary>
         /// 退还判例
@@ -133,7 +133,7 @@ namespace Master.Case
             var caseSource = await manager.GetByIdAsync(id);
             //设置案源状态
             caseSource.OwerId = null;
-            caseSource.CaseSourceStatus = CaseSourceStatus.初始;
+            caseSource.CaseSourceStatus = CaseSourceStatus.待选;
             //清空当前用户针对此案源加工的所有数据
             await manager.ClearCaseContent(id);
             //增加判例记录

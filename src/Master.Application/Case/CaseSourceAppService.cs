@@ -46,9 +46,9 @@ namespace Master.Case
         #region 上架下架删除
         public virtual async Task Freeze(IEnumerable<int> ids)
         {
-            if (await Manager.GetAll().CountAsync(o => ids.Contains(o.Id) && o.CaseSourceStatus != CaseSourceStatus.初始) > 0)
+            if (await Manager.GetAll().CountAsync(o => ids.Contains(o.Id) && o.CaseSourceStatus != CaseSourceStatus.待选) > 0)
             {
-                throw new UserFriendlyException("只有初始状态的判例可以下架");
+                throw new UserFriendlyException("只有待选状态的判例可以下架");
             }
             else
             {
@@ -70,7 +70,7 @@ namespace Master.Case
                 var caseSources = await Manager.GetAll().Where(o => ids.Contains(o.Id)).ToListAsync();
                 foreach (var caseSource in caseSources)
                 {
-                    caseSource.CaseSourceStatus = CaseSourceStatus.初始;
+                    caseSource.CaseSourceStatus = CaseSourceStatus.待选;
                 }
             }
         }

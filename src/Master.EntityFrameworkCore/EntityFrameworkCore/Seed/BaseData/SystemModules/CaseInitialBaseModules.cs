@@ -20,7 +20,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 ButtonActionType = ButtonActionType.Ajax,
                 ButtonActionUrl = $"abp.services.app.case.back",
                 ConfirmMsg = "确认退回此案例？",
-                ButtonClass = "layui-danger",
+                ButtonClass = "layui-btn-danger",
                 Sort = 1
             };
             moduleButtons.Add(BackButton);

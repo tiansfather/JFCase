@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Events.Bus;
 using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
@@ -18,10 +19,11 @@ namespace Master.Authentication
     public class UserGrantedPermissionInvalidator : IEventHandler<UserGrantedPermissionIndicator>, ITransientDependency
     {
         public ICacheManager CacheManager { get; set; }
-        public void HandleEvent(UserGrantedPermissionIndicator eventData)
+        [UnitOfWork]
+        public virtual void HandleEvent(UserGrantedPermissionIndicator eventData)
         {
             var users = GetUsersByIndicator(eventData);
-            foreach (var user in users)
+            foreach (var user in users.Where(o=>o!=null))
             {
                 var cacheKey = user.Id + "@" + (user.TenantId ?? 0);
                 CacheManager.GetCache<string, IReadOnlyList<Permission>>("UserGrantedPermissions").Remove(cacheKey);
@@ -31,28 +33,31 @@ namespace Master.Authentication
         private IEnumerable<User> GetUsersByIndicator(UserGrantedPermissionIndicator userGrantedPermissionIndicator)
         {
             var users = new List<User>();
-            var scope = IocManager.Instance.CreateScope();
-            var userManager = scope.Resolve<UserManager>();
-            var userRoleRepository = scope.Resolve<IRepository<UserRole, int>>();
-            if (userGrantedPermissionIndicator.UserId.HasValue)
+            using (var scope = IocManager.Instance.CreateScope())
             {
-                users.Add(userManager.GetByIdAsync(userGrantedPermissionIndicator.UserId.Value).Result);
-            }
-            else if (userGrantedPermissionIndicator.RoleId.HasValue)
-            {
-                var userIds = userRoleRepository.GetAll().Where(o => o.RoleId == userGrantedPermissionIndicator.RoleId.Value).Select(o => o.UserId).ToList();
-                users = userManager.GetListByIdsAsync(userIds).Result.ToList();
-            }
-            else if (userGrantedPermissionIndicator.TenantId.HasValue)
-            {
-                users = userManager.GetAll().IgnoreQueryFilters().Where(o => !o.IsDeleted && o.TenantId == userGrantedPermissionIndicator.TenantId.Value).ToList();
-            }
-            else if (userGrantedPermissionIndicator.EditionId.HasValue)
-            {
-                users = userManager.GetAll().IgnoreQueryFilters().Where(o => !o.IsDeleted && o.Tenant.EditionId == userGrantedPermissionIndicator.EditionId.Value).ToList();
-            }
+                var userManager = scope.Resolve<UserManager>();
+                var userRoleRepository = scope.Resolve<IRepository<UserRole, int>>();
+                if (userGrantedPermissionIndicator.UserId.HasValue)
+                {
+                    users.Add(userManager.GetAll().IgnoreQueryFilters().Where(o => o.Id == userGrantedPermissionIndicator.UserId.Value).FirstOrDefault());
+                }
+                else if (userGrantedPermissionIndicator.RoleId.HasValue)
+                {
+                    var userIds = userRoleRepository.GetAll().Where(o => o.RoleId == userGrantedPermissionIndicator.RoleId.Value).Select(o => o.UserId).ToList();
+                    users = userManager.GetListByIdsAsync(userIds).Result.ToList();
+                }
+                else if (userGrantedPermissionIndicator.TenantId.HasValue)
+                {
+                    users = userManager.GetAll().IgnoreQueryFilters().Where(o => !o.IsDeleted && o.TenantId == userGrantedPermissionIndicator.TenantId.Value).ToList();
+                }
+                else if (userGrantedPermissionIndicator.EditionId.HasValue)
+                {
+                    users = userManager.GetAll().IgnoreQueryFilters().Where(o => !o.IsDeleted && o.Tenant.EditionId == userGrantedPermissionIndicator.EditionId.Value).ToList();
+                }
 
-            return users;
+                return users;
+            }
+                
         }
     }
 
