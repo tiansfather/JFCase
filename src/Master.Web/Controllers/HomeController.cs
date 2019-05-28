@@ -91,7 +91,15 @@ namespace Master.Web.Controllers
             }
             return View(loginInfo);
         }
-
+        /// <summary>
+        /// 个人中心
+        /// </summary>
+        /// <returns></returns>
+        [AbpMvcAuthorize]
+        public IActionResult Me()
+        {
+            return View();
+        }
         /// <summary>
         /// 工作台
         /// </summary>

@@ -18,7 +18,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 ButtonName = "退回重做",
                 ButtonType = ButtonType.ForSelectedRows,
                 ButtonActionType = ButtonActionType.Ajax,
-                ButtonActionUrl = $"abp.services.app.case.back",
+                ButtonActionUrl = $"abp.services.app.caseInitial.back",
                 ConfirmMsg = "确认退回此案例？",
                 ButtonClass = "layui-btn-danger",
                 Sort = 1
@@ -30,7 +30,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 ButtonName = "下架",
                 ButtonType = ButtonType.ForSelectedRows,
                 ButtonActionType = ButtonActionType.Ajax,
-                ButtonActionUrl = $"abp.services.app.case.down",
+                ButtonActionUrl = $"abp.services.app.caseInitial.down",
                 ConfirmMsg = "确认下架此案例？",
                 ButtonClass = "layui-danger",
                 Sort = 1
@@ -42,7 +42,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 ButtonName = "推荐",
                 ButtonType = ButtonType.ForSelectedRows,
                 ButtonActionType = ButtonActionType.Ajax,
-                ButtonActionUrl = $"abp.services.app.case.recommand",
+                ButtonActionUrl = $"abp.services.app.caseInitial.recommand",
                 ConfirmMsg = "确认推荐此案例？",
                 Sort = 1
             };
