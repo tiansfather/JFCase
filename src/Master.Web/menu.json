@@ -139,12 +139,6 @@
         "url": "/ModuleInfo"
       },
       {
-        "name": "Setting.Tenancy.MenuSetting",
-        "displayName": "菜单设置",
-        "icon": "iconfont icon-shezhi1",
-        "url": "/MenuSetting"
-      },
-      {
         "name": "Setting.Tenancy.DictionarySetting",
         "displayName": "字典设置",
         "icon": "iconfont icon-shezhi1",
@@ -156,12 +150,6 @@
         "displayName": "日志",
         "icon": "layui-icon layui-icon-zwrite-l",
         "items": [
-          {
-            "name": "Setting.Tenancy.SystemLog",
-            "displayName": "系统日志",
-            "icon": "layui-icon layui-icon-zwrite-l",
-            "url": "/Logs/System"
-          },
           {
             "name": "Setting.Tenancy.LoginLog",
             "displayName": "登录日志",
