@@ -228,7 +228,7 @@ namespace Master.Case
             var caseSource = await Manager.GetByIdAsync(caseInitial.CaseSourceId);
             //设置案源为加工中状态
             caseSource.CaseSourceStatus = CaseSourceStatus.加工中;
-
+            caseInitial.CaseStatus = CaseStatus.加工中;
             await CurrentUnitOfWork.SaveChangesAsync();
             return caseInitial.Id;
         }

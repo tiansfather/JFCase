@@ -17,7 +17,11 @@ namespace Master.Users
         {
             return nameof(Miner);
         }
-
+        protected override async Task<IQueryable<User>> BuildKeywordQueryAsync(string keyword, IQueryable<User> query)
+        {
+            return (await base.BuildKeywordQueryAsync(keyword, query))
+                .Where(o => o.Name.Contains(keyword));
+        }
         public virtual async Task<object> GetSummary()
         {
             var manager = Manager as UserManager;

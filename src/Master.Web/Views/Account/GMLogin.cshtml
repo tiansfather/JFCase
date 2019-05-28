@@ -98,7 +98,7 @@
                     <a href="forget.html" class="layadmin-user-jump-change layadmin-link" style="margin-top: 7px;">忘记密码？</a>
                 </div>
                 <div class="layui-form-item">
-                    <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="LAY-user-login-submit">@L("登录")</button>
+                    <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="LAY-user-login-submit" id="btnSubmit">@L("登录")</button>
                 </div>
                 <div class="layui-trans layui-form-item layadmin-user-login-other" style="display:none">
                     <label>其它账号登入</label>
@@ -251,7 +251,14 @@
 					}
 				})
 			);
-		}
+        }
+
+
+        $(document).on("keyup", function (data) {
+            if (data.keyCode == 13) {
+                $("#btnSubmit").trigger("click");
+            }
+        })
 	</script>
 </body>
 </html>
