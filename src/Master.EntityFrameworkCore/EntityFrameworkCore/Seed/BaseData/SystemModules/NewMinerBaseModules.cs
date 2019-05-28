@@ -26,7 +26,15 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
 
             return moduleButtons;
         }
-
+        public override void SetColumnInfosMoreData(ICollection<ColumnInfo> ColumnInfos)
+        {
+            var toDelColumnKeys = new string[] { "CreatorUserId", "LastModifierUserId", "LastModificationTime" };
+            foreach(var columnKey in toDelColumnKeys)
+            {
+                var column = ColumnInfos.Single(o => o.ColumnKey == columnKey);
+                ColumnInfos.Remove(column);
+            }
+        }
         public override void SetButtonsInfosMoreData(ICollection<ModuleButton> ButtonInfos)
         {
             var createBtn = ButtonInfos.Single(o => o.ButtonKey == "Add");
