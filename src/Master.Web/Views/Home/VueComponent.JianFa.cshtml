@@ -1,6 +1,9 @@
 ﻿<style>
-    #jianHeader{
-
+    #jianHeader {
+        height: 80px;
+        background-color: rgba(198, 156, 109, 1);
+        width: 1200px;
+        margin: 0 auto;
     }
 </style>
 <script type="text/x-template" id="comHeadr">
@@ -10,23 +13,15 @@
 </script>
 <script>
 
-    Vue.component('com-headr', {//表格普通文本输入
+    Vue.component('com-headr', {//前台页面头
         data: function () {
-            return { inputShow: false }
+            return {
+            }
         },
-        props: ['value', 'verify'],
+        props: [],
         template: '#comHeader',
         methods: {
-            updateVal: function (event) {
-                this.$emit('input', event.target.value)
-                this.inputShow = false;
-            },
-            cancelUpdate: function () {
-                this.inputShow = false;
-            },
-            tableEdit: function (event) {
-                this.inputShow = true;
-            }
+
         }
     })
 </script>
