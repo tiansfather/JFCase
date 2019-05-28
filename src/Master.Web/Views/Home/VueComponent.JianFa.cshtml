@@ -1,0 +1,32 @@
+﻿<style>
+    #jianHeader{
+
+    }
+</style>
+<script type="text/x-template" id="comHeadr">
+    <header id="jianHeader">
+
+    </header>
+</script>
+<script>
+
+    Vue.component('com-headr', {//表格普通文本输入
+        data: function () {
+            return { inputShow: false }
+        },
+        props: ['value', 'verify'],
+        template: '#comHeader',
+        methods: {
+            updateVal: function (event) {
+                this.$emit('input', event.target.value)
+                this.inputShow = false;
+            },
+            cancelUpdate: function () {
+                this.inputShow = false;
+            },
+            tableEdit: function (event) {
+                this.inputShow = true;
+            }
+        }
+    })
+</script>
