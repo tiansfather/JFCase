@@ -61,7 +61,22 @@
             </div>
             <div class="page-3" v-show="status==2&&isCheck">
                 <p> 这是说明文字这是说明文字这是说明文字这是说明文字这是说明文字这是说明文字说明文字这是说明文字</p>
-                <fieldset><legend><a name="fieldset">个人信息</a></legend></fieldset>
+                <p>个人信息</p>
+                <el-form :label-position="top" label-width="80px" :model="currentItem">
+                    <el-form-item label="姓名">
+                        <el-input placeholder="请输入真实姓名" v-model="currentItem.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="律所">
+                        <el-input placeholder="请输入所在的律师事务所" v-model="currentItem.layerOffice"></el-input>
+                    </el-form-item>
+                    <el-form-item label="电话">
+                        <el-input placeholder="请输入您的电话号码" v-model="currentItem.tel"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div class="page-2-buttons">
+                    <el-button type="success" plain @@click="isCheck=true">我是</el-button>
+                    <el-button type="success" plain>不是</el-button>
+                </div>
             </div>
         </div>
 
@@ -75,7 +90,12 @@
             el: '#app',
             data: {
                 status: 0,
-                isCheck:false
+                isCheck: false,
+                currentItem: {
+                    name: '',
+                    layerOffice: '',
+                    tel: ''
+                }
             },
 			computed: {
 				qrCode: function () {

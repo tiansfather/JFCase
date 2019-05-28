@@ -326,6 +326,14 @@ abp.services = abp.services || {};
 
     abp.services.app.miner = abp.services.app.miner || {};
 
+    // action 'getSummary'
+    abp.services.app.miner.getSummary = function(ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Miner/GetSummary',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
     // action 'getPageResult'
     abp.services.app.miner.getPageResult = function(request, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -406,6 +414,14 @@ abp.services = abp.services || {};
   (function(){
 
     abp.services.app.newMiner = abp.services.app.newMiner || {};
+
+    // action 'getSummary'
+    abp.services.app.newMiner.getSummary = function(ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/NewMiner/GetSummary',
+        type: 'GET'
+      }, ajaxParams));;
+    };
 
     // action 'register'
     abp.services.app.newMiner.register = function(newMinerRegisterDto, ajaxParams) {
@@ -536,6 +552,15 @@ abp.services = abp.services || {};
     abp.services.app.user.unFreeze = function(userIds, ajaxParams) {
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/User/UnFreeze',
+        type: 'POST',
+        data: JSON.stringify(userIds)
+      }, ajaxParams));;
+    };
+
+    // action 'revert'
+    abp.services.app.user.revert = function(userIds, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/User/Revert',
         type: 'POST',
         data: JSON.stringify(userIds)
       }, ajaxParams));;
