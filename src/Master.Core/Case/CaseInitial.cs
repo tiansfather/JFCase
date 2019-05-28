@@ -124,9 +124,7 @@ namespace Master.Case
         加工中,
         展示中,
         退回,
-        下架,
-        推荐,
-        须修整
+        下架
     }
 
     public class JudgeInfo
