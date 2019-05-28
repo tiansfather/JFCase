@@ -91,10 +91,6 @@ namespace Master.Web.Controllers
             }
             return View(loginInfo);
         }
-        /// <summary>
-        /// ¹¤×÷Ì¨
-        /// </summary>
-        /// <returns></returns>
         [AbpMvcAuthorize]
         public IActionResult Me()
         {

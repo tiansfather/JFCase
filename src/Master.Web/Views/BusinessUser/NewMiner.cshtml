@@ -17,7 +17,7 @@
                     <input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
                     <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
                 </div>
-                <vc:module-table param="@(new ModuleTableViewParam() {ID="NewMiner",ModuleKey="NewMiner",Height="full-150",Where="isdeleted=0" })"></vc:module-table>
+                <vc:module-table param="@(new ModuleTableViewParam() {ID="NewMiner",ModuleKey="NewMiner",Height="full-150",Where="isdeleted=false" })"></vc:module-table>
             </div>
         </div>
         @*<div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("审核新矿工申请")</div>
@@ -42,7 +42,7 @@
                         hideArr = [];
                         break;
                     case 1:
-                        hideArr = ['Verify'];
+                        hideArr = ['Verify','Delete'];
                         break;
                     default:
                         hideArr = [];
@@ -79,10 +79,10 @@
             var where = { searchKeys: JSON.stringify(searchKeys) };
             switch (index) {
                 case 0:
-                    where.where= 'isdeleted=0';
+                    where.where= 'isdeleted=false';
                     break;
                 case 1:
-                    where.where= 'isdeleted=1 and verified=false';
+                    where.where= 'isdeleted=true and verified=false';
                     break;
             }
             var value = $('#name-input').val();

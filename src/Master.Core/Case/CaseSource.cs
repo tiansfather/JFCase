@@ -80,8 +80,8 @@ namespace Master.Case
     public enum CaseSourceStatus
     {
         下架=-1,
-        初始,
-        被选中,
+        待选,
+        待加工,
         加工中,
         已加工
     }

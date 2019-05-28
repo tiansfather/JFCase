@@ -620,6 +620,7 @@ var func = {
     //表格重载
     reload: function (tableid, option) {
         layui.table.reload(tableid, option);
+        config.refresh();
     },
     //异步执行
     runAsync: function (fun) {

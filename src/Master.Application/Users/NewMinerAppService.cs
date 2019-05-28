@@ -69,6 +69,7 @@ namespace Master.Users
                 new UserLogin(AbpSession.TenantId,user.Id,"Wechat",newMiner.OpenId)
             };
                 newMiner.Verified = true;
+                await CurrentUnitOfWork.SaveChangesAsync();
                 await manager.DeleteAsync(newMiner);
             }
             
