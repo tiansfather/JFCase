@@ -6,8 +6,11 @@
     .jian-header-wrap {
         width: 1200px;
         margin: 0 auto;
-        height:100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
     }
+
     #jianHeader aside{
         line-height: 80px;
     }
@@ -20,6 +23,25 @@
         text-align: left;
         line-height: 27px;
     }
+    .jian-header-nav{
+
+    }
+    #jianHeader .user{
+        width:60px;
+        height:60px;
+    }
+/*-----footer-----*/
+    #jianFooter {
+        height: 51px;
+        background-color: rgba(198, 156, 109, 1);
+        font-family: '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        text-align: center;
+        line-height: 51px;
+        color: #754C24;
+    }
 </style>
 <script type="text/x-template" id="comHeader">
     <header id="jianHeader">
@@ -28,20 +50,28 @@
                 <img src="/assets/images/me/logo.png" style="height: 60px;">
                 <span class="title-1">案例工厂</span>
             </aside>
-            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @@select="handleSelect">
-                <el-menu-item index="1">首页</el-menu-item>
-                <el-menu-item index="2">查案例</el-menu-item>
-                <el-menu-item index="3">看观点</el-menu-item>
+            <el-menu :default-active="activeIndex" class="jian-header-nav" mode="horizontal" @@select="handleSelect" background-color="#c69c6d" text-color="#fff" active-text-color="#ffd04b">
+                <el-menu-item index="1"><a href="/home/Source">首页</a></el-menu-item>
+                <el-menu-item index="2"><a href="/home/Source">查案例</a></el-menu-item>
+                <el-menu-item index="3"><a href="/home/Source">看观点</a></el-menu-item>
                 <el-submenu index="4">
                     <template slot="title">
                         我的工作台
                     </template>
-                    <el-menu-item index="2-1">我的案例</el-menu-item>
-                    <el-menu-item index="2-2">我的精品</el-menu-item>
-                    <el-menu-item index="2-3">工作台</el-menu-item>
+                    <el-menu-item index="4-1"><a href="/home/MyCase">我的案例</a></el-menu-item>
+                    <el-menu-item index="4-2"><a href="/home/MyArt">我的精品</a></el-menu-item>
+                    <el-menu-item index="4-3"><a href="/home/workbench">工作台</a></el-menu-item>
                 </el-submenu>
-                @*<el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>*@
             </el-menu>
+            <aside class="user-wrap">
+                <img src="/assets/images/me/user.png" alt="user" class="user" />
+                <dl class="layui-nav-child layui-anim layui-anim-upbit">
+                    <dd><a lay-href="/Home/Tenant" tips="企业资料">企业资料</a></dd>
+                    <dd><a lay-href="/Home/UserInfo" tips="个人资料">个人资料</a></dd>
+                    <dd><a tips="修改密码" fornonerow="1" buttonname="修改密码" params="{&quot;area&quot;: [&quot;500px&quot;, &quot;400px&quot;]}" buttonactiontype="Form" buttonactionurl="/Account/ChangePassword" onclick="func.callModuleButtonEvent()" style="cursor: pointer;">修改密码</a></dd>
+                    <dd style="text-align: center;"><a href="/Account/Logout">退出</a></dd>
+                </dl>
+            </aside>
         </div>
     </header>
 </script>
@@ -50,16 +80,21 @@
     Vue.component('com-headr', {//前台页面头
         data() {
             return {
-                activeIndex: '1',
-                activeIndex2: '1'
+                
             };
         },
+        props: ['activeIndex'],
         methods: {
             handleSelect(key, keyPath) {
                 console.log(key, keyPath);
             }
         },
-        props: [],
+        created: function () {
+            console.log(typeof this.activeIndex);
+        },
         template: '#comHeader',
+    })
+    Vue.component('com-footer', {
+        template:`<footer id="jianFooter"><p>2017-2020 | Copyright | 版权声明 | 简法二手房  ( 沪ICP备00000000号 )</p></footer>`
     })
 </script>

@@ -59,7 +59,7 @@
     "inputFiles": [
       "wwwroot/lib/jquery/jquery.js",
       "wwwroot/lib/jquery.cookie/jquery.cookie.js",
-      "wwwroot/lib/vue/vue.min.js",
+      "wwwroot/lib/vue/vue.js",
       "wwwroot/lib/blockUI/jquery.blockUI.min.js",
       "wwwroot/lib/spin.js/spin.js",
       "wwwroot/lib/spin.js/jquery.spin.js",
