@@ -59,15 +59,19 @@ namespace Master.Authentication
         #region 数据验证
         public override async Task ValidateEntity(User entity)
         {
-            if (entity.Id > 0 && await Repository.GetAll().CountAsync(o => o.UserName == entity.UserName && o.TenantId==entity.TenantId && o.Id != entity.Id) > 0)
+            if (!string.IsNullOrEmpty(entity.UserName))
             {
-                throw new UserFriendlyException(L("用户名已被占用,请调整后再试"));
-            }
+                if (entity.Id > 0 && await Repository.GetAll().CountAsync(o => o.UserName == entity.UserName && o.TenantId == entity.TenantId && o.Id != entity.Id) > 0)
+                {
+                    throw new UserFriendlyException(L("用户名已被占用,请调整后再试"));
+                }
 
-            if (entity.Id == 0 && await Repository.GetAll().CountAsync(o => o.UserName == entity.UserName) > 0)
-            {
-                throw new UserFriendlyException(L("用户名已被占用，无法创建，请调整后再试"));
+                if (entity.Id == 0 && await Repository.GetAll().CountAsync(o => o.UserName == entity.UserName) > 0)
+                {
+                    throw new UserFriendlyException(L("用户名已被占用，无法创建，请调整后再试"));
+                }
             }
+            
 
             if (!string.IsNullOrEmpty(entity.Email))
             {
@@ -629,6 +633,10 @@ namespace Master.Authentication
             if (moduleInfo.ModuleKey == nameof(Assistant))
             {
                 data["InputCaseNumber"] =await Resolve<CaseSourceManager>().GetAll().CountAsync(o => o.CreatorUserId == user.Id);
+            }
+            if (moduleInfo.ModuleKey == nameof(Miner))
+            {
+                data["CaseNumber"] = await Resolve<CaseSourceManager>().GetAll().CountAsync(o => o.OwerId == user.Id && o.CaseSourceStatus == CaseSourceStatus.已加工);
             }
         }
         #endregion

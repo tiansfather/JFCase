@@ -20,6 +20,9 @@ namespace Master.Web.Controllers
     [AbpMvcAuthorize]
     public class MinerController : MasterModuleControllerBase
     {
-       
+       public IActionResult ShowCase()
+        {
+            return View();
+        }
     }
 }

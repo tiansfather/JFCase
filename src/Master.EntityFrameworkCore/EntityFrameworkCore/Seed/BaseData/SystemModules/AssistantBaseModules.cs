@@ -19,7 +19,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 ButtonActionType = ButtonActionType.Ajax,
                 ButtonActionUrl = $"abp.services.app.user.freeze",
                 ConfirmMsg= "确认冻结此用户？",
-                ButtonClass = "layui-danger",
+                ButtonClass = "layui-btn-danger",
                 ClientShowCondition="d.isActive",
                 Sort = 1
             };

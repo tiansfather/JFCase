@@ -64,33 +64,33 @@
     </script>
 </head>
 <body class="gray-bg" @*style="overflow-y:scroll" *@>
-	@RenderSection("MainBody", required: false)
-	<div class="layui-anim layui-anim-upbit" data-anim="layui-anim-upbit">
-		@RenderBody()
-	</div>
+    @RenderSection("MainBody", required: false)
+    <div class="layui-anim layui-anim-upbit" data-anim="layui-anim-upbit">
+        @RenderBody()
+    </div>
 
 
-	<!-- View specific scripts -->
-	@RenderSection("scripts", required: false)
-	<script type="text/html" id="activeTpl">
-		{{#if(d.isActive){}}
-		<span class="layui-badge layui-bg-blue">@L("有效")</span>
-		{{#}else{}}
-		<span class="layui-badge layui-bg-gray">@L("无效")</span>
-		{{#}}}
-	</script>
+    <!-- View specific scripts -->
+    <script type="text/html" id="activeTpl">
+        {{#if(d.isActive){}}
+        <span class="layui-badge layui-bg-blue">@L("有效")</span>
+        {{#}else{}}
+        <span class="layui-badge layui-bg-gray">@L("无效")</span>
+        {{#}}}
+    </script>
 
 
-	@foreach (var commonView in WebCoreConfiguration.CommonViews)
-	{
-		await Html.RenderPartialAsync(commonView);
-	}
+    @foreach (var commonView in WebCoreConfiguration.CommonViews)
+    {
+        await Html.RenderPartialAsync(commonView);
+    }
 
 
-	<script>
+    @RenderSection("scripts", required: false)
+    <script>
         layui.use(config.layuiModules, function () {
-			//表单初始化
-			func.initForm();
+            //表单初始化
+            func.initForm();
             //调用layui加载完事件
             for (fnIndex in config.readyFuncs) {
                 var fn = config.readyFuncs[fnIndex];
@@ -98,19 +98,19 @@
             }
             config.readyFuncs.hadRun = true;
             config.ready();
-			if (!parent.$("#LAY_app_tabs").is(":visible")) {
-				if (top.$("#LAY_app_tabsheader li").size() > 1) {
-					parent.$("#LAY_app_tabsheader li").eq(0).remove();
-					parent.$("#LAY_app_body .layadmin-tabsbody-item").eq(0).remove();
-					//var id = parent.$("#LAY_app_tabsheader li").eq(0).attr("lay-id");
-					//console.log(id);
-					//top.layui.element.tabDelete("layadmin-layout-tabs", id);//删除
-				}
+            if (!parent.$("#LAY_app_tabs").is(":visible")) {
+                if (top.$("#LAY_app_tabsheader li").size() > 1) {
+                    parent.$("#LAY_app_tabsheader li").eq(0).remove();
+                    parent.$("#LAY_app_body .layadmin-tabsbody-item").eq(0).remove();
+                    //var id = parent.$("#LAY_app_tabsheader li").eq(0).attr("lay-id");
+                    //console.log(id);
+                    //top.layui.element.tabDelete("layadmin-layout-tabs", id);//删除
+                }
 
 
-			}
-		})
-	</script>
+            }
+        })
+    </script>
 </body>
 </html>
 

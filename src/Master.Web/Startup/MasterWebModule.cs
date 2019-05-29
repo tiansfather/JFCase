@@ -46,6 +46,7 @@ namespace Master.Web.Startup
             //加入通用模板视图
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueFormComponent");
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueSheetComponent");
+            Configuration.Modules.WebCore().CommonViews.Add("../Home/VueComponentJianFa");
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueFormComponentExtend");
         }
 

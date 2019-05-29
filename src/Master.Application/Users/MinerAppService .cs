@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Master.Authentication;
 using Master.Domain;
+using Master.Dto;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,10 @@ namespace Master.Users
         protected override string ModuleKey()
         {
             return nameof(Miner);
+        }
+        protected override async Task<IQueryable<User>> GetQueryable(RequestPageDto request)
+        {
+            return (await base.GetQueryable(request)).IgnoreQueryFilters();
         }
         protected override async Task<IQueryable<User>> BuildKeywordQueryAsync(string keyword, IQueryable<User> query)
         {

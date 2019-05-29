@@ -1,0 +1,41 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <table id="dataTable" lay-filter="dataTable"></table>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var userId = $.getUrlParam("data");
+        config.ready = function () {
+            func.runAsync(abp.services.app.caseInitial.getPageResult({ page: 1, limit: 10, where: 'creatorUserId=' + userId }).done(function (data) {
+                //构建表头
+                var cols = [
+                    { field: 'sourceSN', title: '案号' },
+                    { field: 'city', title: '城市' },
+                    { field: 'anYou', title: '案由' },
+                    { field: 'title', title: '标题' },
+                    { field: 'publishDate', title: '发布日期' },
+                ]
+
+                layui.table.render({
+                    cellMinWidth: 120,
+                    limit: 10000,
+                    page:false,
+                    elem: '#dataTable'
+                    , cols: [cols]
+                    , data: data.data
+                });
+            }))
+            
+        }
+    </script>
+}
+
