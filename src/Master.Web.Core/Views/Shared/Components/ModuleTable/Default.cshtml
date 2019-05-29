@@ -6,116 +6,123 @@
 @addTagHelper *, Master.Web.Core
 @model ModuleTableViewModel
 @{
-	var columns = Model.ModuleInfo.FilterdColumnInfos(FormType.List);
-	if (Model.ColumnFilter != null)
-	{
-		columns = columns.Where(Model.ColumnFilter.Compile());
+    var columns = Model.ModuleInfo.FilterdColumnInfos(FormType.List);
+    var btns = Model.ModuleInfo.Buttons;
+    if (Model.ColumnFilter != null)
+    {
+        columns = columns.Where(Model.ColumnFilter.Compile());
 
-	}
+    }
 
-	foreach (var column in columns)
-	{
-		column.Normalize();
-	}
+    foreach (var column in columns)
+    {
+        column.Normalize();
+    }
 }
-@*<style>
-    .model-table{
-        position:relative;
+<style>
+    .model-table {
+        position: relative;
     }
-    .model-table .layui-table-tool {
-        position: absolute;
-        top: -50px;
-        z-index: 999;
-        width: 130px;
-        right: 0;
-    }
-</style>*@
+
+        .model-table .layui-table-tool {
+            position: absolute;
+            top: -50px;
+            z-index: 999;
+            width: 130px;
+            right: 0;
+        }
+</style>
 <div class="model-table">
     @*<table module="@Model.ID" autoevent="1" id="@Model.ID" lay-filter="@Model.Filter" class="layui-table @Model.ClassName" lay-data="{toolbar:true,cellMinWidth:'120',height:'@Model.Height', url:'@Model.DataUrl',where:{where:'@Model.Where',searchKeys:'@Model.SearchKeys'}, page:true,limit:@Model.ModuleInfo.DefaultLimit,limits:@Model.ModuleInfo.Limits,initSort:{field:'@Model.ModuleInfo.SortField',type:'@Model.ModuleInfo.SortType.ToString().ToLower()'}, id:'@Model.ID', even: true,done:config.onTableDone}">
-        <thead>
-            <tr>
-                @if (Model.ShowCheckbox)
-                {
-                    <th lay-data="{type:'checkbox',fixed:'left'}"></th>
+            <thead>
+                <tr>
+                    @if (Model.ShowCheckbox)
+                    {
+                        <th lay-data="{type:'checkbox',fixed:'left'}"></th>
 
-                }
+                    }
 
-                @foreach (var columnInfo in columns.OrderBy(o => o.TableColumnOrder))
-                {
-                    <th column-info="@columnInfo"></th>
-                }
-            </tr>
-        </thead>
-    </table>*@
+                    @foreach (var columnInfo in columns.OrderBy(o => o.TableColumnOrder))
+                    {
+                        <th column-info="@columnInfo"></th>
+                    }
+                </tr>
+            </thead>
+        </table>*@
     <table id="@Model.ID" lay-filter="@Model.Filter" model="true"></table>
 </div>
 
 @*列模板*@
-@foreach (var column in columns.Where(o => !string.IsNullOrWhiteSpace(o.Templet) || o.ColumnType == ColumnTypes.Images || o.ColumnType == ColumnTypes.Files ))
+@foreach (var column in columns.Where(o => !string.IsNullOrWhiteSpace(o.Templet) || o.ColumnType == ColumnTypes.Images || o.ColumnType == ColumnTypes.Files))
 {
-<script type="text/html" id="templet_@(column.ModuleInfo.ModuleKey)_@column.ColumnKey">
+    <script type="text/html" id="templet_@(column.ModuleInfo.ModuleKey)_@column.ColumnKey">
 
-    @if (!string.IsNullOrEmpty(column.Templet))
-    {
-        @Html.Raw(column.Templet)
+        @if (!string.IsNullOrEmpty(column.Templet))
+        {
+            @Html.Raw(column.Templet)
 
-    }
-    else if (column.ColumnType == ColumnTypes.Images)
-    {
-        //图片的列表展示模板 20180609 lijianbo
-        @*{ { #foreach()} }
-            <img class=\"layui-upload-img thumb\" style="max-width:120px;max-height:120px;" FileID="{{d.@(column.ColumnKey)}}" src="/File/Thumb?fileid = &w=120&h =120\">
-                    { { } }*@
+        }
+        else if (column.ColumnType == ColumnTypes.Images)
+        {
+            //图片的列表展示模板 20180609 lijianbo
+            @*{ { #foreach()} }
+                <img class=\"layui-upload-img thumb\" style="max-width:120px;max-height:120px;" FileID="{{d.@(column.ColumnKey)}}" src="/File/Thumb?fileid = &w=120&h =120\">
+                        { { } }*@
 
-        @Html.Raw("{{# layui.each(d." + (column.ColumnKey.ToCamelCase()) + "_Files, function(index, data){ }}")
+            @Html.Raw("{{# layui.each(d." + (column.ColumnKey.ToCamelCase()) + "_Files, function(index, data){ }}")
 
 
-        @Html.Raw("{{# var file=data.filePath.split('.') }}")
+            @Html.Raw("{{# var file=data.filePath.split('.') }}")
 
-        //<img class="layui-upload-img thumb" FileID="{{data.id}}" src="/File/Thumb?fileid={{data.id}}">
-        <img class="thumb" FileID="{{data.id}}" src="/File/Thumb/{{data.id}}?w=38" onerror="this.src='/assets/ico/default.gif'">
+            //<img class="layui-upload-img thumb" FileID="{{data.id}}" src="/File/Thumb?fileid={{data.id}}">
+            <img class="thumb" FileID="{{data.id}}" src="/File/Thumb/{{data.id}}?w=38" onerror="this.src='/assets/ico/default.gif'">
 
-        @Html.Raw("{{# }) }}")
-    }
-    else if (column.ColumnType == ColumnTypes.Files)
-    {
-        //todo:文件的列表展示模板
-        // var file = await FileManager.GetByIdAsync(column.Id);
-        //@Html.Raw(file.FileName)
+            @Html.Raw("{{# }) }}")
+        }
+        else if (column.ColumnType == ColumnTypes.Files)
+        {
+            //todo:文件的列表展示模板
+            // var file = await FileManager.GetByIdAsync(column.Id);
+            //@Html.Raw(file.FileName)
 
-        @Html.Raw("{{# layui.each(d." + (column.ColumnKey.ToCamelCase()) + "_Files, function(index, data){ }}")
+            @Html.Raw("{{# layui.each(d." + (column.ColumnKey.ToCamelCase()) + "_Files, function(index, data){ }}")
 
-        @Html.Raw("{{# var file=data.filePath.split('.') }}")
+            @Html.Raw("{{# var file=data.filePath.split('.') }}")
 
-        //<img class="layui-upload-img" FileID="{{data.id}}" src="/File/Thumblog?fileid={{data.id}}" tips="{{data.fileName}}">
-        <img class="layui-upload-img" FileID="{{data.id}}" src="/assets/ico/{{file[1]}}.gif" tips="{{data.fileName}}">
-        @Html.Raw("{{# }) }}")
-    }
-</script>
+            //<img class="layui-upload-img" FileID="{{data.id}}" src="/File/Thumblog?fileid={{data.id}}" tips="{{data.fileName}}">
+            <img class="layui-upload-img" FileID="{{data.id}}" src="/assets/ico/{{file[1]}}.gif" tips="{{data.fileName}}">
+            @Html.Raw("{{# }) }}")
+        }
+    </script>
 
 }
 @*操作按钮模板*@
 @if (columns.ToList().Exists(o => o.IsOperationColumn))
 {
 
-	<script type="text/html" id="Operation">
-		@foreach (var button in Model.ModuleInfo.Buttons.Where(o => o.IsEnabled && o.ButtonType.HasFlag(ButtonType.ForSingleRow)).OrderBy(o => o.Sort))
-		{
-			//权限判定
-			if (!button.RequirePermission || await PermissionChecker.IsGrantedAsync(button.ButtonPermissionName))
-			{
-				var clientCondition = !string.IsNullOrEmpty(button.ClientShowCondition) ? button.ClientShowCondition : "true";
-				@Html.Raw("{{# if(" + clientCondition + "){ }}")
-				<a dataid="{{d.id}}" class="layui-btn layui-btn-xs @button.ButtonClass" module-button="@button" title="@(!string.IsNullOrEmpty(button.TitleTemplet)?button.TitleTemplet:button.ButtonName)"></a>
-				@("{{# } }}")
-			}
+    <script type="text/html" id="Operation">
+        @foreach (var button in Model.ModuleInfo.Buttons.Where(o => o.IsEnabled && o.ButtonType.HasFlag(ButtonType.ForSingleRow)).OrderBy(o => o.Sort))
+        {
+            //权限判定
+            if (!button.RequirePermission || await PermissionChecker.IsGrantedAsync(button.ButtonPermissionName))
+            {
+                var clientCondition = !string.IsNullOrEmpty(button.ClientShowCondition) ? button.ClientShowCondition : "true";
+                @("{{# if(" + clientCondition + "){ }}")
+                <a dataid="{{d.id}}" class="layui-btn layui-btn-xs @button.ButtonClass" module-button="@button" title="@(!string.IsNullOrEmpty(button.TitleTemplet)?button.TitleTemplet:button.ButtonName)"></a>
+                @("{{# } }}")
+            }
 
-		}
+        }
 
-	</script>
+    </script>
 
 }
-
+@*按钮的自定义函数*@
+<script>
+    @foreach(var btn in btns.Where(o=>o.ButtonActionType==ButtonActionType.Func && !string.IsNullOrEmpty(o.ButtonScript))){
+        @Html.Raw(btn.ButtonScript)
+    }
+</script>
 <script>
     config.readyFuncs.push(function () {
         var table = layui.table;
@@ -131,7 +138,7 @@
             table.render({
                 elem: '#@Model.ID',
                 autoSort:false,
-                //toolbar: true,
+                toolbar: false,
                 cellMinWidth: '120',
                 height: '@Model.Height',
                 url: '@Model.DataUrl',
