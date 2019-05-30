@@ -25,5 +25,18 @@ namespace Master.Web.Controllers
             var baseTree = await BaseTreeManager.GetByIdFromCacheAsync(id);
             return View(baseTree);
         }
+
+        public IActionResult Knowledge()
+        {
+            return View();
+        }
+        public IActionResult AddKnowledgeRoot()
+        {
+            return View();
+        }
+        public IActionResult Types()
+        {
+            return View();
+        }
     }
 }

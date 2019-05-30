@@ -13,6 +13,29 @@ namespace Master.BaseTrees
     public class BaseTreeAppService:MasterAppServiceBase<BaseTree,int>
     {
         public BaseTreeManager BaseTreeManager { get; set; }
+        public virtual async Task<object> GetKnowledgeTreeJsonByParentId(int? parentId)
+        {
+            var manager = Manager as BaseTreeManager;
+            var nodes = (await manager.GetAllList()).Where(o=>o.TreeNodeType==TreeNodeType.Knowledge || o.ParentId==null);
+            if (parentId != null)
+            {
+                var parentNode = nodes.Where(o => o.Id == parentId.Value).SingleOrDefault();
+                if (parentNode != null)
+                {
+                    nodes = nodes.Where(o => o.Code.StartsWith(parentNode.Code)).ToList();
+                }
+            }
+            
+            return nodes.Select(o =>
+            {
+                var dto = o.MapTo<BaseTreeDto>();
+
+                return dto;
+            }
+            );
+        }
+
+
         public virtual async Task<object> GetTreeJson(string discriminator,int? parentId, int maxLevel = 0)
         {
             var manager = Manager as BaseTreeManager;

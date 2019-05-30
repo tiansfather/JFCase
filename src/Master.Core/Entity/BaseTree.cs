@@ -2,6 +2,7 @@
 using Abp.Domain.Entities;
 using Abp.Extensions;
 using Master.MultiTenancy;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -46,6 +47,22 @@ namespace Master.Entity
         /// </summary>
         public virtual ICollection<BaseTree> Children { get; set; }
         public int Sort { get; set; }
+
+
+        public TreeNodeType TreeNodeType { get; set; }
+        /// <summary>
+        /// 启用多选
+        /// </summary>
+
+        public bool EnableMultiSelect { get; set; }
+        /// <summary>
+        /// 关联树节点
+        /// </summary>
+        public int? RelativeNodeId { get; set; }
+        
+
+        #region 方法
+
 
         public BaseTree()
         {
@@ -174,5 +191,37 @@ namespace Master.Entity
 
             return splittedCode.Take(splittedCode.Length - 1).JoinAsString(".");
         }
+
+        #endregion
     }
+
+    /// <summary>
+    /// 节点类型
+    /// </summary>
+    public enum TreeNodeType
+    {
+        /// <summary>
+        /// 知识树节点
+        /// </summary>
+        Knowledge=0,
+        /// <summary>
+        /// 分类节点
+        /// </summary>
+        Type=1
+    }
+
+    //public class BaseTreeEntityMapConfiguration : EntityMappingConfiguration<BaseTree>
+    //{
+        
+    //    public override void Map(EntityTypeBuilder<BaseTree> b)
+    //    {
+    //        //b.HasOne(p => p.Parent)
+    //        //    .WithMany()
+    //        //    .HasForeignKey(p => p.ParentId);
+
+    //        b.HasOne(p => p.RelativeNode)
+    //            .WithMany()
+    //            .HasForeignKey(p => p.RelativeNodeId);
+    //    }
+    //}
 }

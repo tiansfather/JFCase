@@ -68,7 +68,8 @@
                     <div class="layui-inline">
                         <label class="layui-form-label">生效日期<font color="red">*</font></label>
                         <div class="layui-input-block">
-                            <input type="text" id="validDate" name="validDate" v-model="currentItem.validDate" autocomplete="off" class="layui-input" lay-verify="required">
+                            <el-date-picker v-model="currentItem.validDate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd"> </el-date-picker >
+                            @*<input type="text" id="validDate" name="validDate" v-model="currentItem.validDate" autocomplete="off" class="layui-input" lay-verify="required">*@
                         </div>
                     </div>
                 </div>
@@ -254,13 +255,16 @@
                         load=this.loadItem(this.currentItem.id);
                     }
                     Promise.all([load]).then(function () {
-                        layui.laydate.render({
-                            elem: '#validDate'
-                            , value: new Date(app.currentItem.validDate).pattern('yyyy-MM-dd')
-                            , done: function (value, date, endDate) {
-                                app.currentItem.validDate = value;
-                            }
-                        });
+                        Vue.nextTick(function () {
+                            layui.laydate.render({
+                                elem: '#validDate'
+                                , value: new Date(app.currentItem.validDate).pattern('yyyy-MM-dd')
+                                , done: function (value, date, endDate) {
+                                    app.currentItem.validDate = value;
+                                }
+                            });
+                        })
+                        
                         console.log(app.currentItem);
                     })
                 }

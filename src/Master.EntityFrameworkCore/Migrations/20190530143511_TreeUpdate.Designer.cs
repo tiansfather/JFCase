@@ -3,14 +3,16 @@ using System;
 using Master.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Master.Migrations
 {
     [DbContext(typeof(MasterDbContext))]
-    partial class MasterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190530143511_TreeUpdate")]
+    partial class TreeUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -852,6 +854,8 @@ namespace Master.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("BaseTreeId");
+
                     b.Property<string>("BriefCode");
 
                     b.Property<string>("Code");
@@ -896,6 +900,8 @@ namespace Master.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BaseTreeId");
+
                     b.HasIndex("CreatorUserId");
 
                     b.HasIndex("DeleterUserId");
@@ -903,6 +909,8 @@ namespace Master.Migrations
                     b.HasIndex("LastModifierUserId");
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("RelativeNodeId");
 
                     b.HasIndex("TenantId");
 
@@ -1848,6 +1856,10 @@ namespace Master.Migrations
 
             modelBuilder.Entity("Master.Entity.BaseTree", b =>
                 {
+                    b.HasOne("Master.Entity.BaseTree")
+                        .WithMany("Children")
+                        .HasForeignKey("BaseTreeId");
+
                     b.HasOne("Master.Authentication.User", "CreatorUser")
                         .WithMany()
                         .HasForeignKey("CreatorUserId");
@@ -1861,8 +1873,12 @@ namespace Master.Migrations
                         .HasForeignKey("LastModifierUserId");
 
                     b.HasOne("Master.Entity.BaseTree", "Parent")
-                        .WithMany("Children")
+                        .WithMany()
                         .HasForeignKey("ParentId");
+
+                    b.HasOne("Master.Entity.BaseTree", "RelativeNode")
+                        .WithMany()
+                        .HasForeignKey("RelativeNodeId");
 
                     b.HasOne("Master.MultiTenancy.Tenant", "Tenant")
                         .WithMany()

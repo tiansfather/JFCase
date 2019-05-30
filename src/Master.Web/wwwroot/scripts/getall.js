@@ -3157,6 +3157,14 @@ abp.services = abp.services || {};
 
     abp.services.app.baseTree = abp.services.app.baseTree || {};
 
+    // action 'getKnowledgeTreeJsonByParentId'
+    abp.services.app.baseTree.getKnowledgeTreeJsonByParentId = function(parentId, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/BaseTree/GetKnowledgeTreeJsonByParentId' + abp.utils.buildQueryString([{ name: 'parentId', value: parentId }]) + '',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
     // action 'getTreeJson'
     abp.services.app.baseTree.getTreeJson = function(discriminator, parentId, maxLevel, ajaxParams) {
       return abp.ajax($.extend(true, {

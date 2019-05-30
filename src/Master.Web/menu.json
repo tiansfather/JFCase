@@ -40,10 +40,16 @@
         "url": "/Case/"
       },
       {
+        "name": "Admin.Tenancy.Knowledge",
+        "displayName": "知识树定义",
+        "icon": "layui-icon layui-icon-zcontrol-rank",
+        "url": "/BaseTree/Knowledge"
+      },
+      {
         "name": "Admin.Tenancy.Types",
         "displayName": "分类内容管理",
         "icon": "layui-icon layui-icon-zcontrol-rank",
-        "url": "/Case/Types"
+        "url": "/BaseTree/Types"
       },
       {
         "name": "Admin.Tenancy.Labels",
