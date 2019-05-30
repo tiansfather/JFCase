@@ -2,24 +2,128 @@
 @{
     ViewData["Title"] = "个人中心";
 }
-
-<h2>Host</h2>
+@section styles{ 
+    <style>
+        .me-content {
+            width: 450px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 18px;
+            color: #754C24;
+            line-height: 2;
+            padding: 100px 0;
+            box-sizing: border-box
+        }
+            .me-content .me-con-avata {
+                width: 150px;
+                height: 150px;
+            }
+            .me-content .me-con-first {
+                height:2em;
+            }
+            .me-content .me-context-wrap {
+                display: flex;
+                color: #C69C6D;
+                text-align: left;
+            }
+            .me-content .me-con-text .me-context-val {
+                flex: 1;
+                border-bottom: 1px solid #cda87f;
+                padding-left: 1em;
+                color: black;
+            }
+            .me-content .me-con-text .me-context-label {
+                width: 6em;
+            }
+            .button-wrap{
+                margin-top:50px;
+                text-align:right;
+                margin-right:50px;
+            }
+    </style>
+}
 <div id="app">
-    <jian-header></jian-header>
+    <com-headr active-index="1"></com-headr>
+    <div class="r-main-wrap me-content" v-cloak>
+        <img :src="userData.avata" alt="头像" class="me-con-avata" />
+        <div v-show="!editMode">
+            <p class="me-con-first" v-text="userData.name"></p>
+            <p class="me-con-first">{{userData.workLocation}}</p>
+            <div class="me-con-text">
+                <div class="me-context-wrap">
+                    <label class="me-context-label ">所属领域:</label>
+                    <p class="me-context-val">{{userData.anYou}}</p>
+                </div>
+                <div class="me-context-wrap">
+                    <label class="me-context-label ">已完成案例:</label>
+                    <p class="me-context-val">{{userData.caseCount}}</p>
+                </div>
+                <div class="me-context-wrap">
+                    <label class="me-context-label ">注册时间:</label>
+                    <p class="me-context-val">{{userData.creationTime}}</p>
+                </div>
+            </div>
+        </div>
+        <div v-show="editMode">
+
+            <el-form :model="userData" label-width="6em">
+                <el-form-item label="姓名">
+                    <el-input v-model="userData.name" placeholder="姓名"></el-input>
+                </el-form-item>
+                <el-form-item label="律所">
+                    <el-input v-model="userData.workLocation" placeholder="律所"></el-input>
+                </el-form-item>
+                <el-form-item label="所属领域">
+                    <el-input v-model="userData.anYou" placeholder="所属领域"></el-input>
+                </el-form-item>
+                <el-form-item label="已完成案例">
+                    <el-input v-model="userData.caseCount" placeholder="已完成案例"></el-input>
+                </el-form-item>
+                <el-form-item label="注册时间">
+                    <el-input v-model="userData.creationTime" placeholder="注册时间"></el-input>
+                </el-form-item>
+            </el-form>
+        </div>
+        <div class="button-wrap">
+            <el-button @@click="editMode=!editMode">{{ !editMode?'修改':'返回'}}</el-button>
+            <el-button @@click="update" v-show="editMode">保存</el-button>
+
+        </div>
+    </div>
+    <com-footer></com-footer>
 </div>
 @section scripts{
     <script>
-        //请求用户信息的接口
-        abp.services.app.user.getById(abp.session.userId).done(function (data) {
-            data.avata//头像
-            data.name//姓名
-            data.workLocation//律师事务所
-            data.creationTime//注册时间
-            data.caseCount//完成案例数
-            data.anYouId//所属领域Id，即案由
-            data.anYou//所属领域名称
+        new Vue({
+            el: '#app',
+            data: {
+                editMode:false,
+                userData: {}
+            },
+            methods: {
+                update: function () {
+                    abp.services.app.user.updateUserInfo(this.userData)
+
+                }
+            },
+            mounted: function () {
+                abp.services.app.user.getById(abp.session.userId).done(data => {
+                    this.userData = data;
+                })
+
+            }
         })
-        //更新用户信息接口
-        abp.services.app.user.updateUserInfo({ id: 1, workLocation: '长江律师事务所', anYouId:4 })
+        ////请求用户信息的接口
+        //abp.services.app.user.getById(abp.session.userId).done(function (data) {
+        //    data.avata//头像
+        //    data.name//姓名
+        //    data.workLocation//律师事务所
+        //    data.creationTime//注册时间
+        //    data.caseCount//完成案例数
+        //    data.anYouId//所属领域Id，即案由
+        //    data.anYou//所属领域名称
+        //})
+        ////更新用户信息接口
+        //abp.services.app.user.updateUserInfo({ id: 1, workLocation: '长江律师事务所', anYouId:4 })
     </script>
     }

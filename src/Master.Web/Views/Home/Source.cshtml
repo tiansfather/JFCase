@@ -3,34 +3,83 @@
     ViewData["Title"] = "案源库";
 }
 
-<h2>Host</h2>
+<div id="app">
+    <com-headr active-index="4-3"></com-headr>
+    <div class="r-main-wrap" v-cloak>
+        {{part}}
+    </div>
+    <com-footer></com-footer>
+</div>
 
 @section scripts{
     <script>
-        //数据获取接口
-        var where = `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
-        abp.services.app.workbench.getPageResult({ where: where, keyword: keyword }).done(function (data) {
-            console.log(data);
+        window.app=new Vue({
+            el: '#app',
+            data: {
+                part: [],
+                wherePart: {
+                    anyouid: '',
+                    cityId: '',
+                    courtId: '',
+                    courtId:''
+                },
+                keyword:''
+            },
+            computed: {
+                where: function () {
+                    var where = '1=1';
+                    for (var i in this.wherePart) {
+                        var data = this.wherePart[i];
+                        if (!data) continue;
+                        if (i == 'courtId') {
+                            where += ` and (court1Id=${courtId} or court2id=${courtId})`;
+                        } else {
+                            where += ` and ${i}=${anyouid}`;
+                        }
+                          
+                    }
+                    return where;
+                    //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+
+                }
+            },
+            methods: {
+                loadSource: function () {
+                    //数据获取接口
+                    abp.services.app.workbench.getPageResult({ where: this.where, keyword: this.keyword }).done((res)=> {
+                        this.part = res.data;
+                        console.log(this.part);
+                    })
+                }
+            },
+            mounted: function () {
+                this.loadSource();
+            }
         })
-        //获取所有案由
-        abp.services.app.type.getAnYous().done(function (data) {
-            //data:[{id:1,displayName:'房屋纠纷'}]            
-        })
-        //获取所有城市
-        abp.services.app.type.getCities().done(function (data) {
-            //data:[{id:1,displayName:'上海'}]            
-        })
-        //获取城市下所有法院
-        abp.services.app.type.getCityCourts(cityId).done(function (data) {
-            //data:[{id:1,displayName:'上海第一人民法院'}]            
-        })
-        //获取用户工作台中最大案例数量
-        abp.setting.getInt("maxWorkbenchCaseCount")
-        //获取用户工作台案例数量
-        abp.servcies.app.workbench.getMyProcessingCount().done(function (data) {
-            //data:工作台案例数量:8
-        })
-        //将案源选入工作台
-        abp.servcies.app.workbench.choose(id)
+            ////数据获取接口
+            //var where = `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+            //abp.services.app.workbench.getPageResult({ where: where, keyword: keyword }).done(function (data) {
+            //    console.log(data);
+            //})
+            ////获取所有案由
+            //abp.services.app.type.getAnYous().done(function (data) {
+            //    //data:[{id:1,displayName:'房屋纠纷'}]
+            //})
+            ////获取所有城市
+            //abp.services.app.type.getCities().done(function (data) {
+            //    //data:[{id:1,displayName:'上海'}]
+            //})
+            ////获取城市下所有法院
+            //abp.services.app.type.getCityCourts(cityId).done(function (data) {
+            //    //data:[{id:1,displayName:'上海第一人民法院'}]
+            //})
+            ////获取用户工作台中最大案例数量
+            //abp.setting.getInt("maxWorkbenchCaseCount")
+            ////获取用户工作台案例数量
+            //abp.servcies.app.workbench.getMyProcessingCount().done(function (data) {
+            //    //data:工作台案例数量:8
+            //})
+            ////将案源选入工作台
+            //abp.servcies.app.workbench.choose(id)
     </script>
-    }
+}
