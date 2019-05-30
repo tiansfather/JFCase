@@ -256,7 +256,7 @@
                     Promise.all([load]).then(function () {
                         layui.laydate.render({
                             elem: '#validDate'
-                            , value: app.currentItem.validDate
+                            , value: new Date(app.currentItem.validDate).pattern('yyyy-MM-dd')
                             , done: function (value, date, endDate) {
                                 app.currentItem.validDate = value;
                             }
