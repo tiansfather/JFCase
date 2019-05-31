@@ -47,7 +47,7 @@
       },
       {
         "name": "Admin.Tenancy.Types",
-        "displayName": "分类内容管理",
+        "displayName": "分类管理",
         "icon": "layui-icon layui-icon-zcontrol-rank",
         "url": "/BaseTree/Types"
       },
@@ -55,7 +55,7 @@
         "name": "Admin.Tenancy.Labels",
         "displayName": "标签内容管理",
         "icon": "layui-icon layui-icon-zcontrol-rank",
-        "url": "/Case/Labels"
+        "url": "/BaseTree/Labels"
       }
     ]
   },

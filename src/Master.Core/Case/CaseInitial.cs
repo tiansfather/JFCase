@@ -98,7 +98,8 @@ namespace Master.Case
         [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus")]
         public CaseStatus CaseStatus { get; set; }
 
-        public virtual ICollection<CaseKey> CaseKeys { get; set; }
+        public virtual ICollection<CaseNode> CaseNodes { get; set; }
+        public virtual ICollection<CaseLabel> CaseLabels { get; set; }
         public virtual ICollection<CaseFine> CaseFines { get; set; }
         public virtual ICollection<CaseCard> CaseCards { get; set; }
 

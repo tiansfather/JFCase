@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Master.Case
 {
-    [AutoMap(typeof(CaseKey))]
-    public class CaseKeyDto
+    [AutoMap(typeof(CaseNode))]
+    public class CaseNodeDto
     {
         public int Id { get; set; }
         public string KeyName { get; set; }

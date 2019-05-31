@@ -30,11 +30,11 @@ namespace Master.Web.Controllers
         {
             return View();
         }
-        public IActionResult AddKnowledgeRoot()
+        public IActionResult Types()
         {
             return View();
         }
-        public IActionResult Types()
+        public IActionResult Labels()
         {
             return View();
         }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Master.Case
 {
-    public class CaseNodeManager:DomainServiceBase<CaseNode,int>
+    public class LabelManager:DomainServiceBase<Label,int>
     {
     }
 }

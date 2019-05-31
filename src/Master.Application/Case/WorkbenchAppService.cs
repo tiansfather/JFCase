@@ -163,7 +163,7 @@ namespace Master.Case
                 .SingleOrDefaultAsync();
 
             var caseInitial = await Resolve<CaseInitialManager>().GetAll()
-                .Include(o => o.CaseKeys)
+                .Include(o => o.CaseNodes)
                 .Include(o => o.CaseFines)
                 .Include(o => o.CaseCards)
                 .Where(o => o.CaseSourceId == id && o.CreatorUserId == caseSource.OwerId)
@@ -210,14 +210,14 @@ namespace Master.Case
             CaseInitial caseInitial = null;
             if (caseInitialUpdateDto.Id > 0)
             {
-                caseInitial = await caseInitialManager.GetAll().Include(o => o.CaseKeys)
+                caseInitial = await caseInitialManager.GetAll().Include(o => o.CaseNodes)
                     .Where(o => o.Id == caseInitialUpdateDto.Id).SingleOrDefaultAsync();
                 if (caseInitial == null)
                 {
                     throw new UserFriendlyException("不存在对应加工信息");
                 }
                 //删除
-                caseInitial.CaseKeys.Clear();
+                caseInitial.CaseNodes.Clear();
             }
             else
             {
