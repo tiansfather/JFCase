@@ -90,7 +90,7 @@
             @Html.Raw("{{# var file=data.filePath.split('.') }}")
 
             //<img class="layui-upload-img" FileID="{{data.id}}" src="/File/Thumblog?fileid={{data.id}}" tips="{{data.fileName}}">
-            <img class="layui-upload-img" FileID="{{data.id}}" src="/assets/ico/{{file[1]}}.gif" tips="{{data.fileName}}">
+            <a href="{{data.filePath}}" target="_blank"><img FileID="{{data.id}}" src="/assets/ico/{{file[1]}}.gif" tips="{{data.fileName}}"></a>
             @Html.Raw("{{# }) }}")
         }
     </script>
