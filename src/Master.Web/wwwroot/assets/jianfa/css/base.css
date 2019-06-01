@@ -1,0 +1,90 @@
+﻿html, body, p, h1, h2, h3, h4, h5, h6, form, input, textarea, select, button, fieldset, legend, img, ul, ol, li, dl, dt, dd, th, td, pre, blockquote {margin:0; padding: 0;font-weight: normal;}
+body {color:#343434;font-size:12px;font-family:'Microsoft YaHei';/*overflow:hidden;*/}
+body, button, input, select, textarea, h1, h2, h3, h4, h5, h6 {font-size: 12px; font-family:'Microsoft YaHei', Verdana, Arial, sans-serif; }
+img, fieldset { border: 0; vertical-align: middle; }
+textarea { word-wrap: break-word; word-break: break-all; resize: none; }
+li { list-style: none; }
+img { border: none; }
+a { text-decoration: none; color: #343434; }
+a:hover { text-decoration: none;}
+a:focus { outline: none; }
+.o_hidden { overflow: hidden; text-overflow: ellipsis; }
+.hide { display: none; }
+.block { display: block; }
+.fleft { float: left; }
+.fright { float: right; }
+.clear { clear: both; }
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.dingju-1{padding:0 0 10px 0}
+article,
+aside,
+details,
+figcaption,
+figure,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  display: block;
+}
+/*表格*/
+
+/*
+table {
+	font-size:12px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #D8E2EB;
+	border-collapse: collapse;
+	text-align:left;
+	font-family:"微软雅黑";
+}
+table tr.tb_bgcolor{background-color: #fff; text-align:left;}
+table th {
+text-align:left;
+	border-width: 0px 0px 2px 0px;
+	font-size:16px;
+	padding: 0 30px 10px 30px;
+	border-style: solid;
+	border-color: #4cbcaf;
+	color:#333;
+}
+table td {
+text-align:left;
+    font-size:14px;
+	width:20%;
+	line-height:26px;
+	border-width: 0px 0 1px 0;
+	padding: 25px 30px;
+	border-style: solid;
+	border-color: #ECECEC;
+}*/
+/**/
+/**/
+/**/
+
+/*分页
+.more-pages{float:left;position:relative;width:100%;margin:50px auto 0 auto;}
+.pages{
+	text-align: center;
+	margin:0 auto 0 auto;
+}
+.pages a{
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	background-color: #f5f5f5;
+	border-radius: 3px;
+	text-align: center;
+	line-height: 30px;
+	font-family:Arial;
+	font-size: 14px;
+	color: #666;
+	margin: 0 4px;
+}
+.pages a:hover,.pages .page-on{background-color: #4cbcaf;color: #fff;}*/

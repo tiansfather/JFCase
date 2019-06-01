@@ -1,1 +1,44 @@
-﻿
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+    Layout = "_LayoutJianFa";
+    ViewData["Title"] = "简法二手房";
+}
+@*<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8" />
+        <title>减法二手房</title>
+        <link href="~/assets/jianfa/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/assets/jianfa/css/jianfa-style.css" rel="stylesheet" />
+        <link href="~/assets/jianfa/css/base.css" rel="stylesheet" />
+        <style>
+            body {
+                height: 100%;
+            }
+        </style>
+    </head>*@
+
+<div class="index-bj-b">
+    <!--顶部-->
+    <div class="jianfa-intop">
+        <div class="intop-logo">
+
+            <div class="inlogo-pic"><img src="~/assets/jianfa/ima/logo-ny.png" border="0" /><span>案例工厂</span></div>
+            <div class="inportrait-pic"><img src="~/assets/jianfa/ima/index-2.png" border="0" /></div>
+        </div>
+
+    </div>
+    <!--首页-01-->
+    <div class="index-daohang">
+        <a href="差案例.html"><div class="dh-left"></div></a>
+        <a href="看观点.html"><div class="dh-middle"></div></a>
+        <a href="我的文件.html"><div class="dh-right"></div></a>
+    </div>
+    <!--end-->
+    <div class="footer-top">
+        <img src="~/assets/jianfa/ima/index-b-1.png" />
+    </div>
+    <!--footer-->
+    <footer><div class="ziti-a">2017-2020 | Copyright | 版权声明 | 简法二手房  ( 沪ICP备00000000号 )</div></footer>
+</div>
