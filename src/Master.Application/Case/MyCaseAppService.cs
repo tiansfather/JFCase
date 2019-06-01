@@ -21,15 +21,15 @@ namespace Master.Case
             var query = await base.GetQueryable(request);
 
             return query.Include("CaseSource.AnYou")
+                .Include(o=>o.Subject)
                 .Include(o => o.CaseFines)
                 .Include(o => o.CaseCards)
-                .Include(o => o.CaseKeys)
+                .Include(o => o.CaseNodes)
                 .Where(o => o.CaseSource.OwerId == AbpSession.UserId);
 
         }
         protected override object PageResultConverter(CaseInitial entity)
         {
-            var subjectCaseKey = entity.CaseKeys.Where(o => o.KeyName == "专题").FirstOrDefault();
             return new
             {
                 entity.Id,
@@ -41,8 +41,8 @@ namespace Master.Case
                 CaseFineCount = entity.CaseFines.Count,
                 CaseCardCount = entity.CaseCards.Count,
                 entity.CaseStatus,
-                subjectId = subjectCaseKey?.KeyNodeId,//专题Id
-                subjectName = subjectCaseKey?.KeyValue//专题名称
+                entity.SubjectId,
+                entity.Subject?.DisplayName
             };
         }
         #endregion

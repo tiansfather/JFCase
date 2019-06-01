@@ -1,0 +1,133 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="labelTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this ">标签编辑</li>
+                <li class="">树形查看</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <form class="layui-form layui-form-pane" onsubmit="return doSearch();">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">@L("标签名称")</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="labelName" name="labelName" autocomplete="off" class="layui-input">
+                                </div>
+                                <button class="layui-btn layui-btn-primary" type="button" onclick="config.reloadTable()">@L("搜索")</button>
+                                <button class="layui-btn  " buttonname="@L("添加")" type="button" onclick="addLabel()">@L("添加")</button>
+                            </div>
+                        </div>
+                    </form>
+                    <table autoevent="1" id="Labels" lay-filter="Labels" class="layui-table " lay-data="{cellMinWidth:'80',height:'full-170', url:'/api/services/app/label/GetPageResult', page:true, id:'Labels',  even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
+                        <thead>
+                            <tr>
+                                <th lay-data="{field:'labelName',edit:'text'}">@L("标签名称")</th>
+                                <th lay-data="{field:'labelType',templet:'#labelTypeTpl'}">@L("类别")</th>
+                                <th lay-data="{field:'',templet:'#memberTpl'}">@L("对应结构")</th>
+                                <th lay-data="{field:'creator'}">@L("创建人")</th>
+                                <th lay-data="{field:'creationTime',sort:true}">@L("创建时间")</th>
+                                <th lay-data="{align:'center', toolbar: '#toolbar'}">@L("操作")</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="layui-tab-item">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/html" id="labelTypeTpl">
+        <span class="layui-badge layui-bg-blue" style="cursor:pointer" tips="点击切换类别" onclick="toggleLabelType({{d.id}},'{{d.labelType}}')">{{d.labelType}}</span>
+    </script>
+    <script>
+        var app;
+        var searchKeys = {};
+
+        config.ready = function () {
+
+            var element = layui.element;
+            var table = layui.table;
+            //一些事件监听
+            element.on('tab(userTab)', function (data) {
+                config.reloadTable();
+            });
+            layui.table.on('edit(Labels)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                //layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+                if (!value.trim()) {
+                    layer.msg("输入不能为空", { icon: 5, anim: 6 });
+                    return false;
+                }
+                abp.message.confirm(L('确认修改?'), function () {
+                    func.runAsync(abp.services.app.label.updateField(data.id, field, value, {
+                        error: function () {
+                            layui.table.reload('Labels');
+                        }
+                    }).done(function () {
+                        layer.msg('更新成功');
+                    }));
+                })
+
+            });
+            config.refresh();
+        };
+        config.refresh = function () {
+
+        };
+        config.reloadTable = function () {
+            layui.table.reload('Labels', {
+                where: getWhere()
+            })
+        }
+        function getWhere() {
+            var where = {  };
+
+            var value = $('#labelName').val();
+            if (value) {
+                where.keyword = value;
+            } else {
+                where.keyword = '';
+            }
+
+            return where;
+
+        }
+        function addLabel() {
+            layer.prompt({ title: '@L("请输入标签名称")', formType: 0 }, function (text, index) {
+                        layer.close(index);
+                doAdd(text);
+            });
+
+            function doAdd(text) {
+
+                func.runAsync(abp.services.app.label.add(text).done(function (data) {
+                    layer.msg('@L("提交成功")');
+                    config.reloadTable();
+
+                }));
+            }
+
+        }
+        function toggleLabelType(id, labelType) {
+            var targetLabelType = labelType == "标签" ? "关键词" : "标签";
+            func.runAsync(abp.services.app.label.setLabelType(id, targetLabelType).done(function () {
+                config.reloadTable();
+            }))
+        }
+    </script>
+}
+

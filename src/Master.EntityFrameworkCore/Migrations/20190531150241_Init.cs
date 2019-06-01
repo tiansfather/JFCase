@@ -56,6 +56,25 @@ namespace Master.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmailLog",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    ToEmail = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: true),
+                    Message = table.Column<string>(nullable: true),
+                    Success = table.Column<bool>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailLog", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Settings",
                 columns: table => new
                 {
@@ -122,6 +141,68 @@ namespace Master.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CaseInitial",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    ExtensionData = table.Column<string>(nullable: true),
+                    Remarks = table.Column<string>(nullable: true),
+                    Property = table.Column<string>(type: "json", nullable: true),
+                    TenantId = table.Column<int>(nullable: false),
+                    CaseSourceId = table.Column<int>(nullable: false),
+                    SubjectId = table.Column<int>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    Introduction = table.Column<string>(nullable: true),
+                    Law = table.Column<string>(nullable: true),
+                    Experience = table.Column<string>(nullable: true),
+                    LawyerOpinion = table.Column<string>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
+                    PublisDate = table.Column<DateTime>(nullable: true),
+                    ReadNumber = table.Column<int>(nullable: false),
+                    PraiseNumber = table.Column<int>(nullable: false),
+                    BeatNumber = table.Column<int>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
+                    CaseStatus = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaseInitial", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CaseNode",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    RelType = table.Column<string>(nullable: true),
+                    RelName = table.Column<string>(nullable: true),
+                    RelValue = table.Column<string>(nullable: true),
+                    BaseTreeId = table.Column<int>(nullable: false),
+                    CaseInitialId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaseNode", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CaseNode_CaseInitial_CaseInitialId",
+                        column: x => x.CaseInitialId,
+                        principalTable: "CaseInitial",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CaseSource",
                 columns: table => new
                 {
@@ -147,11 +228,154 @@ namespace Master.Migrations
                     SourceFile = table.Column<string>(nullable: true),
                     IsActive = table.Column<bool>(nullable: false),
                     Status = table.Column<string>(nullable: true),
-                    CaseSourceStatus = table.Column<int>(nullable: false)
+                    CaseSourceStatus = table.Column<int>(nullable: false),
+                    OwerId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CaseSource", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TreeLabel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    BaseTreeId = table.Column<int>(nullable: false),
+                    LabelId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TreeLabel", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CaseCard",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    ExtensionData = table.Column<string>(nullable: true),
+                    Remarks = table.Column<string>(nullable: true),
+                    Property = table.Column<string>(type: "json", nullable: true),
+                    TenantId = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: true),
+                    CaseInitialId = table.Column<int>(nullable: false),
+                    Status = table.Column<string>(nullable: true),
+                    IsActive = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaseCard", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CaseCard_CaseInitial_CaseInitialId",
+                        column: x => x.CaseInitialId,
+                        principalTable: "CaseInitial",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CaseFine",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    ExtensionData = table.Column<string>(nullable: true),
+                    Remarks = table.Column<string>(nullable: true),
+                    Property = table.Column<string>(type: "json", nullable: true),
+                    TenantId = table.Column<int>(nullable: false),
+                    CaseInitialId = table.Column<int>(nullable: false),
+                    Status = table.Column<string>(nullable: true),
+                    IsActive = table.Column<bool>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: true),
+                    MediaPath = table.Column<string>(nullable: true),
+                    UserModifyTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaseFine", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CaseFine_CaseInitial_CaseInitialId",
+                        column: x => x.CaseInitialId,
+                        principalTable: "CaseInitial",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CaseLabel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    RelType = table.Column<string>(nullable: true),
+                    RelName = table.Column<string>(nullable: true),
+                    RelValue = table.Column<string>(nullable: true),
+                    LabelId = table.Column<int>(nullable: false),
+                    CaseInitialId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaseLabel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CaseLabel_CaseInitial_CaseInitialId",
+                        column: x => x.CaseInitialId,
+                        principalTable: "CaseInitial",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CaseSourceHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    ExtensionData = table.Column<string>(nullable: true),
+                    Remarks = table.Column<string>(nullable: true),
+                    Property = table.Column<string>(type: "json", nullable: true),
+                    TenantId = table.Column<int>(nullable: false),
+                    CaseSourceId = table.Column<int>(nullable: false),
+                    Reason = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CaseSourceHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CaseSourceHistory_CaseSource_CaseSourceId",
+                        column: x => x.CaseSourceId,
+                        principalTable: "CaseSource",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -383,9 +607,13 @@ namespace Master.Migrations
                     Discriminator = table.Column<string>(nullable: true),
                     ParentId = table.Column<int>(nullable: true),
                     Code = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
                     DisplayName = table.Column<string>(nullable: false),
                     BriefCode = table.Column<string>(nullable: true),
-                    Sort = table.Column<int>(nullable: false)
+                    Sort = table.Column<int>(nullable: false),
+                    TreeNodeType = table.Column<int>(nullable: false),
+                    EnableMultiSelect = table.Column<bool>(nullable: false),
+                    RelativeNodeId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -560,6 +788,55 @@ namespace Master.Migrations
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Label",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    ExtensionData = table.Column<string>(nullable: true),
+                    Remarks = table.Column<string>(nullable: true),
+                    Property = table.Column<string>(type: "json", nullable: true),
+                    TenantId = table.Column<int>(nullable: false),
+                    LabelName = table.Column<string>(nullable: true),
+                    LabelType = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Label", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Label_User_CreatorUserId",
+                        column: x => x.CreatorUserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Label_User_DeleterUserId",
+                        column: x => x.DeleterUserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Label_User_LastModifierUserId",
+                        column: x => x.LastModifierUserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Label_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenant",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1078,6 +1355,106 @@ namespace Master.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CaseCard_CaseInitialId",
+                table: "CaseCard",
+                column: "CaseInitialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseCard_CreatorUserId",
+                table: "CaseCard",
+                column: "CreatorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseCard_DeleterUserId",
+                table: "CaseCard",
+                column: "DeleterUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseCard_LastModifierUserId",
+                table: "CaseCard",
+                column: "LastModifierUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseCard_TenantId",
+                table: "CaseCard",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseFine_CaseInitialId",
+                table: "CaseFine",
+                column: "CaseInitialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseFine_CreatorUserId",
+                table: "CaseFine",
+                column: "CreatorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseFine_DeleterUserId",
+                table: "CaseFine",
+                column: "DeleterUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseFine_LastModifierUserId",
+                table: "CaseFine",
+                column: "LastModifierUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseFine_TenantId",
+                table: "CaseFine",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseInitial_CaseSourceId",
+                table: "CaseInitial",
+                column: "CaseSourceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseInitial_CreatorUserId",
+                table: "CaseInitial",
+                column: "CreatorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseInitial_DeleterUserId",
+                table: "CaseInitial",
+                column: "DeleterUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseInitial_LastModifierUserId",
+                table: "CaseInitial",
+                column: "LastModifierUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseInitial_SubjectId",
+                table: "CaseInitial",
+                column: "SubjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseInitial_TenantId",
+                table: "CaseInitial",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseLabel_CaseInitialId",
+                table: "CaseLabel",
+                column: "CaseInitialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseLabel_LabelId",
+                table: "CaseLabel",
+                column: "LabelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseNode_BaseTreeId",
+                table: "CaseNode",
+                column: "BaseTreeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseNode_CaseInitialId",
+                table: "CaseNode",
+                column: "CaseInitialId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CaseSource_AnYouId",
                 table: "CaseSource",
                 column: "AnYouId");
@@ -1113,8 +1490,38 @@ namespace Master.Migrations
                 column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CaseSource_OwerId",
+                table: "CaseSource",
+                column: "OwerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CaseSource_TenantId",
                 table: "CaseSource",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseSourceHistory_CaseSourceId",
+                table: "CaseSourceHistory",
+                column: "CaseSourceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseSourceHistory_CreatorUserId",
+                table: "CaseSourceHistory",
+                column: "CreatorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseSourceHistory_DeleterUserId",
+                table: "CaseSourceHistory",
+                column: "DeleterUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseSourceHistory_LastModifierUserId",
+                table: "CaseSourceHistory",
+                column: "LastModifierUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CaseSourceHistory_TenantId",
+                table: "CaseSourceHistory",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
@@ -1161,6 +1568,26 @@ namespace Master.Migrations
                 name: "IX_File_LastModifierUserId",
                 table: "File",
                 column: "LastModifierUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Label_CreatorUserId",
+                table: "Label",
+                column: "CreatorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Label_DeleterUserId",
+                table: "Label",
+                column: "DeleterUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Label_LastModifierUserId",
+                table: "Label",
+                column: "LastModifierUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Label_TenantId",
+                table: "Label",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ModuleButton_CreatorUserId",
@@ -1388,6 +1815,16 @@ namespace Master.Migrations
                 column: "LastModifierUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TreeLabel_BaseTreeId",
+                table: "TreeLabel",
+                column: "BaseTreeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TreeLabel_LabelId",
+                table: "TreeLabel",
+                column: "LabelId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_User_CreatorUserId",
                 table: "User",
                 column: "CreatorUserId");
@@ -1443,6 +1880,62 @@ namespace Master.Migrations
                 columns: new[] { "TenantId", "UserId" });
 
             migrationBuilder.AddForeignKey(
+                name: "FK_CaseInitial_User_CreatorUserId",
+                table: "CaseInitial",
+                column: "CreatorUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseInitial_User_DeleterUserId",
+                table: "CaseInitial",
+                column: "DeleterUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseInitial_User_LastModifierUserId",
+                table: "CaseInitial",
+                column: "LastModifierUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseInitial_Tenant_TenantId",
+                table: "CaseInitial",
+                column: "TenantId",
+                principalTable: "Tenant",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseInitial_CaseSource_CaseSourceId",
+                table: "CaseInitial",
+                column: "CaseSourceId",
+                principalTable: "CaseSource",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseInitial_BaseTree_SubjectId",
+                table: "CaseInitial",
+                column: "SubjectId",
+                principalTable: "BaseTree",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseNode_BaseTree_BaseTreeId",
+                table: "CaseNode",
+                column: "BaseTreeId",
+                principalTable: "BaseTree",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_CaseSource_User_CreatorUserId",
                 table: "CaseSource",
                 column: "CreatorUserId",
@@ -1462,6 +1955,14 @@ namespace Master.Migrations
                 name: "FK_CaseSource_User_LastModifierUserId",
                 table: "CaseSource",
                 column: "LastModifierUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseSource_User_OwerId",
+                table: "CaseSource",
+                column: "OwerId",
                 principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
@@ -1505,6 +2006,126 @@ namespace Master.Migrations
                 principalTable: "BaseTree",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_TreeLabel_BaseTree_BaseTreeId",
+                table: "TreeLabel",
+                column: "BaseTreeId",
+                principalTable: "BaseTree",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_TreeLabel_Label_LabelId",
+                table: "TreeLabel",
+                column: "LabelId",
+                principalTable: "Label",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseCard_User_CreatorUserId",
+                table: "CaseCard",
+                column: "CreatorUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseCard_User_DeleterUserId",
+                table: "CaseCard",
+                column: "DeleterUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseCard_User_LastModifierUserId",
+                table: "CaseCard",
+                column: "LastModifierUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseCard_Tenant_TenantId",
+                table: "CaseCard",
+                column: "TenantId",
+                principalTable: "Tenant",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseFine_User_CreatorUserId",
+                table: "CaseFine",
+                column: "CreatorUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseFine_User_DeleterUserId",
+                table: "CaseFine",
+                column: "DeleterUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseFine_User_LastModifierUserId",
+                table: "CaseFine",
+                column: "LastModifierUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseFine_Tenant_TenantId",
+                table: "CaseFine",
+                column: "TenantId",
+                principalTable: "Tenant",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseLabel_Label_LabelId",
+                table: "CaseLabel",
+                column: "LabelId",
+                principalTable: "Label",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseSourceHistory_User_CreatorUserId",
+                table: "CaseSourceHistory",
+                column: "CreatorUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseSourceHistory_User_DeleterUserId",
+                table: "CaseSourceHistory",
+                column: "DeleterUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseSourceHistory_User_LastModifierUserId",
+                table: "CaseSourceHistory",
+                column: "LastModifierUserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CaseSourceHistory_Tenant_TenantId",
+                table: "CaseSourceHistory",
+                column: "TenantId",
+                principalTable: "Tenant",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Tenant_User_CreatorUserId",
@@ -1644,13 +2265,28 @@ namespace Master.Migrations
                 name: "BaseType");
 
             migrationBuilder.DropTable(
-                name: "CaseSource");
+                name: "CaseCard");
+
+            migrationBuilder.DropTable(
+                name: "CaseFine");
+
+            migrationBuilder.DropTable(
+                name: "CaseLabel");
+
+            migrationBuilder.DropTable(
+                name: "CaseNode");
+
+            migrationBuilder.DropTable(
+                name: "CaseSourceHistory");
 
             migrationBuilder.DropTable(
                 name: "ColumnInfo");
 
             migrationBuilder.DropTable(
                 name: "Dictionary");
+
+            migrationBuilder.DropTable(
+                name: "EmailLog");
 
             migrationBuilder.DropTable(
                 name: "FeatureSetting");
@@ -1683,6 +2319,9 @@ namespace Master.Migrations
                 name: "Template");
 
             migrationBuilder.DropTable(
+                name: "TreeLabel");
+
+            migrationBuilder.DropTable(
                 name: "UserLogin");
 
             migrationBuilder.DropTable(
@@ -1692,13 +2331,22 @@ namespace Master.Migrations
                 name: "UserRole");
 
             migrationBuilder.DropTable(
-                name: "BaseTree");
+                name: "CaseInitial");
 
             migrationBuilder.DropTable(
                 name: "ModuleInfo");
 
             migrationBuilder.DropTable(
                 name: "Role");
+
+            migrationBuilder.DropTable(
+                name: "Label");
+
+            migrationBuilder.DropTable(
+                name: "CaseSource");
+
+            migrationBuilder.DropTable(
+                name: "BaseTree");
 
             migrationBuilder.DropTable(
                 name: "User");

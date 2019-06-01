@@ -1,6 +1,7 @@
 ﻿using Abp.Collections.Extensions;
 using Abp.Domain.Entities;
 using Abp.Extensions;
+using Master.Case;
 using Master.MultiTenancy;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -35,6 +36,7 @@ namespace Master.Entity
         /// 树层级编码
         /// </summary>
         public virtual string Code { get; set; }
+        public virtual string Name { get; set; }
 
         [Required]
         public virtual string DisplayName { get; set; }
@@ -60,6 +62,7 @@ namespace Master.Entity
         /// </summary>
         public int? RelativeNodeId { get; set; }
         
+        public virtual ICollection<TreeLabel> TreeLabels { get; set; }
 
         #region 方法
 

@@ -11,17 +11,13 @@ namespace Master.BaseTrees
     {
         public int Id { get; set; }
         public int? ParentId { get; set; }
-        public string Name
-        {
-            get
-            {
-                return DisplayName;
-            }
-        }
+        public string Name { get; set; }
         public string DisplayName { get; set; }
-        public string BriefCode { get; set; }
         public int Sort { get; set; }
         public string Remarks { get; set; }
-        public string Discriminator { get; set; }
+        public TreeNodeType TreeNodeType { get; set; }
+        public bool EnableMultiSelect { get; set; }
+        public int? RelativeNodeId { get; set; }
+        public string Code { get; set; }
     }
 }

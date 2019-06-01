@@ -585,12 +585,10 @@ namespace Master.Migrations
                     b.ToTable("CaseInitial");
                 });
 
-            modelBuilder.Entity("Master.Case.CaseKey", b =>
+            modelBuilder.Entity("Master.Case.CaseLabel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("CaseFineId");
 
                     b.Property<int?>("CaseInitialId");
 
@@ -598,48 +596,49 @@ namespace Master.Migrations
 
                     b.Property<long?>("CreatorUserId");
 
-                    b.Property<long?>("DeleterUserId");
+                    b.Property<int>("LabelId");
 
-                    b.Property<DateTime?>("DeletionTime");
+                    b.Property<string>("RelName");
 
-                    b.Property<string>("ExtensionData");
+                    b.Property<string>("RelType");
 
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("KeyName");
-
-                    b.Property<int>("KeyNodeId");
-
-                    b.Property<string>("KeyValue");
-
-                    b.Property<DateTime?>("LastModificationTime");
-
-                    b.Property<long?>("LastModifierUserId");
-
-                    b.Property<string>("Property")
-                        .HasColumnType("json");
-
-                    b.Property<string>("Remarks");
-
-                    b.Property<int>("TenantId");
+                    b.Property<string>("RelValue");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CaseFineId");
+                    b.HasIndex("CaseInitialId");
+
+                    b.HasIndex("LabelId");
+
+                    b.ToTable("CaseLabel");
+                });
+
+            modelBuilder.Entity("Master.Case.CaseNode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BaseTreeId");
+
+                    b.Property<int?>("CaseInitialId");
+
+                    b.Property<DateTime>("CreationTime");
+
+                    b.Property<long?>("CreatorUserId");
+
+                    b.Property<string>("RelName");
+
+                    b.Property<string>("RelType");
+
+                    b.Property<string>("RelValue");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseTreeId");
 
                     b.HasIndex("CaseInitialId");
 
-                    b.HasIndex("CreatorUserId");
-
-                    b.HasIndex("DeleterUserId");
-
-                    b.HasIndex("KeyNodeId");
-
-                    b.HasIndex("LastModifierUserId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("CaseKey");
+                    b.ToTable("CaseNode");
                 });
 
             modelBuilder.Entity("Master.Case.CaseSource", b =>
@@ -786,6 +785,73 @@ namespace Master.Migrations
                     b.ToTable("EmailLog");
                 });
 
+            modelBuilder.Entity("Master.Case.Label", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreationTime");
+
+                    b.Property<long?>("CreatorUserId");
+
+                    b.Property<long?>("DeleterUserId");
+
+                    b.Property<DateTime?>("DeletionTime");
+
+                    b.Property<string>("ExtensionData");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("LabelName");
+
+                    b.Property<string>("LabelType");
+
+                    b.Property<DateTime?>("LastModificationTime");
+
+                    b.Property<long?>("LastModifierUserId");
+
+                    b.Property<string>("Property")
+                        .HasColumnType("json");
+
+                    b.Property<string>("Remarks");
+
+                    b.Property<int>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorUserId");
+
+                    b.HasIndex("DeleterUserId");
+
+                    b.HasIndex("LastModifierUserId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Label");
+                });
+
+            modelBuilder.Entity("Master.Case.TreeLabel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BaseTreeId");
+
+                    b.Property<DateTime>("CreationTime");
+
+                    b.Property<long?>("CreatorUserId");
+
+                    b.Property<int>("LabelId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseTreeId");
+
+                    b.HasIndex("LabelId");
+
+                    b.ToTable("TreeLabel");
+                });
+
             modelBuilder.Entity("Master.Configuration.Dictionaries.Dictionary", b =>
                 {
                     b.Property<int>("Id")
@@ -878,6 +944,8 @@ namespace Master.Migrations
                     b.Property<DateTime?>("LastModificationTime");
 
                     b.Property<long?>("LastModifierUserId");
+
+                    b.Property<string>("Name");
 
                     b.Property<int?>("ParentId");
 
@@ -1728,37 +1796,28 @@ namespace Master.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Master.Case.CaseKey", b =>
+            modelBuilder.Entity("Master.Case.CaseLabel", b =>
                 {
-                    b.HasOne("Master.Case.CaseFine", "CaseFine")
-                        .WithMany("CaseKeys")
-                        .HasForeignKey("CaseFineId");
-
                     b.HasOne("Master.Case.CaseInitial", "CaseInitial")
-                        .WithMany("CaseKeys")
+                        .WithMany("CaseLabels")
                         .HasForeignKey("CaseInitialId");
 
-                    b.HasOne("Master.Authentication.User", "CreatorUser")
+                    b.HasOne("Master.Case.Label", "Label")
                         .WithMany()
-                        .HasForeignKey("CreatorUserId");
+                        .HasForeignKey("LabelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.HasOne("Master.Authentication.User", "DeleterUser")
+            modelBuilder.Entity("Master.Case.CaseNode", b =>
+                {
+                    b.HasOne("Master.Entity.BaseTree", "BaseTree")
                         .WithMany()
-                        .HasForeignKey("DeleterUserId");
-
-                    b.HasOne("Master.Entity.BaseTree", "KeyNode")
-                        .WithMany()
-                        .HasForeignKey("KeyNodeId")
+                        .HasForeignKey("BaseTreeId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Master.Authentication.User", "LastModifierUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifierUserId");
-
-                    b.HasOne("Master.MultiTenancy.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("Master.Case.CaseInitial", "CaseInitial")
+                        .WithMany("CaseNodes")
+                        .HasForeignKey("CaseInitialId");
                 });
 
             modelBuilder.Entity("Master.Case.CaseSource", b =>
@@ -1823,6 +1882,39 @@ namespace Master.Migrations
                     b.HasOne("Master.MultiTenancy.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Master.Case.Label", b =>
+                {
+                    b.HasOne("Master.Authentication.User", "CreatorUser")
+                        .WithMany()
+                        .HasForeignKey("CreatorUserId");
+
+                    b.HasOne("Master.Authentication.User", "DeleterUser")
+                        .WithMany()
+                        .HasForeignKey("DeleterUserId");
+
+                    b.HasOne("Master.Authentication.User", "LastModifierUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifierUserId");
+
+                    b.HasOne("Master.MultiTenancy.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Master.Case.TreeLabel", b =>
+                {
+                    b.HasOne("Master.Entity.BaseTree", "BaseTree")
+                        .WithMany("TreeLabels")
+                        .HasForeignKey("BaseTreeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Master.Case.Label", "Label")
+                        .WithMany("TreeLabels")
+                        .HasForeignKey("LabelId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

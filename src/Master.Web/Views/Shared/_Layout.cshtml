@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="/assets/layuiadmin/layui/css/layui.css" media="all" asp-append-version="true">
     <link rel="stylesheet" href="/assets/layuiadmin/style/admin.css" media="all" asp-append-version="true">
     <link href="~/assets/css/default.css" rel="stylesheet" asp-append-version="true" />
+
     <!-- View specific styles -->
     @RenderSection("styles", required: false)
     <script type="text/javascript">
@@ -62,6 +63,11 @@
 
 
     </script>
+    <style>
+        .layui-form-pane .layui-form-label {
+            padding: 8px 5px !important;
+        }
+    </style>
 </head>
 <body class="gray-bg" @*style="overflow-y:scroll" *@>
     @RenderSection("MainBody", required: false)
@@ -69,15 +75,6 @@
 
     </div>*@
     @RenderBody()
-
-    <!-- View specific scripts -->
-    <script type="text/html" id="activeTpl">
-        {{#if(d.isActive){}}
-        <span class="layui-badge layui-bg-blue">@L("有效")</span>
-        {{#}else{}}
-        <span class="layui-badge layui-bg-gray">@L("无效")</span>
-        {{#}}}
-    </script>
 
 
     @foreach (var commonView in WebCoreConfiguration.CommonViews)
