@@ -1,4 +1,4 @@
-﻿<style>
+﻿@*<style>
     #jianHeader {
         height: 80px;
         background-color: rgba(198, 156, 109, 1);
@@ -10,18 +10,21 @@
     <header id="jianHeader">
 
     </header>
-</script>
+</script>*@
 <script>
 
-    Vue.component('com-headr', {//前台页面头
-        data: function () {
-            return {
-            }
-        },
-        props: [],
-        template: '#comHeader',
-        methods: {
+    //Vue.component('com-headr', {//前台页面头
+    //    data: function () {
+    //        return {
+    //        }
+    //    },
+    //    props: [],
+    //    template: '#comHeader',
+    //    methods: {
 
-        }
+    //    }
+    //})
+    Vue.component('com-footer', {
+        template:'<div class="footer-ny"><div class="ziti-b">2017-2020 | Copyright | 版权声明 | 简法二手房 ( 沪ICP备00000000号 )</div></div>'
     })
 </script>

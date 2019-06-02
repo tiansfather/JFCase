@@ -752,7 +752,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Logs\" />
-    <Folder Include="wwwroot\assets\jianfa\" />
     <Folder Include="wwwroot\lib\swiper\" />
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties bundleconfig_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
