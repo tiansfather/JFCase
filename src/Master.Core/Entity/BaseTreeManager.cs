@@ -56,6 +56,19 @@ namespace Master.Entity
             return result;
         }
         /// <summary>
+        /// 获取树节点关联的所有标签
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<Label>> GetRelativeLabels(int nodeId)
+        {
+            return await Resolve<IRepository<TreeLabel, int>>()
+                .GetAll().Include(o => o.Label)
+                .Where(o => o.BaseTreeId == nodeId)
+                .Select(o => o.Label)
+                .ToListAsync();
+        }
+        /// <summary>
         /// 通过树类型和节点名称获取树节点
         /// </summary>
         /// <param name="displayName"></param>

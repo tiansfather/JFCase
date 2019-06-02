@@ -7,12 +7,77 @@
 
 @section scripts{
     <script>
-        var id=@ViewBag.Id;//此id为案源的id
+        var id =@ViewBag.Id;//此id为案源的id
+        //获取初加工、精加工级联层级的方式
+        //简述：目的是给定一个知识树节点名称，如“案由”，产生对应节点下所有子节点的下拉选择框
+        //1.首先获取知识树及分类树
+        //abp.services.app.baseTree.getKnowledgeTreeJsonByParentId()
+        //abp.services.app.baseTree.getTypeTreeJsonByParentId()
+        //返回数据如下
+        var data=[
+            {
+                "id": 1,
+                "parentId": null,
+                "name": "案例属性体系",
+                "displayName": "案例属性体系",//前台展示名称
+                "sort": 0,
+                "remarks": null,
+                "treeNodeType": 0,//节点类型，知识树为0，分类树为1
+                "enableMultiSelect": false,//是否多选
+                "relativeNodeId": null,//关联节点Id，只对分类树有效，表示对应知识树的哪个节点
+                "code": "00001"//节点编码，用于表述节点层级关系
+            }, { "id": 2, "parentId": 1, "name": "案由", "displayName": "案由", "sort": 0, "remarks": null, "treeNodeType": 0, "enableMultiSelect": false, "relativeNodeId": null, "code": "00001.00001" },]
+        //2.根据节点的code属性获取对应节点下面的所有子节点
+        //例，在初加工的时候我们需要获取案由下面的所有子节点来产生下拉选择框，首先，先找到名称为“案由”的知识树节点，发现其Code为"00001.00001",那么找案由下的所有子节点，只需要寻找知识树中所有code以"00001.00001"开头的节点，然后将其渲染为下拉框，单选多选由属性值enableMultiSelect确定
+        //3.填充对应的一级下拉框的数据
+        //上一步中“案由”的直接子节点只有“纠纷类型”一个，假设其id为15，那么我们从分类树节点中寻找所有relativeNodeId值为15的节点，将其displayName作为option渲染到上一步的选择框中
+        //4.填充级联下拉框的数据
+        //级联下拉框的数据由上一级下拉框的数据决定，例如当纠纷类型选定后，我们能够得到了一个选中的分类树节点Id,此时根据此Id去分类树节点寻找对应的直接子节点，注意此时这些子节点有可能对应知识树的“纠纷原因”，也可能对应“判决结果”，根据这些子节点的relativeNodeId，把他们对应到对应的选择框中
+        //5.选中节点后获取对应的标签并显示
+        //abp.services.app.baseTree.getRelativeLabels(nodeId)
+        var data = [{ id: 1, labelName: '无权', labelType: '标签' }, { id: 2, labelName: '天才', labelType: '关键词' }]
+        //注意标签有两种类型“关键词”和“标签”，分开显示，当下拉框选择后同步更新关键词区域和标签区域的内容
+        //6.至此，我们可以获取两组数据了，一为用户选中的所有分类树节点，二为用户选中的所有标签，
+        //初加工提交时的数据
+        var updateInitialDto= {
+            id: 1,//初加工Id
+                title: '案例焦点',
+            Introduction: '案例概述',
+            Law: '法律法规',
+            Experience: '经验分享',
+            LawyerOpinion: '律师说',
+            CaseNodes: [
+                {
+                    BaseTreeId: 15 //对应分类树节点Id 
+                },
+                {
+                    BaseTreeId: 20 //对应分类树节点Id 
+                }
+            ],
+            CaseLabels: [
+                {
+                    LabelId: 15 //对应标签Id 
+                },
+                {
+                    LabelId: 20 //对应标签Id 
+                }
+            ],
+            JudgeInfo: {
+                JudgeContent: '诉情',
+                JudgeResult: '判决',
+                SupportRate: 100,//支持率0-100
+                HasReverseJudge: true,//是否有反诉
+                ReverseJudgeContent: '反诉内容',
+                ReverseJudgeResult: '反诉判决',
+                ReverseSupportRate: 100//反诉支持率0-100
+            },
+            remarks:'备注'
+        }
         //获取判例对应的数据
         abp.services.app.workbench.getCaseInfo(id).done(function (data) {
 
         })
-        //提交初加工
+        //提交初加工，数据格式见上文
         abp.servcies.app.workbench.updateInitial(updateInitialDto)
         //发布初加工
         abp.servcies.app.workbench.publishInitial(caseInitialId)
@@ -25,4 +90,4 @@
         //发布案例卡
         abp.servcies.app.workbench.publishCard(caseInitialId)
     </script>
-    }
+}
