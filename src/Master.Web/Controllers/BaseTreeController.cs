@@ -38,5 +38,13 @@ namespace Master.Web.Controllers
         {
             return View();
         }
+        /// <summary>
+        /// 标签绑定至树节点
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult LabelBind()
+        {
+            return View();
+        }
     }
 }

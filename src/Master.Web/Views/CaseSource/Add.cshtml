@@ -208,21 +208,21 @@
                     },
                     loadAnYou: function () {
                         var that = this;
-                        return abp.services.app.type.getTypesByParentName("纠纷属性").done(function (data) {
+                        return abp.services.app.type.getAnYous().done(function (data) {
                             that.anYous = data;
                             refresh();
                         })
                     },
                     loadCities: function () {
                         var that = this;
-                        return abp.services.app.type.getTypesByParentName("审判组织").done(function (data) {
+                        return abp.services.app.type.getCities().done(function (data) {
                             that.cities = data;
                             refresh();
                         })
                     },
                     loadCourts: function () {
                         var that = this;                        
-                        return abp.services.app.type.getTypesByParentId(that.currentItem.cityId).done(function (data) {
+                        return abp.services.app.type.getCityCourts(that.currentItem.cityId).done(function (data) {
                             that.courts = data;
                             refresh();
                         })

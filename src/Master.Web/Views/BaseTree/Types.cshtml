@@ -14,77 +14,80 @@
                         style="padding: 2px; border: 1px solid #ddd; overflow: auto;min-height:500px"></ul>
                 </div>
                 <div class="layui-col-xs9 ">
-                    <div id="app" class="layui-hide">
-                        <blockquote class="layui-elem-quote">{{title}}</blockquote>
-                        <form class="layui-form layui-form-pane">
-                            <input type="hidden" name="Id" v-model="currentItem.id" />
-                            <div class="layui-form-item">
-                                <div class="layui-inline">
-                                    <label class="layui-form-label">{{nameStr}}</label>
-                                    <div class="layui-input-block">
-                                        <input type="text" v-model="currentItem.name" name="name" lay-verify="required" autocomplete="off" class="layui-input" :readonly="!currentItem.parentId">
-                                    </div>
-                                </div>
-
-                                <div class="layui-inline">
-                                    <label class="layui-form-label">排序</label>
-                                    <div class="layui-input-block">
-                                        <input type="text" name="Sort" v-model="currentItem.sort" lay-verify="number" autocomplete="off" class="layui-input" :readonly="!currentItem.parentId">
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="layui-form-item" v-if="currentItem.parentId">
-                                <div class="layui-inline">
-                                    <label class="layui-form-label">前端显示名称</label>
-                                    <div class="layui-input-block">
-                                        <input type="text" v-model="currentItem.displayName" autocomplete="off" class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-inline">
-                                    <label class="layui-form-label">上级节点</label>
-                                    <div class="layui-input-block">
-                                        <input type="text" :value="parentNodeName" autocomplete="off" class="layui-input" readonly>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="layui-form-item" v-if="currentItem.parentId">
-                                <div class="layui-inline">
-                                    <label class="layui-form-label">对应知识树级</label>
-                                    <template v-for="(item,index) in casadeNodes">
-                                        <div class="layui-input-inline" style="width: 100px;">
-                                            <input type="text" :value="item.name" autocomplete="off" class="layui-input" readonly>
+                    <div id="app" class="layui-hide" >
+                        <div v-show="currentItem.id>0 || currentItem.parentId">
+                            <blockquote class="layui-elem-quote" >{{title}}</blockquote>
+                            <form class="layui-form layui-form-pane">
+                                <input type="hidden" name="Id" v-model="currentItem.id" />
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">{{nameStr}}</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" v-model="currentItem.name" name="name" lay-verify="required" autocomplete="off" class="layui-input" :readonly="!currentItem.parentId">
                                         </div>
-                                        <div class="layui-form-mid">--</div>
-                                    </template>
-                                    
-                                    <div class="layui-input-inline" style="width: 100px;">
-                                        <select v-model="currentItem.relativeNodeId">
-                                            <option v-for="(item,index) in relativeNodes" :value="item.id" v-text="item.name"></option>
-                                        </select>
+                                    </div>
+
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">排序</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="Sort" v-model="currentItem.sort" lay-verify="number" autocomplete="off" class="layui-input" :readonly="!currentItem.parentId">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="layui-form-item" v-if="currentItem.parentId">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">前端显示名称</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" v-model="currentItem.displayName" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">上级节点</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" :value="parentNodeName" autocomplete="off" class="layui-input" readonly>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="layui-form-item layui-form-text" v-if="!currentItem.parentId">
-                                <label class="layui-form-label">说明</label>
-                                <div class="layui-input-block">
-                                    <textarea placeholder="" class="layui-textarea" name="remarks" v-model="currentItem.remarks" readonly></textarea>
+                                <div class="layui-form-item" v-if="currentItem.parentId">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">对应知识树级</label>
+                                        <template v-for="(item,index) in casadeNodes">
+                                            <div class="layui-input-inline" style="width: 100px;">
+                                                <input type="text" :value="item.name" autocomplete="off" class="layui-input" readonly>
+                                            </div>
+                                            <div class="layui-form-mid">--</div>
+                                        </template>
+
+                                        <div class="layui-input-inline" style="width: 100px;">
+                                            <select v-model="currentItem.relativeNodeId">
+                                                <option v-for="(item,index) in relativeNodes" :value="item.id" v-text="item.name"></option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="layui-form-item layui-form-text" v-if="!currentItem.parentId">
+                                    <label class="layui-form-label">说明</label>
+                                    <div class="layui-input-block">
+                                        <textarea placeholder="" class="layui-textarea" name="remarks" v-model="currentItem.remarks" readonly></textarea>
+                                    </div>
+                                </div>
 
 
-                            <div class="layui-form-item">
-                                <button v-if="currentItem.id" class="layui-btn layui-btn-normal" type="button" @@click="addNode(currentItem.id)">新增子节点数据</button>
-                                <button class="layui-btn" type="button" @@click="doSave" v-if="currentItem.parentId">@L("保存")</button>
-                                <button v-if="!isAdd && currentItem.parentId" class="layui-btn layui-btn-danger" @@click="doDelete" type="button">@L("删除")</button>
-                            </div>
-                            @*<vc:form-submit param="@(new FormSubmitViewParam() { ModuleKey="Organization",ButtonKey="Submit",Callback="submitCallback"})"></vc:form-submit>*@
-                            @*<div class="layui-form-item">
-            <div class="layui-input-block">
-                <button class="layui-btn" type="button" lay-submit="" lay-filter="submit">提交</button>
-            </div>
-        </div>*@
-                        </form>
+                                <div class="layui-form-item">
+                                    <button v-if="currentItem.id" class="layui-btn layui-btn-normal" type="button" @@click="addNode(currentItem.id)">新增子节点数据</button>
+                                    <button class="layui-btn" type="button" @@click="doSave" v-if="currentItem.parentId">@L("保存")</button>
+                                    <button v-if="!isAdd && currentItem.parentId" class="layui-btn layui-btn-danger" @@click="doDelete" type="button">@L("删除")</button>
+                                </div>
+                                @*<vc:form-submit param="@(new FormSubmitViewParam() { ModuleKey="Organization",ButtonKey="Submit",Callback="submitCallback"})"></vc:form-submit>*@
+                                @*<div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" type="button" lay-submit="" lay-filter="submit">提交</button>
+                </div>
+            </div>*@
+                            </form>
+                        </div>
+                        
                     </div>
 
 
@@ -170,6 +173,7 @@
                 },
                 methods: {
                     addNode: function (parentId) {
+                        console.log(parentId);
                         this.currentItem = { id: 0, parentId: parentId, treeNodeType: 1 };
                         if (this.relativeNodes.length > 0) {
                             this.currentItem.relativeNodeId = this.relativeNodes[0].id;
@@ -250,7 +254,7 @@
                         var load = function () {
                             abp.services.app.baseTree.getTypeTreeJsonByParentId().done(function (json) {
                                 nodes = json;
-                                that.currentItem = nodes[0];
+                                //that.currentItem = nodes[0];
                                 zTreeObj = $.fn.zTree.init($("#tree"), setting);
                                 //var newNode = { briefName: "根节点", id: null, parentId: "" };
                                 //json.push(newNode);
@@ -279,7 +283,7 @@
         };
         config.refresh = function () {
             ztree.reload();
-            app.doAdd();
+            app.addNode(app.currentItem.parentId);
         };
         config.reloadTable = function () {
 
