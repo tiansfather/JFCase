@@ -32,6 +32,7 @@ namespace Master.Case
         /// </summary>
         public string LawyerOpinion { get; set; }
         public virtual ICollection<CaseNodeDto> CaseNodes { get; set; }
+        public virtual ICollection<CaseLabelDto> CaseLabels { get; set; }
         public JudgeInfo JudgeInfo { get; set; }
         public string Remarks { get; set; }
     }

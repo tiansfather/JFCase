@@ -50,12 +50,9 @@ namespace Master.Case
                 .Where(o => ids.Contains(o.Id)).ToListAsync();
             foreach (var caseInitial in caseInitials)
             {
-                caseInitial.CaseSource.CaseSourceStatus = CaseSourceStatus.待选;
-                caseInitial.CaseSource.OwerId = null;
+                caseInitial.CaseStatus = CaseStatus.下架;
             }
 
-            await CurrentUnitOfWork.SaveChangesAsync();
-            await DeleteEntity(ids);
         }
     }
 }

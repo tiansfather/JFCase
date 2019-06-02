@@ -2646,6 +2646,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'getTypesByKnowledgeName'
+    abp.services.app.type.getTypesByKnowledgeName = function(name, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Type/GetTypesByKnowledgeName' + abp.utils.buildQueryString([{ name: 'name', value: name }]) + '',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
     // action 'getTypesByParentName'
     abp.services.app.type.getTypesByParentName = function(name, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -2666,6 +2674,14 @@ abp.services = abp.services || {};
     abp.services.app.type.getCities = function(ajaxParams) {
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/Type/GetCities',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
+    // action 'getCourts'
+    abp.services.app.type.getCourts = function(ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Type/GetCourts',
         type: 'GET'
       }, ajaxParams));;
     };
@@ -3264,10 +3280,18 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
-    // action 'getTreeJson'
-    abp.services.app.baseTree.getTreeJson = function(discriminator, parentId, maxLevel, ajaxParams) {
+    // action 'getRelativeLabelsWithOtherReference'
+    abp.services.app.baseTree.getRelativeLabelsWithOtherReference = function(nodeId, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/BaseTree/GetTreeJson' + abp.utils.buildQueryString([{ name: 'discriminator', value: discriminator }, { name: 'parentId', value: parentId }, { name: 'maxLevel', value: maxLevel }]) + '',
+        url: abp.appPath + 'api/services/app/BaseTree/GetRelativeLabelsWithOtherReference' + abp.utils.buildQueryString([{ name: 'nodeId', value: nodeId }]) + '',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
+    // action 'getRelativeLabels'
+    abp.services.app.baseTree.getRelativeLabels = function(nodeId, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/BaseTree/GetRelativeLabels' + abp.utils.buildQueryString([{ name: 'nodeId', value: nodeId }]) + '',
         type: 'GET'
       }, ajaxParams));;
     };
@@ -3377,6 +3401,31 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'bindToNode'
+    abp.services.app.label.bindToNode = function(labelId, nodeIds, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Label/BindToNode' + abp.utils.buildQueryString([{ name: 'labelId', value: labelId }]) + '',
+        type: 'POST',
+        data: JSON.stringify(nodeIds)
+      }, ajaxParams));;
+    };
+
+    // action 'getBindedNodes'
+    abp.services.app.label.getBindedNodes = function(labelId, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Label/GetBindedNodes' + abp.utils.buildQueryString([{ name: 'labelId', value: labelId }]) + '',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
+    // action 'deleteEntity'
+    abp.services.app.label.deleteEntity = function(ids, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Label/DeleteEntity' + abp.utils.buildQueryString([{ name: 'ids', value: ids }]) + '',
+        type: 'DELETE'
+      }, ajaxParams));;
+    };
+
     // action 'getPageResult'
     abp.services.app.label.getPageResult = function(request, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -3422,14 +3471,6 @@ abp.services = abp.services || {};
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/Label/GetGroupedField' + abp.utils.buildQueryString([{ name: 'key', value: key }]) + '',
         type: 'GET'
-      }, ajaxParams));;
-    };
-
-    // action 'deleteEntity'
-    abp.services.app.label.deleteEntity = function(ids, ajaxParams) {
-      return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Label/DeleteEntity' + abp.utils.buildQueryString([{ name: 'ids', value: ids }]) + '',
-        type: 'DELETE'
       }, ajaxParams));;
     };
 

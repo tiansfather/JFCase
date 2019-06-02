@@ -43,8 +43,7 @@
       "wwwroot/lib/vue/vue.min.js",
       "wwwroot/lib/vue-router/vue-router.min.js",
       "wwwroot/assets/jianfa/js/iview.min.js",
-      "wwwroot/assets/jianfa/js/top-banner.js",
-      "wwwroot/assets/js/global.js"
+      "wwwroot/assets/jianfa/js/top-banner.js"      
     ]
   },
   {
@@ -71,8 +70,8 @@
       "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/abp.js",
       "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/libs/abp.jquery.js",
       "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/libs/abp.blockui.js",
-      "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/libs/abp.spin.js",
-      "wwwroot/assets/js/abp.layer.js"
+      "wwwroot/lib/abp-web-resources/Abp/Framework/scripts/libs/abp.spin.js"
+      
     ]
   },
   {

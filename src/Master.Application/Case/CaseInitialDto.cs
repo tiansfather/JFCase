@@ -51,6 +51,7 @@ namespace Master.Case
         public CaseStatus CaseStatus { get; set; }
 
         public virtual ICollection<CaseNodeDto> CaseNodes { get; set; }
+        public virtual ICollection<CaseLabelDto> CaseLabels { get; set; }
         public virtual ICollection<CaseFineDto> CaseFines { get; set; }
         public virtual ICollection<CaseCardDto> CaseCards { get; set; }
 

@@ -49,7 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="menu.json" />
-    <Content Remove="Views\Home\VueComponentJianFa.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -740,7 +739,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="menu.json" />
-    <EmbeddedResource Include="Views\Home\VueComponentJianFa.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="appsettings.json">

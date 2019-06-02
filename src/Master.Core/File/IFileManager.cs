@@ -22,7 +22,7 @@ namespace Master
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        Task<File> UploadFile(IFormFile file);
+        Task<File> UploadFile(IFormFile file, bool temp);
         /// <summary>
         /// 将base64转为文件
         /// </summary>

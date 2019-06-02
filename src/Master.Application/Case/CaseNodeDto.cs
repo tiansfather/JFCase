@@ -9,14 +9,21 @@ namespace Master.Case
     public class CaseNodeDto
     {
         public int Id { get; set; }
-        public string KeyName { get; set; }
+        /// <summary>
+        /// 初加工、精加工
+        /// </summary>
+        public string RelType { get; set; }
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        public string RelName { get; set; }
         /// <summary>
         /// 具体的值
         /// </summary>
-        public string KeyValue { get; set; }
+        public string RelValue { get; set; }
         /// <summary>
         /// 对应节点id
         /// </summary>
-        public int KeyNodeId { get; set; }
+        public int BaseTreeId { get; set; }
     }
 }

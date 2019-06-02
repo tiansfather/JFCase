@@ -113,7 +113,7 @@ namespace Master.Case
                 importResult.CaseSourceUpdateDto.MapTo(caseSource);
                 //将pdf文件从临时文件夹移至正式文件夹
                 caseSource.SourceFile = $"{virtualDirectory}/{caseSource.SourceSN}.pdf";
-                System.IO.File.Copy($"{tempDirectory}\\{caseSource.SourceSN}.pdf", Common.PathHelper.VirtualPathToAbsolutePath(caseSource.SourceFile));
+                System.IO.File.Copy($"{tempDirectory}\\{caseSource.SourceSN}.pdf", Common.PathHelper.VirtualPathToAbsolutePath(caseSource.SourceFile),true);
                 
                 
                 await manager.SaveAsync(caseSource);

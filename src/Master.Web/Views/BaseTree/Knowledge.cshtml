@@ -17,8 +17,8 @@
                         style="padding: 2px; border: 1px solid #ddd; overflow: auto;min-height:500px"></ul>
                 </div>
                 <div class="layui-col-xs9 ">
-                    <div id="app" class="layui-hide">
-                        <blockquote class="layui-elem-quote">{{title}}</blockquote>
+                    <div id="app" class="layui-hide" >
+                        <blockquote class="layui-elem-quote" >{{title}}</blockquote>
                         <form class="layui-form layui-form-pane">
                             <input type="hidden" name="Id" v-model="currentItem.id" />
                             <div class="layui-form-item">
@@ -228,7 +228,7 @@
         };
         config.refresh = function () {
             ztree.reload();
-            app.doAdd();
+            app.addNode(app.currentItem.parentId);
         };
         config.reloadTable = function () {
 

@@ -1,8 +1,11 @@
 ﻿using Abp.AutoMapper;
+using Abp.Domain.Repositories;
 using Abp.UI;
+using Master.Case;
 using Master.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -76,6 +79,8 @@ namespace Master.BaseTrees
             var entity =await BaseTreeManager.GetByIdFromCacheAsync(id);
             return entity.MapTo<BaseTreeDto>();
         }
+
+        #region 提交
         /// <summary>
         /// 提交
         /// </summary>
@@ -84,7 +89,7 @@ namespace Master.BaseTrees
         public virtual async Task Submit(BaseTreeDto baseTreeDto)
         {
             BaseTree baseTree = null;
-            if (string.IsNullOrWhiteSpace(baseTreeDto.DisplayName) || baseTreeDto.TreeNodeType==TreeNodeType.Knowledge)
+            if (string.IsNullOrWhiteSpace(baseTreeDto.DisplayName) || baseTreeDto.TreeNodeType == TreeNodeType.Knowledge)
             {
                 baseTreeDto.DisplayName = baseTreeDto.Name;
             }
@@ -99,7 +104,7 @@ namespace Master.BaseTrees
                 //仅当父级变动
                 if (baseTreeDto.ParentId != baseTree.ParentId)
                 {
-                    var childIds = (await BaseTreeManager.FindChildrenAsync(baseTree.Id,baseTree.Discriminator, true)).Select(o => o.Id).ToList();
+                    var childIds = (await BaseTreeManager.FindChildrenAsync(baseTree.Id,  true)).Select(o => o.Id).ToList();
                     if (baseTree.Id == baseTreeDto.ParentId)
                     {
                         throw new UserFriendlyException("不允许设置父级为自己");
@@ -120,24 +125,53 @@ namespace Master.BaseTrees
                 baseTreeDto.MapTo(baseTree);
                 await BaseTreeManager.UpdateAsync(baseTree);
             }
-        }
+        } 
+        #endregion
 
-
-        public virtual async Task<object> GetTreeJson(string discriminator, int? parentId, int maxLevel = 0)
+        /// <summary>
+        /// 获取树节点的关联标签，并且获取标签关联的其它节点
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <returns></returns>
+        public virtual async Task<object> GetRelativeLabelsWithOtherReference(int nodeId)
         {
+            var result = new List<object>();
+            var labelManager = Resolve<LabelManager>();
             var manager = Manager as BaseTreeManager;
-            var ous = await manager.FindChildrenAsync(parentId, discriminator, true);
-            if (maxLevel > 0)
-            {
-                ous = ous.Where(o => o.Code.ToCharArray().Count(c => c == '.') < maxLevel).ToList();
-            }
-            return ous.Select(o =>
-            {
-                var dto = o.MapTo<BaseTreeDto>();
+            var labels = await GetRelativeLabels(nodeId);
 
-                return dto;
+            foreach(var label in labels)
+            {
+                var relativeNodes = (await labelManager.GetRelativeTreeNodes(label.Id)).Where(n => n.Id != nodeId);
+                var relativeNodeStrings = new List<IEnumerable<string>>();
+                foreach(var node in relativeNodes)
+                {
+                    var nodeNames = await manager.GetNamesFromTopLevel(node);
+                    relativeNodeStrings.Add(nodeNames);
+                }
+                result.Add(new
+                {
+                    label.LabelName,
+                    relativeNodeStrings
+                });
             }
-            );
+
+            return result;
         }
+
+        /// <summary>
+        /// 获取树节点关联的所有标签
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<Label>> GetRelativeLabels(int nodeId)
+        {
+            return await Resolve<IRepository<TreeLabel, int>>()
+                .GetAll().Include(o => o.Label)
+                .Where(o => o.BaseTreeId == nodeId)
+                .Select(o => o.Label)
+                .ToListAsync();
+        }
+
     }
 }

@@ -27,7 +27,7 @@ namespace Master.Web.Controllers
         public IHostingEnvironment HostingEnvironment { get; set; }
 
         #region 私有
-        private async Task<UploadResult> UploadFile(IFormFile file)
+        private async Task<UploadResult> UploadFile(IFormFile file, bool temp)
         {
             //string ext = Path.GetExtension(file.FileName);
 
@@ -50,9 +50,9 @@ namespace Master.Web.Controllers
             //}
             ////虚拟路径
             //var virtualPath = $"/files/{now.Year}/{now.ToString("MM")}/{now.ToString("dd")}/{filenameWithOutPath}";
-            var uploadFile = await FileManager.UploadFile(file);
+            var uploadFile = await FileManager.UploadFile(file, temp);
 
-            var result = new UploadResult { Success = true, FilePath = uploadFile.FilePath, FileName = file.FileName, FileId = uploadFile.Id, FileSize = uploadFile.FileSize };
+            var result = new UploadResult { Success = true, FilePath = uploadFile.FilePath, FileName = file.FileName, FileId = uploadFile.Id };
             return result;
         }
 
@@ -83,7 +83,7 @@ namespace Master.Web.Controllers
 
             var uploadFile = await FileManager.UploadFile(base64Content, oriVirtualPath);
 
-            var result = new UploadResult { Success = true, FilePath = uploadFile.FilePath, FileName = uploadFile.FileName, FileId = uploadFile.Id, FileSize = uploadFile.FileSize };
+            var result = new UploadResult { Success = true, FilePath = uploadFile.FilePath, FileName = uploadFile.FileName, FileId = uploadFile.Id };
             return result;
         }
         #endregion
@@ -118,7 +118,7 @@ namespace Master.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [AbpAllowAnonymous]
-        public async Task<JsonResult> Upload()
+        public async Task<JsonResult> Upload(bool temp)
         {
             //throw new UserFriendlyException("Not Available");
             //if(new Random().Next(1, 4) > 2)
@@ -134,7 +134,7 @@ namespace Master.Web.Controllers
                     var file = files[0];
                     string ext = Path.GetExtension(file.FileName);
 
-                    var result = await UploadFile(file);
+                    var result = await UploadFile(file, temp);
 
                     return Json(result);
                 }
@@ -145,27 +145,6 @@ namespace Master.Web.Controllers
                 return Json(new UploadResult { Success = false, Msg = "系统繁忙,请稍候重试" });
             }
 
-
-            throw new UserFriendlyException("未找到上传文件");
-        }
-        [DontWrapResult]
-        public async Task<object> LayEditUpload()
-        {
-            var files = HttpContext.Request.Form.Files;
-            if (files.Count > 0)
-            {
-                //可以写遍历files
-                var file = files[0];
-
-                var uploadResult = await UploadFile(file);
-
-                var result = new ResultDto()
-                {
-                    data = new { src = uploadResult.FilePath, title = uploadResult.FileName }
-                };
-
-                return Json(result);
-            }
 
             throw new UserFriendlyException("未找到上传文件");
         }

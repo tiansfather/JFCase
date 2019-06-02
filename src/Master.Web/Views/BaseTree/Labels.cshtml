@@ -25,21 +25,31 @@
                             </div>
                         </div>
                     </form>
-                    <table autoevent="1" id="Labels" lay-filter="Labels" class="layui-table " lay-data="{cellMinWidth:'80',height:'full-170', url:'/api/services/app/label/GetPageResult', page:true, id:'Labels',  even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
+                    <table autoevent="1" id="Labels" lay-filter="Labels" class="layui-table " lay-data="{cellMinWidth:'120',height:'full-170', url:'/api/services/app/label/GetPageResult', page:true, id:'Labels',  even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
                         <thead>
                             <tr>
                                 <th lay-data="{field:'labelName',edit:'text'}">@L("标签名称")</th>
                                 <th lay-data="{field:'labelType',templet:'#labelTypeTpl'}">@L("类别")</th>
-                                <th lay-data="{field:'',templet:'#memberTpl'}">@L("对应结构")</th>
+                                <th lay-data="{field:'',templet:'#relativeTpl',width:'450'}">@L("对应结构")</th>
                                 <th lay-data="{field:'creator'}">@L("创建人")</th>
-                                <th lay-data="{field:'creationTime',sort:true}">@L("创建时间")</th>
+                                <th lay-data="{field:'creationTime',sort:true,width:'140'}">@L("创建时间")</th>
                                 <th lay-data="{align:'center', toolbar: '#toolbar'}">@L("操作")</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
                 <div class="layui-tab-item">
+                    <div class="layui-row layui-col-space10">
+                        <div class="layui-col-xs3">
+                            <ul id="tree" class="ztree"
+                                style="padding: 2px; border: 1px solid #ddd; overflow: auto;min-height:500px"></ul>
+                        </div>
+                        <div class="layui-col-xs9 ">
+                            <table id="labelTable" lay-filter="labelTable"></table>
 
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,12 +61,66 @@
     <script type="text/html" id="labelTypeTpl">
         <span class="layui-badge layui-bg-blue" style="cursor:pointer" tips="点击切换类别" onclick="toggleLabelType({{d.id}},'{{d.labelType}}')">{{d.labelType}}</span>
     </script>
+    <script type="text/html" id="relativeTpl">
+        {{#  layui.each(d.relativeNodeStrings, function(index, item){ }}
+        <span class="layui-badge layui-bg-blue" tips="{{item.join('-')}}">{{item[item.length-1]}}</span>
+        {{#  }); }}
+
+    </script>
+    @*<script type="text/html" id="relativeTpl2">
+        {{#  layui.each(d.relativeNames, function(index, item){ }}
+        <div>{{item.join('-')}}</div>
+        {{#  }); }}
+
+    </script>*@
+    <script type="text/html" id="toolbar">
+        <a dataid="{{d.id}}" class="layui-btn layui-btn-xs " title="编辑" type="button" buttonname="编辑" modulekey="Labels" params="{&quot;area&quot;: [&quot;50%&quot;, &quot;90%&quot;]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/BaseTree/LabelBind" onclick="func.callModuleButtonEvent()">编辑</a>
+    </script>
     <script>
         var app;
         var searchKeys = {};
 
         config.ready = function () {
-
+            window.ztree = function () {
+                var zTreeObj;
+                var setting = {
+                    view: { selectedMulti: false },
+                    data: {
+                        key: {
+                            name: 'name',
+                            title: 'name'
+                        },
+                        simpleData: {
+                            enable: true,
+                            idKey: 'id',
+                            pIdKey: 'parentId',
+                            rootPId: null
+                        }
+                    },
+                    callback: {
+                        onClick: function (event, treeId, treeNode) {
+                            loadLabelTable(treeNode.id);
+                            //searchKeys.parentId = treeNode.id;
+                            //config.reloadTable();
+                        }
+                    }
+                };
+                var load = function () {
+                    abp.services.app.baseTree.getTypeTreeJsonByParentId().done(function (json) {
+                        nodes = json;
+                        zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                        //var newNode = { briefName: "根节点", id: null, parentId: "" };
+                        //json.push(newNode);
+                        zTreeObj.addNodes(null, json);
+                        //mainList({ orgId: "" });
+                        zTreeObj.expandAll(true);
+                    });
+                };
+                load();
+                return {
+                    reload: load
+                };
+            }();
             var element = layui.element;
             var table = layui.table;
             //一些事件监听
@@ -127,6 +191,23 @@
             func.runAsync(abp.services.app.label.setLabelType(id, targetLabelType).done(function () {
                 config.reloadTable();
             }))
+        }
+
+        function loadLabelTable(treeId) {
+            func.runAsync(abp.services.app.baseTree.getRelativeLabelsWithOtherReference(treeId).done(function (data) {
+                var cols = [
+                    { field: 'labelName', title: '标签名称',align:'center' },
+                    { field: 'relative', title: '其它关联', templet: '#relativeTpl', align: 'center' },
+                ]
+                layui.table.render({
+                    cellMinWidth: 100,
+                    limit: 10000,
+                    elem: '#labelTable'
+                    , cols: [cols]
+                    , data: data
+                });
+            }));
+
         }
     </script>
 }

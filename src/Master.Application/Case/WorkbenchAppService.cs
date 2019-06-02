@@ -49,7 +49,7 @@ namespace Master.Case
                 ValidDate=entity.ValidDate.ToString("yyyy/MM/dd"),
                 entity.SourceSN,
                 entity.LawyerFirms,
-                History = entity.CaseSourceHistories
+                History = entity.CaseSourceHistories.MapTo<List<CaseSourceHistoryDto>>()
             };
         }
         #endregion
@@ -164,6 +164,7 @@ namespace Master.Case
 
             var caseInitial = await Resolve<CaseInitialManager>().GetAll()
                 .Include(o => o.CaseNodes)
+                .Include(o=>o.CaseLabels)
                 .Include(o => o.CaseFines)
                 .Include(o => o.CaseCards)
                 .Where(o => o.CaseSourceId == id && o.CreatorUserId == caseSource.OwerId)
@@ -218,6 +219,7 @@ namespace Master.Case
                 }
                 //删除
                 caseInitial.CaseNodes.Clear();
+                caseInitial.CaseLabels.Clear();
             }
             else
             {

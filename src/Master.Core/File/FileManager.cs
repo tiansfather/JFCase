@@ -29,10 +29,14 @@ namespace Master
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public async Task<File> UploadFile(IFormFile file)
+        public async Task<File> UploadFile(IFormFile file, bool temp)
         {
             DateTime now = DateTime.Now;
             string upload_path = $"{Directory.GetCurrentDirectory()}\\wwwroot\\files\\{now.Year}\\{now.ToString("MM")}\\{now.ToString("dd")}";
+            if (temp)
+            {
+                upload_path = $"{Directory.GetCurrentDirectory()}\\wwwroot\\temp";
+            }
 
             Directory.CreateDirectory(upload_path);
 
@@ -51,7 +55,8 @@ namespace Master
 
             }
             //虚拟路径
-            var virtualPath = $"/files/{now.Year}/{now.ToString("MM")}/{now.ToString("dd")}/{filenamenew}";
+            //var virtualPath = $"/files/{now.Year}/{now.ToString("MM")}/{now.ToString("dd")}/{filenamenew}";
+            var virtualPath = Common.PathHelper.AbsolutePathToVirtualPath($"{upload_path}/{filenamenew}");
             var fileModel = new File()
             {
                 TenantId = AbpSession.TenantId,
@@ -60,7 +65,7 @@ namespace Master
                 FileSize = Convert.ToDecimal(file.Length) / 1024
             };
 
-            await InsertAndGetIdAsync(fileModel);
+            //await InsertAndGetIdAsync(fileModel);
 
             return fileModel;
         }

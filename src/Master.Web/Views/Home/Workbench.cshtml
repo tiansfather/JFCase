@@ -48,7 +48,7 @@
         //获取用户工作台中最大案例数量，如果当前工作台的数量已等于最大案例数量，则添加案源入口不可用
         abp.setting.getInt("maxWorkbenchCaseCount")
         //获取用户工作台案例数量
-        abp.servcies.app.workbench.getMyProcessingCount().done(function (data) {
+        abp.services.app.workbench.getMyProcessingCount().done(function (data) {
             //data:工作台案例数量:8
         })
     </script>
