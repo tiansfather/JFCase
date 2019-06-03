@@ -697,6 +697,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'getUserIsActive'
+    abp.services.app.user.getUserIsActive = function(id, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/User/GetUserIsActive' + abp.utils.buildQueryString([{ name: 'id', value: id }]) + '',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
     // action 'updateUserInfo'
     abp.services.app.user.updateUserInfo = function(userUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {

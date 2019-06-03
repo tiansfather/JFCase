@@ -83,6 +83,7 @@ namespace Master.Case
             return nodes.Select(o => new
             {
                 o.Id,
+                o.ParentId,
                 o.Name,
                 o.DisplayName
             });

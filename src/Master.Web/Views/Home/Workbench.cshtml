@@ -34,14 +34,14 @@
                             <p class="wzys1">{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
                         </dd>
                         <dd class="card-bottom">
-                            <p class="fleft">{{caseSourceStatus==1?'待加工':'加工中'}}...</p>
+                            <p class="fleft">{{item.caseSourceStatus==1?'待加工':'加工中'}}...</p>
                             <p><a @@click="modal1 = true"><i class="mywj-icon-2"></i></a></p>
                             <p><a :href="'/Home/Process?encrypedId='+item.encrypedId"><i class="mywj-icon-1"></i></a></p>
                         </dd>
                     </dl>
                 </li>
 
-                <li>
+                <li :class="{'on':(sources.length+1)%3==2}">
                     <dl>
                         <dd class="card-zhongjian">
 
@@ -59,16 +59,21 @@
         <div class="neirong-eject-ny">
             <ul>
                 <li class="bot-on-b"><p>请选择（填写）放回原由：</p></li>
-                <li><Checkbox v-model="single1">判断过于简单，不适合加工</Checkbox></li>
-                <li><Checkbox v-model="single2">判断描述不清，不适合加工</Checkbox></li>
-                <li><Checkbox v-model="single3">其他（填写）</Checkbox></li>
-                <li><i-Input v-model="value8" type="textarea" :autosize="{minRows: 5,maxRows: 5}" placeholder="这里请输入放回原因…" /></li>
+                <li>
+                    <CheckboxGroup v-model="choosedReasons">
+                        <Checkbox  v-for="(item,index) in reasons" :label="item">
+                            {{item}}
+                        </Checkbox>
+                        <Checkbox label="other">其他（填写）</Checkbox>
+                    </CheckboxGroup>
+                </li>
+                <li><i-Input v-model="otherReason" type="textarea" :autosize="{minRows: 5,maxRows: 5}" placeholder="这里请输入放回原因…" /></li>
             </ul>
         </div>
         <div slot="footer">
             <div class="but-foot">
-                <div class="but-left-foot"><Button class="btn-footer" @@click="submit">放回</Button></div>
-                <div class="but-right-foot"><Button class="btn-footer-qx" @@click="submit">取消</Button></div>
+                <div class="but-left-foot"><Button class="btn-footer" @@click="giveBack">放回</Button></div>
+                <div class="but-right-foot"><Button class="btn-footer-qx" @@click="modal1=false">取消</Button></div>
             </div>
         </div>
     </Modal>
@@ -89,7 +94,7 @@
 
 @section scripts{
     <script>
-        new Vue({
+        var app=new Vue({
             el: '#app',
             data: {
                 //spanLeft: 3,
@@ -106,8 +111,10 @@
                 single2: false,
                 single3: false,
                 sources: [],//工作台中的判例
-                userIsAcitve:true,//用户是否被冻结
-
+                userIsAcitve: true,//用户是否被冻结
+                reasons:[],//供选择退回原因
+                choosedReasons: [],//选中的退回原因
+                otherReason:'',//其它退回原因
             },
             computed: {
                 //用户是否还可以添加判例
@@ -117,21 +124,39 @@
             },
             //
             methods: {
-                submit() {
-                    this.modal1 = false;
+                giveBack() {
+                    //验证退回原因是否填写
+                    if (this.choosedReasons.length == 0) {
+                        abp.message.error("请选择至少一条退还原因");
+                    } else if (this.choosedReasons.indexOf("Other") >= 0 && !this.otherReason) {
+                        abp.message.error("您选择了其它原因,请在文本框中填写具体原因");
+                    } else {
+                        var reason = this.choosedReasons.join(',');
+                        //todo:弹出确认框
+                        abp.services.app.workbench.giveBack(id, reason)
+                    }
                 }
             },
             //
             mounted: function () {
                 var that = this;
+                //获取工作台案例
                 abp.services.app.workbench.getMyProcessingCaseSource().done(function (data) {
                     //data:[{encrypedId:'加密后的id',id:1,anYou:'案由',court1:'一审法院',court2:'二审法院',validDate:'判决日期',caseSourceStatus:1，SourceSN:案号}]
                     //caseSourceStatus为案例状态：1待加工，2加工中
                     //对应的加工页地址为/Home/Process?encrypedId=加密后的id
                     that.sources = data;
                 })
-                abp.services.app.user.getUseIsActive(abp.session.userId).done(function (data) {
+                //用户是否被冻结
+                abp.services.app.user.getUserIsActive(abp.session.userId).done(function (data) {
                     that.userIsAcitve = data;
+                })
+                //退回原因
+                abp.services.app.dictionary.getDictionary('退回原因').done(function (data) {
+                    //data:[{"a":"a","b":"b"}]
+                    for (var item in data) {
+                        that.reasons.push(item);
+                    }
                 })
             }
         })
