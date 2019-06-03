@@ -9,7 +9,7 @@ namespace Master.Authentication
 {
     [InterModule("审核新矿工")]
     [AutoMap(typeof(User))]
-    public class NewMiner:BaseFullEntityWithTenant
+    public class NewMiner:BaseFullEntity
     {      
         public string OpenId { get; set; }
         
@@ -21,6 +21,8 @@ namespace Master.Authentication
         public string Name { get; set; }
         [InterColumn(ColumnName = "律师事务所")]
         public string WorkLocation { get; set; }
+        [InterColumn(ColumnName = "手机号码")]
+        public string PhoneNumber { get; set; }
         [InterColumn(ColumnName = "邮箱")]
         public string Email { get; set; }
         [InterColumn(ColumnName = "申请时间",ColumnType =Module.ColumnTypes.DateTime)]
