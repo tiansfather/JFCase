@@ -19,7 +19,9 @@
                     </dl>
                 </li>
                 <li>
-                    <dl class="xian">
+                    <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
+
+                    @*<dl class="xian">
                         <dd class="style-bf-20">
                             <template>
                                 <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
@@ -48,7 +50,7 @@
                             </template>
                         </dd>
                         <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
-                    </dl>
+                    </dl>*@
                 </li>
                 <li class="on">您的工作台已有 <span class="shuzi">{{workbenchCount}}</span> 个案例，还可以选择 <span class="shuzi">{{canChooseCount}}</span> 个案例:</li>
                 <li v-show="items.length==0">
@@ -140,7 +142,7 @@
             el: '#app',
             data: {
                 wherePart: {
-                    anyouid: '',
+                    anyouId: '',
                     cityId: '',
                     courtId: '',
                 },
@@ -151,9 +153,9 @@
                 items: [],
                 currentItem: {},
                 workbenchCount: 0,//工作台已有数量
-                anYous: [],
-                cities: [],
-                courts:[],
+                //anYous: [],
+                //cities: [],
+                //courts:[],
                 //theme1: 'light',
                 //spanLeft: 3,
                 //spanRight: 21,
@@ -173,18 +175,20 @@
             },
             computed: {
                 where: function () {
-                    var where = '1=1';
-                    for (var i in this.wherePart) {
-                        var data = this.wherePart[i];
-                        if (!data) continue;
-                        if (i == 'courtId') {
-                            where += ` and (court1Id=${data} or court2id=${data})`;
-                        } else {
-                            where += ` and ${i}=${data}`;
-                        }
+                    return this.$refs.headFilter.where;
+                    //var where = '1=1';
+                    //for (var i in this.wherePart) {
+                    //    console.log(i,this.wherePart[i])
+                    //    var data = this.wherePart[i];
+                    //    if (!data) continue;
+                    //    if (i == 'courtId') {
+                    //        where += ` and (court1Id=${data} or court2id=${data})`;
+                    //    } else {
+                    //        where += ` and ${i}=${data}`;
+                    //    }
 
-                    }
-                    return where;
+                    //}
+                    //return where;
                     //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
 
                 },
@@ -192,16 +196,16 @@
                 canChooseCount: function () {
                     return abp.setting.getInt("maxWorkbenchCaseCount") - this.workbenchCount;
                 },
-                filterCourtByCity: function () {
-                    this.wherePart.courtId = null;
-                    if (!this.wherePart.cityId) {
-                        return [];
-                    } else {
-                        var that = this;
-                        return this.courts.filter(o => o.parentId == that.wherePart.cityId);
-                    }
+                //filterCourtByCity: function () {
+                //    this.wherePart.courtId = null;
+                //    if (!this.wherePart.cityId) {
+                //        return [];
+                //    } else {
+                //        var that = this;
+                //        return this.courts.filter(o => o.parentId == that.wherePart.cityId);
+                //    }
                     
-                }
+                //}
             },
             methods: {
                 //将案源加入工作台
@@ -230,18 +234,18 @@
                     })
                 },
                 //获取分类信息
-                loadTypes: function () {
-                    var that = this;
-                    abp.services.app.type.getAnYous().done(function (data) {
-                        that.anYous = data;
-                    });
-                    abp.services.app.type.getCities().done(function (data) {
-                        that.cities = data;
-                    });
-                    abp.services.app.type.getCourts().done(function (data) {
-                        that.courts = data;
-                    });
-                },
+                //loadTypes: function () {
+                //    var that = this;
+                //    abp.services.app.type.getAnYous().done(function (data) {
+                //        that.anYous = data;
+                //    });
+                //    abp.services.app.type.getCities().done(function (data) {
+                //        that.cities = data;
+                //    });
+                //    abp.services.app.type.getCourts().done(function (data) {
+                //        that.courts = data;
+                //    });
+                //},
                 getLawyer: function (item) {
                     return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
                 }
@@ -249,7 +253,7 @@
             mounted: function () {
                 this.loadSource();
                 this.loadWorkBenchCount();
-                this.loadTypes();
+                //this.loadTypes();
             }
         })
     </script>

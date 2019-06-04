@@ -47,19 +47,40 @@
             </div>
         </div>
     </script>
+    <script id="headSelectFilter" type="text/x-template">
+
+        <dl class="xian">
+            <dd class="style-bf-20">
+                <template>
+                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
+                        <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                    </i-select>
+                </template>
+            </dd>
+            <dd class="style-bf-20">
+                <template>
+                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
+                        <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                    </i-select>
+                </template>
+            </dd>
+            <dd class="style-bf-20">
+                <template>
+                    <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
+                        <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                        <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                    </i-select>
+                </template>
+            </dd>
+            <dd class="style-bf-30">
+                <template>
+                    <i-input v-model="wherePart.keyword" size="small" placeholder="请输入关键词等信息..." />
+                </template>
+            </dd>
+            <dd class="style-bf-10"><button class="btn-search" @@click="$emit('click')">筛选</button></dd>
+        </dl>
+    </script>
 <script>
-
-    //Vue.component('com-headr', {//前台页面头
-    //    data: function () {
-    //        return {
-    //        }
-    //    },
-    //    props: [],
-    //    template: '#comHeader',
-    //    methods: {
-
-    //    }
-    //})
     Vue.component('com-header', {//前台页面头
         template: '#comHeader',
         props: ['activeName'],
@@ -78,5 +99,70 @@
     Vue.component('com-footer', {
         //不设font-size12，就变大了，没看出原因
         template:'<div class="footer-ny"><div class="ziti-b" style="font-size:12px;">2017-2020 | Copyright | 版权声明 | 简法二手房 ( 沪ICP备00000000号 )</div></div>'
+    })
+    Vue.component('head-select-filter', {
+        data: function () {
+            var w = this.wherePart || {
+                anyouId: '',
+                cityId: '',
+                courtId: '',
+            };
+            return {
+                anYous: [],
+                cities: [],
+                courts: [],
+                filterCourtByCity:[],
+                whereParts: w
+            }
+        },
+        template:'#headSelectFilter',
+        props: ['wherePart'],
+        computed: {
+            where: function () {
+                var where = '1=1';
+                for (var i in this.whereParts) {
+                    var data = this.whereParts[i];
+                    if (!data) continue;
+                    if (i == 'courtId') {
+                        where += ` and (court1Id=${data} or court2id=${data})`;
+                    } else {
+                        where += ` and ${i}=${data}`;
+                    }
+
+                }
+                return where;
+                //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+
+            },
+        },
+        methods: {
+            //获取分类信息
+            loadTypes: function () {
+                var that = this;
+                abp.services.app.type.getAnYous().done(function (data) {
+                    that.anYous = data;
+                });
+                abp.services.app.type.getCities().done(function (data) {
+                    that.cities = data;
+                });
+                abp.services.app.type.getCourts().done(function (data) {
+                    that.courts = data;
+                });
+            },
+        },
+        watch: {
+            'wherePart.cityId': function (val,old) {
+                this.wherePart.courtId = null;
+                if (!val) {
+                    this.filterCourtByCity= [];
+                } else {
+                    var that = this;
+                    this.filterCourtByCity = this.courts.filter(o => o.parentId == val);
+                }
+            }
+        },
+        created: function () {
+            this.loadTypes();
+        }
     })
 </script>
