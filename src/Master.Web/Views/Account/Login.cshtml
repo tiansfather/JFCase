@@ -107,36 +107,44 @@
             methods: {
                 test() {
                     this.$Modal.confirm({
-                    title: 'Title',
-                    content: '<p>The dialog box will be closed after 2 seconds</p>',
-                    loading: true,
-                    onOk: () => {
-                        setTimeout(() => {
-                            this.$Modal.remove();
+                        title: 'Title',
+                        content: '<p>The dialog box will be closed after 2 seconds</p>',
+                        loading: true,
+                        onOk: () => {
+                            app.$Modal.remove();
+                            //此处用message正常，用modal就会弹出马上消失
                             this.$Modal.info({
-                                title:  '消息', content: '',  onOk: function () {
+                                title: '消息', content: '', onOk: function () {
                                 }
                             })
-                        }, 2000);
-                    }
-                });
+                            //除非使用settimeout
+                            //setTimeout(() => {
+                            //    app.$Modal.info({
+                            //        title: '消息', onOk: function () {
+                            //        }
+                            //    })
+                            //}, 300);
+                        }
+                    });
+                },
+                spin() {
+                    this.$Spin.show();
+                    setTimeout(() => {
+                        this.$Spin.hide();
+                    }, 3000);
                 },
                 doSubmit: function () {
                     //todo:数据验证
-                    abp.message.confirm("确认提交?", '', true).done(function () {
-                        abp.services.app.newMiner.register(app.currentItem).done(function () {
-                            app.$Modal.remove();
+                    abp.message.confirm("确认提交?").done(function () {                        
+                        func.runAsync(abp.services.app.newMiner.register(app.currentItem).done(function () {
                             abp.message.success("您的注册申请已提交，我们将会在X个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！")
                                 .done(function () {
                                     location.reload();
-                            })
-                        })
+                                })
+                        }));
+                        
                         
                     })
-                    //func.runAsync(abp.services.app.newMiner.register(this.currentItem).done(function () {
-                        
-                        
-                    //}))
                 }
             }
 		});
