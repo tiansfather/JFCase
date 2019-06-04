@@ -105,12 +105,38 @@
 				}
             },
             methods: {
+                test() {
+                    this.$Modal.confirm({
+                    title: 'Title',
+                    content: '<p>The dialog box will be closed after 2 seconds</p>',
+                    loading: true,
+                    onOk: () => {
+                        setTimeout(() => {
+                            this.$Modal.remove();
+                            this.$Modal.info({
+                                title:  '消息', content: '',  onOk: function () {
+                                }
+                            })
+                        }, 2000);
+                    }
+                });
+                },
                 doSubmit: function () {
                     //todo:数据验证
-                    func.runAsync(abp.services.app.newMiner.register(this.currentItem).done(function () {
-                        abp.message.success("成功");
+                    abp.message.confirm("确认提交?", '', true).done(function () {
+                        abp.services.app.newMiner.register(app.currentItem).done(function () {
+                            app.$Modal.remove();
+                            abp.message.success("您的注册申请已提交，我们将会在X个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！")
+                                .done(function () {
+                                    location.reload();
+                            })
+                        })
                         
-                    }))
+                    })
+                    //func.runAsync(abp.services.app.newMiner.register(this.currentItem).done(function () {
+                        
+                        
+                    //}))
                 }
             }
 		});
@@ -137,18 +163,26 @@
                                 doExternalAuthentication(authModel);
                             } else if (status == 2) {
                                 app.step = 2;
+                            } else if (status == -1) {
+                                abp.message.info("您的账号已被冻结（注销），请联系<a href='mailto:abc@163.com'>管理员</a>");
+                                doLoop();
+                            } else if (status == 3) {
+                                abp.message.info("您的账号还在审核中，请耐心等待");
+                                doLoop();
                             }
                         })
 						
-					} else {
-						window.setTimeout(loopFunc, 1000);
+                    } else {
+                        doLoop();
 					}
 
 
 				});
 			}
 			loopFunc();
-
+    function doLoop() {
+        window.setTimeout(loopFunc, 1000);
+    }
         //第三方登录接口
         function doExternalAuthentication(authModel) {
             console.log(authModel);
