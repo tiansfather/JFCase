@@ -86,6 +86,7 @@
                 var nodeIds = nodes.map(function (o) { return o.id });
                 func.runAsync(abp.services.app.label.bindToNode(labelId, nodeIds).done(function () {
                     parent.layer.msg("提交成功");
+                    parent.config.reloadTable();
                     parent.layer.closeAll("iframe");
                 }))
             })

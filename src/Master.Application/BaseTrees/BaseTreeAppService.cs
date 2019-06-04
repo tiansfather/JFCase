@@ -138,7 +138,7 @@ namespace Master.BaseTrees
             var result = new List<object>();
             var labelManager = Resolve<LabelManager>();
             var manager = Manager as BaseTreeManager;
-            var labels = await GetRelativeLabels(nodeId);
+            var labels = await manager.GetRelativeLabels(nodeId);
 
             foreach(var label in labels)
             {
@@ -160,17 +160,19 @@ namespace Master.BaseTrees
         }
 
         /// <summary>
-        /// 获取树节点关联的所有标签
+        /// 获取节点关联的标签
         /// </summary>
         /// <param name="nodeId"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<Label>> GetRelativeLabels(int nodeId)
+        public virtual async Task<object> GetRelativeLabels(int nodeId)
         {
-            return await Resolve<IRepository<TreeLabel, int>>()
-                .GetAll().Include(o => o.Label)
-                .Where(o => o.BaseTreeId == nodeId)
-                .Select(o => o.Label)
-                .ToListAsync();
+            var labels = await (Manager as BaseTreeManager).GetRelativeLabels(nodeId);
+            return labels.Select(o => new
+            {
+                o.Id,
+                o.LabelName,
+                o.LabelType
+            });
         }
 
     }

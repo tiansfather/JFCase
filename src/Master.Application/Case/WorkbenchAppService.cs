@@ -85,7 +85,8 @@ namespace Master.Case
                     Court1 = o.Court1 != null ? o.Court1.DisplayName : "",
                     Court2 = o.Court2 != null ? o.Court2.DisplayName : "",
                     ValidDate = o.ValidDate.ToString("yyyy-MM-dd"),
-                    o.CaseSourceStatus
+                    o.CaseSourceStatus,
+                    o.SourceSN
                 })
                 .ToListAsync();
 

@@ -28,7 +28,7 @@
 			<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
 				<ul class="layui-tab-title">
 					<li class="layui-this">@L("基本信息")</li>
-					<li>@L("关联账号")</li>
+					@*<li>@L("关联账号")</li>*@
 				</ul>
 				<div class="layui-tab-content">
                     <div class="layui-tab-item layui-show">
@@ -62,49 +62,10 @@
             </div>
         </div>*@
                     </div>
-					<div class="layui-tab-item">
+					@*<div class="layui-tab-item">
 						<div is="lay-userbindlogin" user-id="@AbpSession.UserId.Value"></div>
-						@*@foreach (var provider in providers.Where(o => !string.IsNullOrEmpty(o.BindUrl)))
-						{
-							<div class="layui-form-item" provider="@provider.Name">
-								<label class="layui-form-label">@provider.Name</label>
-								<div class="layui-input-inline">
-									<input type="text" autocomplete="off" class="layui-input" :value="isBinded('@provider.Name')?'已绑定':'未绑定'" readonly>
-								</div>
-								<input v-if="!isBinded('@provider.Name')" type="button" class="layui-btn laydialog" value="绑定"  url="@provider.BindUrl" title="绑定登录" width="400" height="400"/>
-								<input v-else type="button" class="layui-btn layui-btn-danger" value="取消绑定" onclick="unBindLogin('@provider.Name')" />
-							</div>
-						}*@
-						@*@{
-							var wechatProvider = providers.Where(o => o.Name == "Wechat").SingleOrDefault();
-						}
-						@if (wechatProvider != null && ViewBag.EnableWeChatAuthentication)
-						{
-							<div class="layui-form-item" provider="Wechat">
-								<label class="layui-form-label">微信</label>
-								<div class="layui-input-inline">
-									<input type="text" autocomplete="off" class="layui-input" :value="isBinded('Wechat')?'已绑定':'未绑定'" readonly>
-								</div>
-								<input v-if="!isBinded('Wechat')" type="button" class="layui-btn " value="绑定" onclick="bindLogin(this)" bindurl="@wechatProvider.BindUrl" />
-								<input v-else type="button" class="layui-btn layui-btn-danger" value="取消绑定" onclick="unBindLogin('Wechat')" />
-							</div>
-						}
-						@{
-							var miniProgramProvider = providers.Where(o => o.Name == "MiniProgram").SingleOrDefault();
-						}
-						@if (miniProgramProvider != null && ViewBag.EnableMiniProgramAuthentication)
-						{
-							<div class="layui-form-item" provider="MiniProgram">
-								<label class="layui-form-label">小程序</label>
-								<div class="layui-input-inline">
-									<input type="text" autocomplete="off" class="layui-input" :value="isBinded('MiniProgram')?'已绑定':'未绑定'" readonly>
-								</div>
-								<input v-if="!isBinded('MiniProgram')" type="button" class="layui-btn " value="绑定" onclick="bindLogin(this)" bindurl="@miniProgramProvider.BindUrl" />
-								<input v-else type="button" class="layui-btn layui-btn-danger" value="取消绑定" onclick="unBindLogin('MiniProgram')" />
-							</div>
-						}*@
-
-					</div>
+						
+					</div>*@
 				</div>
 			</div>
 

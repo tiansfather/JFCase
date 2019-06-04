@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewData["Title"] = "工作台";
+}
+
+<div id="app">
+    <com-headr active-index="4-3"></com-headr>
+    <div class="r-main-wrap" v-cloak>
+    </div>
+    <com-footer></com-footer>
+</div>
+
+@section scripts{
+    <script>
+
+        new Vue({
+            el: '#app',
+            data: {
+                source:[]
+            },
+            methods: {
+                update: function () {
+
+                },
+                loadSource: function () {
+                    //请求当前用户工作台所有加工案例
+                    abp.services.app.workbench.getMyProcessingCaseSource().done( (data)=>{
+                        //this.source=data
+                    })
+                }
+            },
+            mounted: function () {
+
+            }
+        })
+        //请求当前用户工作台所有加工案例
+        abp.services.app.workbench.getMyProcessingCaseSource().done(function (data) {
+            //data:[{encrypedId:'加密后的id',id:1,anYou:'案由',court1:'一审法院',court2:'二审法院',validDate:'判决日期',caseSourceStatus:1，SourceSN:案号}]
+            //caseSourceStatus为案例状态：1待加工，2加工中
+            //对应的加工页地址为/Home/Process?encrypedId=加密后的id
+        })
+        //获取所有退还理由
+        abp.services.app.dictionary.getDictionary('退还理由').done(function (data) {
+            //data:[{"a":"a","b":"b"}]
+        })
+        //退还判例接口:id为案例id,reason为退回理由
+        abp.services.app.workbench.giveBack(id, reason)
+        //获取用户工作台中最大案例数量，如果当前工作台的数量已等于最大案例数量，则添加案源入口不可用
+        abp.setting.getInt("maxWorkbenchCaseCount")
+        //获取用户工作台案例数量
+        abp.services.app.workbench.getMyProcessingCount().done(function (data) {
+            //data:工作台案例数量:8
+        })
+    </script>
+}

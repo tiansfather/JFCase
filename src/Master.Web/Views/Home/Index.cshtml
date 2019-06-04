@@ -11,37 +11,41 @@
         }
     </style>
 }
-@*<!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>减法二手房</title>
-        <link href="~/assets/jianfa/css/font-awesome.css" rel="stylesheet" />
-        <link href="~/assets/jianfa/css/jianfa-style.css" rel="stylesheet" />
-        <link href="~/assets/jianfa/css/base.css" rel="stylesheet" />
-
-    </head>*@
-
-<div class="index-bj-b">
-    <!--顶部-->
+<!--顶部-->
+<div id="app">
     <div class="jianfa-intop">
         <div class="intop-logo">
-
-            <div class="inlogo-pic"><img src="~/assets/jianfa/ima/logo-ny.png" border="0" /><span>案例工厂</span></div>
-            <div class="inportrait-pic"><img src="~/assets/jianfa/ima/index-2.png" border="0" /></div>
+            <div class="inlogo-pic"><img src="/assets/jianfa/ima/logo-ny.png" border="0"><span>案例工厂</span></div>
+            <div class="inportrait-pic"><img :src="avata" border="0"></div>
         </div>
-
     </div>
-    <!--首页-01-->
     <div class="index-daohang">
-        <a href="差案例.html"><div class="dh-left"></div></a>
-        <a href="看观点.html"><div class="dh-middle"></div></a>
-        <a href="我的文件.html"><div class="dh-right"></div></a>
+        <a href="/Home/ViewCase"><div class="dh-left"></div></a>
+        <a href="/Home/ViewPoint"><div class="dh-middle"></div></a>
+        <a href="/Home/WorkBench"><div class="dh-right"></div></a>
     </div>
     <!--end-->
-    <div class="footer-top">
-        <img src="~/assets/jianfa/ima/index-b-1.png" />
-    </div>
+    <div class="footer-top"><img src="/assets/jianfa/ima/index-b-1.png"></div>
     <!--footer-->
-    <footer><div class="ziti-a">2017-2020 | Copyright | 版权声明 | 简法二手房  ( 沪ICP备00000000号 )</div></footer>
+    <com-footer></com-footer>
 </div>
+
+
+@section scripts{
+    <script>
+        $("body").addClass("index-bj-b");
+        new Vue({
+            el: '#app',
+            data: {
+                avata:'/assets/jianfa/ima/index-2.png'
+            },
+            mounted: function () {
+                var that = this;
+                abp.services.app.user.getById(abp.session.userId).done(function (data) {
+                    that.avata = data.avata;
+                })
+            }
+        });
+    </script>
+
+}}

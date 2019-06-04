@@ -11,7 +11,7 @@
 @{
     Layout = null;
     AbpAntiForgeryManager.SetCookie(Context);
-    
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +20,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
-    <title>@ViewData["Title"]</title>
+    <title>简法二手房</title>
     <!--[if lt IE 9]>
     <meta http-equiv="refresh" content="0;ie.html" />
     <![endif]-->
@@ -41,7 +41,7 @@
     <script src="~/view-resources/Views/_Bundles/jianfa.min.js" asp-append-version="true"></script>
     <script src="~/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
     <script src="~/assets/js/global.js" asp-append-version="true"></script>
-
+    <script src="~/assets/js/home.js" asp-append-version="true"></script>
 
     @*<script src="~/assets/js/global.js" asp-append-version="true"></script>*@
     <!-- 全局js -->
@@ -49,18 +49,18 @@
     <script src="~/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
 
 </head>
-<body class="gray-bg" @*style="overflow-y:scroll" *@>
+<body>
 
-    @RenderSection("MainBody", required: false)
 
     @RenderBody()
 
 
-    @foreach (var commonView in WebCoreConfiguration.CommonViews)
+    @*@foreach (var commonView in WebCoreConfiguration.CommonViews)
     {
         await Html.RenderPartialAsync(commonView);
-    }
+    }*@
 
+    @{await Html.RenderPartialAsync("../Home/VueComponentJianFa"); }
 
     @RenderSection("scripts", required: false)
 </body>

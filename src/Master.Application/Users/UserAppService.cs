@@ -326,6 +326,16 @@ namespace Master.Users
 
 
         #region 用户信息
+        /// <summary>
+        /// 用户是否激活状态
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> GetUserIsActive(long id)
+        {
+            var user = await Manager.GetByIdAsync(id);
+            return user.IsActive;
+        }
         protected override object ResultConverter(User entity)
         {
             //获取用户已完成的案例
