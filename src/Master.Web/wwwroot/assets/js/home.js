@@ -103,7 +103,8 @@
             if (options.blockUI != false) {
                 abp.ui.block();
             }
-            app.$Spin.show();
+            //改这里
+            //app.$Spin.show();
             //$('body').spin(abp.libs.spinjs.spinner_config);
         } else {
             //var $elm = $(elm);
@@ -136,7 +137,8 @@
         //TODO@Halil: Maybe better to do not call unblock if it's not blocked by setBusy
         if (!elm) {
             abp.ui.unblock();
-            app.$Spin.hide();
+            //改这里
+            //app.$Spin.hide();
         } else {
             //var $elm = $(elm);
             //var $busyIndicator = $elm.find('.abp-busy-indicator');

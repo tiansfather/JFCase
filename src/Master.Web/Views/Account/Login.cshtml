@@ -109,9 +109,9 @@
                     this.$Modal.confirm({
                         title: 'Title',
                         content: '<p>The dialog box will be closed after 2 seconds</p>',
-                        loading: true,
+                        //loading: true,
                         onOk: () => {
-                            app.$Modal.remove();
+                            //app.$Modal.remove();
                             //此处用message正常，用modal就会弹出马上消失
                             this.$Modal.info({
                                 title: '消息', content: '', onOk: function () {
