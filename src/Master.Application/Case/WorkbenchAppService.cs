@@ -35,7 +35,14 @@ namespace Master.Case
         protected override async Task<IQueryable<CaseSource>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseSource> query)
         {
             return (await base.BuildKeywordQueryAsync(keyword, query))
-                .Where(o=>o.SourceSN.Contains(keyword));
+                .Where(o=>o.SourceSN.Contains(keyword) 
+                || o.AnYou.DisplayName.Contains(keyword)
+                || o.City.DisplayName.Contains(keyword)
+                || o.Court1.DisplayName.Contains(keyword)
+                || o.Court2.DisplayName.Contains(keyword)
+                || o.TrialPeopleField.Contains(keyword)
+                || o.LawyerFirmsField.Contains(keyword)
+                );
         }
         protected override object PageResultConverter(CaseSource entity)
         {

@@ -22,6 +22,7 @@ namespace Master.Case
         #region 添加修改
         public virtual async Task Update(CaseSourceUpdateDto caseSourceDto)
         {
+            caseSourceDto.Normalize();
             var manager = Manager as CaseSourceManager;
             CaseSource caseSource = null;
             if (!caseSourceDto.Id.HasValue || caseSourceDto.Id.Value == 0)
@@ -32,6 +33,7 @@ namespace Master.Case
             {
                 caseSource = await manager.GetByIdAsync(caseSourceDto.Id.Value);
                 caseSourceDto.MapTo(caseSource);
+                
             }
 
             await manager.SaveAsync(caseSource);

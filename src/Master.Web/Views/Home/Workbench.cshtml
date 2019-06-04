@@ -5,7 +5,8 @@
 }
 <div id="app">
     <!--顶部-->
-   <com-header active-name="工作台"></com-header>
+    <com-header active-name="工作台"></com-header>
+    
     <!---01-->
     <div class="jianfa-content">
         <div class="ny-content on">
@@ -35,7 +36,7 @@
                         </dd>
                         <dd class="card-bottom">
                             <p class="fleft">{{item.caseSourceStatus==1?'待加工':'加工中'}}...</p>
-                            <p><a @@click="modal1 = true"><i class="mywj-icon-2"></i></a></p>
+                            <p><a @@click="currentItem=item;modal1 = true"><i class="mywj-icon-2"></i></a></p>
                             <p><a :href="'/Home/Process?encrypedId='+item.encrypedId"><i class="mywj-icon-1"></i></a></p>
                         </dd>
                     </dl>
@@ -45,7 +46,7 @@
                     <dl>
                         <dd class="card-zhongjian">
 
-                            <span><a href="/Home/Source"><i class="mywj-icon-3"></i></a>去案源库，添加工作文件</span>
+                            <span><a href="/Home/Source" @@click.prevent="gotoSource"><i class="mywj-icon-3"></i></a>去案源库，添加工作文件</span>
                         </dd>
                     </dl>
                 </li>
@@ -61,7 +62,7 @@
                 <li class="bot-on-b"><p>请选择（填写）放回原由：</p></li>
                 <li>
                     <CheckboxGroup v-model="choosedReasons">
-                        <Checkbox  v-for="(item,index) in reasons" :label="item">
+                        <Checkbox v-for="(item,index) in reasons" :label="index">
                             {{item}}
                         </Checkbox>
                         <Checkbox label="other">其他（填写）</Checkbox>
@@ -97,13 +98,10 @@
         var app=new Vue({
             el: '#app',
             data: {
-                //spanLeft: 3,
-                //spanRight: 21,
-                theme1: 'primary',
                 value: '',
                 modal1: false,
                 moda12: false,
-                value8: '',
+                toemail: abp.setting.get("receiveMailAddress"),
                 // moda3: false,
                 // password1:false,
                 //value1: [],
@@ -111,10 +109,12 @@
                 single2: false,
                 single3: false,
                 sources: [],//工作台中的判例
+                currentItem: {},//当前选中的判例
                 userIsAcitve: true,//用户是否被冻结
                 reasons:[],//供选择退回原因
                 choosedReasons: [],//选中的退回原因
-                otherReason:'',//其它退回原因
+                otherReason: '',//其它退回原因
+                social:[]
             },
             computed: {
                 //用户是否还可以添加判例
@@ -124,7 +124,21 @@
             },
             //
             methods: {
+                //去案源库
+                gotoSource() {
+                    if (this.canAdd) {
+                        location.href = '/Home/Source';
+                    } else {
+                        if (!this.userIsAcitve) {
+                            abp.message.info("您的账号被冻结，目前不能加工案例，请联系<a style='color:blue' href='mailto:" + this.toemail + "'>管理员</a>")
+                        } else {
+                            abp.message.info("您的工作台中已经有多个案例待加工，请完成后并发布，然后再添加新的判例。")
+                        }
+                    }
+                },
+                //退还
                 giveBack() {
+                    var that = this;
                     //验证退回原因是否填写
                     if (this.choosedReasons.length == 0) {
                         abp.message.error("请选择至少一条退还原因");
@@ -132,21 +146,30 @@
                         abp.message.error("您选择了其它原因,请在文本框中填写具体原因");
                     } else {
                         var reason = this.choosedReasons.join(',');
-                        //todo:弹出确认框
-                        abp.services.app.workbench.giveBack(id, reason)
+                        abp.message.confirm("您确定要将此案例放回判例库吗？您所做的加工内容将不再保留，确定要继续吗？").done(function () {
+                            func.runAsync(abp.services.app.workbench.giveBack(that.currentItem.id, reason).done(function () {
+                                that.loadSource();
+                                that.modal1 = false;
+                            }))
+                        })
+                        
                     }
+                },
+                loadSource: function () {
+                    var that = this;
+                    abp.services.app.workbench.getMyProcessingCaseSource().done(function (data) {
+                        //data:[{encrypedId:'加密后的id',id:1,anYou:'案由',court1:'一审法院',court2:'二审法院',validDate:'判决日期',caseSourceStatus:1，SourceSN:案号}]
+                        //caseSourceStatus为案例状态：1待加工，2加工中
+                        //对应的加工页地址为/Home/Process?encrypedId=加密后的id
+                        that.sources = data;
+                    })
                 }
             },
             //
             mounted: function () {
                 var that = this;
                 //获取工作台案例
-                abp.services.app.workbench.getMyProcessingCaseSource().done(function (data) {
-                    //data:[{encrypedId:'加密后的id',id:1,anYou:'案由',court1:'一审法院',court2:'二审法院',validDate:'判决日期',caseSourceStatus:1，SourceSN:案号}]
-                    //caseSourceStatus为案例状态：1待加工，2加工中
-                    //对应的加工页地址为/Home/Process?encrypedId=加密后的id
-                    that.sources = data;
-                })
+                this.loadSource();
                 //用户是否被冻结
                 abp.services.app.user.getUserIsActive(abp.session.userId).done(function (data) {
                     that.userIsAcitve = data;

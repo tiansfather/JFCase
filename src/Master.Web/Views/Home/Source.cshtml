@@ -13,9 +13,9 @@
             <ul>
                 <li>
                     <dl>
-                        <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
-                        <dd class="xchu">上海<span><!--<i class="jianfa fa-close"></i>-->×</span></dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
+                        <dd>当前位置：案例工厂 > 判例库 > 筛选 ：</dd>
+                        @*<dd class="xchu">上海<span>×</span></dd>
+                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                     </dl>
                 </li>
                 <li>
@@ -212,7 +212,7 @@
                 choose: function () {
                     var that = this;
                     abp.services.app.workbench.choose(this.currentItem.id).done(function () {
-                        abp.message.success("判例已放入您的工作台!");
+                        that.$Message.success("判例已放入您的工作台!");
                         //重新加载判例库，并更新工作台数量;
                         that.loadSource();
                         that.loadWorkBenchCount();
@@ -221,10 +221,10 @@
                 loadSource: function () {
                     var that = this;
                     //数据获取接口
-                    abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
+                    func.runAsync(abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
                         that.items = res.data;
                         that.totalCount = res.count;
-                    })
+                    }))
                 },
                 //获取工作台数量
                 loadWorkBenchCount: function () {

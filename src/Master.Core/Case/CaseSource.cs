@@ -36,6 +36,7 @@ namespace Master.Case
         public virtual BaseTree AnYou { get; set; }
         [InterColumn(ColumnName ="生效日期",ColumnType =Module.ColumnTypes.DateTime,Sort =6)]
         public DateTime ValidDate { get; set; }
+        public string TrialPeopleField { get; set; }
         [NotMapped]
         public List<TrialPerson> TrialPeople
         {
@@ -48,6 +49,7 @@ namespace Master.Case
                 this.SetPropertyValue("TrialPeople", value);
             }
         }
+        public string LawyerFirmsField { get; set; }
         [NotMapped]
         public List<LawyerFirm> LawyerFirms
         {

@@ -8,7 +8,7 @@
 
 <div id="app">
     <!--顶部-->
-    <com-header active-name="3"></com-header>
+    <com-header ></com-header>
 
     <!---01-->
     <div class="jianfa-content">
@@ -17,13 +17,13 @@
 
                 <li>
                     <dl>
-                        <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
-                        <dd class="xchu">
+                        <dd>当前位置：案例工厂 > 看观点 > 筛选 ：</dd>
+                        @*<dd class="xchu">
                             上海<span>
-                                <!--<i class="jianfa fa-close"></i>-->×
+                                ×
                             </span>
                         </dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
+                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                     </dl>
                 </li>
                 <li>
@@ -37,15 +37,45 @@
     <!--看观点-->
     <div class="jianfa-guandiancard style-pa-46">
         <div class="ny-guandiancard">
-            <a @@click="moda11= true" class="paiban">
+            <a @@click="moda11= true" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2}">
                 <!--状态1-->
                 <div class="card-start">
                     <ul>
                         <li>
                             <dl>
                                 <dd class="card-top">
-                                    <span>在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？</span>
+                                    <span>{{item.title}}</span>
                                 </dd>
+                                <dd class="card-zhong">{{item.sourceSN}}</dd>
+                                <dd class="card-bottom">{{item.court2||item.court1}}</dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+                <!--end-->
+                <!--状态2-->
+                <div class="card-end">
+                    <ul>
+                        <li>
+                            <dl>
+                                <dd class="oncard-top">
+                                    <span>{{item.content}}</span>
+                                    <p>{{getLawyer(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
+                                </dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+                <!--end-->
+            </a>
+
+            @*<a @click="moda12 = true" class="paiban">
+                <!--状态1-->
+                <div class="card-start">
+                    <ul>
+                        <li>
+                            <dl>
+                                <dd class="card-top"><span>在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？</span></dd>
                                 <dd class="card-zhong">(2016)沪 0115 民初 67704 号</dd>
                                 <dd class="card-bottom">上海市浦东新区人民法院</dd>
                             </dl>
@@ -67,7 +97,7 @@
                     </ul>
                 </div>
                 <!--end-->
-            </a>
+            </a>*@
         </div>
     </div>
     <!--end-->
@@ -127,14 +157,17 @@
 
                     //请求案例卡分页
                     abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where}).done( (data)=> {
-                        this.items = data;
+                        that.items = data;
+                        //that.items = [{ id: 1, title: 'a', content: 'b', lawyerFirms:[] }]
                         console.log(data)
                     })
                 },
+                getLawyer: function (item) {
+                    return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
+                }
             },
             mounted: function () {
                 this.loadSource();
-                this.loadTypes();
             }
         })
     </script>
