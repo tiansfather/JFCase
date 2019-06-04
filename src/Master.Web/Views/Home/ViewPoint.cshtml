@@ -1,15 +1,196 @@
-﻿
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
 @{
+    Layout = "_LayoutJianFa";
     ViewData["Title"] = "看观点";
 }
 
-<h2>Host</h2>
 
+<div id="app">
+    <!--顶部-->
+    <com-header active-name="3"></com-header>
+
+    <!---01-->
+    <div class="jianfa-content">
+        <div class="ny-content on">
+            <ul>
+                <li>
+                    <dl>
+                        <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
+                        <dd class="xchu">上海<span></span></dd>
+                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl class="xian">
+
+                        <dd class="style-bf-20">
+                            <template>
+                                <i-select placeholder="请选择城市" v-model="model3" size="small">
+                                    <i-option v-for="item in chengshi" :value="item.value" :key="item.value">
+                                        {{ item.label }}
+                                    </i-option>
+                                </i-select>
+                            </template>
+                        </dd>
+
+                        <dd class="style-bf-20">
+                            <template>
+                                <i-select placeholder="请选择案由" v-model="model2" size="small">
+                                    <i-option v-for="item in anyou" :value="item.value" :key="item.value">
+                                        {{ item.label }}
+                                    </i-option>
+                                </i-select>
+                            </template>
+                        </dd>
+
+                        <dd class="style-bf-20">
+                            <template>
+                                <i-select placeholder="请选择法院" v-model="model4" size="small">
+                                    <i-option v-for="item in fayuan" :value="item.value" :key="item.value">
+                                        {{ item.label }}
+                                    </i-option>
+                                </i-select>
+                            </template>
+                        </dd>
+                        <dd class="style-bf-30">
+                            <template>
+                                <i-input v-model="value" size="small" placeholder="请输入关键词等信息..." />
+                            </template>
+                        </dd>
+                        <dd class="style-bf-10"><Button class="btn-search">筛选</Button></dd>
+                    </dl>
+                </li>
+                <!--<li class="on">您的工作台已有 <span class="shuzi">5</span> 个案例，还可以选择 <span class="shuzi">3</span> 个案例:</li>-->
+            </ul>
+        </div>
+    </div>
+
+    <com-footer></com-footer>
+    <!--end-->
+</div>
+    
 @section scripts{
     <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                wherePart: {
+                    anyouid: '',
+                    cityId: '',
+                    courtId: '',
+                },
+                totalCount: 0,//判例总数
+                currentPage: 1,
+                pagesize: 10,
+                keyword: '',
+                items: [],
+                currentItem: {},
+                workbenchCount: 0,//工作台已有数量
+                anYous: [],
+                cities: [],
+                courts: [],
+                //theme1: 'light',
+                //spanLeft: 3,
+                //spanRight: 21,
+                //theme1: 'primary',
+                value: '',
+                modal1: false,
+                moda12: false,
+            },
+            watch: {
+                currentPage: function () {
+                    this.loadSource();
+                },
+                pagesize: function () {
+                    //this.currentPage = 1;
+                    this.loadSource();
+                }
+            },
+            computed: {
+                where: function () {
+                    var where = '1=1';
+                    for (var i in this.wherePart) {
+                        var data = this.wherePart[i];
+                        if (!data) continue;
+                        if (i == 'courtId') {
+                            where += ` and (court1Id=${data} or court2id=${data})`;
+                        } else {
+                            where += ` and ${i}=${data}`;
+                        }
+
+                    }
+                    return where;
+                    //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+
+                },
+                //还能选择的数量
+                canChooseCount: function () {
+                    return abp.setting.getInt("maxWorkbenchCaseCount") - this.workbenchCount;
+                },
+                filterCourtByCity: function () {
+                    this.wherePart.courtId = null;
+                    if (!this.wherePart.cityId) {
+                        return [];
+                    } else {
+                        var that = this;
+                        return this.courts.filter(o => o.parentId == that.wherePart.cityId);
+                    }
+
+                }
+            },
+            methods: {
+                //将案源加入工作台
+                choose: function () {
+                    var that = this;
+                    abp.services.app.workbench.choose(this.currentItem.id).done(function () {
+                        abp.message.success("判例已放入您的工作台!");
+                        //重新加载判例库，并更新工作台数量;
+                        that.loadSource();
+                        that.loadWorkBenchCount();
+                    })
+                },
+                loadSource: function () {
+                    var that = this;
+                    //数据获取接口
+                    abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
+                        that.items = res.data;
+                        that.totalCount = res.count;
+                    })
+                },
+                //获取工作台数量
+                loadWorkBenchCount: function () {
+                    var that = this;
+                    abp.services.app.workbench.getMyProcessingCount().done(function (data) {
+                        that.workbenchCount = data;
+                    })
+                },
+                //获取分类信息
+                loadTypes: function () {
+                    var that = this;
+                    abp.services.app.type.getAnYous().done(function (data) {
+                        that.anYous = data;
+                    });
+                    abp.services.app.type.getCities().done(function (data) {
+                        that.cities = data;
+                    });
+                    abp.services.app.type.getCourts().done(function (data) {
+                        that.courts = data;
+                    });
+                },
+                getLawyer: function (item) {
+                    return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
+                }
+            },
+            mounted: function () {
+                this.loadSource();
+                this.loadWorkBenchCount();
+                this.loadTypes();
+            }
+        })
         //请求案例卡分页
         abp.services.app.viewPoint.getPageResult().done(function (data) {
-            
+
         })
     </script>
-    }
+}

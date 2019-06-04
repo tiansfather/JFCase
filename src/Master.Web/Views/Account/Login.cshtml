@@ -113,10 +113,14 @@
                     onOk: () => {
                         setTimeout(() => {
                             this.$Modal.remove();
-                            this.$Modal.info({
-                                title:  '消息', content: '',  onOk: function () {
-                                }
-                            })
+                            //this.$Modal.info({
+                            //    title: '成功',
+                            //    content: '',
+                            //    loading: false,
+                            //    onOk: function () {
+                            //    }
+                            //})
+                            this.$Message.success('Successfully delete');
                         }, 2000);
                     }
                 });

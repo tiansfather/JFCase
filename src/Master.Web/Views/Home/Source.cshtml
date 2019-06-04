@@ -37,7 +37,8 @@
                         <dd class="style-bf-20">
                             <template>
                                 <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
-                                    <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                    <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                                    <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>

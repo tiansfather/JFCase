@@ -11,6 +11,12 @@
 
     </header>
 </script>*@
+<style>
+/*重置样式*/
+    .ivu-menu-item-selected a {
+        color: #754c24;
+    }
+</style>
     <script type="text/x-template" id="comHeader">
         <div id="jianfa_top">
             <div class="top-logo">
@@ -70,6 +76,7 @@
         }
     })
     Vue.component('com-footer', {
-        template:'<div class="footer-ny"><div class="ziti-b">2017-2020 | Copyright | 版权声明 | 简法二手房 ( 沪ICP备00000000号 )</div></div>'
+        //不设font-size12，就变大了，没看出原因
+        template:'<div class="footer-ny"><div class="ziti-b" style="font-size:12px;">2017-2020 | Copyright | 版权声明 | 简法二手房 ( 沪ICP备00000000号 )</div></div>'
     })
 </script>
