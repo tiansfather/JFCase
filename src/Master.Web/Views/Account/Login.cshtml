@@ -172,7 +172,8 @@
                             } else if (status == 2) {
                                 app.step = 2;
                             } else if (status == -1) {
-                                abp.message.info("您的账号已被冻结（注销），请联系<a href='mailto:abc@163.com'>管理员</a>");
+                                var toemail = abp.setting.get("receiveMailAddress");
+                                abp.message.info("您的账号已被冻结（注销），请联系<a href='mailto:" + toemail+"'>管理员</a>");
                                 doLoop();
                             } else if (status == 3) {
                                 abp.message.info("您的账号还在审核中，请耐心等待");

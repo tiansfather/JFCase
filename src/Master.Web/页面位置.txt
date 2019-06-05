@@ -1,12 +1,15 @@
 ﻿登录页：Account/Login
 首页：Home/Index
-个人中心：Home/Me
-工作台:Home/workbench
 案源库:Home/Source
+看观点:Home/ViewPoint
+
+
+个人中心：Home/Me
 加工页:Home/Process
+工作台:Home/workbench
 我的案例：Home/MyCase
 我的精品：Home/MyArt
-看观点:Home/ViewPoint
+查案例:home/viewcase
 
 树相关接口
 1.节点数据

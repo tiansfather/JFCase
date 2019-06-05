@@ -1,21 +1,265 @@
 ﻿
 @{
+    Layout = "_LayoutJianFa";
     ViewData["Title"] = "我的精品";
 }
 
-<h2>Host</h2>
+<div id="app">
+    <!--顶部-->
+    <com-header active-name="我的精品"></com-header>
+    <!--案源库-01-->
+    <div class="jianfa-content">
+        <div class="ny-content">
+            <ul>
+                <li>
+                    <dl>
+                        <dd>当前位置：案例工厂 > 首页 > 工作台 > 我的精品 > 筛选 ：</dd>
+                        @*<dd class="xchu">上海<span>×</span></dd>
+                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                    </dl>
+                </li>
+                <li>
+                    <dl class="xian">
+                        <dd class="style-bf-40">
+                            <template>
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small">
+                                    <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                </i-select>
+                            </template>
+                        </dd>
+                        <dd class="style-bf-20">
+                            <template>
+                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" size="small">
+                                    <i-option v-for="item in caseStatuses" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                </i-select>
+                            </template>
+                        </dd>
+                        <dd class="style-bf-30">
+                            <template>
+                                <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." />
+                            </template>
+                        </dd>
+                        <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
+                    </dl>
+                </li>
+                <li class="on">您已完成有 <span class="shuzi">55</span> 个案例<!--，其中包含案例卡 <span class="shuzi">49</span> 个--></li>
+                <li>
+                    <div class="li-table table-stripe">
+                        <table width="100%">
+                            <th width="220">案由</th>
+                            <th width="220">案号	</th>
+                            <th width="250">标题</th>
+                            <th>发布时间</th>
+                            <th width="220">我的备注</th>
+                            <th width="50">操作</th>
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                            <tr>
+                                <td class="on">房屋买卖纠纷（二手）</td>
+                                <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
+                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on">2016/04/10</td>
+                                <td class="on">我的备注内容备注内容…</td>
+                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--end-->
+    <!--添加-->
+    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" title="(2016)沪 0115 民初 67704 号">
+        <div class="neirong-eject">
+            <ul>
+                <li><img src="ima/anhao-1.jpg"></li>
+            </ul>
+        </div>
+        <div slot="footer">&nbsp;</div>
+        <!--
+        <div slot="footer">
+        <Button class="btn-footer" @@click="submit">确认</Button><Button class="btn-footer" @@click="submit">取消</Button>
+        </div>-->
+    </Modal>
+    <!--end-->
+    <!--footer-->
+    <div class="footer-ny">
+        <div class="ziti-b">2017-2020 | Copyright | 版权声明 | 简法二手房  ( 沪ICP备00000000号 )</div>
+    </div>
+    <!--end-->
+</div>
 
 @section scripts{
     <script>
-        //请求当前用户所有精品
-        abp.services.app.myArt.getPageResult().done(function (data) {
-            
+        new Vue({
+            el: '#app',
+            data: {
+                wherePart: {
+                    subjectId: null,
+                    caseStatus: null,
+                },
+                totalCount: 0,//判例总数
+                currentPage: 1,
+                pagesize: 10,
+                keyword: '',
+                items: [],
+                currentItem: {},
+                subjects: [],//专题
+                caseStatuses: [{ id: 1, displayName: '展示中' }, { id: 2, displayName: '退回' }, { id: 3, displayName: '下架' }],
+                moda12:false
+            },
+            watch: {
+                currentPage: function () {
+                    this.loadSource();
+                },
+                pagesize: function () {
+                    //this.currentPage = 1;
+                    this.loadSource();
+                }
+            },
+            computed: {
+                where: function () {
+                    var where = '1=1';
+                    for (var i in this.wherePart) {
+                        var data = this.wherePart[i];
+                        if (!data) continue;
+                        where += ` and ${i}=${data}`;
+
+                    }
+                    return where;
+                    //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+
+                }
+            },
+            methods: {
+                loadSource() {
+                    var that = this;
+                    func.runAsync(abp.services.app.myArt.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
+                        that.items = res.data;
+                        //that.items = [{ id: 1, subjectId: null, remarks: 'bb', caseStatus: 1 }]
+                        that.totalCount = res.count;
+                    }));
+                },
+                //上下架
+                changeStatus(item, status) {
+                    var funcProxcy = status ? abp.services.app.myArt.unFreeze : abp.services.app.myArt.freeze;
+                    func.runAsync(funcProxcy(item.id).done(function () {
+                        app.$Message.success("提交成功");
+                    }))
+                },
+            },
+            mounted: function () {
+                var that = this;
+                //加载专题数据
+                abp.services.app.type.getSubjects().done(function (data) {
+                    that.subjects = data;
+                })
+                //加载案例数据
+                this.loadSource();
+            }
         })
-        //获取用户汇总值
-        abp.services.app.myArt.getSummary();
-        //下架
-        abp.services.app.myArt.freeze(caseFineId);
-        //上架
-        abp.services.app.myArt.unFreeze(caseFineId);
     </script>
-    }
+    <script>
+        //请求当前用户所有精品
+        //abp.services.app.myArt.getPageResult().done(function (data) {
+
+        //})
+        ////获取用户汇总值
+        //abp.services.app.myArt.getSummary();
+        ////下架
+        //abp.services.app.myArt.freeze(caseFineId);
+        ////上架
+        //abp.services.app.myArt.unFreeze(caseFineId);
+    </script>
+}

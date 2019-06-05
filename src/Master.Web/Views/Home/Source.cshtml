@@ -13,13 +13,15 @@
             <ul>
                 <li>
                     <dl>
-                        <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
-                        <dd class="xchu">上海<span><!--<i class="jianfa fa-close"></i>-->×</span></dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
+                        <dd>当前位置：案例工厂 > 判例库 > 筛选 ：</dd>
+                        @*<dd class="xchu">上海<span>×</span></dd>
+                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                     </dl>
                 </li>
                 <li>
-                    <dl class="xian">
+                    <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
+
+                    @*<dl class="xian">
                         <dd class="style-bf-20">
                             <template>
                                 <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
@@ -37,7 +39,8 @@
                         <dd class="style-bf-20">
                             <template>
                                 <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
-                                    <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                    <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                                    <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
@@ -47,7 +50,7 @@
                             </template>
                         </dd>
                         <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
-                    </dl>
+                    </dl>*@
                 </li>
                 <li class="on">您的工作台已有 <span class="shuzi">{{workbenchCount}}</span> 个案例，还可以选择 <span class="shuzi">{{canChooseCount}}</span> 个案例:</li>
                 <li v-show="items.length==0">
@@ -139,7 +142,7 @@
             el: '#app',
             data: {
                 wherePart: {
-                    anyouid: '',
+                    anyouId: '',
                     cityId: '',
                     courtId: '',
                 },
@@ -150,9 +153,9 @@
                 items: [],
                 currentItem: {},
                 workbenchCount: 0,//工作台已有数量
-                anYous: [],
-                cities: [],
-                courts:[],
+                //anYous: [],
+                //cities: [],
+                //courts:[],
                 //theme1: 'light',
                 //spanLeft: 3,
                 //spanRight: 21,
@@ -172,18 +175,20 @@
             },
             computed: {
                 where: function () {
-                    var where = '1=1';
-                    for (var i in this.wherePart) {
-                        var data = this.wherePart[i];
-                        if (!data) continue;
-                        if (i == 'courtId') {
-                            where += ` and (court1Id=${data} or court2id=${data})`;
-                        } else {
-                            where += ` and ${i}=${data}`;
-                        }
+                    return this.$refs.headFilter.where;
+                    //var where = '1=1';
+                    //for (var i in this.wherePart) {
+                    //    console.log(i,this.wherePart[i])
+                    //    var data = this.wherePart[i];
+                    //    if (!data) continue;
+                    //    if (i == 'courtId') {
+                    //        where += ` and (court1Id=${data} or court2id=${data})`;
+                    //    } else {
+                    //        where += ` and ${i}=${data}`;
+                    //    }
 
-                    }
-                    return where;
+                    //}
+                    //return where;
                     //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
 
                 },
@@ -191,23 +196,23 @@
                 canChooseCount: function () {
                     return abp.setting.getInt("maxWorkbenchCaseCount") - this.workbenchCount;
                 },
-                filterCourtByCity: function () {
-                    this.wherePart.courtId = null;
-                    if (!this.wherePart.cityId) {
-                        return [];
-                    } else {
-                        var that = this;
-                        return this.courts.filter(o => o.parentId == that.wherePart.cityId);
-                    }
+                //filterCourtByCity: function () {
+                //    this.wherePart.courtId = null;
+                //    if (!this.wherePart.cityId) {
+                //        return [];
+                //    } else {
+                //        var that = this;
+                //        return this.courts.filter(o => o.parentId == that.wherePart.cityId);
+                //    }
                     
-                }
+                //}
             },
             methods: {
                 //将案源加入工作台
                 choose: function () {
                     var that = this;
                     abp.services.app.workbench.choose(this.currentItem.id).done(function () {
-                        abp.message.success("判例已放入您的工作台!");
+                        that.$Message.success("判例已放入您的工作台!");
                         //重新加载判例库，并更新工作台数量;
                         that.loadSource();
                         that.loadWorkBenchCount();
@@ -216,10 +221,10 @@
                 loadSource: function () {
                     var that = this;
                     //数据获取接口
-                    abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
+                    func.runAsync(abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
                         that.items = res.data;
                         that.totalCount = res.count;
-                    })
+                    }))
                 },
                 //获取工作台数量
                 loadWorkBenchCount: function () {
@@ -229,18 +234,18 @@
                     })
                 },
                 //获取分类信息
-                loadTypes: function () {
-                    var that = this;
-                    abp.services.app.type.getAnYous().done(function (data) {
-                        that.anYous = data;
-                    });
-                    abp.services.app.type.getCities().done(function (data) {
-                        that.cities = data;
-                    });
-                    abp.services.app.type.getCourts().done(function (data) {
-                        that.courts = data;
-                    });
-                },
+                //loadTypes: function () {
+                //    var that = this;
+                //    abp.services.app.type.getAnYous().done(function (data) {
+                //        that.anYous = data;
+                //    });
+                //    abp.services.app.type.getCities().done(function (data) {
+                //        that.cities = data;
+                //    });
+                //    abp.services.app.type.getCourts().done(function (data) {
+                //        that.courts = data;
+                //    });
+                //},
                 getLawyer: function (item) {
                     return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
                 }
@@ -248,7 +253,7 @@
             mounted: function () {
                 this.loadSource();
                 this.loadWorkBenchCount();
-                this.loadTypes();
+                //this.loadTypes();
             }
         })
     </script>

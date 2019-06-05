@@ -1,0 +1,6 @@
+﻿.ivu-spin-fix {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+[v-cloak] {
+    display: none;
+}

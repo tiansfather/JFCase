@@ -103,6 +103,7 @@
             if (options.blockUI != false) {
                 abp.ui.block();
             }
+            $('body').append('<div id="abpUiBusy" class="ivu-spin ivu-spin-large ivu-spin-fix"><div class="ivu-spin-main"><span class="ivu-spin-dot"></span> <div class="ivu-spin-text"></div></div></div>')
             //改这里
             //app.$Spin.show();
             //$('body').spin(abp.libs.spinjs.spinner_config);
@@ -137,6 +138,7 @@
         //TODO@Halil: Maybe better to do not call unblock if it's not blocked by setBusy
         if (!elm) {
             abp.ui.unblock();
+            $('#abpUiBusy').remove();
             //改这里
             //app.$Spin.hide();
         } else {

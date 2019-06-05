@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using Abp.Runtime.Security;
 using Master.Dto;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -28,11 +29,26 @@ namespace Master.Case
                 .Where(o => o.CaseSource.OwerId == AbpSession.UserId);
 
         }
+
+        protected override async Task<IQueryable<CaseInitial>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseInitial> query)
+        {
+            return (await base.BuildKeywordQueryAsync(keyword, query))
+                 .Where(o => o.CaseSource.SourceSN.Contains(keyword)
+                || o.CaseSource.AnYou.DisplayName.Contains(keyword)
+                || o.CaseSource.City.DisplayName.Contains(keyword)
+                || o.CaseSource.Court1.DisplayName.Contains(keyword)
+                || o.CaseSource.Court2.DisplayName.Contains(keyword)
+                || o.CaseSource.TrialPeopleField.Contains(keyword)
+                || o.CaseSource.LawyerFirmsField.Contains(keyword)
+                ||o.Subject.DisplayName.Contains(keyword)
+                );
+        }
         protected override object PageResultConverter(CaseInitial entity)
         {
             return new
             {
                 entity.Id,
+                EncrypedId = SimpleStringCipher.Instance.Encrypt(entity.CaseSource.Id.ToString(), null, null),//加密后的案源id
                 entity.CaseSource.SourceSN,
                 AnYou = entity.CaseSource.AnYou.DisplayName,
                 entity.Remarks,

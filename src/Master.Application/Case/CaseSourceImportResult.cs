@@ -135,6 +135,8 @@ namespace Master.Case
                 this.CaseSourceUpdateDto.TrialPeople = trialPeople.ToList();
                 #endregion
 
+                this.CaseSourceUpdateDto.Normalize();
+
                 this.Valid = true;
             }
             
