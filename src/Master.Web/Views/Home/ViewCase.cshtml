@@ -4,7 +4,7 @@
     ViewData["Title"] = "查案例";
 }
 
-<div id="app">
+<div id="app" v-cloak>
     <!--顶部-->
     <com-header active-name="2"></com-header>
     <!--案源库-01-->
@@ -74,17 +74,126 @@
                         </dd>
                         <dd class="style-bf-35">
                             <template>
-                                <i-select placeholder="请选择专题" v-model="model3" size="small">
-                                    <i-option v-for="item in subjects" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small">
+                                    <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-47">
                             <template>
-                                <i-input v-model="value" size="small" placeholder="请输入关键词等信息..." />
+                                <i-input v-model="wherePart.keyWord" size="small" placeholder="请输入关键词等信息..." />
                             </template>
                         </dd>
                         <dd class="style-bf-10-b"><Button class="btn-search">筛选</Button></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--end-->
+    <!--查案例-->
+    <div class="jianfa-chaanli">
+        <div class="chaanli-content">
+            <ul>
+                <li class="style-chaal-40">
+                    <dl>
+                        <dd v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
+                            <i1>
+                                <div class="left-cha1"><img src="ima/index-2.png"></div>
+                                <div class="right-cha1">
+                                    {{item.title}}
+                                </div>
+                            </i1>
+                            <i2>
+                                <div class="top-cha1">
+                                    {{item.introduction}}
+                                </div>
+                                <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
+                            </i2>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="on style-chaal-60">
+                    <dl class="on">
+
+                        <dd class="on">
+                            <i4 class="fleft tjustify">
+                                {{caseInfo.initial.title}}
+                            </i4>
+                        </dd>
+
+                        <dd class="on">
+                            <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
+                            <a @@click="moda12 = true">
+                                <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+                            </a>
+                            <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
+                        </dd>
+
+
+                        <dd class="on">
+                            <i5 class="fleft tjustify">
+                                <!-- 概述 -->
+                                {{caseInfo.initial.introduction}}
+                            </i5>
+                        </dd>
+
+                        <dd class="on">
+                            <bt>
+                                <i8 class="style-chaal-20">诉请及判决</i8>
+                            </bt>
+                            <i6 class="fleft tjustify style-chaal-42-h">卖方起诉：解除合同，返还房屋</i6>
+                            <i5c class="style-chaal-16-h"><span class="h50">50%</span></i5c>
+                            <!--调节h50 h60.....-->
+                            <i6 class="fleft tjustify style-chaal-42-h">判决结果：全部驳回</i6>
+                        </dd>
+
+                        <dd class="on">
+                            <bf>
+                                <i9 class="fright">反诉判决</i9>
+                            </bf>
+                            <i6 class="fleft tjustify style-chaal-42-h">反诉方：这是假字这是假字....</i6>
+                            <i5c class="style-chaal-16-h"><span class="h50">50%</span></i5c>
+                            <!--调节h50 h60.....-->
+                            <i6 class="fleft tjustify style-chaal-42-h">判决结果：这是假字这是假字....</i6>
+                        </dd>
+
+                        <dd class="on">
+                            <bt>
+                                <i8 class="style-chaal-20">法律法规</i8>
+                            </bt>
+                            <i6 class="fleft tjustify">
+                                {{caseInfo.initial.law}}
+                            </i6>
+                        </dd>
+
+                        <dd class="on">
+                            <bt>
+                                <i8 class="style-chaal-20">经验分享</i8>
+                            </bt>
+                            <i6 class="fleft tjustify">
+                                {{caseInfo.initial.experience}}
+                            </i6>
+                        </dd>
+
+                        <dd class="on">
+                            <bt>
+                                <i8 class="style-chaal-20">简法律师说</i8>
+                            </bt>
+                            <i6 class="fleft tjustify">
+                                {{caseInfo.initial.lawyerOpinion}}
+                            </i6>
+                        </dd>
+
+                        <dd class="on">
+                            <bt>
+                                <i8 class="style-chaal-20">案例卡</i8>
+                            </bt>
+                            <i5 class="fleft tjustify">
+                                在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？卖方可否以限购导致合同目的无法实现为由行使法定解除权？
+                            </i5>
+                        </dd>
+
                     </dl>
                 </li>
             </ul>
@@ -100,15 +209,48 @@
         var app = new Vue({
             el: '#app',
             data: {
+                currentPage: 1,
+                pagesize: 10,
+                items: [],
+                caseInfo: {
+                    initial: {},
+                    source: {}
+                },
                 anYous: [],
                 cities: [],
                 subjects:[],
                 wherePart: {
                     anYouId: '',
                     cityId: '',
+                    subjectId: '',
+                    keyWord:''
+                }
+            },
+            computed: {
+                where() {
+                    return '1=1'
                 }
             },
             methods: {
+                getViewMsg(caseInitialId) {
+                    abp.servcies.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
+                        //caseSourceId为对应的案源id
+                        //获取案例详情
+                        abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
+                            that.caseInfo = res;
+                        })
+                    })
+                },
+                loadSource() {
+                    var that = this;
+                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
+                        that.items = res.data;
+                        //that.totalCount = res.count;
+                    }));
+                    //abp.services.app.viewCase.getSummary().done(function (data) {
+                    //    that.summary = data;
+                    //})
+                },
                 loadData() {
                     var that = this;
                     //加载专题数据
@@ -127,17 +269,17 @@
                 this.loadData();
             }
         })
-        //请求案例分页
-        abp.services.app.viewCase.getPageResult().done(function (data) {
+        ////请求案例分页
+        //abp.services.app.viewCase.getPageResult().done(function (data) {
 
-        })
-        //点击案例查看详情
-        abp.servcies.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
-            //caseSourceId为对应的案源id
-            //获取案例详情
-            abp.services.app.workbench.getCaseInfo(caseSourceId).done(function () {
+        //})
+        ////点击案例查看详情
+        //abp.servcies.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
+        //    //caseSourceId为对应的案源id
+        //    //获取案例详情
+        //    abp.services.app.workbench.getCaseInfo(caseSourceId).done(function () {
 
-            })
-        })
+        //    })
+        //})
     </script>
 }
