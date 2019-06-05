@@ -219,31 +219,30 @@
                                 </Tab-Pane>
                                 <Tab-Pane label="案例卡">
                                     <div class="bqian">
-
                                         <div class="bjdd on">
-                                            <i5 class="fleft style-chaal-50">(2018)沪 0114 民初 1528 号</i5>
-                                            <i7 class="fright tright style-chaal-50">房屋买卖纠纷（二手房）</i7>
+                                            <i5 class="fleft style-chaal-50">{{source.sourceSN}}</i5>
+                                            <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
                                         </div>
 
                                         <div class="bjdd on">
                                             <div class="fleft style-chaal-20-w">一审法院：</div>
-                                            <div class="fleft style-chaal-80-w">上海市浦东新区人民法院</div>
+                                            <div class="fleft style-chaal-80-w">{{source.court1}}</div>
                                         </div>
 
                                         <div class="bjdd on">
                                             <div class="fleft style-chaal-20-w">二审法院：</div>
-                                            <div class="fleft style-chaal-80-w">最高人民法院</div>
+                                            <div class="fleft style-chaal-80-w">{{source.court2}}</div>
                                         </div>
 
                                         <div class="bjdd on">
                                             <div class="fleft style-chaal-20-w">审判组织：</div>
-                                            <div class="fleft style-chaal-80-w">这是假字，这是假字这是假字这是假字这是假字这是</div>
+                                            <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
                                         </div>
 
                                         <div class="bjdd on xian-1">
                                             <div class="fleft style-chaal-20-w">代理律师：</div>
                                             <div class="fleft style-chaal-80-w">
-                                                这是假字，这是假字这是假字这是假字这是假字这是<br>这是假字，这是假字这是假字这是假字这是假字这是<br>这是假字，这是假字这是假字这是假字这是假字这是<br>这是假字，这是假字这是假字这是假字这是假字这是
+                                                {{lawyerFirms}}
                                             </div>
                                             <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
                                         </div>
@@ -251,21 +250,21 @@
                                         <div class="bjdd on">
                                             <div class="fleft style-chaal-33-b">
                                                 <template>
-                                                    <i-select placeholder="请选择案由" v-model="model2">
+                                                    <i-select placeholder="请选择案由" v-model="part.anyou">
                                                         <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                                     </i-select>
                                                 </template>
                                             </div>
                                             <div class="fleft style-chaal-33-b">
                                                 <template>
-                                                    <i-select placeholder="请选择城市" v-model="model3">
+                                                    <i-select placeholder="请选择城市" v-model="part.city">
                                                         <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                                     </i-select>
                                                 </template>
                                             </div>
                                             <div class="fleft style-chaal-33">
                                                 <template>
-                                                    <i-select placeholder="请选择法院" v-model="model8">
+                                                    <i-select placeholder="请选择法院" v-model="part.court">
                                                         <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
                                                         <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
                                                     </i-select>
@@ -305,9 +304,9 @@
 律师在代理限购状态下的买方，因为无法过户，卖方起诉解除合同的类似案件时，律师要尽量提醒当事人，指定近亲属作为买受人。要举证房屋用于自住，排除被法院认定为炒房、投资、转售获利的诉讼风险。</textarea>
                                                                     </dd>
                                                                     <dd class="card-zhong">
-                                                                        (2016)沪 0115 民初 67704 号
+                                                                        {{source.sourceSN}}
                                                                     </dd>
-                                                                    <dd class="card-bottom">上海市浦东新区人民法院</dd>
+                                                                    <dd class="card-bottom">{{source.court1}}</dd>
                                                                 </dl>
                                                             </li>
                                                         </ul>
@@ -388,43 +387,20 @@
             data: {
                 theme1: 'primary',
                 value: '',
-                anyou: [{
-                    value: 'anyou1',
-                    label: '案由一'
-                },
-                {
-                    value: 'anyou2',
-                    label: '案由二'
-                },
-                ],
                 model2: '',
-                chengshi: [{
-                    value: 'chengshi1',
-                    label: '上海'
-                },
-                {
-                    value: 'chengshi2',
-                    label: '北京'
-                },
-                ],
                 model3: '',
                 model4: '',
                 model5: [],
                 model6: '',
                 model7: '',
-                fayuan: [{
-                    value: 'fayuan1',
-                    label: '最高人民法院'
-                },
-                {
-                    value: 'fayuan2',
-                    label: '第二人民法院'
-                },
-                ],
                 model8: '',
 
                 //end//
-                part: {},
+                part: {
+                    city: '',
+                    court: '',
+                    anyou:''
+                },
                 subjects: [],
 
                 anYous: [],
@@ -509,8 +485,7 @@
                 }
             },
             watch: {
-                'wherePart.cityId': function (val, old) {
-                    this.wherePart.courtId = null;
+                'part.city': function (val, old) {
                     if (!val) {
                         this.filterCourtByCity = [];
                     } else {
