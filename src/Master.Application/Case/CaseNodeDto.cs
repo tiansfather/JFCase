@@ -14,15 +14,15 @@ namespace Master.Case
         /// </summary>
         public string RelType { get; set; }
         /// <summary>
-        /// 节点名称
+        /// 节点名称：纠纷原因
         /// </summary>
         public string RelName { get; set; }
         /// <summary>
-        /// 具体的值
+        /// 具体的值：
         /// </summary>
         public string RelValue { get; set; }
         /// <summary>
-        /// 对应节点id
+        /// 对应分类树节点id
         /// </summary>
         public int BaseTreeId { get; set; }
     }

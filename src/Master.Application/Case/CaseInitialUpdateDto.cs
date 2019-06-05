@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Abp.AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,9 +8,11 @@ namespace Master.Case
     /// <summary>
     /// 初加工提交
     /// </summary>
+    [AutoMap(typeof(CaseInitial))]
     public class CaseInitialUpdateDto
     {
         public int Id { get; set; }
+        public int? SubjectId { get; set; }
         /// <summary>
         /// 案例焦点
         /// </summary>
