@@ -478,11 +478,11 @@ namespace Master.Controllers
                 .Where(o => o.LoginProvider == WeChatAuthProviderApi.Name && o.ProviderKey == WeUser.openid)
                 .FirstOrDefaultAsync();
 
-            if (userLogin == null)
-            {
-                return Redirect("/MES/BindError");
-                return Redirect("/WeiXin/Error?msg=" + "当前微信尚未绑定账号".UrlEncode());
-            }
+            //if (userLogin == null)
+            //{
+            //    return Redirect("/MES/BindError");
+            //    return Redirect("/WeiXin/Error?msg=" + "当前微信尚未绑定账号".UrlEncode());
+            //}
             ViewBag.Guid = guid;
             return View();
         }

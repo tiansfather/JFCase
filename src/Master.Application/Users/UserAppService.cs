@@ -303,12 +303,13 @@ namespace Master.Users
         {
             return nameof(User);
         }
-        
+
         /// <summary>
         /// 通过openid返回用户状态1:正常登录，-1:被注销，2：未注册,3:审核中
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
+        [AbpAllowAnonymous]
         public virtual async Task<int> GetUserStatusByWeOpenId(string openId)
         {
             var user = await (Manager as UserManager).FindAsync(new Microsoft.AspNetCore.Identity.UserLoginInfo("Wechat", openId, ""));
