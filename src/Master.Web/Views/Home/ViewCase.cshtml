@@ -1,135 +1,15 @@
 ﻿
 @{
-    Layout = "_LayoutJianFa";
     ViewData["Title"] = "查案例";
 }
 
-<div id="app">
-    <!--顶部-->
-    <com-header active-name="2"></com-header>
-    <!--案源库-01-->
-    <div class="jianfa-content">
-        <div class="ny-content">
-            <ul>
-                <li>
-                    <dl>
-                        <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
-                        <dd class="xchu">
-                            上海<span>
-                                <!--<i class="jianfa fa-close"></i>-->×
-                            </span>
-                        </dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
-                    </dl>
-                </li>
-                <li>
-                    <dl class="xian">
-                        <dd class="style-bf-20-a">
-                            <template>
-                                <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
-                                    <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                        <dd class="style-bf-20-b">
-                            <template>
-                                <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
-                                    <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                    </dl>
-                </li>
+<h2>Host</h2>
 
-                <li>
-                    <dl class="xianb">
-                        <dd class="style-bf-8">
-                            <div class="btn-title-bz">关键词删选：</div>
-                        </dd>
-                        <dd class="style-bf-92">
-                            <i2>
-                                <a href="" v-for="i in 5" style="margin-left:20px;">关键词一</a>
-                            </i2>
-                        </dd>
-                    </dl>
-                </li>
-
-                <li>
-                    <dl class="xianb">
-                        <dd class="style-bf-8">
-                            <div class="btn-title-bz">标签删选：</div>
-                        </dd>
-                        <dd class="style-bf-92">
-                            <i2>
-                                <a href="" v-for="i in 5" style="margin-left:20px;">标签一</a>
-                            </i2>
-                        </dd>
-                    </dl>
-                </li>
-
-                <li>
-                    <dl class="xian">
-                        <dd class="style-bf-8">
-                            <div class="btn-title-bz">专题删选：</div>
-                        </dd>
-                        <dd class="style-bf-35">
-                            <template>
-                                <i-select placeholder="请选择专题" v-model="model3" size="small">
-                                    <i-option v-for="item in subjects" :value="item.value" :key="item.value">{{ item.label }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                        <dd class="style-bf-47">
-                            <template>
-                                <i-input v-model="value" size="small" placeholder="请输入关键词等信息..." />
-                            </template>
-                        </dd>
-                        <dd class="style-bf-10-b"><Button class="btn-search">筛选</Button></dd>
-                    </dl>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <!--end-->
-    <!--footer-->
-    <com-footer></com-footer>
-    <!--end-->
-</div>
 @section scripts{
     <script>
-        var app = new Vue({
-            el: '#app',
-            data: {
-                anYous: [],
-                cities: [],
-                subjects:[],
-                wherePart: {
-                    anYouId: '',
-                    cityId: '',
-                }
-            },
-            methods: {
-                loadData() {
-                    var that = this;
-                    //加载专题数据
-                    abp.services.app.type.getSubjects().done(function (data) {
-                        that.subjects = data;
-                    })
-                    abp.services.app.type.getAnYous().done(function (data) {
-                        that.anYous = data;
-                    });
-                    abp.services.app.type.getCities().done(function (data) {
-                        that.cities = data;
-                    });
-                }
-            },
-            mounted() {
-                this.loadData();
-            }
-        })
         //请求案例分页
         abp.services.app.viewCase.getPageResult().done(function (data) {
-
+            
         })
         //点击案例查看详情
         abp.servcies.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
@@ -140,4 +20,4 @@
             })
         })
     </script>
-}
+    }
