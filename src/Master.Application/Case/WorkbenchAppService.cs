@@ -252,7 +252,7 @@ namespace Master.Case
         {
             var caseInitial = await Resolve<CaseInitialManager>().GetAll().Include(o=>o.CaseSource)
                 .Where(o=>o.Id==id).SingleAsync();
-            caseInitial.PublisDate = DateTime.Now;
+            //caseInitial.PublisDate = DateTime.Now;
             caseInitial.CaseStatus = CaseStatus.展示中;
             caseInitial.CaseSource.CaseSourceStatus = CaseSourceStatus.已加工;
         }
