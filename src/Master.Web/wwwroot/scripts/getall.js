@@ -2710,6 +2710,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'getAllLabels'
+    abp.services.app.type.getAllLabels = function(ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Type/GetAllLabels',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
     // action 'getAnYouTypes'
     abp.services.app.type.getAnYouTypes = function(id, ajaxParams) {
       return abp.ajax($.extend(true, {

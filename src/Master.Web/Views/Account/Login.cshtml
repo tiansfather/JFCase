@@ -157,13 +157,13 @@
                         app.currentItem.nickName = data.nickname;//用户昵称
                         app.currentItem.avata = data.headimgurl;//头像
                         //根据openid去寻找用户的账号信息
-                        abp.services.app.user.getUserStatusByWeOpenId(openid).done(function (status) {
+                        abp.services.app.user.getUserStatusByWeOpenId(data.openid).done(function (status) {
                             //status的四种值：1:正常登录，-1:被注销，2：未注册,3:审核中
                             //todo:根据不同状态进行不同操作
                             if (status == 1) {
                                 var authModel = {
                                     authProvider: "Wechat",
-                                    providerKey: openid,
+                                    providerKey: data.openid,
                                     providerAccessCode: "",
                                     clientInfo: 'Browser'
                                 };
@@ -196,7 +196,7 @@
         function doExternalAuthentication(authModel) {
             console.log(authModel);
             abp.ui.setBusy(
-                $('body'),
+               null,
 
                 abp.ajax({
                     contentType: "application/x-www-form-urlencoded",

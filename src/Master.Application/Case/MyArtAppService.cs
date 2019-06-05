@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Authorization;
+using Abp.Runtime.Security;
 using Master.Dto;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,19 +20,21 @@ namespace Master.Case
         protected override async Task<IQueryable<CaseFine>> GetQueryable(RequestPageDto request)
         {
             var query = await base.GetQueryable(request);
-            return query.Include(o => "CaseInitial.CaseSource.AnYou");
+            return query.Include("CaseInitial.CaseSource.AnYou");
         }
         protected override object PageResultConverter(CaseFine entity)
         {
             return new
             {
                 entity.Id,
+                EncrypedId = SimpleStringCipher.Instance.Encrypt(entity.CaseInitial.CaseSource.Id.ToString(), null, null),//加密后的案源id
                 entity.IsActive,
                 entity.CaseInitial.CaseSource.SourceSN,
                 entity.CaseInitial.CaseSource.AnYou?.DisplayName,
+                PublishDate = entity.PublishDate?.ToString("yyyy/MM/dd"),
                 entity.Title,
                 entity.Remarks,
-                UserModifyTime=entity.UserModifyTime.ToString("yyyy/MM/dd")
+                UserModifyTime = entity.UserModifyTime.ToString("yyyy/MM/dd"),
             };
         }
         #endregion

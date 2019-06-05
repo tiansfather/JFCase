@@ -55,6 +55,7 @@ namespace Master.Case
                 Court2 = entity.Court2 != null ? entity.Court2.DisplayName : "",
                 ValidDate=entity.ValidDate.ToString("yyyy/MM/dd"),
                 entity.SourceSN,
+                entity.SourceFile,
                 entity.LawyerFirms,
                 History = entity.CaseSourceHistories.MapTo<List<CaseSourceHistoryDto>>()
             };
@@ -198,7 +199,7 @@ namespace Master.Case
                     caseSource.Court2Id,
                     Court2 = caseSource.Court2?.DisplayName,
                     caseSource.LawyerFirms,
-                    caseSource.TrialPeople,
+                    TrialPeople=caseSource.TrialPeople.Select(o=>new { o.Name, TrialRole=o.TrialRole.ToString()}),
                     caseSource.SourceFile
                 },
                 Initial = caseInitialDto
@@ -251,7 +252,7 @@ namespace Master.Case
         {
             var caseInitial = await Resolve<CaseInitialManager>().GetAll().Include(o=>o.CaseSource)
                 .Where(o=>o.Id==id).SingleAsync();
-            caseInitial.PublisDate = DateTime.Now;
+            caseInitial.PublishDate = DateTime.Now;
             caseInitial.CaseStatus = CaseStatus.展示中;
             caseInitial.CaseSource.CaseSourceStatus = CaseSourceStatus.已加工;
         }

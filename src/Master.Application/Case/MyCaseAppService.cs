@@ -53,7 +53,7 @@ namespace Master.Case
                 AnYou = entity.CaseSource.AnYou.DisplayName,
                 entity.Remarks,
                 entity.ReadNumber,
-                PublisDate = entity.PublisDate?.ToString("yyyy/MM/dd"),
+                PublishDate = entity.PublishDate?.ToString("yyyy/MM/dd"),
                 CaseFineCount = entity.CaseFines.Count,
                 CaseCardCount = entity.CaseCards.Count,
                 entity.CaseStatus,
@@ -67,14 +67,16 @@ namespace Master.Case
         public virtual async Task<object> GetSummary()
         {
             //已发布的案例数量
-            var caseCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && o.PublisDate != null);
+            var caseCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && o.CaseStatus==CaseStatus.展示中 );
             //案例卡数量
             var caseCardCount = await Resolve<CaseCardManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && o.IsActive).CountAsync();
-
+            //精加工数量
+            var caseFineCount= await Resolve<CaseFineManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && o.IsActive).CountAsync();
             return new
             {
                 caseCount,
-                caseCardCount
+                caseCardCount,
+                caseFineCount
             };
         }
         #endregion
