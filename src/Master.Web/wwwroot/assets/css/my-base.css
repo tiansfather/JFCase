@@ -4,3 +4,6 @@
 [v-cloak] {
     display: none;
 }
+.top-modal, .top-modal .ivu-modal, .top-modal .ivu-modal-content, .top-modal .ivu-modal-body {
+    height: 100%;
+}

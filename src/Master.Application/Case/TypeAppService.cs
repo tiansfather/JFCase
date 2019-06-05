@@ -118,6 +118,25 @@ namespace Master.Case
         }
         #endregion
 
+        #region 标签
+        /// <summary>
+        /// 获取所有标签及其绑定的树节点
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<object> GetAllLabels()
+        {
+            var labels = await Resolve<LabelManager>().GetAllList();
+
+            return labels.Select(o => new {
+                o.Id,
+                o.LabelName,
+                o.LabelType,
+                TreeIds=o.TreeLabels.Select(t=>t.BaseTreeId)
+            }
+                );
+        }
+        #endregion
+
         #region 纠纷类型
         /// <summary>
         /// 获取案由下的纠纷类型

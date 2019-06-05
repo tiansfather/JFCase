@@ -13,7 +13,7 @@ namespace Master.Authentication
     {      
         public string OpenId { get; set; }
         
-        [InterColumn(ColumnName = "微信头像")]
+        [InterColumn(ColumnName = "微信头像",Templet = "<img class=\"thumb\" src=\"{{d.avata}}\" width=30 />")]
         public string Avata { get; set; }
         [InterColumn(ColumnName = "昵称")]
         public string NickName { get; set; }

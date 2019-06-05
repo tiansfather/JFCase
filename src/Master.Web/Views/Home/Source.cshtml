@@ -74,7 +74,7 @@
                                 <td>{{item.city}}</td>
                                 <td>{{item.court1}}</td>
                                 <td>{{item.court2}}</td>
-                                <td><a @@click="moda12 = true">{{item.sourceSN}}</a></td>
+                                <td><a @@click="currentItem=item;moda12 = true">{{item.sourceSN}}</a></td>
                                 <td>{{item.anYou}}</td>
                                 <td>{{getLawyer(item)}}</td>
                                 <td>{{item.validDate}}</td>
@@ -117,12 +117,14 @@
         </div>
     </Modal>
     <!--添加-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" title="(2016)沪 0115 民初 67704 号">
-        <div class="neirong-eject">
+    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+        @*<div class="neirong-eject">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%"></iframe>
             <ul>
                 <li><img src="ima/anhao-1.jpg"></li>
             </ul>
-        </div>
+        </div>*@
         <div slot="footer">&nbsp;</div>
     </Modal>
     <!--

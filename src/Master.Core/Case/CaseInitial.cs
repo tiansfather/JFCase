@@ -78,7 +78,7 @@ namespace Master.Case
         /// 发布日期
         /// </summary>
         [InterColumn(ColumnName = "发布日期")]
-        public DateTime? PublisDate { get; set; }
+        public DateTime? PublishDate { get; set; }
         /// <summary>
         /// 阅读量
         /// </summary>
