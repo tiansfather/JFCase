@@ -1,13 +1,528 @@
-﻿
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
 @{
+    Layout = "_LayoutJianFa";
     ViewData["Title"] = "加工页";
 }
 
-<h2>Host</h2>
+
+<div id="app">
+    <!--顶部-->
+    <com-header></com-header>
+    <!--案源库-01-->
+    <div class="jianfa-content">
+        <div class="ny-content">
+            <ul>
+                <li>
+                    <dl class="xian">
+                        <dd>当前位置：案例工厂 > 工作台 > 加工页：</dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--end-->
+    <!--加工页-->
+    <div class="jianfa-jiagong">
+        <div class="jiagong-content">
+            <div class="bjul">
+                <div class="bjli style-chaal-55">
+                    <div class="bjdl">
+                        <div class="bjdd">
+                            <img src="~/assets/jianfa/ima/anhao-1.jpg" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bjli on style-chaal-45">
+                    <div class="bjdl on">
+                        <template>
+                            <Tabs size="small" type="card">
+                                <Tab-Pane label="初加工">
+                                    <div class="bqian">
+
+                                        <div class="bjdd on">
+                                            <i5 class="fleft style-chaal-50">{{source.sourceSN}}</i5>
+                                            <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">一审法院：</div>
+                                            <div class="fleft style-chaal-80-w">{{source.court1}}</div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">二审法院：</div>
+                                            <div class="fleft style-chaal-80-w">{{source.court2}}</div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">审判组织：</div>
+                                            <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
+                                        </div>
+
+                                        <div class="bjdd on xian-1">
+                                            <div class="fleft style-chaal-20-w">代理律师：</div>
+                                            <div class="fleft style-chaal-80-w">
+                                                {{lawyerFirms}}
+                                            </div>
+                                            <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-33-b">
+                                                <template>
+                                                    <i-select placeholder="请选择纠纷类型" v-model="model4" :clearable="true">
+                                                        <i-option v-for="item in jfleix" :value="item.id"
+                                                                  :key="item.id">{{ item.displayName }}</i-option>
+                                                    </i-select>
+                                                </template>
+                                            </div>
+                                            <div class="fleft style-chaal-33-b">
+                                                <template>
+                                                    <i-select placeholder="请选择纠纷原因" v-model="model5" :multiple="true">
+                                                        <i-option v-for="item in jfyuany" :value="item.id"
+                                                                  :key="item.id">{{ item.displayName }}</i-option>
+                                                    </i-select>
+                                                </template>
+                                            </div>
+                                            <div class="fleft style-chaal-33">
+                                                <template>
+                                                    <i-select placeholder="请选择判决结果" v-model="model6" :clearable="true">
+                                                        <i-option v-for="item in pjjieg" :value="item.id"
+                                                                  :key="item.id">{{ item.displayName }}</i-option>
+                                                    </i-select>
+                                                </template>
+                                            </div>
+                                        </div>
+
+                                        @*<div class="bjdd on xian-2">
+                                            <div class="xuanzeStyle ">
+                                                <div class="title-bz">添加关键词：</div>
+                                                <template v-for="" >
+                                                    <input type="checkbox" id="bq1" v-model=""/>
+                                                    <label for="bq1">关键词</label>
+
+                                                </template>
+                                            </div>
+                                        </div>
+                                        <div class="bjdd on">
+                                            <div class="xuanzeStyle ">
+                                                <div class="title-bz">添加标签词：</div>
+                                                <input type="checkbox" id="bq1" /><label for="bq1">标签</label>
+                                                <input type="checkbox" id="bq2" /><label for="bq2">标签</label>
+                                                <input type="checkbox" id="bq3" checked /><label for="bq3">标签</label>
+                                                <input type="checkbox" id="bq4" /><label for="bq4">标签</label>
+                                                <input type="checkbox" id="bq5" /><label for="bq5">标签</label>
+                                                <input type="checkbox" id="bq6" checked /><label for="bq6">标签</label>
+                                                <input type="checkbox" id="bq7" /><label for="bq7">标签</label>
+                                                <input type="checkbox" id="bq8" /><label for="bq8">标签</label>
+                                                <input type="checkbox" id="bq9" /><label for="bq9">标签</label>
+                                            </div>
+                                        </div>*@
+
+                                        <div class="bjdd on">
+                                            <div class="fleft xian-1 style-chaal-100">
+                                                <template>
+                                                    <i-select placeholder="请选择专题" v-model="model7">
+                                                        <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                    </i-select>
+                                                </template>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bt>
+                                                <i8 class="style-chaal-20">案例聚焦</i8>
+                                            </bt>
+                                            <div class="fleft style-chaal-100">
+                                                <textarea name=""
+                                                          class="textarea">在确保买方能够付款的前提下，配合过户是卖方的义务，而非合同目的</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bt>
+                                                <i8 class="style-chaal-20">案例概述</i8>
+                                            </bt>
+                                            <div class="fleft style-chaal-100">
+                                                <textarea name=""
+                                                          class="textarea-sp">动迁房买卖纠纷，2013年5月13日签订买卖合同，总价119万，约定“房屋上市交易后30日内过户”，同时约定“交易条件不变的情况下，乙方有权增减变更买受人”，后因买方社保不满5年，卖方起诉，以无法办理过户登记为由行使单方解除权，买方以配偶社保已满，可以变更买受人为由抗辩，一审嘉定法院最终驳回卖方解约的诉请。</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bt>
+                                                <i8 class="style-chaal-20">诉请及判决</i8>
+                                            </bt>
+                                            <div class="fleft style-chaal-42">
+                                                <textarea name=""
+                                                          class="textarea-sp">卖方起诉：解除合同，返还房屋</textarea>
+                                            </div>
+                                            <i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>
+                                            <!--调节h50 h60.....-->
+                                            <div class="fleft style-chaal-42">
+                                                <textarea name=""
+                                                          class="textarea-sp">判决结果：全部驳回</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bf>
+                                                <i9 class="fright">反诉判决</i9>
+                                            </bf>
+                                            <div class="fleft style-chaal-42">
+                                                <textarea name=""
+                                                          class="textarea-sp">反诉方：这是假字这是假字....</textarea>
+                                            </div>
+                                            <i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>
+                                            <!--调节h50 h60.....-->
+                                            <div class="fleft style-chaal-42">
+                                                <textarea name=""
+                                                          class="textarea-sp">判决结果：这是假字这是假字....</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bt>
+                                                <i8 class="style-chaal-20">法律法规</i8>
+                                            </bt>
+                                            <div class="fleft style-chaal-100">
+                                                <textarea name=""
+                                                          class="textarea">2016年3月25日，《关于进一步完善本市住房市场体系和保障体系促进房地产市场平稳健康发展若干意见的通知》：将自购房之日起计算的前3年内在本市累计缴纳2年以上，调整为自购房之日前连续缴纳满5年及以上。</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bt>
+                                                <i8 class="style-chaal-20">经验分享</i8>
+                                            </bt>
+                                            <div class="fleft style-chaal-100">
+                                                <textarea name="" class="textarea">
+本案中买方胜诉取决于几点：1、合同中关于增减变更买受人的条款有效。2、买方的配偶具备购房资格。从类似判例及法院指导意见看，审理类似案例时，主排除炒房及中介行业吃进低价房转售获利两种情形，如指定非买受人近亲属，则有判决该条款无效的风险。</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bt>
+                                                <i8 class="style-chaal-20">简法律师说</i8>
+                                            </bt>
+                                            <div class="fleft style-chaal-100">
+                                                <textarea name="" class="textarea">
+律师在代理限购状态下的买方，因为无法过户，卖方起诉解除合同的类似案件时，律师要尽量提醒当事人，指定近亲属作为买受人。要举证房屋用于自住，排除被法院认定为炒房、投资、转售获利的诉讼风险。</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Tab-Pane>
+                                <Tab-Pane label="精加工">
+                                    <div class="bqian">空</div>
+                                </Tab-Pane>
+                                <Tab-Pane label="案例卡">
+                                    <div class="bqian">
+
+                                        <div class="bjdd on">
+                                            <i5 class="fleft style-chaal-50">(2018)沪 0114 民初 1528 号</i5>
+                                            <i7 class="fright tright style-chaal-50">房屋买卖纠纷（二手房）</i7>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">一审法院：</div>
+                                            <div class="fleft style-chaal-80-w">上海市浦东新区人民法院</div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">二审法院：</div>
+                                            <div class="fleft style-chaal-80-w">最高人民法院</div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">审判组织：</div>
+                                            <div class="fleft style-chaal-80-w">这是假字，这是假字这是假字这是假字这是假字这是</div>
+                                        </div>
+
+                                        <div class="bjdd on xian-1">
+                                            <div class="fleft style-chaal-20-w">代理律师：</div>
+                                            <div class="fleft style-chaal-80-w">
+                                                这是假字，这是假字这是假字这是假字这是假字这是<br>这是假字，这是假字这是假字这是假字这是假字这是<br>这是假字，这是假字这是假字这是假字这是假字这是<br>这是假字，这是假字这是假字这是假字这是假字这是
+                                            </div>
+                                            <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-33-b">
+                                                <template>
+                                                    <i-select placeholder="请选择案由" v-model="model2">
+                                                        <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                    </i-select>
+                                                </template>
+                                            </div>
+                                            <div class="fleft style-chaal-33-b">
+                                                <template>
+                                                    <i-select placeholder="请选择城市" v-model="model3">
+                                                        <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                    </i-select>
+                                                </template>
+                                            </div>
+                                            <div class="fleft style-chaal-33">
+                                                <template>
+                                                    <i-select placeholder="请选择法院" v-model="model8">
+                                                        <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                                                        <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                                                    </i-select>
+                                                </template>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on xian-1">
+                                            <div class="xuanzeStyle ">
+                                                <div class="title-bz">添加关键词：</div>
+                                                <input type="checkbox" id="bq1" /><label for="bq1">关键词</label>
+                                                <input type="checkbox" id="bq2" checked /><label for="bq2">关键词</label>
+                                                <input type="checkbox" id="bq3" /><label for="bq3">关键词</label>
+                                                <input type="checkbox" id="bq4" /><label for="bq4">关键词</label>
+                                                <input type="checkbox" id="bq5" /><label for="bq5">关键词</label>
+                                                <input type="checkbox" id="bq6" /><label for="bq6">关键词</label>
+                                                <input type="checkbox" id="bq7" /><label for="bq7">关键词</label>
+                                                <input type="checkbox" id="bq8" /><label for="bq8">关键词</label>
+                                                <input type="checkbox" id="bq9" /><label for="bq9">关键词</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bm class="style-pa-20">
+                                                <i8 class="style-chaal-20">案例卡正面</i8>
+                                            </bm>
+                                            <div class="style-pa-1">
+                                                <div class="jianfa-guandiancard">
+                                                    <div class="ny-guandiancard">
+                                                        <!--状态2-->
+                                                        <ul>
+                                                            <li>
+                                                                <dl>
+                                                                    <dd class="card-top">
+                                                                        <textarea name=""
+                                                                                  class="textarea-k">
+律师在代理限购状态下的买方，因为无法过户，卖方起诉解除合同的类似案件时，律师要尽量提醒当事人，指定近亲属作为买受人。要举证房屋用于自住，排除被法院认定为炒房、投资、转售获利的诉讼风险。</textarea>
+                                                                    </dd>
+                                                                    <dd class="card-zhong">
+                                                                        (2016)沪 0115 民初 67704 号
+                                                                    </dd>
+                                                                    <dd class="card-bottom">上海市浦东新区人民法院</dd>
+                                                                </dl>
+                                                            </li>
+                                                        </ul>
+                                                        <!--end-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <bm class="style-pa-20">
+                                                <i8 class="style-chaal-20">案例卡背面</i8>
+                                            </bm>
+                                            <div class="style-pa-1">
+                                                <div class="jianfa-guandiancard">
+                                                    <div class="ny-guandiancard">
+                                                        <!--状态2-->
+                                                        <ul>
+                                                            <li>
+                                                                <dl>
+                                                                    <dd class="oncard-top">
+                                                                        <textarea name="" class="textarea-k">
+本院认为，……现系争房屋已由被告装修入住数年，原告也已取得被告支付的大部分房款，在被告同意支付剩余房屋尾款的情况下，原告的合同目的已然能够实现。根据合同约定原告应协助被告办理系争房屋的过户手续，此系原告的合同义务而非原告的合同目的，原告以被告限购致使无法办理过户手续为由称其合同目的无法实现，与事实不符，本院不予认同。</textarea>
+                                                                        <p>郑卫青、吴 丹、杨斯空<br>2018年4月10日</p>
+                                                                    </dd>
+                                                                </dl>
+                                                            </li>
+                                                        </ul>
+                                                        <!--end-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="bjdd">
+                                            <div class="imghov">
+                                                <i11><a href=""><img src="ima/jia-icon-2c.png"></a></i11>
+                                                <i11><a href=""><img src="ima/jia-icon-2d.png"></a></i11>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </Tab-Pane>
+                            </Tabs>
+                        </template>
+
+
+                        <div class="bqian">
+                            <div class="bjdd on">
+                                <bt>
+                                    <i8 class="style-chaal-20">添加备注</i8>
+                                </bt>
+                                <div class="fleft style-chaal-100">
+                                    <textarea name="" class="textarea" placeholder="这里添加备注，备注内容仅仅自己可见…"></textarea>
+                                </div>
+                            </div>
+                            <div class="bjdd">
+                                <a href="" class="btn-submit-jgy">发布</a><a href="" class="btn-submit-jgy">保存</a><a href="" class="btn-submit-jgy">预览</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+            </div>
+        </div>
+    </div>
+    <com-footer></com-footer>
+    <!--end-->
+</div>
 
 @section scripts{
     <script>
         var id =@ViewBag.Id;//此id为案源的id
+        var app=new Vue({
+            el: '#app',
+            data: {
+                theme1: 'primary',
+                value: '',
+                anyou: [{
+                    value: 'anyou1',
+                    label: '案由一'
+                },
+                {
+                    value: 'anyou2',
+                    label: '案由二'
+                },
+                ],
+                model2: '',
+                chengshi: [{
+                    value: 'chengshi1',
+                    label: '上海'
+                },
+                {
+                    value: 'chengshi2',
+                    label: '北京'
+                },
+                ],
+                model3: '',
+                model4: '',
+                model5: [],
+                model6: '',
+                model7: '',
+                fayuan: [{
+                    value: 'fayuan1',
+                    label: '最高人民法院'
+                },
+                {
+                    value: 'fayuan2',
+                    label: '第二人民法院'
+                },
+                ],
+                model8: '',
+
+                //end//
+                part: {},
+                subjects: [],
+
+                anYous: [],
+                courts: [],
+                cities: [],
+                filterCourtByCity: [],
+
+                initial: {
+                    CaseLabels: [],
+                },
+                source: {},
+                knowledgeTree: [],
+                typeTree:[]
+            },
+            computed: {
+                //审判组织
+                trialPeople() {
+                    if (!this.source.trialPeople) return '';
+                    var str=''
+                    this.source.trialPeople.forEach(el => {
+                        str += `${el.trialRole}：${el.name}\n`
+                    })
+                    return str
+                },
+                //代理律师
+                lawyerFirms() {
+                    if (!this.source.lawyerFirms) return '';
+                    var str = ''
+                    this.source.lawyerFirms.forEach(el => {
+                        str += `${el.firmName}： ${el.lawyer}\n`
+                    })
+                    return str
+                },
+                //纠纷类型
+                jfleix() {
+                    if (this.knowledgeTree.length==0) return [{}];
+                    var relativeNodeId = this.knowledgeTree.filter(el => el.name == '纠纷类型')[0].id; 
+                    return this.typeTree.filter(el => el.relativeNodeId == relativeNodeId)
+                },
+                //纠纷原因
+                jfyuany() {
+                    if (this.knowledgeTree.length == 0) return [{}];
+                    var relativeNodeId = this.knowledgeTree.filter(el => el.name == '纠纷原因')[0].id;
+                    return this.typeTree.filter(el => el.relativeNodeId == relativeNodeId&&(this.model4?el.parentId==this.model4:true))
+                },
+                //判决结果
+                pjjieg() {
+                    if (this.knowledgeTree.length == 0) return [{}];
+                    var relativeNodeId = this.knowledgeTree.filter(el => el.name == '判决结果')[0].id;
+                    return this.typeTree.filter(el => el.relativeNodeId == relativeNodeId && (this.model4 ? el.parentId == this.model4 : true))
+                },
+
+            },
+            methods: {
+                loadData() {
+                    var that = this;
+                    //获取判例对应的数据
+                    abp.services.app.workbench.getCaseInfo(id).done( (res)=> {
+                        this.source = res.source;
+                        this.initial = res.initial;
+                    })
+                    abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
+                        this.knowledgeTree = res;
+                    })
+                    abp.services.app.baseTree.getTypeTreeJsonByParentId().done((res) => {
+                        this.typeTree = res;
+                    })
+                    //加载专题数据
+                    abp.services.app.type.getSubjects().done( (res)=> {
+                        this.subjects = res;
+                    })
+
+                    abp.services.app.type.getAnYous().done(function (data) {
+                        that.anYous = data;
+                    });
+                    abp.services.app.type.getCities().done(function (data) {
+                        that.cities = data;
+                    });
+                    abp.services.app.type.getCourts().done(function (data) {
+                        that.courts = data;
+                    });
+                }
+            },
+            watch: {
+                'wherePart.cityId': function (val, old) {
+                    this.wherePart.courtId = null;
+                    if (!val) {
+                        this.filterCourtByCity = [];
+                    } else {
+                        var that = this;
+                        this.filterCourtByCity = this.courts.filter(o => o.parentId == val);
+                    }
+                }
+            },
+            created() {
+                this.loadData();
+            }
+        })
         //获取初加工、精加工级联层级的方式
         //简述：目的是给定一个知识树节点名称，如“案由”，产生对应节点下所有子节点的下拉选择框
         //1.首先获取知识树及分类树
@@ -48,18 +563,18 @@
             LawyerOpinion: '律师说',
             CaseNodes: [
                 {
-                    BaseTreeId: 15 //对应分类树节点Id 
+                    BaseTreeId: 15 //对应分类树节点Id
                 },
                 {
-                    BaseTreeId: 20 //对应分类树节点Id 
+                    BaseTreeId: 20 //对应分类树节点Id
                 }
             ],
             CaseLabels: [
                 {
-                    LabelId: 15 //对应标签Id 
+                    LabelId: 15 //对应标签Id
                 },
                 {
-                    LabelId: 20 //对应标签Id 
+                    LabelId: 20 //对应标签Id
                 }
             ],
             JudgeInfo: {
@@ -74,20 +589,20 @@
             remarks:'备注'
         }
         //获取判例对应的数据
-        abp.services.app.workbench.getCaseInfo(id).done(function (data) {
+        //abp.services.app.workbench.getCaseInfo(id).done(function (data) {
 
-        })
-        //提交初加工，数据格式见上文
-        abp.servcies.app.workbench.updateInitial(updateInitialDto)
-        //发布初加工
-        abp.servcies.app.workbench.publishInitial(caseInitialId)
-        //提交精加工
-        abp.services.app.workbench.updateFine(caseInitialId, updateFineDto)
-        //发布精加工
-        abp.servcies.app.workbench.publishFine(caseInitialId)
-        //提交案例卡
-        abp.services.app.workbench.updateCard(caseInitialId, updateCardDto)
-        //发布案例卡
-        abp.servcies.app.workbench.publishCard(caseInitialId)
+        //})
+        ////提交初加工，数据格式见上文
+        //abp.services.app.workbench.updateInitial(updateInitialDto)
+        ////发布初加工
+        //abp.services.app.workbench.publishInitial(caseInitialId)
+        ////提交精加工
+        //abp.services.app.workbench.updateFine(caseInitialId, updateFineDto)
+        ////发布精加工
+        //abp.services.app.workbench.publishFine(caseInitialId)
+        ////提交案例卡
+        //abp.services.app.workbench.updateCard(caseInitialId, updateCardDto)
+        ////发布案例卡
+        //abp.services.app.workbench.publishCard(caseInitialId)
     </script>
 }

@@ -12,7 +12,11 @@ a:focus { outline: none; }
 .hide { display: none; }
 .block { display: block; }
 .fleft { float: left; }
-.fright { float: right; }
+.fright { float: right;}
+.fmargin{margin:0 auto}
+.tleft { text-align: left; }
+.tright { text-align: right; }
+.tjustify{text-align:justify;}
 .clear { clear: both; }
 .relative { position: relative; }
 .absolute { position: absolute; }
