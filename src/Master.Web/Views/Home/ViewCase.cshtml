@@ -3,7 +3,59 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "查案例";
 }
-
+@section styles{ 
+    <style>
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i1{
+            display:flex;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 {
+            width: 100%;
+            border: 1px solid #f2f2f2;
+            padding: 5px 10px 3px 10px;
+            border-radius: 5px;
+            margin: 10px 0 0 0;
+            overflow: auto;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap  .left-cha1 {
+            width: 15%;
+            padding: 0 5px 0 0;
+            box-sizing: border-box;
+        }
+            .jianfa-chaanli .chaanli-content .cha-item-wrap .left-cha1 img {
+                width: 100%;
+                max-width: 54px;
+                border-radius: 50px;
+            }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap .right-cha1 {
+            width: 85%;
+            background: #c69c6d;
+            color: #fff;
+            line-height: 22px;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 0 0 0 0;
+            box-sizing: border-box;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .top-cha1 {
+            width: 100%;
+            text-align: justify;
+            padding: 3px 0 10px 0;
+            border-bottom: 1px solid #c69c6d;
+            line-height: 24px;
+            color: #c69c6d;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1 {
+            width: 100%;
+            color: #c69c6d;
+            line-height: 24px;
+            padding: 3px 0 0 0;
+            transition: all 0.5s ease 0s;
+        }
+    </style>
+}
 <div id="app" v-cloak>
     <!--顶部-->
     <com-header active-name="2"></com-header>
@@ -96,24 +148,46 @@
         <div class="chaanli-content">
             <ul>
                 <li class="style-chaal-40">
-                    <dl>
-                        <dd v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
-                            <i1>
-                                <div class="left-cha1"><img src="ima/index-2.png"></div>
-                                <div class="right-cha1">
-                                    {{item.title}}
-                                </div>
-                            </i1>
-                            <i2>
-                                <div class="top-cha1">
-                                    {{item.introduction}}
-                                </div>
-                                <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
-                            </i2>
-                        </dd>
-                    </dl>
+                    <template>
+                        <div class="infinite-list-wrapper">
+                            <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled">
+                                <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
+                                    <i1>
+                                        <div class="left-cha1"><img src="ima/index-2.png"></div>
+                                        <div class="right-cha1">
+                                            {{item.title}}
+                                        </div>
+                                    </i1>
+                                    <i2>
+                                        <div class="top-cha1">
+                                            {{item.introduction}}
+                                        </div>
+                                        <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
+                                    </i2>
+                                </dd>
+                            </dl>
+                            <p v-if="loading">加载中...</p>
+                            <p v-if="noMore">没有更多了</p>
+                        </div>
+                    </template>
+                    @*<dl>
+            <dd v-for="item in [{title:'t',introduction:'34321',readNumber:125,id:12}]" :key="item.id" @@click="getViewMsg(item.id)">
+                <i1>
+                    <div class="left-cha1"><img src="ima/index-2.png"></div>
+                    <div class="right-cha1">
+                        {{item.title}}
+                    </div>
+                </i1>
+                <i2>
+                    <div class="top-cha1">
+                        {{item.introduction}}
+                    </div>
+                    <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
+                </i2>
+            </dd>
+        </dl>*@
                 </li>
-                <li class="on style-chaal-60">
+                <li class="on style-chaal-60" v-if="caseInfo">
                     <dl class="on">
 
                         <dd class="on">
@@ -142,20 +216,20 @@
                             <bt>
                                 <i8 class="style-chaal-20">诉请及判决</i8>
                             </bt>
-                            <i6 class="fleft tjustify style-chaal-42-h">卖方起诉：解除合同，返还房屋</i6>
+                            <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.introduction}}</i6>
                             <i5c class="style-chaal-16-h"><span class="h50">50%</span></i5c>
                             <!--调节h50 h60.....-->
-                            <i6 class="fleft tjustify style-chaal-42-h">判决结果：全部驳回</i6>
+                            <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.judgeResult}}</i6>
                         </dd>
 
                         <dd class="on">
                             <bf>
                                 <i9 class="fright">反诉判决</i9>
                             </bf>
-                            <i6 class="fleft tjustify style-chaal-42-h">反诉方：这是假字这是假字....</i6>
+                            <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</i6>
                             <i5c class="style-chaal-16-h"><span class="h50">50%</span></i5c>
                             <!--调节h50 h60.....-->
-                            <i6 class="fleft tjustify style-chaal-42-h">判决结果：这是假字这是假字....</i6>
+                            <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</i6>
                         </dd>
 
                         <dd class="on">
@@ -190,7 +264,7 @@
                                 <i8 class="style-chaal-20">案例卡</i8>
                             </bt>
                             <i5 class="fleft tjustify">
-                                在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？卖方可否以限购导致合同目的无法实现为由行使法定解除权？
+
                             </i5>
                         </dd>
 
@@ -212,10 +286,7 @@
                 currentPage: 1,
                 pagesize: 10,
                 items: [],
-                caseInfo: {
-                    initial: {},
-                    source: {}
-                },
+                caseInfo: null,
                 anYous: [],
                 cities: [],
                 subjects:[],
@@ -224,14 +295,23 @@
                     cityId: '',
                     subjectId: '',
                     keyWord:''
-                }
+                },
+                noMore: false,
+                loading:false
             },
             computed: {
                 where() {
                     return '1=1'
+                },
+                disabled() {
+                    return this.loading || this.noMore
                 }
             },
             methods: {
+                loadScroll() {
+                    this.loading = true
+                    this.loadSource();
+                },
                 getViewMsg(caseInitialId) {
                     abp.servcies.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
                         //caseSourceId为对应的案源id
@@ -244,7 +324,14 @@
                 loadSource() {
                     var that = this;
                     func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
-                        that.items = res.data;
+                        this.loading = false;
+                        if (res.data.length == 0) {
+                            this.$Message.info('已经没有数据了');
+                            this.noMore = true;
+                        }
+                        this.currentPage++;
+                        that.items.concat(res.data);
+                        //that.items = res.data;
                         //that.totalCount = res.count;
                     }));
                     //abp.services.app.viewCase.getSummary().done(function (data) {
@@ -266,6 +353,7 @@
                 }
             },
             mounted() {
+                this.loadSource();
                 this.loadData();
             }
         })

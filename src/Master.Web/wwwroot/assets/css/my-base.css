@@ -7,3 +7,7 @@
 .top-modal, .top-modal .ivu-modal, .top-modal .ivu-modal-content, .top-modal .ivu-modal-body {
     height: 100%;
 }
+.ivu-page-item-active {
+    background-color: #c69c6d;
+    border-color:#c69c6d;
+}
