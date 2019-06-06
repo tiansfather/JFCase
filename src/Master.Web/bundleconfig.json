@@ -33,7 +33,8 @@
       "wwwroot/assets/layuiadmin/layui/css/layui.css",
       "wwwroot/lib/iconfont/wechaticon.css",
       "wwwroot/lib/iconfont/iconfont.css",
-      "wwwroot/assets/css/wechatcommon.css"
+      "wwwroot/assets/css/wechatcommon.css",
+      "wwwroot/lib/element/element-ui.css"
     ]
   },
   {
@@ -41,9 +42,10 @@
     "inputFiles": [
       "wwwroot/lib/jquery/jquery.min.js",
       "wwwroot/lib/vue/vue.min.js",
+      "wwwroot/lib/element/element-ui.js",
       "wwwroot/lib/vue-router/vue-router.min.js",
       "wwwroot/assets/jianfa/js/iview.min.js",
-      "wwwroot/assets/jianfa/js/top-banner.js"      
+      "wwwroot/assets/jianfa/js/top-banner.js"
     ]
   },
   {

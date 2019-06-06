@@ -171,7 +171,7 @@
                                             <!--调节h50 h60.....-->
                                             <div class="fleft style-chaal-42">
                                                 <textarea name=""
-                                                          class="textarea-sp" v-model="caseInitialDto.judgeInfo.judgeResult">判决结果：全部驳回</textarea>
+                                                          class="textarea-sp" v-model="caseInitialDto.judgeInfo.judgeResult" placeholder="判决结果："></textarea>
                                             </div>
                                         </div>
 
@@ -183,6 +183,7 @@
                                                 <textarea name=""
                                                           class="textarea-sp" v-model="caseInitialDto.judgeInfo.reverseJudgeContent"></textarea>
                                             </div>
+                                            
                                             <i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>
                                             <!--调节h50 h60.....-->
                                             <div class="fleft style-chaal-42">
@@ -368,7 +369,7 @@
                                     <i8 class="style-chaal-20">添加备注</i8>
                                 </bt>
                                 <div class="fleft style-chaal-100">
-                                    <textarea name="" class="textarea" placeholder="这里添加备注，备注内容仅仅自己可见…"></textarea>
+                                    <textarea name="" class="textarea" placeholder="这里添加备注，备注内容仅仅自己可见…" v-model="caseInitialDto.remarks"></textarea>
                                 </div>
                             </div>
                             <div class="bjdd">
@@ -391,6 +392,7 @@
         var app=new Vue({
             el: '#app',
             data: {
+                value1:50,
                 theme1: 'primary',
                 value: '',
                 model2: '',
