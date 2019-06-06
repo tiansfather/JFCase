@@ -157,7 +157,7 @@
 
                     //请求案例卡分页
                     abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where}).done( (data)=> {
-                        that.items = data;
+                        that.items = data.data;
                         //that.items = [{ id: 1, title: 'a', content: 'b', lawyerFirms:[] }]
                         console.log(data)
                     })

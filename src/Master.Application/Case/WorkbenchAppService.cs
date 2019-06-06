@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Abp.AutoMapper;
+using Abp.Domain.Repositories;
 using Abp.Runtime.Security;
 using Abp.UI;
 using Master.Authentication;
@@ -210,52 +211,144 @@ namespace Master.Case
 
         #region 加工
         /// <summary>
+        /// 加工信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual async Task<object> GetCaseProcessInfo(int id)
+        {
+            var caseInitialManager = Resolve<CaseInitialManager>();
+            var caseSource = await Manager.GetAll()
+                .Include(o => o.AnYou)
+                .Include(o => o.City)
+                .Include(o => o.Court1)
+                .Include(o => o.Court2)
+                .Where(o => o.Id == id)
+                .SingleOrDefaultAsync();
+
+            var caseInitial = await caseInitialManager.GetAll()
+                .Include(o => o.CaseNodes)
+                .Include(o => o.CaseLabels)
+                .Include(o => o.CaseFines)
+                .Include(o => o.CaseCards)
+                .Where(o => o.CaseSourceId == id && o.CreatorUserId == caseSource.OwerId)
+                .FirstOrDefaultAsync();
+
+            #region 初加工数据
+            CaseInitialUpdateDto caseInitialUpdateDto = new CaseInitialUpdateDto();
+            if (caseInitial == null)
+            {
+                //如果没有初加工，直接产生初加工记录
+                caseInitial = new CaseInitial()
+                {
+                    CaseSourceId = id,
+                    CaseStatus = CaseStatus.加工中
+                };
+                await caseInitialManager.InsertAndGetIdAsync(caseInitial);
+            }
+            caseInitial.MapTo(caseInitialUpdateDto);
+            #endregion
+
+            #region 案例卡数据
+            CaseCardUpdateDto caseCardUpdateDto = new CaseCardUpdateDto()
+            {
+                CaseInitialId= caseInitial.Id
+            };
+            caseCardUpdateDto.CaseCards = caseInitial.CaseCards.MapTo<List<CaseCardDto>>(); 
+            #endregion
+
+            return new
+            {
+                Source = new
+                {
+                    caseSource.SourceSN,
+                    caseSource.AnYouId,
+                    AnYou = caseSource.AnYou?.DisplayName,
+                    caseSource.CityId,
+                    City = caseSource.City?.DisplayName,
+                    caseSource.Court1Id,
+                    Court1 = caseSource.Court1?.DisplayName,
+                    caseSource.Court2Id,
+                    Court2 = caseSource.Court2?.DisplayName,
+                    caseSource.LawyerFirms,
+                    TrialPeople = caseSource.TrialPeople.Select(o => new { o.Name, TrialRole = o.TrialRole.ToString() }),
+                    caseSource.SourceFile
+                },
+                caseInitialUpdateDto,
+                caseCardUpdateDto
+
+            };
+        }
+
+        #region 初加工提交发布
+        /// <summary>
         /// 提交初加工内容
         /// </summary>
         /// <param name="caseInitialUpdateDto"></param>
         /// <returns></returns>
-        public virtual async Task<int> UpdateInitial(CaseInitialUpdateDto caseInitialUpdateDto)
+        public virtual async Task UpdateInitial(CaseInitialUpdateDto caseInitialUpdateDto)
         {
             var caseInitialManager = Resolve<CaseInitialManager>();
+
             CaseInitial caseInitial = null;
             if (caseInitialUpdateDto.Id > 0)
             {
+                //先删除对应初加工的分类绑定和标签绑定
+                await Resolve<IRepository<CaseNode, int>>().DeleteAsync(o => o.RelType == "初加工" && o.CaseInitialId == caseInitialUpdateDto.Id);
+                await Resolve<IRepository<CaseLabel, int>>().DeleteAsync(o => o.RelType == "初加工" && o.CaseInitialId == caseInitialUpdateDto.Id);
+
                 caseInitial = await caseInitialManager.GetAll().Include(o => o.CaseNodes)
+                    .Include(o => o.CaseLabels)
                     .Where(o => o.Id == caseInitialUpdateDto.Id).SingleOrDefaultAsync();
                 if (caseInitial == null)
                 {
                     throw new UserFriendlyException("不存在对应加工信息");
                 }
-                //删除
-                caseInitial.CaseNodes.Clear();
-                caseInitial.CaseLabels.Clear();
+                //数据设置
+                caseInitial.Title = caseInitialUpdateDto.Title;
+                caseInitial.SubjectId = caseInitialUpdateDto.SubjectId;
+                caseInitial.Introduction = caseInitialUpdateDto.Introduction;
+                caseInitial.Law = caseInitialUpdateDto.Law;
+                caseInitial.LawyerOpinion = caseInitialUpdateDto.LawyerOpinion;
+                caseInitial.Experience = caseInitialUpdateDto.Experience;
+                caseInitial.Remarks = caseInitialUpdateDto.Remarks;
+                caseInitial.JudgeInfo = caseInitialUpdateDto.JudgeInfo;
+                //树节点和标签
+                foreach (var caseNodeDto in caseInitialUpdateDto.CaseNodes)
+                {
+                    var caseNode = caseNodeDto.MapTo<CaseNode>();
+                    caseNode.RelType = "初加工";
+                    caseInitial.CaseNodes.Add(caseNode);
+                }
+                foreach (var caseLabelDto in caseInitialUpdateDto.CaseLabels)
+                {
+                    var caseLabel = caseLabelDto.MapTo<CaseLabel>();
+                    caseLabel.RelType = "初加工";
+                    caseInitial.CaseLabels.Add(caseLabel);
+                }
             }
-            else
-            {
-                caseInitial = new CaseInitial();
-            }
-
-            caseInitialUpdateDto.MapTo(caseInitial);
             var caseSource = await Manager.GetByIdAsync(caseInitial.CaseSourceId);
             //设置案源为加工中状态
             caseSource.CaseSourceStatus = CaseSourceStatus.加工中;
             caseInitial.CaseStatus = CaseStatus.加工中;
             await CurrentUnitOfWork.SaveChangesAsync();
-            return caseInitial.Id;
         }
         /// <summary>
         /// 发布初加工
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task PublishInitial(int id)
+        public virtual async Task PublishInitial(CaseInitialUpdateDto caseInitialUpdateDto)
         {
-            var caseInitial = await Resolve<CaseInitialManager>().GetAll().Include(o=>o.CaseSource)
-                .Where(o=>o.Id==id).SingleAsync();
+            await UpdateInitial(caseInitialUpdateDto);
+            var caseInitial = await Resolve<CaseInitialManager>().GetAll().Include(o => o.CaseSource)
+                .Where(o => o.Id == caseInitialUpdateDto.Id).SingleAsync();
             caseInitial.PublishDate = DateTime.Now;
             caseInitial.CaseStatus = CaseStatus.展示中;
             caseInitial.CaseSource.CaseSourceStatus = CaseSourceStatus.已加工;
-        }
+        } 
+        #endregion
+
         /// <summary>
         /// 提交精加工信息
         /// </summary>
@@ -306,11 +399,12 @@ namespace Master.Case
         /// </summary>
         /// <param name="caseFineDtos"></param>
         /// <returns></returns>
-        public virtual async Task UpdateCard(int caseInitialId, IEnumerable<CaseCardDto> caseCardDtos)
+        public virtual async Task UpdateCard(CaseCardUpdateDto caseCardUpdateDto)
         {
             var caseCardManager = Resolve<CaseCardManager>();
+            var caseCardDtos = caseCardUpdateDto.CaseCards;
             var caseInitial = await Resolve<CaseInitialManager>().GetAll().Include(o => o.CaseCards)
-                .Where(o => o.Id == caseInitialId).SingleOrDefaultAsync();
+                .Where(o => o.Id == caseCardUpdateDto.CaseInitialId).SingleOrDefaultAsync();
             if (caseInitial == null)
             {
                 throw new UserFriendlyException("不存在加工信息");
@@ -323,6 +417,7 @@ namespace Master.Case
             {
                 var newCaseCard = caseCardDto.MapTo<CaseCard>();
                 newCaseCard.CaseInitialId = caseInitial.Id;
+                newCaseCard.IsActive = false;
                 await caseCardManager.InsertAsync(newCaseCard);
             }
             //修改
@@ -330,6 +425,7 @@ namespace Master.Case
             {
                 var oriCaseCard = await caseCardManager.GetByIdAsync(caseCardDto.Id);
                 caseCardDto.MapTo(oriCaseCard);
+                oriCaseCard.IsActive = false;
             }
         }
         /// <summary>
@@ -337,9 +433,22 @@ namespace Master.Case
         /// </summary>
         /// <param name="caseInitialId"></param>
         /// <returns></returns>
-        public virtual async Task PublishCard(int caseInitialId)
+        public virtual async Task PublishCard(CaseCardUpdateDto caseCardUpdateDto)
         {
-            var caseCards = await Resolve<CaseCardManager>().GetAll().Where(o => o.CaseInitialId == caseInitialId).ToListAsync();
+            var caseInitial = await Resolve<CaseInitialManager>().GetAll().Include(o => o.CaseCards)
+                .Where(o => o.Id == caseCardUpdateDto.CaseInitialId).SingleOrDefaultAsync();
+            if (caseInitial == null)
+            {
+                throw new UserFriendlyException("不存在加工信息");
+            }
+            if(caseInitial.CaseStatus!=CaseStatus.展示中 && caseInitial.CaseStatus != CaseStatus.下架)
+            {
+                throw new UserFriendlyException("请先完成本判例的初加工并发布后再进行案例卡发布，谢谢！您可点击保存按钮保留已做的成果");
+            }
+
+            await UpdateCard(caseCardUpdateDto);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            var caseCards = await Resolve<CaseCardManager>().GetAll().Where(o => o.CaseInitialId == caseCardUpdateDto.CaseInitialId).ToListAsync();
             foreach (var caseCard in caseCards)
             {
                 caseCard.IsActive = true;

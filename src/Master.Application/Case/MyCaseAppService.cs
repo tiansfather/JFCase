@@ -26,7 +26,8 @@ namespace Master.Case
                 .Include(o => o.CaseFines)
                 .Include(o => o.CaseCards)
                 .Include(o => o.CaseNodes)
-                .Where(o => o.CaseSource.OwerId == AbpSession.UserId);
+                .Where(o => o.CaseSource.OwerId == AbpSession.UserId)
+                .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架);
 
         }
 
@@ -67,7 +68,7 @@ namespace Master.Case
         public virtual async Task<object> GetSummary()
         {
             //已发布的案例数量
-            var caseCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && o.CaseStatus==CaseStatus.展示中 );
+            var caseCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && o.CaseStatus==CaseStatus.展示中 ||o.CaseStatus==CaseStatus.下架);
             //案例卡数量
             var caseCardCount = await Resolve<CaseCardManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && o.IsActive).CountAsync();
             //精加工数量

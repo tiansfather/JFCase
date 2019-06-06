@@ -67,6 +67,7 @@ namespace Master.EntityFrameworkCore
         public virtual DbSet<CaseSourceHistory> CaseSourceHistory { get; set; }
         public virtual DbSet<CaseFine> CaseFine { get; set; }
         public virtual DbSet<CaseNode> CaseNode { get; set; }
+        public virtual DbSet<CaseLabel> CaseLabel { get; set; }
         public virtual DbSet<CaseCard> CaseCard { get; set; }
         public virtual DbSet<Label> Label { get; set; }
         public virtual DbSet<TreeLabel> TreeLabel { get; set; }

@@ -3025,6 +3025,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'getCaseProcessInfo'
+    abp.services.app.workbench.getCaseProcessInfo = function(id, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Workbench/GetCaseProcessInfo' + abp.utils.buildQueryString([{ name: 'id', value: id }]) + '',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
     // action 'updateInitial'
     abp.services.app.workbench.updateInitial = function(caseInitialUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -3035,10 +3043,11 @@ abp.services = abp.services || {};
     };
 
     // action 'publishInitial'
-    abp.services.app.workbench.publishInitial = function(id, ajaxParams) {
+    abp.services.app.workbench.publishInitial = function(caseInitialUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/PublishInitial' + abp.utils.buildQueryString([{ name: 'id', value: id }]) + '',
-        type: 'POST'
+        url: abp.appPath + 'api/services/app/Workbench/PublishInitial',
+        type: 'POST',
+        data: JSON.stringify(caseInitialUpdateDto)
       }, ajaxParams));;
     };
 
@@ -3060,19 +3069,20 @@ abp.services = abp.services || {};
     };
 
     // action 'updateCard'
-    abp.services.app.workbench.updateCard = function(caseInitialId, caseCardDtos, ajaxParams) {
+    abp.services.app.workbench.updateCard = function(caseCardUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/UpdateCard' + abp.utils.buildQueryString([{ name: 'caseInitialId', value: caseInitialId }]) + '',
+        url: abp.appPath + 'api/services/app/Workbench/UpdateCard',
         type: 'PUT',
-        data: JSON.stringify(caseCardDtos)
+        data: JSON.stringify(caseCardUpdateDto)
       }, ajaxParams));;
     };
 
     // action 'publishCard'
-    abp.services.app.workbench.publishCard = function(caseInitialId, ajaxParams) {
+    abp.services.app.workbench.publishCard = function(caseCardUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/PublishCard' + abp.utils.buildQueryString([{ name: 'caseInitialId', value: caseInitialId }]) + '',
-        type: 'POST'
+        url: abp.appPath + 'api/services/app/Workbench/PublishCard',
+        type: 'POST',
+        data: JSON.stringify(caseCardUpdateDto)
       }, ajaxParams));;
     };
 
