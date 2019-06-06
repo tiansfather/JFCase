@@ -527,8 +527,16 @@
                 initSelects() {
                     var selects = this.getSelects("案由");
                     for (var i = 0; i < selects.length; i++) {
-                        //todo:根据caseNode下的数据构建出选中对象
-                        this.selectValues["案由"].push(selects[i].enableMultiSelect ? [] : null);
+                        var select = selects[i];
+                        //从casenodes中获取初始值
+                        var value;
+                        var nodes = this.caseInitialDto.caseNodes.filter(o => o.relName == select.name);
+                        if (select.enableMultiSelect) {
+                            value = nodes.map(o => o.baseTreeId);
+                        } else {
+                            value = nodes[0] ? nodes[0].baseTreeId : null;
+                        }                        
+                        this.selectValues["案由"].push(value);
                     }
                 },
                 //获取级联知识树选择框
