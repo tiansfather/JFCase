@@ -36,6 +36,7 @@ namespace Master.Case
                 entity.CaseInitial.CaseSource.TrialPeople,
                 entity.CaseInitial.CaseSource.LawyerFirms,
                 entity.CaseInitial.CaseSource.ValidDate,
+                entity.CaseInitial.CaseSource.SourceFile,
                 entity.CreatorUserId,
                 City =entity.CaseInitial.CaseSource.City?.DisplayName,
                 AnYou = entity.CaseInitial.CaseSource.AnYou?.DisplayName,

@@ -4,7 +4,11 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "加工页";
 }
-
+@section styles{ 
+<style>
+    .jianfa-guandiancard .ny-guandiancard li dl{width:325px;}
+    </style>
+}
 
 <div id="app">
     <!--顶部-->
@@ -78,37 +82,13 @@
                                                     </i-select>
                                                 </template>
                                             </div>
-                                            @*<div class="fleft style-chaal-33-b">
-                <template>
-                    <i-select placeholder="请选择纠纷类型" v-model="model4" :clearable="true">
-                        <i-option v-for="item in jfleix" :value="item.id"
-                                  :key="item.id">{{ item.displayName }}</i-option>
-                    </i-select>
-                </template>
-            </div>
-            <div class="fleft style-chaal-33-b">
-                <template>
-                    <i-select placeholder="请选择纠纷原因" v-model="model5" :multiple="true">
-                        <i-option v-for="item in jfyuany" :value="item.id"
-                                  :key="item.id">{{ item.displayName }}</i-option>
-                    </i-select>
-                </template>
-            </div>
-            <div class="fleft style-chaal-33">
-                <template>
-                    <i-select placeholder="请选择判决结果" v-model="model6" :clearable="true">
-                        <i-option v-for="item in pjjieg" :value="item.id"
-                                  :key="item.id">{{ item.displayName }}</i-option>
-                    </i-select>
-                </template>
-            </div>*@
                                         </div>
 
                                         <div class="bjdd on xian-2">
                                             <div class="xuanzeStyle ">
                                                 <div class="title-bz">添加关键词：</div>
                                                 <el-checkbox-group v-model="selectKeywords['初加工']" @@change="changeLabelCheck('初加工','关键词')">
-                                                    <el-checkbox-button v-for="(item,index) in getLabels('初加工','关键词')" :label="item.id" >{{item.labelName}}</el-checkbox-button>
+                                                    <el-checkbox-button v-for="(item,index) in getLabels('初加工','关键词')" :label="item.id">{{item.labelName}}</el-checkbox-button>
                                                 </el-checkbox-group>
                                             </div>
                                         </div>
@@ -120,13 +100,13 @@
                                                 </el-checkbox-group>
 
                                                 @*<input type="checkbox" id="bq2" /><label for="bq2">标签</label>
-                <input type="checkbox" id="bq3" checked /><label for="bq3">标签</label>
-                <input type="checkbox" id="bq4" /><label for="bq4">标签</label>
-                <input type="checkbox" id="bq5" /><label for="bq5">标签</label>
-                <input type="checkbox" id="bq6" checked /><label for="bq6">标签</label>
-                <input type="checkbox" id="bq7" /><label for="bq7">标签</label>
-                <input type="checkbox" id="bq8" /><label for="bq8">标签</label>
-                <input type="checkbox" id="bq9" /><label for="bq9">标签</label>*@
+                                                    <input type="checkbox" id="bq3" checked /><label for="bq3">标签</label>
+                                                    <input type="checkbox" id="bq4" /><label for="bq4">标签</label>
+                                                    <input type="checkbox" id="bq5" /><label for="bq5">标签</label>
+                                                    <input type="checkbox" id="bq6" checked /><label for="bq6">标签</label>
+                                                    <input type="checkbox" id="bq7" /><label for="bq7">标签</label>
+                                                    <input type="checkbox" id="bq8" /><label for="bq8">标签</label>
+                                                    <input type="checkbox" id="bq9" /><label for="bq9">标签</label>*@
                                             </div>
                                         </div>
 
@@ -232,7 +212,7 @@
                                             <a href="" class="btn-submit-jgy" @@click.prevent="publishInitial">发布</a><a href="" class="btn-submit-jgy" @@click.prevent="updateInitial">保存</a><a href="" class="btn-submit-jgy">预览</a>
                                         </div>
                                     </div>
-                                    
+
                                 </Tab-Pane>
                                 <Tab-Pane label="精加工">
                                     <div class="bqian">空</div>
@@ -268,48 +248,50 @@
                                         </div>
 
                                         @*<div class="bjdd on">
-            <div class="fleft style-chaal-33-b">
-                <template>
-                    <i-select placeholder="请选择案由" v-model="part.anyou">
-                        <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                    </i-select>
-                </template>
-            </div>
-            <div class="fleft style-chaal-33-b">
-                <template>
-                    <i-select placeholder="请选择城市" v-model="part.city">
-                        <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                    </i-select>
-                </template>
-            </div>
-            <div class="fleft style-chaal-33">
-                <template>
-                    <i-select placeholder="请选择法院" v-model="part.court">
-                        <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
-                        <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
-                    </i-select>
-                </template>
-            </div>
-        </div>
+                                                <div class="fleft style-chaal-33-b">
+                                                    <template>
+                                                        <i-select placeholder="请选择案由" v-model="part.anyou">
+                                                            <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                        </i-select>
+                                                    </template>
+                                                </div>
+                                                <div class="fleft style-chaal-33-b">
+                                                    <template>
+                                                        <i-select placeholder="请选择城市" v-model="part.city">
+                                                            <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                        </i-select>
+                                                    </template>
+                                                </div>
+                                                <div class="fleft style-chaal-33">
+                                                    <template>
+                                                        <i-select placeholder="请选择法院" v-model="part.court">
+                                                            <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                                                            <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                                                        </i-select>
+                                                    </template>
+                                                </div>
+                                            </div>
 
-        <div class="bjdd on xian-1">
-            <div class="xuanzeStyle ">
-                <div class="title-bz">添加关键词：</div>
-                <input type="checkbox" id="bq1" /><label for="bq1">关键词</label>
-                <input type="checkbox" id="bq2" checked /><label for="bq2">关键词</label>
-                <input type="checkbox" id="bq3" /><label for="bq3">关键词</label>
-                <input type="checkbox" id="bq4" /><label for="bq4">关键词</label>
-                <input type="checkbox" id="bq5" /><label for="bq5">关键词</label>
-                <input type="checkbox" id="bq6" /><label for="bq6">关键词</label>
-                <input type="checkbox" id="bq7" /><label for="bq7">关键词</label>
-                <input type="checkbox" id="bq8" /><label for="bq8">关键词</label>
-                <input type="checkbox" id="bq9" /><label for="bq9">关键词</label>
-            </div>
-        </div>*@
+                                            <div class="bjdd on xian-1">
+                                                <div class="xuanzeStyle ">
+                                                    <div class="title-bz">添加关键词：</div>
+                                                    <input type="checkbox" id="bq1" /><label for="bq1">关键词</label>
+                                                    <input type="checkbox" id="bq2" checked /><label for="bq2">关键词</label>
+                                                    <input type="checkbox" id="bq3" /><label for="bq3">关键词</label>
+                                                    <input type="checkbox" id="bq4" /><label for="bq4">关键词</label>
+                                                    <input type="checkbox" id="bq5" /><label for="bq5">关键词</label>
+                                                    <input type="checkbox" id="bq6" /><label for="bq6">关键词</label>
+                                                    <input type="checkbox" id="bq7" /><label for="bq7">关键词</label>
+                                                    <input type="checkbox" id="bq8" /><label for="bq8">关键词</label>
+                                                    <input type="checkbox" id="bq9" /><label for="bq9">关键词</label>
+                                                </div>
+                                            </div>*@
                                         <template v-for="(item,index) in caseCardUpdateDto.caseCards">
+
                                             <div class="bjdd on">
                                                 <bm class="style-pa-20">
                                                     <i8 class="style-chaal-20">案例卡正面</i8>
+                                                    <el-button type="text" @@click="previewVisible = true">预览案例卡</el-button>
                                                 </bm>
                                                 <div class="style-pa-1">
                                                     <div class="jianfa-guandiancard">
@@ -379,10 +361,10 @@
 
 
                         <div class="bqian">
-                            
+
                             @*<div class="bjdd">
-                                <a href="" class="btn-submit-jgy">发布</a><a href="" class="btn-submit-jgy">保存</a><a href="" class="btn-submit-jgy">预览</a>
-                            </div>*@
+                                    <a href="" class="btn-submit-jgy">发布</a><a href="" class="btn-submit-jgy">保存</a><a href="" class="btn-submit-jgy">预览</a>
+                                </div>*@
                         </div>
                     </div>
                 </div>
@@ -390,8 +372,18 @@
             </div>
         </div>
     </div>
+
     <com-footer></com-footer>
     <!--end-->
+
+    <el-dialog title="提示"
+               :visible.sync="previewVisible"
+               width="30%">
+
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="previewVisible = false">关闭</el-button>
+        </span>
+    </el-dialog>
 </div>
 
 @section scripts{
@@ -412,6 +404,7 @@
                 model8: '',
 
                 //end//
+                previewVisible:false,
                 part: {
                     city: '',
                     court: '',
@@ -484,24 +477,6 @@
                         str += `${el.firmName}： ${el.lawyer}\n`
                     })
                     return str
-                },
-                //纠纷类型
-                jfleix() {
-                    if (this.knowledgeTree.length==0) return [{}];
-                    var relativeNodeId = this.knowledgeTree.filter(el => el.name == '纠纷类型')[0].id; 
-                    return this.typeTree.filter(el => el.relativeNodeId == relativeNodeId)
-                },
-                //纠纷原因
-                jfyuany() {
-                    if (this.knowledgeTree.length == 0) return [{}];
-                    var relativeNodeId = this.knowledgeTree.filter(el => el.name == '纠纷原因')[0].id;
-                    return this.typeTree.filter(el => el.relativeNodeId == relativeNodeId&&(this.model4?el.parentId==this.model4:true))
-                },
-                //判决结果
-                pjjieg() {
-                    if (this.knowledgeTree.length == 0) return [{}];
-                    var relativeNodeId = this.knowledgeTree.filter(el => el.name == '判决结果')[0].id;
-                    return this.typeTree.filter(el => el.relativeNodeId == relativeNodeId && (this.model4 ? el.parentId == this.model4 : true))
                 },
 
             },
