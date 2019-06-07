@@ -90,6 +90,16 @@
                                 </i-select>
                             </template>
                         </dd>
+                        <dd class="style-bf-20-b">
+                            <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')">
+                                <template>
+                                    <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues['案由'][index]" @@on-change="changeInitialSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect">
+                                        <i-option v-for="opt in getOptions(item)" :value="opt.id"
+                                                  :key="opt.id">{{ opt.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </div>
+                        </dd>
                     </dl>
                 </li>
 
@@ -297,7 +307,16 @@
                     keyWord:''
                 },
                 noMore: false,
-                loading:false
+                loading: false,
+
+
+
+
+                //selectValues: {
+                //    "案由": []
+                //},
+                //knowledgeTree: [],
+                //typeTree: [],
             },
             computed: {
                 where() {
@@ -308,6 +327,36 @@
                 }
             },
             methods: {
+                ////初始化下拉选择，目的是为了构建数据对象存放动态select的v-model
+                //initSelects() {
+                //    var selects = this.getSelects("案由");
+                //    for (var i = 0; i < selects.length; i++) {
+                //        var select = selects[i];
+                //        //从casenodes中获取初始值
+                //        var value;
+                //        var nodes = this.caseInitialUpdateDto.caseNodes.filter(o => o.relName == select.name);
+                //        if (select.enableMultiSelect) {
+                //            value = nodes.map(o => o.baseTreeId);
+                //        } else {
+                //            value = nodes[0] ? nodes[0].baseTreeId : null;
+                //        }
+                //        this.selectValues["案由"].push(value);
+                //    }
+                //},
+                ////初始化标签选择，目的是构建存放标签及关键词v-model的两个数组
+                //initLabels() {
+                //    this.selectLabels["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "标签" && o.relType == "初加工").map(o => o.labelId);
+                //    this.selectKeywords["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "关键词" && o.relType == "初加工").map(o => o.labelId);
+                //},
+                ////获取级联知识树选择框
+                //getSelects(knowledgeName) {
+                //    var rootNode = this.knowledgeTree.filter(o => o.name == knowledgeName)[0];//如对应案由节点知识树节点
+                //    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code);//所有子节点，包含子级
+                //    var selects = subNodes.map(function (o) { return { id: o.id, name: o.name, displayName: o.displayName, enableMultiSelect: o.enableMultiSelect, parentId: o.parentId } });
+
+                //    return selects;
+                //},
+
                 loadScroll() {
                     this.loading = true
                     this.loadSource();
@@ -355,6 +404,18 @@
             mounted() {
                 this.loadSource();
                 this.loadData();
+
+                //await abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
+                //    this.knowledgeTree = res;
+                //})
+                ////获取所有标签数据
+                //await abp.services.app.type.getAllLabels().done(res => {
+                //    this.labels = res;
+                //})
+                ////初始化下拉选择
+                //this.initSelects();
+                ////初始化标签选择
+                //this.initLabels();
             }
         })
         ////请求案例分页

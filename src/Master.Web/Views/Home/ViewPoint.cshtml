@@ -4,11 +4,22 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "看观点";
 }
+@section styles{
+    <style>
+        .jianfa-guandiancard .ny-guandiancard li dl {
+            width: 325px;
+        }
+        .card-zhong:hover span {
+            color: blue;
+            border-bottom: 1px solid blue;
+        }
+    </style>
 
+}
 
-<div id="app">
+<div id="app" v-cloak>
     <!--顶部-->
-    <com-header ></com-header>
+    <com-header></com-header>
 
     <!---01-->
     <div class="jianfa-content">
@@ -19,11 +30,11 @@
                     <dl>
                         <dd>当前位置：案例工厂 > 看观点 > 筛选 ：</dd>
                         @*<dd class="xchu">
-                            上海<span>
-                                ×
-                            </span>
-                        </dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                                上海<span>
+                                    ×
+                                </span>
+                            </dd>
+                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                     </dl>
                 </li>
                 <li>
@@ -37,17 +48,22 @@
     <!--看观点-->
     <div class="jianfa-guandiancard style-pa-46">
         <div class="ny-guandiancard">
-            <a @@click="moda11= true" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2}">
+            <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}">
                 <!--状态1-->
                 <div class="card-start">
                     <ul>
                         <li>
                             <dl>
                                 <dd class="card-top">
-                                    <span>{{item.title}}</span>
+                                    <span>{{item.title}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
                                 </dd>
-                                <dd class="card-zhong">{{item.sourceSN}}</dd>
-                                <dd class="card-bottom">{{item.court2||item.court1}}</dd>
+                                <dd class="card-zhong" @@click.stop.prevent="currentItem=item;moda12 = true">
+                                    <span>{{item.sourceSN}}</span>
+                                </dd>
+                                <dd class="card-bottom">
+                                    {{item.court2||item.court1}}
+                                    <i-button @@click.stop.prevent="" v-if="item.creatorUserId===abp.session.userId" >编辑</i-button>
+                                </dd>
                             </dl>
                         </li>
                     </ul>
@@ -59,7 +75,7 @@
                         <li>
                             <dl>
                                 <dd class="oncard-top">
-                                    <span>{{item.content}}</span>
+                                    <span>{{item.content}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
                                     <p>{{getLawyer(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
                                 </dd>
                             </dl>
@@ -70,34 +86,34 @@
             </a>
 
             @*<a @click="moda12 = true" class="paiban">
-                <!--状态1-->
-                <div class="card-start">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dd class="card-top"><span>在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？</span></dd>
-                                <dd class="card-zhong">(2016)沪 0115 民初 67704 号</dd>
-                                <dd class="card-bottom">上海市浦东新区人民法院</dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <!--end-->
-                <!--状态2-->
-                <div class="card-end">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dd class="oncard-top">
-                                    <span>本院认为，……现系争房屋已由被告装修入住数年，原告也已取得被告支付的大部分房款，在被告同意支付剩余房屋尾款的情况下，原告的合同目的已然能够实现。根据合同约定原告应协助被告办理系争房屋的过户手续，此系原告的合同义务而非原告的合同目的，原告以被告限购致使无法办理过户手续为由称其合同目的无法实现，与事实不符，本院不予认同。</span>
-                                    <p>郑卫青、吴 丹、杨斯空<br>2018年4月10日</p>
-                                </dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <!--end-->
-            </a>*@
+                    <!--状态1-->
+                    <div class="card-start">
+                        <ul>
+                            <li>
+                                <dl>
+                                    <dd class="card-top"><span>在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？</span></dd>
+                                    <dd class="card-zhong">(2016)沪 0115 民初 67704 号</dd>
+                                    <dd class="card-bottom">上海市浦东新区人民法院</dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--end-->
+                    <!--状态2-->
+                    <div class="card-end">
+                        <ul>
+                            <li>
+                                <dl>
+                                    <dd class="oncard-top">
+                                        <span>本院认为，……现系争房屋已由被告装修入住数年，原告也已取得被告支付的大部分房款，在被告同意支付剩余房屋尾款的情况下，原告的合同目的已然能够实现。根据合同约定原告应协助被告办理系争房屋的过户手续，此系原告的合同义务而非原告的合同目的，原告以被告限购致使无法办理过户手续为由称其合同目的无法实现，与事实不符，本院不予认同。</span>
+                                        <p>郑卫青、吴 丹、杨斯空<br>2018年4月10日</p>
+                                    </dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--end-->
+                </a>*@
         </div>
     </div>
     <!--end-->
@@ -111,16 +127,22 @@
         </div>
         <div slot="footer">&nbsp;</div>
     </Modal>
-
+    
+    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+        <div slot="footer">&nbsp;</div>
+    </Modal>
     <com-footer></com-footer>
     <!--end-->
 </div>
-    
+
 @section scripts{
     <script>
         var app = new Vue({
             el: '#app',
             data: {
+                moda12: false,
+                currentItem: {},
                 currentPage: 1,
                 pagesize: 10,
                 wherePart: {
@@ -129,7 +151,7 @@
                     courtId: '',
                 },
                 moda11: false,
-                items:[]
+                items: []
             },
             watch: {
                 currentPage: function () {
@@ -169,7 +191,10 @@
                     //})
 
                     //请求案例卡分页
-                    abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.wherePart.keyword }).done((data) => {
+                    abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where }).done((data) => {
+                        data.data.forEach(el => {
+                            el.isRotate = false;
+                        })
                         that.items = data.data;
                         //that.items = [{ id: 1, title: 'a', content: 'b', lawyerFirms:[] }]
                         console.log(data)
