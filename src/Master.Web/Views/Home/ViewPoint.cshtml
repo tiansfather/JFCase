@@ -142,8 +142,21 @@
             },
             computed: {
                 where: function () {
-                    return this.$refs.headFilter.where;
+                    //return this.$refs.headFilter.where;
+                    var where = '1=1';
+                    for (var i in this.wherePart) {
+                        if (i == 'keyword') { return; }
+                        console.log(i, this.wherePart[i])
+                        var data = this.wherePart[i];
+                        if (!data) continue;
+                        if (i == 'courtId') {
+                            where += ` and (caseInitial.caseSource.court1Id=${data} or caseInitial.caseSource.court2id=${data})`;
+                        } else {
+                            where += ` and caseInitial.caseSource.${i}=${data}`;
+                        }
 
+                    }
+                    return where;
                 },
             },
             methods: {
@@ -156,7 +169,7 @@
                     //})
 
                     //请求案例卡分页
-                    abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where}).done( (data)=> {
+                    abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.wherePart.keyword }).done((data) => {
                         that.items = data.data;
                         //that.items = [{ id: 1, title: 'a', content: 'b', lawyerFirms:[] }]
                         console.log(data)

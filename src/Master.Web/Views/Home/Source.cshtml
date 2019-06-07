@@ -144,9 +144,10 @@
             el: '#app',
             data: {
                 wherePart: {
-                    anyouId: '',
+                    anYouId: '',
                     cityId: '',
                     courtId: '',
+                    keyword:'',
                 },
                 totalCount: 0,//判例总数
                 currentPage: 1,
@@ -177,20 +178,21 @@
             },
             computed: {
                 where: function () {
-                    return this.$refs.headFilter.where;
-                    //var where = '1=1';
-                    //for (var i in this.wherePart) {
-                    //    console.log(i,this.wherePart[i])
-                    //    var data = this.wherePart[i];
-                    //    if (!data) continue;
-                    //    if (i == 'courtId') {
-                    //        where += ` and (court1Id=${data} or court2id=${data})`;
-                    //    } else {
-                    //        where += ` and ${i}=${data}`;
-                    //    }
+                    //return this.$refs.headFilter.where;
+                    var where = '1=1';
+                    for (var i in this.wherePart) {
+                        if (i == 'keyword') { return;}
+                        console.log(i,this.wherePart[i])
+                        var data = this.wherePart[i];
+                        if (!data) continue;
+                        if (i == 'courtId') {
+                            where += ` and (court1Id=${data} or court2id=${data})`;
+                        } else {
+                            where += ` and ${i}=${data}`;
+                        }
 
-                    //}
-                    //return where;
+                    }
+                    return where;
                     //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
 
                 },
@@ -223,7 +225,7 @@
                 loadSource: function () {
                     var that = this;
                     //数据获取接口
-                    func.runAsync(abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
+                    func.runAsync(abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.wherePart.keyword }).done((res) => {
                         that.items = res.data;
                         that.totalCount = res.count;
                     }))

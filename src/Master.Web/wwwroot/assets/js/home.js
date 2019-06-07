@@ -1,62 +1,106 @@
 ﻿; (function () {
     abp.message.info = function (message, title, callback) {
         return $.Deferred(function ($dfd) {
-            app.$Modal.remove();
-            setTimeout(() => {                
-                app.$Modal.info({
-                    title: title || '消息', content: message, onOk: function () {
-                        callback && callback();
-                        $dfd.resolve();
-                    }
-                })
-            }, 300);
-            
+            //app.$Modal.remove();
+            //setTimeout(() => {                
+            //    app.$Modal.info({
+            //        title: title || '消息', content: message, onOk: function () {
+            //            callback && callback();
+            //            $dfd.resolve();
+            //        }
+            //    })
+            //}, 300);
+            app.$alert(message, title||'提示', {
+                confirmButtonText: '确定',
+                //cancelButtonText: '取消',
+                type: 'info',
+                confirmButtonClass: 'btn-footer',
+                cancelButtonClass: 'btn-footer-qx',
+                dangerouslyUseHTMLString: true,
+                showClose:false
+            }).then(() => {
+                callback && callback();
+                $dfd.resolve();
+            });
         });
     };
 
     abp.message.success = function (message, title,callback) {
         return $.Deferred(function ($dfd) {
-            app.$Modal.remove();
-            setTimeout(() => {
-                app.$Modal.success({
-                    title: title || '成功', content: message, onOk: function () {
-                        callback && callback();
-                        $dfd.resolve();
-                    }
-                })
-            }, 300);
-           
+            //app.$Modal.remove();
+            //setTimeout(() => {
+            //    app.$Modal.success({
+            //        title: title || '成功', content: message, onOk: function () {
+            //            callback && callback();
+            //            $dfd.resolve();
+            //        }
+            //    })
+            //}, 300);
+            app.$alert(message, title || '成功', {
+                confirmButtonText: '确定',
+                //cancelButtonText: '取消',
+                type: 'success',
+                confirmButtonClass: 'btn-footer',
+                cancelButtonClass: 'btn-footer-qx',
+                dangerouslyUseHTMLString: true,
+                showClose: false
+            }).then(() => {
+                callback && callback();
+                $dfd.resolve();
+            });
         });
         //app.$Modal.success({ title: title||'成功',content: message });
     };
 
     abp.message.warn = function (message, title, callback) {
         return $.Deferred(function ($dfd) {
-            app.$Modal.remove();
-            setTimeout(() => {
-                app.$Modal.warning({
-                    title: title || '警告', content: message, onOk: function () {
-                        callback && callback();
-                        $dfd.resolve();
-                    }
-                })
-            }, 300);
-            
+            //app.$Modal.remove();
+            //setTimeout(() => {
+            //    app.$Modal.warning({
+            //        title: title || '警告', content: message, onOk: function () {
+            //            callback && callback();
+            //            $dfd.resolve();
+            //        }
+            //    })
+            //}, 300);
+            app.$alert(message, title || '警告', {
+                confirmButtonText: '确定',
+                //cancelButtonText: '取消',
+                type: 'warning',
+                confirmButtonClass: 'btn-footer',
+                cancelButtonClass: 'btn-footer-qx',
+                dangerouslyUseHTMLString: true,
+                showClose: false
+            }).then(() => {
+                callback && callback();
+                $dfd.resolve();
+            });
         });
     };
 
     abp.message.error = function (message, title, callback) {        
         return $.Deferred(function ($dfd) {
-            app.$Modal.remove();
-            setTimeout(() => {
-                app.$Modal.error({
-                    title: title || '错误', content: message, onOk: function () {
-                        callback && callback();
-                        $dfd.resolve();
-                    }
-                })
-            }, 300);
-            
+            //app.$Modal.remove();
+            //setTimeout(() => {
+            //    app.$Modal.error({
+            //        title: title || '错误', content: message, onOk: function () {
+            //            callback && callback();
+            //            $dfd.resolve();
+            //        }
+            //    })
+            //}, 300);
+            app.$alert(message, title || '错误', {
+                confirmButtonText: '确定',
+                //cancelButtonText: '取消',
+                type: 'error',
+                confirmButtonClass: 'btn-footer',
+                cancelButtonClass: 'btn-footer-qx',
+                dangerouslyUseHTMLString: true,
+                showClose: false
+            }).then(() => {
+                callback && callback();
+                $dfd.resolve();
+            });
         });
     };
 
@@ -70,16 +114,26 @@
 
 
         return $.Deferred(function ($dfd) {
-            app.$Modal.remove();
-            setTimeout(() => {
-                app.$Modal.confirm({
-                    title: title, content: message, onOk: function () {
-                        callback && callback();
-                        $dfd.resolve();
-                    }
-                })
-            }, 300);
-            
+            //app.$Modal.remove();
+            //setTimeout(() => {
+            //    app.$Modal.confirm({
+            //        title: title, content: message, onOk: function () {
+            //            callback && callback();
+            //            $dfd.resolve();
+            //        }
+            //    })
+            //}, 300);
+            app.$confirm(message, title, {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                confirmButtonClass: 'btn-footer',
+                cancelButtonClass: 'btn-footer-qx',
+                
+                type: 'warning'
+            }).then(() => {
+                callback && callback();
+                $dfd.resolve();
+            })
         });
     };
 

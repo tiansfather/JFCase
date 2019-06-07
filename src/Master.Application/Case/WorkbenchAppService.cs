@@ -394,6 +394,7 @@ namespace Master.Case
                 caseFine.IsActive = true;
             }
         }
+        #region 案例卡提交发布
         /// <summary>
         /// 提交案例卡信息
         /// </summary>
@@ -441,7 +442,7 @@ namespace Master.Case
             {
                 throw new UserFriendlyException("不存在加工信息");
             }
-            if(caseInitial.CaseStatus!=CaseStatus.展示中 && caseInitial.CaseStatus != CaseStatus.下架)
+            if (caseInitial.CaseStatus != CaseStatus.展示中 && caseInitial.CaseStatus != CaseStatus.下架)
             {
                 throw new UserFriendlyException("请先完成本判例的初加工并发布后再进行案例卡发布，谢谢！您可点击保存按钮保留已做的成果");
             }
@@ -453,7 +454,19 @@ namespace Master.Case
             {
                 caseCard.IsActive = true;
             }
+        } 
+        /// <summary>
+        /// 编辑提交单个案例卡
+        /// </summary>
+        /// <param name="caseCardDto"></param>
+        /// <returns></returns>
+        public virtual async Task UpdateSingleCard(CaseCardDto caseCardDto)
+        {
+            var card = await Resolve<CaseCardManager>().GetByIdAsync(caseCardDto.Id);
+            caseCardDto.MapTo(card);
         }
+        #endregion
+
         #endregion
     }
 }

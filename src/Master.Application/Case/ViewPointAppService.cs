@@ -24,7 +24,17 @@ namespace Master.Case
                 .Include("CaseInitial.CaseSource.Court2")
                 .Where(o => o.IsActive && o.CaseInitial.CaseStatus == CaseStatus.展示中);
         }
-
+        protected override async Task<IQueryable<CaseCard>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseCard> query)
+        {
+            return (await base.BuildKeywordQueryAsync(keyword, query))
+                .Where(o=>o.Title.Contains(keyword) 
+                ||o.Content.Contains(keyword)
+                ||o.CaseInitial.CaseSource.SourceSN.Contains(keyword)
+                || o.CaseInitial.CaseSource.City.DisplayName.Contains(keyword)
+                || o.CaseInitial.CaseSource.Court1.DisplayName.Contains(keyword)
+                || o.CaseInitial.CaseSource.Court2.DisplayName.Contains(keyword)
+                );
+        }
         protected override object PageResultConverter(CaseCard entity)
         {
             return new
@@ -36,6 +46,7 @@ namespace Master.Case
                 entity.CaseInitial.CaseSource.TrialPeople,
                 entity.CaseInitial.CaseSource.LawyerFirms,
                 entity.CaseInitial.CaseSource.ValidDate,
+                entity.CaseInitial.CaseSource.SourceFile,
                 entity.CreatorUserId,
                 City =entity.CaseInitial.CaseSource.City?.DisplayName,
                 AnYou = entity.CaseInitial.CaseSource.AnYou?.DisplayName,
