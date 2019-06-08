@@ -3086,6 +3086,15 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'updateSingleCard'
+    abp.services.app.workbench.updateSingleCard = function(caseCardDto, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Workbench/UpdateSingleCard',
+        type: 'PUT',
+        data: JSON.stringify(caseCardDto)
+      }, ajaxParams));;
+    };
+
     // action 'getPageResult'
     abp.services.app.workbench.getPageResult = function(request, ajaxParams) {
       return abp.ajax($.extend(true, {

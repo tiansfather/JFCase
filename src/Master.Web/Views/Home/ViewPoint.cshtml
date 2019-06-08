@@ -164,8 +164,21 @@
             },
             computed: {
                 where: function () {
-                    return this.$refs.headFilter.where;
+                    //return this.$refs.headFilter.where;
+                    var where = '1=1';
+                    for (var i in this.wherePart) {
+                        if (i == 'keyword') { return; }
+                        console.log(i, this.wherePart[i])
+                        var data = this.wherePart[i];
+                        if (!data) continue;
+                        if (i == 'courtId') {
+                            where += ` and (caseInitial.caseSource.court1Id=${data} or caseInitial.caseSource.court2id=${data})`;
+                        } else {
+                            where += ` and caseInitial.caseSource.${i}=${data}`;
+                        }
 
+                    }
+                    return where;
                 },
             },
             methods: {

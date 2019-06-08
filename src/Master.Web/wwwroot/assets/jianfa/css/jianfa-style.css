@@ -411,9 +411,34 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
 }
 
 /*::-webkit-scrollbar-button {background-color: #764c24;}*/
-
+/*新增内容*/
 .el-checkbox-button.is-checked {
     border: 1px solid #c69c6d;
     color: #fff;
     background: #c69c6d;
+}
+.ivu-page{
+    text-align:right;
+}
+.el-checkbox-button__inner {
+    padding: 0 !important;
+    font-size: 12px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow:none !important;
+}
+    .el-checkbox-button__inner:hover{
+        color:#fff !important;
+    }
+    .el-message-box .el-button--primary {
+    }
+.el-message-box .btn-footer-qx, .el-message-box .btn-footer{
+    display:inline-block !important;
+    padding:0px !important;
+}
+.btn-footer:hover {
+    background: #4a3016 !important;
+}
+.btn-footer-qx:hover {
+    background: #4a3016 !important;
 }
