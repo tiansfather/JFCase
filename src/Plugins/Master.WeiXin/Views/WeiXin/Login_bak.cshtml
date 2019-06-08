@@ -1,0 +1,75 @@
+﻿@using Master.Authentication.External
+
+@section styles{
+    <style>
+        #codeB {
+            display: block;
+            padding: 10px;
+        }
+
+        #codeImg {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+}
+
+<div style="text-align:center;margin-top:20px;" id="app">
+    <img id="codeImg" :src="qrCode" width="250" />
+    @*<b id="codeB">第一次来模来模往? 那先来注册个帐户吧.</b>
+    <span style="font-size: 12px;">客服电话：15906863922</span>*@
+</div>
+
+@section scripts{
+    <script>
+		var guid = "@ViewBag.Guid";
+		config.ready = function () {
+			var app = new Vue({
+				el: '#app',
+				computed: {
+					qrCode: function () {
+						return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/LoginCallback?guid=" + guid);
+					}
+				}
+			});
+
+			var loopFunc=function () {
+				abp.services.app.weiXin.getLoginInfo().done(function (data) {
+					console.log(data);
+					if (data) {
+						var authModel = {
+							authProvider: "@WeChatAuthProviderApi.Name",
+							providerKey: data,
+                            providerAccessCode: "",
+                            clientInfo:'Browser'
+						};
+						//window.clearInterval(loop);
+						parent.doExternalAuthentication(authModel);
+					} else {
+						window.setTimeout(loopFunc, 1000);
+					}
+
+
+				});
+			}
+			loopFunc();
+			//定时轮询
+			@*var loop=window.setInterval(function () {
+				abp.services.app.weiXin.getLoginInfo().done(function (data) {
+					console.log(data);
+					if (data) {
+						var authModel = {
+							authProvider: "@WeChatAuthProviderApi.Name",
+							providerKey: data,
+							providerAccessCode:""
+						};
+						window.clearInterval(loop);
+						parent.doExternalAuthentication(authModel);
+					}
+
+
+				});
+			}, 1000);*@
+		}
+    </script>
+}

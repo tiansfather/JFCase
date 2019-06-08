@@ -42,6 +42,7 @@
     "inputFiles": [
       "wwwroot/lib/jquery/jquery.min.js",
       "wwwroot/lib/vue/vue.min.js",
+      "wwwroot/lib/jquery.cookie/jquery.cookie.js",
       "wwwroot/lib/element/element-ui.js",
       "wwwroot/lib/vue-router/vue-router.min.js",
       "wwwroot/assets/jianfa/js/iview.min.js",
