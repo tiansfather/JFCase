@@ -291,7 +291,7 @@
                                             <div class="bjdd on">
                                                 <bm class="style-pa-20">
                                                     <i8 class="style-chaal-20">案例卡正面</i8>
-                                                    <el-button type="text" @@click="previewVisible = true">预览案例卡</el-button>
+                                                    <el-button type="text" @@click="previewVisible = true;currentItem=item;">预览案例卡</el-button>
                                                 </bm>
                                                 <div class="style-pa-1">
                                                     <div class="jianfa-guandiancard">
@@ -378,12 +378,56 @@
 
     <el-dialog title="提示"
                :visible.sync="previewVisible"
-               width="30%">
+               width="400px">
 
+        <div class="jianfa-guandiancard style-pa-46">
+            <div class="ny-guandiancard">
+                <a @@click="isRotate= !isRotate" class="paiban" :class="{'rotate-card':isRotate}">
+                    <!--状态1-->
+                    <div class="card-start">
+                        <ul>
+                            <li>
+                                <dl>
+                                    <dd class="card-top">
+                                        <span>{{currentItem.title}}</span>
+                                    </dd>
+                                    <dd class="card-zhong" @@click.stop.prevent="moda12 = true;previewVisible=false;">
+                                        <span>  {{source.sourceSN}}</span>
+                                    </dd>
+                                    <dd class="card-bottom">
+                                        {{source.court1}}
+                                    </dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--end-->
+                    <!--状态2-->
+                    <div class="card-end">
+                        <ul>
+                            <li>
+                                <dl>
+                                    <dd class="oncard-top">
+                                        <span>{{currentItem.content}} </span>
+                                        <p>{{trialPeople}}<br>{{source.publishDate}}</p>
+                                    </dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--end-->
+                </a>
+            </div>
+        </div>
         <span slot="footer" class="dialog-footer">
             <el-button @@click="previewVisible = false">关闭</el-button>
         </span>
     </el-dialog>
+
+    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="source.sourceSN">
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+source.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+        <div slot="footer">&nbsp;</div>
+    </Modal>
 </div>
 
 @section scripts{
@@ -404,6 +448,9 @@
                 model8: '',
 
                 //end//
+                moda12: false,
+                currentItem: {},
+                isRotate:false,
                 previewVisible:false,
                 part: {
                     city: '',
