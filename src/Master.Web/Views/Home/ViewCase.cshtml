@@ -83,16 +83,16 @@
                     <li>
                         <dl>
                             <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
-                            <dd class="xchu">
+                            @*<dd class="xchu">
                                 上海<span>
-                                    <!--<i class="jianfa fa-close"></i>-->×
+                                    ×
                                 </span>
                             </dd>
-                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
+                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                         </dl>
                     </li>
                     <li>
-                        @*<dl class="xian">
+                        <dl class="xian">
                                 <dd class="style-bf-20-a">
                                     <template>
                                         <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
@@ -100,35 +100,31 @@
                                         </i-select>
                                     </template>
                                 </dd>
-                                <dd class="style-bf-20-b">
+                                @*<dd class="style-bf-20-b">
                                     <template>
                                         <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
                                             <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                         </i-select>
                                     </template>
-                                </dd>
-                                <dd class="style-bf-20-b">
-                                    <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')">
-                                        <template>
-                                            <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues['案由'][index]" @@on-change="changeInitialSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect">
-                                                <i-option v-for="opt in getOptions(item)" :value="opt.id"
-                                                          :key="opt.id">{{ opt.displayName }}</i-option>
-                                            </i-select>
-                                        </template>
-                                    </div>
+                                </dd>*@
+                                <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')">
+                                    <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect" size="small">
+                                        <i-option v-for="opt in getOptions(item)" :value="opt.id"
+                                                  :key="opt.id">{{ opt.displayName }}</i-option>
+                                    </i-select>
                                 </dd>
                             </dl>
-                        </li>*@
+                        </li>
 
                     <li>
                         <dl class="xianb">
                             <dd class="style-bf-8">
-                                <div class="btn-title-bz">关键词删选：</div>
+                                <div class="btn-title-bz">关键词筛选：</div>
                             </dd>
                             <dd class="style-bf-92">
-                                <i2>
-                                    <a href="" v-for="i in 5" style="margin-left:20px;">关键词一</a>
-                                </i2>
+                                <el-checkbox-group v-model="selectKeywords" @@change="changeLabelCheck('关键词')">
+                                    <el-checkbox-button v-for="(item,index) in getLabels('关键词')" :label="item.id">{{item.labelName}}</el-checkbox-button>
+                                </el-checkbox-group>
                             </dd>
                         </dl>
                     </li>
@@ -136,12 +132,12 @@
                     <li>
                         <dl class="xianb">
                             <dd class="style-bf-8">
-                                <div class="btn-title-bz">标签删选：</div>
+                                <div class="btn-title-bz">标签筛选：</div>
                             </dd>
                             <dd class="style-bf-92">
-                                <i2>
-                                    <a href="" v-for="i in 5" style="margin-left:20px;">标签一</a>
-                                </i2>
+                                <el-checkbox-group v-model="selectLabels" @@change="changeLabelCheck('标签')">
+                                    <el-checkbox-button v-for="(item,index) in getLabels('标签')" :label="item.id">{{item.labelName}}</el-checkbox-button>
+                                </el-checkbox-group>
                             </dd>
                         </dl>
                     </li>
@@ -149,7 +145,7 @@
                     <li>
                         <dl class="xian">
                             <dd class="style-bf-8">
-                                <div class="btn-title-bz">专题删选：</div>
+                                <div class="btn-title-bz">专题筛选：</div>
                             </dd>
                             <dd class="style-bf-35">
                                 <template>
@@ -163,7 +159,7 @@
                                     <i-input v-model="wherePart.keyWord" size="small" placeholder="请输入关键词等信息..." />
                                 </template>
                             </dd>
-                            <dd class="style-bf-10-b"><Button class="btn-search">筛选</Button></dd>
+                            <dd class="style-bf-10-b"><Button class="btn-search" type="button">筛选</Button></dd>
                         </dl>
                     </li>
                 </ul>
@@ -362,7 +358,11 @@
                 currentPage: 1,
                 pagesize: 10,
                 items: [],
-                caseInfo: null,
+                caseInfo: {
+                    source: {},
+                    initial: {
+                        judgeInfo: {}}
+                },
                 anYous: [],
                 cities: [],
                 subjects:[],
@@ -377,12 +377,13 @@
 
                 moda12: false,
 
-
-                //selectValues: {
-                //    "案由": []
-                //},
-                //knowledgeTree: [],
-                //typeTree: [],
+                caseNodes: [],
+                caseLabels:[],
+                selectValues: [],
+                selectLabels: [],
+                selectKeywords: [],
+                knowledgeTree: [],
+                typeTree: [],
             },
             computed: {
                 where() {
@@ -393,36 +394,92 @@
                 }
             },
             methods: {
-                ////初始化下拉选择，目的是为了构建数据对象存放动态select的v-model
-                //initSelects() {
-                //    var selects = this.getSelects("案由");
-                //    for (var i = 0; i < selects.length; i++) {
-                //        var select = selects[i];
-                //        //从casenodes中获取初始值
-                //        var value;
-                //        var nodes = this.caseInitialUpdateDto.caseNodes.filter(o => o.relName == select.name);
-                //        if (select.enableMultiSelect) {
-                //            value = nodes.map(o => o.baseTreeId);
-                //        } else {
-                //            value = nodes[0] ? nodes[0].baseTreeId : null;
-                //        }
-                //        this.selectValues["案由"].push(value);
-                //    }
-                //},
-                ////初始化标签选择，目的是构建存放标签及关键词v-model的两个数组
-                //initLabels() {
-                //    this.selectLabels["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "标签" && o.relType == "初加工").map(o => o.labelId);
-                //    this.selectKeywords["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "关键词" && o.relType == "初加工").map(o => o.labelId);
-                //},
-                ////获取级联知识树选择框
-                //getSelects(knowledgeName) {
-                //    var rootNode = this.knowledgeTree.filter(o => o.name == knowledgeName)[0];//如对应案由节点知识树节点
-                //    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code);//所有子节点，包含子级
-                //    var selects = subNodes.map(function (o) { return { id: o.id, name: o.name, displayName: o.displayName, enableMultiSelect: o.enableMultiSelect, parentId: o.parentId } });
+                //初始化下拉选择，目的是为了构建数据对象存放动态select的v-model
+                initSelects() {
+                    var rootNode = this.typeTree.filter(o => o.name == "案例属性体系")[0];
+                    this.caseNodes.push({ relName: '案例属性体系', relValue: '案例属性体系', baseTreeId: rootNode.id })
+                    var selects = this.getSelects("案例属性体系");
+                    for (var i = 0; i < selects.length; i++) {
+                        var select = selects[i];
+                        //从casenodes中获取初始值
+                        var value;
+                        //var nodes = this.caseInitialUpdateDto.caseNodes.filter(o => o.relName == select.name);
+                        if (select.enableMultiSelect) {
+                            //value = nodes.map(o => o.baseTreeId);
+                            value = [];
+                        } else {
+                            value = null;
+                        }
+                        this.selectValues.push(value);
+                    }
+                },
+                //初始化标签选择，目的是构建存放标签及关键词v-model的两个数组
+                initLabels() {
+                    //this.selectLabels["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "标签" && o.relType == "初加工").map(o => o.labelId);
+                    //this.selectKeywords["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "关键词" && o.relType == "初加工").map(o => o.labelId);
+                },
+                //获取级联知识树选择框
+                getSelects(knowledgeName) {
+                    var rootNode = this.knowledgeTree.filter(o => o.name == knowledgeName)[0];//如对应案由节点知识树节点
+                    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code);//所有子节点，包含子级
+                    var selects = subNodes.map(function (o) { return { id: o.id, name: o.name, displayName: o.displayName, enableMultiSelect: o.enableMultiSelect, parentId: o.parentId } });
 
-                //    return selects;
-                //},
+                    return selects;
+                },
+                //获取级联选择框的option
+                getOptions(item) {
+                    //所有可能的options
+                    var allOptions = this.typeTree.filter(o => o.relativeNodeId == item.id);
+                    //父知识节点
+                    var parentKnowledgeNode = this.knowledgeTree.filter(o => o.id == item.parentId)[0];
+                    var parentNode = this.caseNodes.filter(o => o.relName == parentKnowledgeNode.name)[0];
+                    //必须已选中父节点才显示
+                    if (parentNode) {
+                        return allOptions.filter(o => o.parentId == parentNode.baseTreeId);
+                    }
 
+                    return [];
+                },
+                //初加工级联选择改变
+                changeSelect(item, value) {
+                    console.log(value);
+                    if (!item.enableMultiSelect) { value = [value] }
+                    //选中的分类树节点
+                    var selectedNodes = this.typeTree.filter(o => value.indexOf(o.id) >= 0);
+                    //
+                    var nodes = this.caseNodes.filter(o => o.relName == item.name);
+                    //先移除旧节点
+                    for (var i = 0; i < nodes.length; i++) {
+                        this.caseNodes.splice(this.caseNodes.indexOf(nodes[i]), 1);
+                    }
+                    for (var i = 0; i < selectedNodes.length; i++) {
+                        this.caseNodes.push({ relName: item.name, relValue: selectedNodes[i].displayName, baseTreeId: selectedNodes[i].id });
+                    }
+                },
+                //获取可供选择的标签或关键词
+                getLabels(labelType) {
+                    var nodeTreeIds;//被选中的分类树Id
+                    nodeTreeIds = this.caseNodes.map(o => o.baseTreeId);
+                    return this.labels.filter(function (o) {
+                        return o.labelType == labelType && o.treeIds.filter(treeId => nodeTreeIds.indexOf(treeId) >= 0).length > 0;
+                    })
+                },
+                changeLabelCheck() {
+                    var that = this;
+                    //当标签及关键词选中改变时更新对应的数据
+                    //filter的目的是当选中了一个标签，但后续由于分类的改变导致这个标签不存在时，但v-model绑定的数据还存在对应的值 ，所以需要根据当前存在的标签进行筛选
+                    var selectLabels = this.selectLabels.filter(o => this.getLabels( '标签').map(l => l.id).indexOf(o) >= 0);
+                    var selectKeywords = this.selectKeywords.filter(o => this.getLabels( '关键词').map(l => l.id).indexOf(o) >= 0);
+                    var labels = selectLabels.map(function (o) {
+                        var relValue = that.labels.filter(l => l.id == o)[0].labelName;
+                        return { labelId: o, relType: name, relValue: relValue, relName: '标签' };
+                    })
+                    var keywords = selectKeywords.map(function (o) {
+                        var relValue = that.labels.filter(l => l.id == o)[0].labelName;
+                        return { labelId: o, relType: name, relValue: relValue, relName: '关键词' };
+                    })
+                    this.caseLabels = labels.concat(keywords);
+                },
                 getLawyer: function (item) {
                     return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
                 },
@@ -482,17 +539,23 @@
                 this.loadSource();
                 this.loadData();
 
-                //await abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
-                //    this.knowledgeTree = res;
-                //})
-                ////获取所有标签数据
-                //await abp.services.app.type.getAllLabels().done(res => {
-                //    this.labels = res;
-                //})
-                ////初始化下拉选择
-                //this.initSelects();
-                ////初始化标签选择
-                //this.initLabels();
+                var loadKnowledge=abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
+                    this.knowledgeTree = res;
+                })
+                var loadType=abp.services.app.baseTree.getTypeTreeJsonByParentId().done((res) => {
+                    this.typeTree = res;
+                })
+                //获取所有标签数据
+                var loadLabel=abp.services.app.type.getAllLabels().done(res => {
+                    this.labels = res;
+                })
+                Promise.all([loadKnowledge, loadType, loadLabel]).then(() => {
+                    //初始化下拉选择
+                    this.initSelects();
+                    //初始化标签选择
+                    this.initLabels();
+                })
+                
             }
         })
         ////请求案例分页
