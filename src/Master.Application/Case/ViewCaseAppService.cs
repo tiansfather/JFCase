@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.UI;
 using Master.Dto;
+using Master.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,9 @@ namespace Master.Case
         protected override async Task<IQueryable<CaseInitial>> GetQueryable(RequestPageDto request)
         {
             var query=await base.GetQueryable(request);
-            return query.Where(o=>o.CaseStatus==CaseStatus.展示中);
+            return query
+                .Include(o=>o.CreatorUser)
+                .Where(o=>o.CaseStatus==CaseStatus.展示中);
         }
 
         protected override object PageResultConverter(CaseInitial entity)
@@ -26,7 +29,8 @@ namespace Master.Case
                 entity.Id,
                 entity.Title,
                 entity.Introduction,
-                entity.ReadNumber
+                entity.ReadNumber,
+                Avata= entity.CreatorUser.GetPropertyValue("Avata")
             };
         }
 
