@@ -17,75 +17,75 @@
 
 }
 
-<div id="app" v-cloak>
-    <!--顶部-->
-    <com-header></com-header>
+    <div id="app" v-cloak>
+        <!--顶部-->
+        <com-header></com-header>
 
-    <!---01-->
-    <div class="jianfa-content">
-        <div class="ny-content on">
-            <ul>
+        <!---01-->
+        <div class="jianfa-content">
+            <div class="ny-content on">
+                <ul>
 
-                <li>
-                    <dl>
-                        <dd>当前位置：案例工厂 > 看观点 > 筛选 ：</dd>
-                        @*<dd class="xchu">
+                    <li>
+                        <dl>
+                            <dd>当前位置：案例工厂 > 看观点 > 筛选 ：</dd>
+                            @*<dd class="xchu">
                                 上海<span>
                                     ×
                                 </span>
                             </dd>
                             <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
-                    </dl>
-                </li>
-                <li>
-                    <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
-                </li>
+                        </dl>
+                    </li>
+                    <li>
+                        <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
+                    </li>
 
-            </ul>
+                </ul>
+            </div>
         </div>
-    </div>
-    <!--end-->
-    <!--看观点-->
-    <div class="jianfa-guandiancard style-pa-46">
-        <div class="ny-guandiancard">
-            <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}">
-                <!--状态1-->
-                <div class="card-start">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dd class="card-top">
-                                    <span>{{item.title}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
-                                </dd>
-                                <dd class="card-zhong" @@click.stop.prevent="currentItem=item;moda12 = true">
-                                    <span>{{item.sourceSN}}</span>
-                                </dd>
-                                <dd class="card-bottom">
-                                    {{item.court2||item.court1}}
-                                    <i-button @@click.stop.prevent="" v-if="item.creatorUserId===abp.session.userId" >编辑</i-button>
-                                </dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <!--end-->
-                <!--状态2-->
-                <div class="card-end">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dd class="oncard-top">
-                                    <span>{{item.content}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
-                                    <p>{{getLawyer(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
-                                </dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <!--end-->
-            </a>
+        <!--end-->
+        <!--看观点-->
+        <div class="jianfa-guandiancard style-pa-46">
+            <div class="ny-guandiancard">
+                <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}">
+                    <!--状态1-->
+                    <div class="card-start">
+                        <ul>
+                            <li>
+                                <dl>
+                                    <dd class="card-top">
+                                        <span>{{item.title}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
+                                    </dd>
+                                    <dd class="card-zhong" @@click.stop.prevent="currentItem=item;moda12 = true">
+                                        <span>{{item.sourceSN}}</span>
+                                    </dd>
+                                    <dd class="card-bottom">
+                                        {{item.court2||item.court1}}
+                                        <i-button @@click.stop.prevent="modal1=true;caseCardUpdateDto=item;" v-if="item.creatorUserId===abp.session.userId">编辑</i-button>
+                                    </dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--end-->
+                    <!--状态2-->
+                    <div class="card-end">
+                        <ul>
+                            <li>
+                                <dl>
+                                    <dd class="oncard-top">
+                                        <span>{{item.content}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
+                                        <p>{{getLawyer(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
+                                    </dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--end-->
+                </a>
 
-            @*<a @click="moda12 = true" class="paiban">
+                @*<a @click="moda12 = true" class="paiban">
                     <!--状态1-->
                     <div class="card-start">
                         <ul>
@@ -114,33 +114,96 @@
                     </div>
                     <!--end-->
                 </a>*@
+            </div>
         </div>
+        <!--end-->
+        <!--案号-->
+        <Modal width="630px" v-model="moda11" class-name="top-modal" :mask-closable="false"
+               title="(2016)沪 0115 民初 67704 号">
+            <div class="neirong-eject">
+                <ul>
+                    <li><img src="ima/anhao-1.jpg"></li>
+                </ul>
+            </div>
+            <div slot="footer">&nbsp;</div>
+        </Modal>
+
+        <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>
+        <com-footer></com-footer>
+        <!--end-->
+        <el-dialog title="提示"
+                   :visible.sync="modal1"
+                   width="1000px">
+            <div style="display:flex;">
+                <div class="bjdd on">
+                    <bm class="style-pa-20">
+                        <i8 class="style-chaal-20">案例卡正面</i8>
+                    </bm>
+                    <div class="style-pa-1">
+                        <div class="jianfa-guandiancard">
+                            <div class="ny-guandiancard">
+                                <!--状态2-->
+                                <ul>
+                                    <li>
+                                        <dl>
+                                            <dd class="card-top">
+                                                <textarea name=""  class="textarea-k" v-model="caseCardUpdateDto.title"></textarea>
+                                            </dd>
+                                            <dd class="card-zhong">
+                                                {{caseCardUpdateDto.sourceSN}}
+                                            </dd>
+                                            <dd class="card-bottom">{{caseCardUpdateDto.court1}}</dd>
+                                        </dl>
+                                    </li>
+                                </ul>
+                                <!--end-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bjdd on">
+                    <bm class="style-pa-20">
+                        <i8 class="style-chaal-20">案例卡背面</i8>
+                    </bm>
+                    <div class="style-pa-1">
+                        <div class="jianfa-guandiancard">
+                            <div class="ny-guandiancard">
+                                <!--状态2-->
+                                <ul>
+                                    <li>
+                                        <dl>
+                                            <dd class="oncard-top">
+                                                <textarea name="" class="textarea-k" v-model="caseCardUpdateDto.content"></textarea>
+                                                <p>{{caseCardUpdateDto.lawyerFirms?getLawyer(caseCardUpdateDto):''}}<br>{{caseCardUpdateDto.publishDate}}</p>
+                                            </dd>
+                                        </dl>
+                                    </li>
+                                </ul>
+                                <!--end-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @@click="previewVisible = false">保存</el-button>
+                <el-button @@click="previewVisible = false">关闭</el-button>
+            </span>
+        </el-dialog>
     </div>
-    <!--end-->
-    <!--案号-->
-    <Modal width="630px" v-model="moda11" class-name="top-modal" :mask-closable="false"
-           title="(2016)沪 0115 民初 67704 号">
-        <div class="neirong-eject">
-            <ul>
-                <li><img src="ima/anhao-1.jpg"></li>
-            </ul>
-        </div>
-        <div slot="footer">&nbsp;</div>
-    </Modal>
-    
-    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
-        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
-        <div slot="footer">&nbsp;</div>
-    </Modal>
-    <com-footer></com-footer>
-    <!--end-->
-</div>
 
 @section scripts{
     <script>
         var app = new Vue({
             el: '#app',
             data: {
+                modal1: false, 
+                caseCardUpdateDto: {},
                 moda12: false,
                 currentItem: {},
                 currentPage: 1,
@@ -202,7 +265,15 @@
                 },
                 getLawyer: function (item) {
                     return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
-                }
+                },
+                //保存案例卡
+                updateCaseCard() {
+                    var that = this;
+                    func.runAsync(abp.services.app.workbench.updateSingleCard({ id: this.caseCardUpdateDto.id, title: this.caseCardUpdateDto.title, content: this.caseCardUpdateDto.content }).done(function () {
+                        this.moda11 = false;
+                        that.$Message.success("保存成功");
+                    }))
+                },
             },
             mounted: function () {
                 this.loadSource();

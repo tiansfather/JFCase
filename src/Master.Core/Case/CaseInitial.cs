@@ -95,7 +95,7 @@ namespace Master.Case
         public int BeatNumber { get; set; }
         
         public bool IsActive { get; set; }
-        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus")]
+        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}")]
         public CaseStatus CaseStatus { get; set; }
 
         public virtual ICollection<CaseNode> CaseNodes { get; set; } = new List<CaseNode>();

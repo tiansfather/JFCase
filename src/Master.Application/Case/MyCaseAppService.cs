@@ -68,11 +68,11 @@ namespace Master.Case
         public virtual async Task<object> GetSummary()
         {
             //已发布的案例数量
-            var caseCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && o.CaseStatus==CaseStatus.展示中 ||o.CaseStatus==CaseStatus.下架);
+            var caseCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && (o.CaseStatus==CaseStatus.展示中 ||o.CaseStatus==CaseStatus.下架));
             //案例卡数量
-            var caseCardCount = await Resolve<CaseCardManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && o.IsActive).CountAsync();
+            var caseCardCount = await Resolve<CaseCardManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && (o.CaseStatus == CaseStatus.展示中 || o.CaseStatus == CaseStatus.下架)).CountAsync();
             //精加工数量
-            var caseFineCount= await Resolve<CaseFineManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && o.IsActive).CountAsync();
+            var caseFineCount= await Resolve<CaseFineManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && (o.CaseStatus == CaseStatus.展示中 || o.CaseStatus == CaseStatus.下架)).CountAsync();
             return new
             {
                 caseCount,

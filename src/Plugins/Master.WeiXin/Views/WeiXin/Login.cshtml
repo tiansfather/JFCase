@@ -1,75 +1,39 @@
-﻿@using Master.Authentication.External
-
-@section styles{
-    <style>
-        #codeB {
-            display: block;
-            padding: 10px;
-        }
-
-        #codeImg {
-            display: block;
-            margin: 10px auto;
-        }
-    </style>
+﻿@using Master.Configuration
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+	Layout = "_WeUILayout";
+	ViewData["Title"] = WebCoreConfiguration.SoftName;
 }
 
-<div style="text-align:center;margin-top:20px;" id="app">
-    <img id="codeImg" :src="qrCode" width="250" />
-    @*<b id="codeB">第一次来模来模往? 那先来注册个帐户吧.</b>
-    <span style="font-size: 12px;">客服电话：15906863922</span>*@
+<div class="weui-msg">
+	<div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
+	<div class="weui-msg__text-area">
+		<h2 class="weui-msg__title">感谢使用@(WebCoreConfiguration.SoftName)系统</h2>
+		<p class="weui-msg__desc"></p>
+	</div>
+	@*<div class="weui-msg__opr-area">
+		<p class="weui-btn-area">
+			<a href="javascript:;" class="weui-btn weui-btn_primary" onclick="doSubmit()">确认登录</a>
+		</p>
+	</div>*@
+	<div class="weui-msg__extra-area">
+		<div class="weui-footer">
+			@*<p class="weui-footer__links">
+					<a href="javascript:void(0);" class="weui-footer__link">底部链接文本</a>
+				</p>*@
+			<p class="weui-footer__text">Copyright © 2019 </p>
+		</div>
+	</div>
 </div>
 
 @section scripts{
-    <script>
-		var guid = "@ViewBag.Guid";
-		config.ready = function () {
-			var app = new Vue({
-				el: '#app',
-				computed: {
-					qrCode: function () {
-						return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/LoginCallback?guid=" + guid);
-					}
-				}
-			});
+	<script>
+		@*var guid = "@ViewBag.Guid";
+        function doSubmit() {
+            func.runAsync(abp.services.app.weiXin.login(guid).done(function () {
+                location.href = "/weixin/success?msg=" + encodeURIComponent("提交成功");
+            }))
 
-			var loopFunc=function () {
-				abp.services.app.weiXin.getLoginInfo().done(function (data) {
-					console.log(data);
-					if (data) {
-						var authModel = {
-							authProvider: "@WeChatAuthProviderApi.Name",
-							providerKey: data,
-                            providerAccessCode: "",
-                            clientInfo:'Browser'
-						};
-						//window.clearInterval(loop);
-						parent.doExternalAuthentication(authModel);
-					} else {
-						window.setTimeout(loopFunc, 1000);
-					}
-
-
-				});
-			}
-			loopFunc();
-			//定时轮询
-			@*var loop=window.setInterval(function () {
-				abp.services.app.weiXin.getLoginInfo().done(function (data) {
-					console.log(data);
-					if (data) {
-						var authModel = {
-							authProvider: "@WeChatAuthProviderApi.Name",
-							providerKey: data,
-							providerAccessCode:""
-						};
-						window.clearInterval(loop);
-						parent.doExternalAuthentication(authModel);
-					}
-
-
-				});
-			}, 1000);*@
-		}
-    </script>
+        }*@
+	</script>
 }

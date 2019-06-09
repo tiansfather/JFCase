@@ -15,7 +15,7 @@
                     <dl>
                         <dd>当前位置：案例工厂 > 首页 > 工作台 > 我的精品 > 筛选 ：</dd>
                         @*<dd class="xchu">上海<span>×</span></dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                     </dl>
                 </li>
                 <li>
@@ -43,7 +43,10 @@
                     </dl>
                 </li>
                 <li class="on">您已完成有 <span class="shuzi">{{summary.caseFineCount}}</span> 个精品<!--，其中包含案例卡 <span class="shuzi">49</span> 个--></li>
-                <li>
+                <li v-show="items.length==0">
+                    <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的精品案例哦，请减少查询条件再试试看，或联系管理员。</h1>
+                </li>
+                <li v-show="items.length>0">
                     <div class="li-table table-stripe">
                         <table width="100%">
                             <tr>
@@ -52,33 +55,33 @@
                                 <th width="220">案号	</th>
                                 <th width="250">标题</th>
                                 <th>发布时间</th>
-                                <th width="220">我的备注</th>
+                                @*<th width="220">我的备注</th>*@
                                 <th width="50">操作</th>
                             </tr>
 
                             <tr v-for="(item,index) in items">
                                 <td class="on">
                                     <template>
-                                        <i-switch :value="item.isActive" @@on-change="changeStatus(item,$event)" />
+                                        <i-switch :value="item.caseStatus==1" @@on-change="changeStatus(item,$event)" />
                                     </template>
                                 </td>
                                 <td class="on">{{item.anYou}}</td>
                                 <td class="on"><a>{{item.sourceSN}}</a></td>
                                 <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
-                                <td class="on"><a @@click="moda12 = true">{{item.title}}<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on"><a @@click.stop.prevent="currentItem=item;moda12 = true">{{item.title}}<i class="jianfa fa-eye"></i></a></td>
                                 <td class="on">{{item.publishDate}}</td>
-                                <td class="on">{{item.remarks}}</td>
+                                @*<td class="on">{{item.remarks}}</td>*@
                                 <td class="on"><a :href="'/Home/Process?EncrypedId='+item.encrypedId"><img src="/assets/jianfa/ima/jia-icon-2.png"></a></td>
                             </tr>
 
                             @*<tr>
-                                <td class="on">房屋买卖纠纷（二手）</td>
-                                <td class="on">(2016)沪 0115 民初 67704 号</td>
-                                <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
-                                <td class="on">2016/04/10</td>
-                                <td class="on">我的备注内容备注内容…</td>
-                                <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
-                            </tr>*@
+                        <td class="on">房屋买卖纠纷（二手）</td>
+                        <td class="on">(2016)沪 0115 民初 67704 号</td>
+                        <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                        <td class="on">2016/04/10</td>
+                        <td class="on">我的备注内容备注内容…</td>
+                        <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                    </tr>*@
 
                         </table>
                     </div>
@@ -88,18 +91,9 @@
         <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[10, 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
     </div>
     <!--end-->
-    <!--添加-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" title="(2016)沪 0115 民初 67704 号">
-        <div class="neirong-eject">
-            <ul>
-                <li><img src="ima/anhao-1.jpg"></li>
-            </ul>
-        </div>
+    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
         <div slot="footer">&nbsp;</div>
-        <!--
-        <div slot="footer">
-        <Button class="btn-footer" @@click="submit">确认</Button><Button class="btn-footer" @@click="submit">取消</Button>
-        </div>-->
     </Modal>
     <!--end-->
     <!--footer-->
@@ -123,7 +117,7 @@
                 items: [],
                 currentItem: {},
                 subjects: [],//专题
-                caseStatuses: [{ id: 1, displayName: '展示中' }, { id: 0, displayName: '下架' }],
+                caseStatuses: [{ id: 1, displayName: '展示中' }, { id: 3, displayName: '下架' }],
                 moda12: false,
                 summary: {
                     caseCount: 0,
@@ -146,11 +140,9 @@
                     if (this.wherePart.subjectId) {
                         where += ` and caseInitial.subjectId=${this.wherePart.subjectId}`;
                     }
-                    if (this.wherePart.caseStatus == 0) {
-                        where += ` and isActive=false`;
-                    } else if (this.wherePart.caseStatus==1) {
-                        where += ` and isActive=true`;
-                    }
+                    if (this.wherePart.caseStatus) {
+                        where += ` and caseStatus=${this.wherePart.caseStatus}`;
+                    } 
                     //for (var i in this.wherePart) {
                     //    var data = this.wherePart[i];
                     //    if (!data) continue;
@@ -167,7 +159,7 @@
                     var that = this;
                     func.runAsync(abp.services.app.myArt.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
                         that.items = res.data;
-                        that.items = [{ id: 1, isActive:true, remarks: 'bb', caseStatus: 1 }]
+                        //that.items = [{ id: 1, isActive:true, remarks: 'bb', caseStatus: 1 }]
                         that.totalCount = res.count;
                     }));
                     

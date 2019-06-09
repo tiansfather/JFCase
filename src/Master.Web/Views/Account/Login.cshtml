@@ -101,7 +101,7 @@
             },
 			computed: {
 				qrCode: function () {
-					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/LoginCallback?guid=" + guid);
+					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
 				}
             },
             methods: {
@@ -151,8 +151,9 @@
             //轮询请求
         var loopFunc = function () {
                 //获取用户信息
-            abp.services.app.weiXin.getLoginInfo({abpHandleError:false}).done(function (data) {                    
-                    if (data) {
+            abp.services.app.weiXin.getLoginInfo(guid).done(function (data) {                    
+                if (data) {
+                    console.log(data);
                         app.currentItem.openid = data.openid;
                         app.currentItem.nickName = data.nickname;//用户昵称
                         app.currentItem.avata = data.headimgurl;//头像

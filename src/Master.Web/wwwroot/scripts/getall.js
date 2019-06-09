@@ -3052,19 +3052,20 @@ abp.services = abp.services || {};
     };
 
     // action 'updateFine'
-    abp.services.app.workbench.updateFine = function(caseInitialId, caseFineDtos, ajaxParams) {
+    abp.services.app.workbench.updateFine = function(caseFineUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/UpdateFine' + abp.utils.buildQueryString([{ name: 'caseInitialId', value: caseInitialId }]) + '',
+        url: abp.appPath + 'api/services/app/Workbench/UpdateFine',
         type: 'PUT',
-        data: JSON.stringify(caseFineDtos)
+        data: JSON.stringify(caseFineUpdateDto)
       }, ajaxParams));;
     };
 
     // action 'publishFine'
-    abp.services.app.workbench.publishFine = function(caseInitialId, ajaxParams) {
+    abp.services.app.workbench.publishFine = function(caseFineUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/PublishFine' + abp.utils.buildQueryString([{ name: 'caseInitialId', value: caseInitialId }]) + '',
-        type: 'POST'
+        url: abp.appPath + 'api/services/app/Workbench/PublishFine',
+        type: 'POST',
+        data: JSON.stringify(caseFineUpdateDto)
       }, ajaxParams));;
     };
 
@@ -3696,9 +3697,9 @@ abp.services = abp.services || {};
     };
 
     // action 'getLoginInfo'
-    abp.services.app.weiXin.getLoginInfo = function(ajaxParams) {
+    abp.services.app.weiXin.getLoginInfo = function(guid, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/WeiXin/GetLoginInfo',
+        url: abp.appPath + 'api/services/app/WeiXin/GetLoginInfo' + abp.utils.buildQueryString([{ name: 'guid', value: guid }]) + '',
         type: 'GET'
       }, ajaxParams));;
     };

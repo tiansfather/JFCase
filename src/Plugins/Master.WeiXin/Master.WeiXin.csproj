@@ -14,7 +14,7 @@
     <None Remove="Views\WeiXin\Error.cshtml" />
     <None Remove="Views\WeiXin\GuanZhu.cshtml" />
     <None Remove="Views\WeiXin\Login.cshtml" />
-    <None Remove="Views\WeiXin\LoginCallback.cshtml" />
+    <None Remove="Views\WeiXin\Login_bak.cshtml" />
     <None Remove="Views\WeiXin\Register.cshtml" />
     <None Remove="Views\WeiXin\ScanUpload.cshtml" />
     <None Remove="Views\WeiXin\ScanUploadCallback.cshtml" />
@@ -69,11 +69,11 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\WeiXin\LoginCallback.cshtml">
+    <EmbeddedResource Include="Views\WeiXin\Login.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\WeiXin\Login.cshtml">
+    <EmbeddedResource Include="Views\WeiXin\Login_bak.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </EmbeddedResource>

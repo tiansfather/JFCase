@@ -34,7 +34,7 @@ namespace Master.WeiXin
         public virtual void Login(string guid)
         {
             var weuser = WeiXinHelper.GetWeiXinUserInfo();
-
+            Logger.Info("Login2:" + guid + Newtonsoft.Json.JsonConvert.SerializeObject(weuser));
             //存入缓存
             CacheManager.GetCache<string,OAuthUserInfo>("ExternalLoginCache").Get(guid,()=>weuser);
             //using (var contextAccessorWrapper = IocManager.Instance.ResolveAsDisposable(typeof(IHttpContextAccessor)))
@@ -51,18 +51,12 @@ namespace Master.WeiXin
         /// </summary>
         /// <returns></returns>
         [DisableAuditing]
-        public virtual object GetLoginInfo()
+        public virtual object GetLoginInfo(string guid)
         {
-            using (var contextAccessorWrapper = IocManager.Instance.ResolveAsDisposable(typeof(IHttpContextAccessor)))
-            {
-                var session = (contextAccessorWrapper.Object as IHttpContextAccessor).HttpContext.Session;
-                var guid = session.Get<string>("WeChatLoginId");
+            var weuser = CacheManager.GetCache<string, OAuthUserInfo>("ExternalLoginCache").GetOrDefault(guid);
 
-                var weuser= CacheManager.GetCache<string, OAuthUserInfo>("ExternalLoginCache").GetOrDefault(guid);
 
-                
-                return weuser;
-            }
+            return weuser;
         }
 
         #endregion

@@ -30,13 +30,13 @@
                     <dl>
                         <dd class="card-top">
                             <p class="wzys1">{{item.anYou}}</p>
-                            <p><a @@click="moda12 = true">{{item.sourceSN}}</a></p>
+                            <p><a @@click.prevent="currentItem=item;moda12 = true">{{item.sourceSN}}</a></p>
                             <p>{{item.court2||item.court1}}</p>
                             <p class="wzys1">{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
                         </dd>
                         <dd class="card-bottom">
                             <p class="fleft">{{item.caseSourceStatus==1?'待加工':'加工中'}}...</p>
-                            <p><a @@click="currentItem=item;modal1 = true"><i class="mywj-icon-2"></i></a></p>
+                            <p><a @@click.prevent="currentItem=item;modal1 = true"><i class="mywj-icon-2"></i></a></p>
                             <p><a :href="'/Home/Process?encrypedId='+item.encrypedId"><i class="mywj-icon-1"></i></a></p>
                         </dd>
                     </dl>
@@ -61,12 +61,16 @@
             <ul>
                 <li class="bot-on-b"><p>请选择（填写）放回原由：</p></li>
                 <li>
-                    <CheckboxGroup v-model="choosedReasons">
+                    @*<CheckboxGroup v-model="choosedReasons">
                         <Checkbox v-for="(item,index) in reasons" :label="index">
                             {{item}}
                         </Checkbox>
                         <Checkbox label="other">其他（填写）</Checkbox>
-                    </CheckboxGroup>
+                    </CheckboxGroup>*@
+                    <el-checkbox-group v-model="choosedReasons">
+                        <el-checkbox v-for="(item,index) in reasons" :label="item">{{item}}</el-checkbox>
+                        <el-checkbox label="other" >其他（填写）</el-checkbox>
+                    </el-checkbox-group>
                 </li>
                 <li><i-Input v-model="otherReason" type="textarea" :autosize="{minRows: 5,maxRows: 5}" placeholder="这里请输入放回原因…" /></li>
             </ul>
@@ -79,12 +83,8 @@
         </div>
     </Modal>
     <!--添加-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" title="(2016)沪 0115 民初 67704 号">
-        <div class="neirong-eject">
-            <ul>
-                <li><img src="ima/anhao-1.jpg"></li>
-            </ul>
-        </div>
+    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
         <div slot="footer">&nbsp;</div>
     </Modal>
 
@@ -142,7 +142,7 @@
                     //验证退回原因是否填写
                     if (this.choosedReasons.length == 0) {
                         abp.message.error("请选择至少一条退还原因");
-                    } else if (this.choosedReasons.indexOf("Other") >= 0 && !this.otherReason) {
+                    } else if (this.choosedReasons.indexOf("other") >= 0 && !this.otherReason) {
                         abp.message.error("您选择了其它原因,请在文本框中填写具体原因");
                     } else {
                         var reason = this.choosedReasons.join(',');

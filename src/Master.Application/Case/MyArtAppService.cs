@@ -28,9 +28,10 @@ namespace Master.Case
             {
                 entity.Id,
                 EncrypedId = SimpleStringCipher.Instance.Encrypt(entity.CaseInitial.CaseSource.Id.ToString(), null, null),//加密后的案源id
-                entity.IsActive,
+                entity.CaseStatus,
                 entity.CaseInitial.CaseSource.SourceSN,
-                entity.CaseInitial.CaseSource.AnYou?.DisplayName,
+                entity.CaseInitial.CaseSource.SourceFile,
+                AnYou=entity.CaseInitial.CaseSource.AnYou?.DisplayName,
                 PublishDate = entity.PublishDate?.ToString("yyyy/MM/dd"),
                 entity.Title,
                 entity.Remarks,
@@ -56,12 +57,12 @@ namespace Master.Case
         public virtual async Task Freeze(int caseFineId)
         {
             var caseFine = await Manager.GetByIdAsync(caseFineId);
-            caseFine.IsActive=false;
+            caseFine.CaseStatus = CaseStatus.下架;
         }
         public virtual async Task UnFreeze(int caseFineId)
         {
             var caseFine = await Manager.GetByIdAsync(caseFineId);
-            caseFine.IsActive = true;
+            caseFine.CaseStatus = CaseStatus.展示中;
         }
         #endregion
     }

@@ -22,7 +22,7 @@ namespace Master.Case
                 .Include("CaseInitial.CaseSource.City")
                 .Include("CaseInitial.CaseSource.Court1")
                 .Include("CaseInitial.CaseSource.Court2")
-                .Where(o => o.IsActive && o.CaseInitial.CaseStatus == CaseStatus.展示中);
+                .Where(o => o.CaseStatus==CaseStatus.展示中 && o.CaseInitial.CaseStatus == CaseStatus.展示中);
         }
         protected override async Task<IQueryable<CaseCard>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseCard> query)
         {

@@ -436,9 +436,27 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
     display:inline-block !important;
     padding:0px !important;
 }
+.btn-footer {
+    background: #754c24 !important;
+}
 .btn-footer:hover {
     background: #4a3016 !important;
 }
 .btn-footer-qx:hover {
     background: #4a3016 !important;
+}
+.jianfa-jiagong .jiagong-content .bjli .bjdl{
+    /*overflow:hidden;*/
+    padding:0px;
+}
+.el-checkbox__label, .el-checkbox__input.is-checked + .el-checkbox__label {
+    font-size: 12px;
+    color: #c69c6c
+}
+.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    border-color: #c69c6d;
+    background-color: #c69c6d;
+}
+.is-focus .el-checkbox__inner, .el-checkbox__inner:hover {
+    border-color: #c69c6d !important;
 }

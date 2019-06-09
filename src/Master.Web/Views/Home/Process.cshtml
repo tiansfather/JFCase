@@ -215,7 +215,50 @@
 
                                 </Tab-Pane>
                                 <Tab-Pane label="精加工">
-                                    <div class="bqian">空</div>
+                                    <div class="bqian">
+                                        <template v-for="(item,index) in caseFineUpdateDto.caseFines">
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">
+                                                        音频视频解读
+                                                    </i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name="" class="textarea" style="height:50px;" v-model="item.mediaPath"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">
+                                                        文案标题
+                                                    </i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name="" class="textarea" style="height:50px;" v-model="item.title"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">
+                                                        文案内容
+                                                    </i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name="" class="textarea" style="height:250px;" v-model="item.content"></textarea>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <div class="bjdd">
+                                            <div class="imghov">
+                                                <i11><a href="" @@click.prevent="addCaseFine"><img src="/assets/jianfa/ima/jia-icon-2c.png"></a></i11>
+                                                <i11><a href="" @@click.prevent="removeCaseFine"><img src="/assets/jianfa/ima/jia-icon-2d.png"></a></i11>
+                                            </div>
+                                        </div>
+
+                                        <div class="bjdd">
+                                            <a href="" class="btn-submit-jgy" @@click.prevent="publishCaseFine">发布</a><a href="" @@click.prevent="updateCaseFine" class="btn-submit-jgy">保存</a>
+                                        </div>
+                                    </div>
                                 </Tab-Pane>
                                 <Tab-Pane label="案例卡">
                                     <div class="bqian">
@@ -489,8 +532,10 @@
                     },
                     remarks:''
                 },
+                //精加工数据
+                caseFineUpdateDto: {},
                 //案例卡数据
-                caseCardUpdateDto:[],
+                caseCardUpdateDto: {},
                 source: {},
                 knowledgeTree: [],
                 typeTree: [],
@@ -534,10 +579,15 @@
                     await abp.services.app.workbench.getCaseProcessInfo(id).done( (res)=> {
                         this.source = res.source;
                         this.caseInitialUpdateDto = res.caseInitialUpdateDto;
+                        this.caseFineUpdateDto = res.caseFineUpdateDto;
                         this.caseCardUpdateDto = res.caseCardUpdateDto;
                         //如果是新的加工，则将案由存至CaseNode，用于级联选择中设置option
-                        if (this.caseInitialUpdateDto.caseNodes.length==0) {
-                            this.caseInitialUpdateDto.caseNodes.push({ relName: '案由', relValue: this.source.anYou,baseTreeId:this.source.anYouId })
+                        if (this.caseInitialUpdateDto.caseNodes.length == 0) {
+                            this.caseInitialUpdateDto.caseNodes.push({ relName: '案由', relValue: this.source.anYou, baseTreeId: this.source.anYouId })
+                        }
+                        //如果没有精加工，默认建立一个精加工
+                        if (this.caseFineUpdateDto.caseFines.length == 0) {
+                            this.caseFineUpdateDto.caseFines.push({ title: '', content: '', mediaPath: '' });
                         }
                         //如果没有案例卡，默认建立一个案例卡
                         if (this.caseCardUpdateDto.caseCards.length == 0) {
@@ -727,6 +777,43 @@
                                 cancelText: '继续加工本案例',
                                 onOk: () => {
                                     location.href = '/Home/MyCase';
+                                },
+                            });
+                        }))
+                    })
+                },
+                //添加精加工
+                addCaseFine() {
+                    this.caseFineUpdateDto.caseFines.push({ title: '', content: '', mediaPath: '' });
+                },
+                //移除最后一个精加工
+                removeCaseFine() {
+                    //不能删除最后一个，如果是最后一个，则清除内容
+                    if (this.caseFineUpdateDto.caseFines.length > 1) {
+                        this.caseFineUpdateDto.caseFines.splice(-1, 1);
+                    } else {
+                        this.caseFineUpdateDto.caseFines[0] = { title: '', content: '', mediaPath: '' };
+                    }
+                },
+                //保存精加工
+                updateCaseFine() {
+                    var that = this;
+                    func.runAsync(abp.services.app.workbench.updateFine(this.caseFineUpdateDto).done(function () {
+                        that.$Message.success("保存成功");
+                    }))
+                },
+                //发布精加工
+                publishCaseFine() {
+                    var that = this;
+                    abp.message.confirm("您确定完成本案例的精加工了吗？发布后大家都能看到了哦。", function () {
+                        func.runAsync(abp.services.app.workbench.publishFine(that.caseFineUpdateDto).done(function () {
+                            that.$Modal.confirm({
+                                title: '成功',
+                                content: '案例精加工内容发布成功！您可至“我的精品”中查看并继续对案例做进一步加工',
+                                okText: '去“我的精品”',
+                                cancelText: '继续加工本案例',
+                                onOk: () => {
+                                    location.href = '/Home/MyArt';
                                 },
                             });
                         }))
