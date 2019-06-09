@@ -145,10 +145,14 @@
                                                 <i8 class="style-chaal-20">诉请及判决</i8>
                                             </bt>
                                             <div class="fleft style-chaal-42">
-                                                <textarea name=""
-                                                          class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.judgeContent"></textarea>
+                                                <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.judgeContent"></textarea>
                                             </div>
-                                            <i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>
+                                            <template>
+                                                <div class="block" style="float:left;">
+                                                    <el-slider v-model="caseInitialUpdateDto.judgeInfo.supportRate" step="5" vertical height="145px">
+                                                    </el-slider>
+                                                </div>
+                                            </template>
                                             <!--调节h50 h60.....-->
                                             <div class="fleft style-chaal-42">
                                                 <textarea name=""
@@ -164,12 +168,16 @@
                                                 <textarea name=""
                                                           class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeContent"></textarea>
                                             </div>
-
-                                            <i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>
+                                            <template>
+                                                <div class="block" style="float:left;">
+                                                    <el-slider v-model="caseInitialUpdateDto.judgeInfo.reverseSupportRate"step="5" vertical height="145px">
+                                                    </el-slider>
+                                                </div>
+                                            </template>
+                                            @*<i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>*@
                                             <!--调节h50 h60.....-->
                                             <div class="fleft style-chaal-42">
-                                                <textarea name=""
-                                                          class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeResult"></textarea>
+                                                <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeResult"></textarea>
                                             </div>
                                         </div>
 

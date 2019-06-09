@@ -48,7 +48,7 @@
         <!--看观点-->
         <div class="jianfa-guandiancard style-pa-46">
             <div class="ny-guandiancard">
-                <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}">
+                <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}" v-if="items.length">
                     <!--状态1-->
                     <div class="card-start">
                         <ul>
@@ -84,7 +84,7 @@
                     </div>
                     <!--end-->
                 </a>
-
+                <p v-else>暂无案例卡</p>
                 @*<a @click="moda12 = true" class="paiban">
                     <!--状态1-->
                     <div class="card-start">
