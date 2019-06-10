@@ -22,6 +22,33 @@ namespace Master.Case
                 .Where(o=>o.CaseStatus==CaseStatus.展示中);
         }
 
+        protected override async Task<IQueryable<CaseInitial>> BuildSearchQueryAsync(IDictionary<string, string> searchKeys, IQueryable<CaseInitial> query)
+        {
+            if (searchKeys.ContainsKey("typeIds") && !string.IsNullOrEmpty(searchKeys["typeIds"]))
+            {
+                var typeIds = searchKeys["typeIds"].Split(',');
+                foreach(var typeId in typeIds)
+                {
+                    if (!string.IsNullOrEmpty(typeId))
+                    {
+                        query = query.Where(o => o.CaseNodes.Count(n => n.BaseTreeId == int.Parse(typeId)) > 0);
+                    }
+                }
+            }
+            if (searchKeys.ContainsKey("labelIds") && !string.IsNullOrEmpty(searchKeys["labelIds"]))
+            {
+                var labelIds = searchKeys["labelIds"].Split(',');
+                foreach (var labelId in labelIds)
+                {
+                    if (!string.IsNullOrEmpty(labelId))
+                    {
+                        query = query.Where(o => o.CaseLabels.Count(n => n.LabelId == int.Parse(labelId)) > 0);
+                    }
+                        
+                }
+            }
+            return query;
+        }
         protected override object PageResultConverter(CaseInitial entity)
         {
             return new

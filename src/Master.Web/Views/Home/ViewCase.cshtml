@@ -156,10 +156,10 @@
                             </dd>
                             <dd class="style-bf-47">
                                 <template>
-                                    <i-input v-model="wherePart.keyWord" size="small" placeholder="请输入关键词等信息..." />
+                                    <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." />
                                 </template>
                             </dd>
-                            <dd class="style-bf-10-b"><Button class="btn-search" type="button">筛选</Button></dd>
+                            <dd class="style-bf-10-b"><Button class="btn-search" type="button" @@click="doSearch">筛选</Button></dd>
                         </dl>
                     </li>
                 </ul>
@@ -169,10 +169,13 @@
         <!--查案例-->
         <div class="jianfa-chaanli">
             <div class="chaanli-content">
-                <ul>
-                    <li class="style-chaal-40">
+                <div v-show="items.length===0">
+                    <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看。</h1>
+                </div>
+                <ul v-show="items.length">
+                    <li class="style-chaal-40" >
                         <template>
-                            <div class="infinite-list-wrapper" v-show="items.length">
+                            <div class="infinite-list-wrapper" >
                                 <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled">
                                     <a href="javascript:;">
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
@@ -194,26 +197,24 @@
                                 <p v-if="loading">加载中...</p>
                                 <p v-if="noMore">没有更多了</p>
                             </div>
-                            <div v-show="items.length===0">
-                                <p>没有符合您查询条件的案例哦，请减少查询条件再试试看。</p>
-                            </div>
+
                         </template>
                         @*<dl>
-                            <dd v-for="item in [{title:'t',introduction:'34321',readNumber:125,id:12}]" :key="item.id" @@click="getViewMsg(item.id)">
-                                <i1>
-                                    <div class="left-cha1"><img src="ima/index-2.png"></div>
-                                    <div class="right-cha1">
-                                        {{item.title}}
-                                    </div>
-                                </i1>
-                                <i2>
-                                    <div class="top-cha1">
-                                        {{item.introduction}}
-                                    </div>
-                                    <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
-                                </i2>
-                            </dd>
-                        </dl>*@
+                    <dd v-for="item in [{title:'t',introduction:'34321',readNumber:125,id:12}]" :key="item.id" @@click="getViewMsg(item.id)">
+                        <i1>
+                            <div class="left-cha1"><img src="ima/index-2.png"></div>
+                            <div class="right-cha1">
+                                {{item.title}}
+                            </div>
+                        </i1>
+                        <i2>
+                            <div class="top-cha1">
+                                {{item.introduction}}
+                            </div>
+                            <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
+                        </i2>
+                    </dd>
+                </dl>*@
                     </li>
                     <li class="on style-chaal-60" v-if="caseInfo">
                         <dl class="on">
@@ -367,11 +368,10 @@
                 cities: [],
                 subjects:[],
                 wherePart: {
-                    anYouId: '',
                     cityId: '',
-                    subjectId: '',
-                    keyWord:''
+                    subjectId:'',
                 },
+                keyword:'',
                 noMore: false,
                 loading: false,
 
@@ -384,16 +384,41 @@
                 selectKeywords: [],
                 knowledgeTree: [],
                 typeTree: [],
+                labels:[],
             },
             computed: {
                 where() {
-                    return '1=1'
+                    var where = '1=1';
+                    if (this.wherePart.cityId) {
+                        where += " and caseSource.CityId=" + this.wherePart.cityId;
+                    }
+                    if (this.wherePart.subjectId) {
+                        where += " and subjectId=" + this.wherePart.subjectId;
+                    }
+                    return where;
+                },
+                searchKeys() {
+                    var typeIds = [];
+                    var labelIds = this.selectLabels.concat(this.selectKeywords);
+                    this.selectValues.forEach(o => {
+                        if (func.typeof(o) != "array") {
+                            typeIds.push(o);
+                        } else {
+                            typeIds = typeIds.concat(o);
+                        }
+                    })
+                    return JSON.stringify({ typeIds: typeIds.join(','), labelIds: labelIds.join(',') });
                 },
                 disabled() {
                     return this.loading || this.noMore
                 }
             },
             methods: {
+                doSearch() {
+                    this.currentPage = 1;
+                    this.items = [];
+                    this.loadSource();
+                },
                 //初始化下拉选择，目的是为了构建数据对象存放动态select的v-model
                 initSelects() {
                     var rootNode = this.typeTree.filter(o => o.name == "案例属性体系")[0];
@@ -502,14 +527,14 @@
                 },
                 loadSource() {
                     var that = this;
-                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
+                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword ,searchKeys:this.searchKeys}).done((res) => {
                         this.loading = false;
                         if (res.data.length == 0) {
                             this.$Message.info('已经没有数据了');
                             this.noMore = true;
                         }
                         that.items = that.items.concat(res.data);
-                        if (this.currentPage === 1) {
+                        if (this.currentPage === 1 && that.items.length>0) {
                             //第一次就点击第一条
                             this.getViewMsg(that.items[0].id)
                         }
