@@ -47,8 +47,8 @@
         <!--end-->
         <!--看观点-->
         <div class="jianfa-guandiancard style-pa-46">
-            <div class="ny-guandiancard">
-                <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}" v-if="items.length">
+            <div class="ny-guandiancard" v-if="items.length">
+                <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}">
                     <!--状态1-->
                     <div class="card-start">
                         <ul>
@@ -84,37 +84,38 @@
                     </div>
                     <!--end-->
                 </a>
-                <p v-else>暂无案例卡</p>
+
                 @*<a @click="moda12 = true" class="paiban">
-                    <!--状态1-->
-                    <div class="card-start">
-                        <ul>
-                            <li>
-                                <dl>
-                                    <dd class="card-top"><span>在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？</span></dd>
-                                    <dd class="card-zhong">(2016)沪 0115 民初 67704 号</dd>
-                                    <dd class="card-bottom">上海市浦东新区人民法院</dd>
-                                </dl>
-                            </li>
-                        </ul>
-                    </div>
-                    <!--end-->
-                    <!--状态2-->
-                    <div class="card-end">
-                        <ul>
-                            <li>
-                                <dl>
-                                    <dd class="oncard-top">
-                                        <span>本院认为，……现系争房屋已由被告装修入住数年，原告也已取得被告支付的大部分房款，在被告同意支付剩余房屋尾款的情况下，原告的合同目的已然能够实现。根据合同约定原告应协助被告办理系争房屋的过户手续，此系原告的合同义务而非原告的合同目的，原告以被告限购致使无法办理过户手续为由称其合同目的无法实现，与事实不符，本院不予认同。</span>
-                                        <p>郑卫青、吴 丹、杨斯空<br>2018年4月10日</p>
-                                    </dd>
-                                </dl>
-                            </li>
-                        </ul>
-                    </div>
-                    <!--end-->
-                </a>*@
+                <!--状态1-->
+                <div class="card-start">
+                    <ul>
+                        <li>
+                            <dl>
+                                <dd class="card-top"><span>在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？</span></dd>
+                                <dd class="card-zhong">(2016)沪 0115 民初 67704 号</dd>
+                                <dd class="card-bottom">上海市浦东新区人民法院</dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+                <!--end-->
+                <!--状态2-->
+                <div class="card-end">
+                    <ul>
+                        <li>
+                            <dl>
+                                <dd class="oncard-top">
+                                    <span>本院认为，……现系争房屋已由被告装修入住数年，原告也已取得被告支付的大部分房款，在被告同意支付剩余房屋尾款的情况下，原告的合同目的已然能够实现。根据合同约定原告应协助被告办理系争房屋的过户手续，此系原告的合同义务而非原告的合同目的，原告以被告限购致使无法办理过户手续为由称其合同目的无法实现，与事实不符，本院不予认同。</span>
+                                    <p>郑卫青、吴 丹、杨斯空<br>2018年4月10日</p>
+                                </dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+                <!--end-->
+            </a>*@
             </div>
+            <div v-else><h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看。</h1></div>
         </div>
         <!--end-->
         <!--案号-->

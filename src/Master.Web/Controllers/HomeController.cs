@@ -81,8 +81,8 @@ namespace Master.Web.Controllers
             //仅矿工可进入首页
             if (!loginInfo.User.RoleNames.Contains(StaticRoleNames.Tenants.Miner))
             {
-                Response.Cookies.Delete("token");
-                return Redirect("/Account/Login");
+                //Response.Cookies.Delete("token");
+                //return Redirect("/Account/Login");
             }
             //默认首页
             if (loginInfo.User.HomeUrl.IsNullOrEmpty())
