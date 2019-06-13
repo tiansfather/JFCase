@@ -95,13 +95,13 @@ namespace Master.Case
         public int BeatNumber { get; set; }
         
         public bool IsActive { get; set; }
-        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus")]
+        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}")]
         public CaseStatus CaseStatus { get; set; }
 
-        public virtual ICollection<CaseNode> CaseNodes { get; set; }
-        public virtual ICollection<CaseLabel> CaseLabels { get; set; }
-        public virtual ICollection<CaseFine> CaseFines { get; set; }
-        public virtual ICollection<CaseCard> CaseCards { get; set; }
+        public virtual ICollection<CaseNode> CaseNodes { get; set; } = new List<CaseNode>();
+        public virtual ICollection<CaseLabel> CaseLabels { get; set; } = new List<CaseLabel>();
+        public virtual ICollection<CaseFine> CaseFines { get; set; } = new List<CaseFine>();
+        public virtual ICollection<CaseCard> CaseCards { get; set; } = new List<CaseCard>();
 
         /// <summary>
         /// 诉情及判决
@@ -111,7 +111,8 @@ namespace Master.Case
         {
             get
             {
-                return this.GetPropertyValue<JudgeInfo>("JudgeInfo");
+                var judgeInfo= this.GetPropertyValue<JudgeInfo>("JudgeInfo");
+                return judgeInfo ?? new JudgeInfo();
             }
             set
             {

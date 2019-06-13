@@ -1,6 +1,9 @@
 ﻿using Abp.Authorization;
 using Abp.AutoMapper;
+using Abp.BackgroundJobs;
 using Master.Authentication;
+using Master.Case;
+using Master.Core.Jobs;
 using Master.Domain;
 using Master.Dto;
 using Master.Entity;
@@ -63,6 +66,7 @@ namespace Master.Users
                 user.Id = 0;
                 user.SetPropertyValue("NickName", newMiner.NickName);
                 user.SetPropertyValue("Avata", newMiner.Avata);
+                user.TenantId = AbpSession.TenantId;
                 await userManger.InsertAndGetIdAsync(user);
                 await userManger.SetRoles(user, new int[] { role.Id });
                 user.Logins = new List<UserLogin>() {
@@ -71,6 +75,17 @@ namespace Master.Users
                 newMiner.Verified = true;
                 await CurrentUnitOfWork.SaveChangesAsync();
                 await manager.DeleteAsync(newMiner);
+
+                //发送邮件
+                var emailLog = new EmailLog()
+                {
+                    Title = "您的账号已经审核通过",
+                    Content = $"您可以通过微信登录简法案例系统",
+                    ToEmail = user.Email
+                };
+                var emailLogId = await Resolve<EmailLogManager>().InsertAndGetIdAsync(emailLog);
+                var jobArg = new SendEmailJobArgs() { EmailLogId = emailLogId };
+                await Resolve<IBackgroundJobManager>().EnqueueAsync<SendEmailJob, SendEmailJobArgs>(jobArg);
             }
             
         }

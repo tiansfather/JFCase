@@ -461,13 +461,12 @@ namespace Master.Controllers
         /// 扫码登录页
         /// </summary>
         /// <returns></returns>
-        public ActionResult Login()
+        [WeUserFilter]
+        public ActionResult Login(string guid)
         {
-            //生成一个标识存入Ｓｅｓｓｉｏｎ
-            var guid = Guid.NewGuid();
-            HttpContext.Session.Set("WeChatLoginId", guid);
-
-            ViewBag.Guid = guid.ToString();
+            Logger.Info("Login1:" + guid + Newtonsoft.Json.JsonConvert.SerializeObject(WeUser));
+            //ViewBag.Guid = guid.ToString();
+            CacheManager.GetCache<string, OAuthUserInfo>("ExternalLoginCache").Get(guid, () => WeUser);
             return View();
         }
         [WeUserFilter]

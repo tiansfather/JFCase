@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.UI;
 using Master.Dto;
+using Master.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,38 @@ namespace Master.Case
         protected override async Task<IQueryable<CaseInitial>> GetQueryable(RequestPageDto request)
         {
             var query=await base.GetQueryable(request);
-            return query.Where(o=>o.CaseStatus==CaseStatus.展示中);
+            return query
+                .Include(o=>o.CreatorUser)
+                .Where(o=>o.CaseStatus==CaseStatus.展示中);
         }
 
+        protected override async Task<IQueryable<CaseInitial>> BuildSearchQueryAsync(IDictionary<string, string> searchKeys, IQueryable<CaseInitial> query)
+        {
+            if (searchKeys.ContainsKey("typeIds") && !string.IsNullOrEmpty(searchKeys["typeIds"]))
+            {
+                var typeIds = searchKeys["typeIds"].Split(',');
+                foreach(var typeId in typeIds)
+                {
+                    if (!string.IsNullOrEmpty(typeId))
+                    {
+                        query = query.Where(o => o.CaseNodes.Count(n => n.BaseTreeId == int.Parse(typeId)) > 0);
+                    }
+                }
+            }
+            if (searchKeys.ContainsKey("labelIds") && !string.IsNullOrEmpty(searchKeys["labelIds"]))
+            {
+                var labelIds = searchKeys["labelIds"].Split(',');
+                foreach (var labelId in labelIds)
+                {
+                    if (!string.IsNullOrEmpty(labelId))
+                    {
+                        query = query.Where(o => o.CaseLabels.Count(n => n.LabelId == int.Parse(labelId)) > 0);
+                    }
+                        
+                }
+            }
+            return query;
+        }
         protected override object PageResultConverter(CaseInitial entity)
         {
             return new
@@ -26,7 +56,8 @@ namespace Master.Case
                 entity.Id,
                 entity.Title,
                 entity.Introduction,
-                entity.ReadNumber
+                entity.ReadNumber,
+                Avata= entity.CreatorUser.GetPropertyValue("Avata")
             };
         }
 

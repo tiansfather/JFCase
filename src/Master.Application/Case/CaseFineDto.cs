@@ -9,7 +9,6 @@ namespace Master.Case
     public class CaseFineDto
     {
         public int Id { get; set; }
-        public virtual ICollection<CaseNodeDto> CaseNodes { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public string MediaPath { get; set; }

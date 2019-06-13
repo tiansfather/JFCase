@@ -3,207 +3,358 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "查案例";
 }
+@section styles{ 
+    <style>
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i1{
+            display:flex;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 {
+            width: 100%;
+            border: 1px solid #f2f2f2;
+            padding: 5px 10px 3px 10px;
+            border-radius: 5px;
+            margin: 10px 0 0 0;
+            overflow: auto;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap  .left-cha1 {
+            width: 15%;
+            padding: 0 5px 0 0;
+            box-sizing: border-box;
+        }
+            .jianfa-chaanli .chaanli-content .cha-item-wrap .left-cha1 img {
+                width: 100%;
+                max-width: 54px;
+                border-radius: 50px;
+            }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap .right-cha1 {
+            width: 85%;
+            background: #c69c6d;
+            color: #fff;
+            line-height: 22px;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 0 0 0 0;
+            box-sizing: border-box;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .top-cha1 {
+            width: 100%;
+            text-align: justify;
+            padding: 3px 0 10px 0;
+            border-bottom: 1px solid #c69c6d;
+            line-height: 24px;
+            color: #c69c6d;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1 {
+            width: 100%;
+            color: #c69c6d;
+            line-height: 24px;
+            padding: 3px 0 0 0;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .top-cha1{
+            min-height:8em;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i4, .jianfa-chaanli .chaanli-content li dl dd i5{
+            width: 100%;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6.width100{
+            width:100%;
+            min-height:8em;
+        }
 
-<div id="app" v-cloak>
-    <!--顶部-->
-    <com-header active-name="2"></com-header>
-    <!--案源库-01-->
-    <div class="jianfa-content">
-        <div class="ny-content">
-            <ul>
-                <li>
-                    <dl>
-                        <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
-                        <dd class="xchu">
-                            上海<span>
-                                <!--<i class="jianfa fa-close"></i>-->×
-                            </span>
-                        </dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
-                    </dl>
-                </li>
-                <li>
-                    <dl class="xian">
-                        <dd class="style-bf-20-a">
-                            <template>
-                                <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
-                                    <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                        <dd class="style-bf-20-b">
-                            <template>
-                                <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
-                                    <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                    </dl>
-                </li>
+        .jianfa-guandiancard .ny-guandiancard li dl {
+            width: 325px;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd{
+            margin:0;
+        }
+        .xuanzeStyle label{
+            width:70px;
+            margin:0;
+        }
+    </style>
+}
+    <div id="app" v-cloak>
+        <!--顶部-->
+        <com-header active-name="2"></com-header>
+        <!--案源库-01-->
+        <div class="jianfa-content">
+            <div class="ny-content">
+                <ul>
+                    <li>
+                        <dl>
+                            <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
+                            @*<dd class="xchu">
+                                上海<span>
+                                    ×
+                                </span>
+                            </dd>
+                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                        </dl>
+                    </li>
+                    <li>
+                        <dl class="xian">
+                                <dd class="style-bf-20-a">
+                                    <template>
+                                        <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
+                                            <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                        </i-select>
+                                    </template>
+                                </dd>
+                                @*<dd class="style-bf-20-b">
+                                    <template>
+                                        <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
+                                            <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                        </i-select>
+                                    </template>
+                                </dd>*@
+                                <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')">
+                                    <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect" size="small">
+                                        <i-option v-for="opt in getOptions(item)" :value="opt.id"
+                                                  :key="opt.id">{{ opt.displayName }}</i-option>
+                                    </i-select>
+                                </dd>
+                            </dl>
+                        </li>
 
-                <li>
-                    <dl class="xianb">
-                        <dd class="style-bf-8">
-                            <div class="btn-title-bz">关键词删选：</div>
-                        </dd>
-                        <dd class="style-bf-92">
-                            <i2>
-                                <a href="" v-for="i in 5" style="margin-left:20px;">关键词一</a>
-                            </i2>
-                        </dd>
-                    </dl>
-                </li>
+                    <li>
+                        <dl class="xianb xuanzeStyle" >
+                            <dd class="style-bf-8">
+                                <div class="btn-title-bz">关键词筛选：</div>
+                            </dd>
+                            <dd class="style-bf-92">
+                                <el-checkbox-group v-model="selectKeywords" @@change="changeLabelCheck('关键词')">
+                                    <el-checkbox-button v-for="(item,index) in getLabels('关键词')" :label="item.id">{{item.labelName}}</el-checkbox-button>
+                                </el-checkbox-group>
+                            </dd>
+                        </dl>
+                    </li>
 
-                <li>
-                    <dl class="xianb">
-                        <dd class="style-bf-8">
-                            <div class="btn-title-bz">标签删选：</div>
-                        </dd>
-                        <dd class="style-bf-92">
-                            <i2>
-                                <a href="" v-for="i in 5" style="margin-left:20px;">标签一</a>
-                            </i2>
-                        </dd>
-                    </dl>
-                </li>
+                    <li>
+                        <dl class="xianb xuanzeStyle">
+                            <dd class="style-bf-8">
+                                <div class="btn-title-bz">标签筛选：</div>
+                            </dd>
+                            <dd class="style-bf-92">
+                                <el-checkbox-group v-model="selectLabels" @@change="changeLabelCheck('标签')">
+                                    <el-checkbox-button v-for="(item,index) in getLabels('标签')" :label="item.id">{{item.labelName}}</el-checkbox-button>
+                                </el-checkbox-group>
+                            </dd>
+                        </dl>
+                    </li>
 
-                <li>
-                    <dl class="xian">
-                        <dd class="style-bf-8">
-                            <div class="btn-title-bz">专题删选：</div>
-                        </dd>
-                        <dd class="style-bf-35">
-                            <template>
-                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small">
-                                    <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                        <dd class="style-bf-47">
-                            <template>
-                                <i-input v-model="wherePart.keyWord" size="small" placeholder="请输入关键词等信息..." />
-                            </template>
-                        </dd>
-                        <dd class="style-bf-10-b"><Button class="btn-search">筛选</Button></dd>
-                    </dl>
-                </li>
-            </ul>
+                    <li>
+                        <dl class="xian">
+                            <dd class="style-bf-8">
+                                <div class="btn-title-bz">专题筛选：</div>
+                            </dd>
+                            <dd class="style-bf-35">
+                                <template>
+                                    <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small">
+                                        <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </dd>
+                            <dd class="style-bf-47">
+                                <template>
+                                    <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." />
+                                </template>
+                            </dd>
+                            <dd class="style-bf-10-b"><Button class="btn-search" type="button" @@click="doSearch">筛选</Button></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-    <!--end-->
-    <!--查案例-->
-    <div class="jianfa-chaanli">
-        <div class="chaanli-content">
-            <ul>
-                <li class="style-chaal-40">
-                    <dl>
-                        <dd v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
-                            <i1>
-                                <div class="left-cha1"><img src="ima/index-2.png"></div>
-                                <div class="right-cha1">
-                                    {{item.title}}
-                                </div>
-                            </i1>
-                            <i2>
-                                <div class="top-cha1">
-                                    {{item.introduction}}
-                                </div>
-                                <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
-                            </i2>
-                        </dd>
-                    </dl>
-                </li>
-                <li class="on style-chaal-60">
-                    <dl class="on">
+        <!--end-->
+        <!--查案例-->
+        <div class="jianfa-chaanli">
+            <div class="chaanli-content">
+                <div v-show="items.length===0">
+                    <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看。</h1>
+                </div>
+                <ul v-show="items.length">
+                    <li class="style-chaal-40" >
+                        <template>
+                            <div class="infinite-list-wrapper" >
+                                <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled">
+                                    <a href="javascript:;">
+                                        <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
+                                            <i1>
+                                                <div class="left-cha1"><img src="ima/index-2.png"></div>
+                                                <div class="right-cha1">
+                                                    {{item.title}}
+                                                </div>
+                                            </i1>
+                                            <i2>
+                                                <div class="top-cha1">
+                                                    {{item.introduction}}
+                                                </div>
+                                                <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
+                                            </i2>
+                                        </dd>
+                                    </a>
+                                </dl>
+                                <p v-if="loading">加载中...</p>
+                                <p v-if="noMore">没有更多了</p>
+                            </div>
 
-                        <dd class="on">
-                            <i4 class="fleft tjustify">
-                                {{caseInfo.initial.title}}
-                            </i4>
-                        </dd>
+                        </template>
+                        @*<dl>
+                    <dd v-for="item in [{title:'t',introduction:'34321',readNumber:125,id:12}]" :key="item.id" @@click="getViewMsg(item.id)">
+                        <i1>
+                            <div class="left-cha1"><img src="ima/index-2.png"></div>
+                            <div class="right-cha1">
+                                {{item.title}}
+                            </div>
+                        </i1>
+                        <i2>
+                            <div class="top-cha1">
+                                {{item.introduction}}
+                            </div>
+                            <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
+                        </i2>
+                    </dd>
+                </dl>*@
+                    </li>
+                    <li class="on style-chaal-60" v-if="caseInfo">
+                        <dl class="on">
 
-                        <dd class="on">
-                            <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
-                            <a @@click="moda12 = true">
-                                <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
-                            </a>
-                            <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
-                        </dd>
+                            <dd class="on">
+                                <i4 class="fleft tjustify">
+                                    {{caseInfo.initial.title}}
+                                </i4>
+                            </dd>
+
+                            <dd class="on">
+                                <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
+                                <a @@click="moda12 = true">
+                                    <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+                                </a>
+                                <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
+                            </dd>
 
 
-                        <dd class="on">
-                            <i5 class="fleft tjustify">
-                                <!-- 概述 -->
-                                {{caseInfo.initial.introduction}}
-                            </i5>
-                        </dd>
+                            <dd class="on">
+                                <i5 class="fleft tjustify">
+                                    <!-- 概述 -->
+                                    {{caseInfo.initial.introduction}}
+                                </i5>
+                            </dd>
 
-                        <dd class="on">
-                            <bt>
-                                <i8 class="style-chaal-20">诉请及判决</i8>
-                            </bt>
-                            <i6 class="fleft tjustify style-chaal-42-h">卖方起诉：解除合同，返还房屋</i6>
-                            <i5c class="style-chaal-16-h"><span class="h50">50%</span></i5c>
-                            <!--调节h50 h60.....-->
-                            <i6 class="fleft tjustify style-chaal-42-h">判决结果：全部驳回</i6>
-                        </dd>
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">诉请及判决</i8>
+                                </bt>
+                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.introduction}}</i6>
+                                <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>
+                                <!--调节h50 h60.....-->
+                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.judgeResult}}</i6>
+                            </dd>
 
-                        <dd class="on">
-                            <bf>
-                                <i9 class="fright">反诉判决</i9>
-                            </bf>
-                            <i6 class="fleft tjustify style-chaal-42-h">反诉方：这是假字这是假字....</i6>
-                            <i5c class="style-chaal-16-h"><span class="h50">50%</span></i5c>
-                            <!--调节h50 h60.....-->
-                            <i6 class="fleft tjustify style-chaal-42-h">判决结果：这是假字这是假字....</i6>
-                        </dd>
+                            <dd class="on">
+                                <bf>
+                                    <i9 class="fright">反诉判决</i9>
+                                </bf>
+                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</i6>
+                                <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>
+                                <!--调节h50 h60.....-->
+                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</i6>
+                            </dd>
 
-                        <dd class="on">
-                            <bt>
-                                <i8 class="style-chaal-20">法律法规</i8>
-                            </bt>
-                            <i6 class="fleft tjustify">
-                                {{caseInfo.initial.law}}
-                            </i6>
-                        </dd>
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">法律法规</i8>
+                                </bt>
+                                <i6 class="fleft tjustify width100">
+                                    {{caseInfo.initial.law}}
+                                </i6>
+                            </dd>
 
-                        <dd class="on">
-                            <bt>
-                                <i8 class="style-chaal-20">经验分享</i8>
-                            </bt>
-                            <i6 class="fleft tjustify">
-                                {{caseInfo.initial.experience}}
-                            </i6>
-                        </dd>
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">经验分享</i8>
+                                </bt>
+                                <i6 class="fleft tjustify width100">
+                                    {{caseInfo.initial.experience}}
+                                </i6>
+                            </dd>
 
-                        <dd class="on">
-                            <bt>
-                                <i8 class="style-chaal-20">简法律师说</i8>
-                            </bt>
-                            <i6 class="fleft tjustify">
-                                {{caseInfo.initial.lawyerOpinion}}
-                            </i6>
-                        </dd>
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20 width100">简法律师说</i8>
+                                </bt>
+                                <i6 class="fleft tjustify width100">
+                                    {{caseInfo.initial.lawyerOpinion}}
+                                </i6>
+                            </dd>
 
-                        <dd class="on">
-                            <bt>
-                                <i8 class="style-chaal-20">案例卡</i8>
-                            </bt>
-                            <i5 class="fleft tjustify">
-                                在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？卖方可否以限购导致合同目的无法实现为由行使法定解除权？
-                            </i5>
-                        </dd>
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">案例卡</i8>
+                                </bt>
+                                <i5 class="fleft tjustify">
+                                    <div class="jianfa-guandiancard style-pa-46">
+                                        <div class="ny-guandiancard">
+                                            <a @@click="item.isRotate= !item.isRotate" style="width:100%;" class="paiban" v-for="(item,index) in caseInfo.initial.caseCards" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}" v-if="items.length">
+                                                <!--状态1-->
+                                                <div class="card-start">
+                                                    <ul>
+                                                        <li>
+                                                            <dl style="height:auto">
+                                                                <dd class="card-top">
+                                                                    <span>{{item.title}}</span>
+                                                                </dd>
+                                                                <dd class="card-zhong" @@click.stop.prevent="moda12 = true">
+                                                                    <span>{{caseInfo.source.sourceSN}}</span>
+                                                                </dd>
+                                                                <dd class="card-bottom">
+                                                                    {{caseInfo.source.court2||caseInfo.source.court1}}
+                                                                </dd>
+                                                            </dl>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <!--end-->
+                                                <!--状态2-->
+                                                <div class="card-end">
+                                                    <ul>
+                                                        <li>
+                                                            <dl style="height:auto">
+                                                                <dd class="oncard-top">
+                                                                    <span>{{item.content}}</span>
+                                                                    <p>{{getLawyer(caseInfo.source)}}<br>{{new Date(caseInfo.source.validDate).pattern('yyyy年MM月dd日')}}</p>
+                                                                </dd>
+                                                            </dl>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <!--end-->
+                                            </a>
 
-                    </dl>
-                </li>
-            </ul>
+                                            <p v-else>暂无案例卡</p>
+                                        </div>
+                                    </div>
+                                </i5>
+                            </dd>
+
+                        </dl>
+                    </li>
+                </ul>
+            </div>
         </div>
+        <!--end-->
+        <!--footer-->
+        <com-footer></com-footer>
+        <!--end-->
+        <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="caseInfo.source.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+caseInfo.source.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>
     </div>
-    <!--end-->
-    <!--footer-->
-    <com-footer></com-footer>
-    <!--end-->
-</div>
 @section scripts{
     <script>
         var app = new Vue({
@@ -213,38 +364,186 @@
                 pagesize: 10,
                 items: [],
                 caseInfo: {
-                    initial: {},
-                    source: {}
+                    source: {},
+                    initial: {
+                        judgeInfo: {}}
                 },
                 anYous: [],
                 cities: [],
                 subjects:[],
                 wherePart: {
-                    anYouId: '',
                     cityId: '',
-                    subjectId: '',
-                    keyWord:''
-                }
+                    subjectId:'',
+                },
+                keyword:'',
+                noMore: false,
+                loading: false,
+
+                moda12: false,
+
+                caseNodes: [],
+                caseLabels:[],
+                selectValues: [],
+                selectLabels: [],
+                selectKeywords: [],
+                knowledgeTree: [],
+                typeTree: [],
+                labels:[],
             },
             computed: {
                 where() {
-                    return '1=1'
+                    var where = '1=1';
+                    if (this.wherePart.cityId) {
+                        where += " and caseSource.CityId=" + this.wherePart.cityId;
+                    }
+                    if (this.wherePart.subjectId) {
+                        where += " and subjectId=" + this.wherePart.subjectId;
+                    }
+                    return where;
+                },
+                searchKeys() {
+                    var typeIds = [];
+                    var labelIds = this.selectLabels.concat(this.selectKeywords);
+                    this.selectValues.forEach(o => {
+                        if (func.typeof(o) != "array") {
+                            typeIds.push(o);
+                        } else {
+                            typeIds = typeIds.concat(o);
+                        }
+                    })
+                    return JSON.stringify({ typeIds: typeIds.join(','), labelIds: labelIds.join(',') });
+                },
+                disabled() {
+                    return this.loading || this.noMore
                 }
             },
             methods: {
+                doSearch() {
+                    this.currentPage = 1;
+                    this.items = [];
+                    this.loadSource();
+                },
+                //初始化下拉选择，目的是为了构建数据对象存放动态select的v-model
+                initSelects() {
+                    var rootNode = this.typeTree.filter(o => o.name == "案例属性体系")[0];
+                    this.caseNodes.push({ relName: '案例属性体系', relValue: '案例属性体系', baseTreeId: rootNode.id })
+                    var selects = this.getSelects("案例属性体系");
+                    for (var i = 0; i < selects.length; i++) {
+                        var select = selects[i];
+                        //从casenodes中获取初始值
+                        var value;
+                        //var nodes = this.caseInitialUpdateDto.caseNodes.filter(o => o.relName == select.name);
+                        if (select.enableMultiSelect) {
+                            //value = nodes.map(o => o.baseTreeId);
+                            value = [];
+                        } else {
+                            value = null;
+                        }
+                        this.selectValues.push(value);
+                    }
+                },
+                //初始化标签选择，目的是构建存放标签及关键词v-model的两个数组
+                initLabels() {
+                    //this.selectLabels["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "标签" && o.relType == "初加工").map(o => o.labelId);
+                    //this.selectKeywords["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "关键词" && o.relType == "初加工").map(o => o.labelId);
+                },
+                //获取级联知识树选择框
+                getSelects(knowledgeName) {
+                    var rootNode = this.knowledgeTree.filter(o => o.name == knowledgeName)[0];//如对应案由节点知识树节点
+                    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code);//所有子节点，包含子级
+                    var selects = subNodes.map(function (o) { return { id: o.id, name: o.name, displayName: o.displayName, enableMultiSelect: o.enableMultiSelect, parentId: o.parentId } });
+
+                    return selects;
+                },
+                //获取级联选择框的option
+                getOptions(item) {
+                    //所有可能的options
+                    var allOptions = this.typeTree.filter(o => o.relativeNodeId == item.id);
+                    //父知识节点
+                    var parentKnowledgeNode = this.knowledgeTree.filter(o => o.id == item.parentId)[0];
+                    var parentNode = this.caseNodes.filter(o => o.relName == parentKnowledgeNode.name)[0];
+                    //必须已选中父节点才显示
+                    if (parentNode) {
+                        return allOptions.filter(o => o.parentId == parentNode.baseTreeId);
+                    }
+
+                    return [];
+                },
+                //初加工级联选择改变
+                changeSelect(item, value) {
+                    console.log(value);
+                    if (!item.enableMultiSelect) { value = [value] }
+                    //选中的分类树节点
+                    var selectedNodes = this.typeTree.filter(o => value.indexOf(o.id) >= 0);
+                    //
+                    var nodes = this.caseNodes.filter(o => o.relName == item.name);
+                    //先移除旧节点
+                    for (var i = 0; i < nodes.length; i++) {
+                        this.caseNodes.splice(this.caseNodes.indexOf(nodes[i]), 1);
+                    }
+                    for (var i = 0; i < selectedNodes.length; i++) {
+                        this.caseNodes.push({ relName: item.name, relValue: selectedNodes[i].displayName, baseTreeId: selectedNodes[i].id });
+                    }
+                },
+                //获取可供选择的标签或关键词
+                getLabels(labelType) {
+                    var nodeTreeIds;//被选中的分类树Id
+                    nodeTreeIds = this.caseNodes.map(o => o.baseTreeId);
+                    return this.labels.filter(function (o) {
+                        return o.labelType == labelType && o.treeIds.filter(treeId => nodeTreeIds.indexOf(treeId) >= 0).length > 0;
+                    })
+                },
+                changeLabelCheck() {
+                    var that = this;
+                    //当标签及关键词选中改变时更新对应的数据
+                    //filter的目的是当选中了一个标签，但后续由于分类的改变导致这个标签不存在时，但v-model绑定的数据还存在对应的值 ，所以需要根据当前存在的标签进行筛选
+                    var selectLabels = this.selectLabels.filter(o => this.getLabels( '标签').map(l => l.id).indexOf(o) >= 0);
+                    var selectKeywords = this.selectKeywords.filter(o => this.getLabels( '关键词').map(l => l.id).indexOf(o) >= 0);
+                    var labels = selectLabels.map(function (o) {
+                        var relValue = that.labels.filter(l => l.id == o)[0].labelName;
+                        return { labelId: o, relType: name, relValue: relValue, relName: '标签' };
+                    })
+                    var keywords = selectKeywords.map(function (o) {
+                        var relValue = that.labels.filter(l => l.id == o)[0].labelName;
+                        return { labelId: o, relType: name, relValue: relValue, relName: '关键词' };
+                    })
+                    this.caseLabels = labels.concat(keywords);
+                },
+                getLawyer: function (item) {
+                    return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
+                },
+                loadScroll() {
+                    this.loading = true
+                    this.loadSource();
+                },
                 getViewMsg(caseInitialId) {
-                    abp.servcies.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
+                    var that = this;
+                    abp.services.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
                         //caseSourceId为对应的案源id
                         //获取案例详情
                         abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
+                            res.initial.caseCards.forEach(el => {
+                                el.isRotate = false;
+                            })
                             that.caseInfo = res;
                         })
                     })
                 },
                 loadSource() {
                     var that = this;
-                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
-                        that.items = res.data;
+                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword ,searchKeys:this.searchKeys}).done((res) => {
+                        this.loading = false;
+                        if (res.data.length == 0) {
+                            this.$Message.info('已经没有数据了');
+                            this.noMore = true;
+                        }
+                        that.items = that.items.concat(res.data);
+                        if (this.currentPage === 1 && that.items.length>0) {
+                            //第一次就点击第一条
+                            this.getViewMsg(that.items[0].id)
+                        }
+                            this.currentPage++;
+                        //that.items = res.data;
                         //that.totalCount = res.count;
                     }));
                     //abp.services.app.viewCase.getSummary().done(function (data) {
@@ -266,7 +565,26 @@
                 }
             },
             mounted() {
+                this.loadSource();
                 this.loadData();
+
+                var loadKnowledge=abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
+                    this.knowledgeTree = res;
+                })
+                var loadType=abp.services.app.baseTree.getTypeTreeJsonByParentId().done((res) => {
+                    this.typeTree = res;
+                })
+                //获取所有标签数据
+                var loadLabel=abp.services.app.type.getAllLabels().done(res => {
+                    this.labels = res;
+                })
+                Promise.all([loadKnowledge, loadType, loadLabel]).then(() => {
+                    //初始化下拉选择
+                    this.initSelects();
+                    //初始化标签选择
+                    this.initLabels();
+                })
+                
             }
         })
         ////请求案例分页

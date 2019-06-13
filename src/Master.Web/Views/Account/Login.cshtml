@@ -16,13 +16,13 @@
 }
     <div id="app">
        
-        <div class="jianfa-ewm" >
+        <div class="jianfa-ewm login" >
             <div class="left"><img src="/assets/jianfa/ima/logo.png"></div>
             <div class="right">
                 <!--登陆-01-->
                 <div class="neirong-top" v-show="step==1">
                     <ul>
-                        <li class="eiweima-a"><a @@click="app.step=2"><img :src="qrCode" width="170" height="170"></a></li>
+                        <li class="eiweima-a"><a ><img :src="qrCode" width="170" height="170"></a></li>
                         <li>请使用微信扫码登陆</li>
                         <li class="explain">这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字</li>
                     </ul>
@@ -55,11 +55,28 @@
                                 <dd>
                                     <i3><img :src="currentItem.avata" width="70" height="70"></i3>
                                 </dd>
-                                <dd>您的真实姓名<input type="text" class="i-text" v-model="currentItem.name" placeholder="请输入你的真实姓名" /></dd>
-                                <dd>您当前所在律所全称<input type="text" class="i-text" v-model="currentItem.workLocation" placeholder="请输入你的律所" /></dd>
-                                <dd>您的手机号码<input type="text" class="i-text" v-model="currentItem.phoneNumber" placeholder="请输入你的手机号码" /></dd>
+                                <dd>
+                                    <label class="label-text">真实姓名</label>
+                                    <input type="text" class="i-text" v-model="currentItem.name" placeholder="请输入你的真实姓名" />
+                                </dd>
+                                <dd>
+                                    <label class="label-text">律所全称</label>
+                                    <input type="text" class="i-text" v-model="currentItem.workLocation" placeholder="请输入你的当前所在律所" />
+                                </dd>
+                                <dd>
+                                    <label class="label-text">手机号码</label>
+                                    <input type="text" class="i-text" v-model="currentItem.phoneNumber" placeholder="请输入你的手机号码" />
+                                </dd>
+                                <dd>
+                                    <label class="label-text">邮箱</label>
+                                    <input type="text" class="i-text" v-model="currentItem.email" placeholder="请输入你的邮箱" />
+                                </dd>
+                                <dd>
+                                    <label class="label-text">留言</label>
+                                    <input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" />
+                                </dd>
                                 @*<dd>您的邮箱<input type="text" class="i-text" v-model="currentItem.email" placeholder="请输入你的邮箱" /></dd>
-                                <dd>您的留言<input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" /></dd>*@
+        <dd>您的留言<input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" /></dd>*@
                             </dl>
                         </li>
                         <li>
@@ -101,7 +118,7 @@
             },
 			computed: {
 				qrCode: function () {
-					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/LoginCallback?guid=" + guid);
+					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
 				}
             },
             methods: {
@@ -151,8 +168,9 @@
             //轮询请求
         var loopFunc = function () {
                 //获取用户信息
-            abp.services.app.weiXin.getLoginInfo({abpHandleError:false}).done(function (data) {                    
-                    if (data) {
+            abp.services.app.weiXin.getLoginInfo(guid).done(function (data) {                    
+                if (data) {
+                    console.log(data);
                         app.currentItem.openid = data.openid;
                         app.currentItem.nickName = data.nickname;//用户昵称
                         app.currentItem.avata = data.headimgurl;//头像
@@ -173,11 +191,9 @@
                                 app.step = 2;
                             } else if (status == -1) {
                                 var toemail = abp.setting.get("receiveMailAddress");
-                                abp.message.info("您的账号已被冻结（注销），请联系<a href='mailto:" + toemail+"'>管理员</a>");
-                                doLoop();
+                                abp.message.info("您的账号已被冻结（注销），请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>");
                             } else if (status == 3) {
                                 abp.message.info("您的账号还在审核中，请耐心等待");
-                                doLoop();
                             }
                         })
 						

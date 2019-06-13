@@ -13,7 +13,7 @@ namespace Master.Case
         /// </summary>
         public string RelType { get; set; }
         /// <summary>
-        /// 节点名称
+        /// 节点名称:关键词、标签
         /// </summary>
         public string RelName { get; set; }
         /// <summary>

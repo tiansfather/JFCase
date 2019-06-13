@@ -4,123 +4,188 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "看观点";
 }
+@section styles{
+    <style>
+        .jianfa-guandiancard .ny-guandiancard li dl {
+            width: 325px;
+        }
+        .card-zhong:hover span {
+            color: blue;
+            border-bottom: 1px solid blue;
+        }
+        .ny-guandiancard{
+            height:420px;
+            overflow:auto;
+        }
+    </style>
 
+}
 
-<div id="app">
-    <!--顶部-->
-    <com-header ></com-header>
+    <div id="app" v-cloak>
+        <!--顶部-->
+        <com-header></com-header>
 
-    <!---01-->
-    <div class="jianfa-content">
-        <div class="ny-content on">
-            <ul>
+        <!---01-->
+        <div class="jianfa-content">
+            <div class="ny-content on">
+                <ul>
 
-                <li>
-                    <dl>
-                        <dd>当前位置：案例工厂 > 看观点 > 筛选 ：</dd>
-                        @*<dd class="xchu">
-                            上海<span>
-                                ×
-                            </span>
-                        </dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
-                    </dl>
-                </li>
-                <li>
-                    <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
-                </li>
+                    <li>
+                        <dl>
+                            <dd>当前位置：案例工厂 > 看观点 > 筛选 ：</dd>
+                            @*<dd class="xchu">
+                                上海<span>
+                                    ×
+                                </span>
+                            </dd>
+                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                        </dl>
+                    </li>
+                    <li>
+                        <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
+                    </li>
 
-            </ul>
+                </ul>
+            </div>
         </div>
+        <!--end-->
+        <!--看观点-->
+        <div class="jianfa-guandiancard style-pa-46">
+            <div v-show="items.length===0">
+                <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例卡哦，请减少查询条件再试试看。</h1>
+            </div>
+            <div class="ny-guandiancard" v-infinite-scroll="load" :infinite-scroll-disabled="disabled" v-if="items.length">
+                <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}">
+                    <!--状态1-->
+                    <div class="card-start">
+                        <ul>
+                            <li>
+                                <dl>
+                                    <dd class="card-top">
+                                        <span>{{item.title}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
+                                    </dd>
+                                    <dd class="card-zhong" @@click.stop.prevent="currentItem=item;moda12 = true">
+                                        <span>{{item.sourceSN}}</span>
+                                    </dd>
+                                    <dd class="card-bottom">
+                                        {{item.court2||item.court1}}
+                                        <i-button @@click.stop.prevent="modal1=true;caseCardUpdateDto=item;" v-if="item.creatorUserId===abp.session.userId">编辑</i-button>
+                                    </dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--end-->
+                    <!--状态2-->
+                    <div class="card-end">
+                        <ul>
+                            <li>
+                                <dl>
+                                    <dd class="oncard-top">
+                                        <span>{{item.content}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
+                                        <p>{{getLawyer(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
+                                    </dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--end-->
+                </a>
+
+            </div>
+            <p v-if="loading">加载中...</p>
+            <p v-if="noMore">没有更多了</p>
+        </div>
+        <!--end-->
+        <!--案号-->
+        <Modal width="630px" v-model="moda11" class-name="top-modal" :mask-closable="false"
+               title="(2016)沪 0115 民初 67704 号">
+            <div class="neirong-eject">
+                <ul>
+                    <li><img src="ima/anhao-1.jpg"></li>
+                </ul>
+            </div>
+            <div slot="footer">&nbsp;</div>
+        </Modal>
+
+        <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>
+        <com-footer></com-footer>
+        <!--end-->
+        <el-dialog title="提示"
+                   :visible.sync="modal1"
+                   width="1000px">
+            <div style="display:flex;">
+                <div class="bjdd on">
+                    <bm class="style-pa-20">
+                        <i8 class="style-chaal-20">案例卡正面</i8>
+                    </bm>
+                    <div class="style-pa-1">
+                        <div class="jianfa-guandiancard">
+                            <div class="ny-guandiancard">
+                                <!--状态2-->
+                                <ul>
+                                    <li>
+                                        <dl>
+                                            <dd class="card-top">
+                                                <textarea name=""  class="textarea-k" v-model="caseCardUpdateDto.title"></textarea>
+                                            </dd>
+                                            <dd class="card-zhong">
+                                                {{caseCardUpdateDto.sourceSN}}
+                                            </dd>
+                                            <dd class="card-bottom">{{caseCardUpdateDto.court1}}</dd>
+                                        </dl>
+                                    </li>
+                                </ul>
+                                <!--end-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bjdd on">
+                    <bm class="style-pa-20">
+                        <i8 class="style-chaal-20">案例卡背面</i8>
+                    </bm>
+                    <div class="style-pa-1">
+                        <div class="jianfa-guandiancard">
+                            <div class="ny-guandiancard">
+                                <!--状态2-->
+                                <ul>
+                                    <li>
+                                        <dl>
+                                            <dd class="oncard-top">
+                                                <textarea name="" class="textarea-k" v-model="caseCardUpdateDto.content"></textarea>
+                                                <p>{{caseCardUpdateDto.lawyerFirms?getLawyer(caseCardUpdateDto):''}}<br>{{caseCardUpdateDto.publishDate}}</p>
+                                            </dd>
+                                        </dl>
+                                    </li>
+                                </ul>
+                                <!--end-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @@click="previewVisible = false">保存</el-button>
+                <el-button @@click="previewVisible = false">关闭</el-button>
+            </span>
+        </el-dialog>
     </div>
-    <!--end-->
-    <!--看观点-->
-    <div class="jianfa-guandiancard style-pa-46">
-        <div class="ny-guandiancard">
-            <a @@click="moda11= true" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2}">
-                <!--状态1-->
-                <div class="card-start">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dd class="card-top">
-                                    <span>{{item.title}}</span>
-                                </dd>
-                                <dd class="card-zhong">{{item.sourceSN}}</dd>
-                                <dd class="card-bottom">{{item.court2||item.court1}}</dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <!--end-->
-                <!--状态2-->
-                <div class="card-end">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dd class="oncard-top">
-                                    <span>{{item.content}}</span>
-                                    <p>{{getLawyer(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
-                                </dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <!--end-->
-            </a>
 
-            @*<a @click="moda12 = true" class="paiban">
-                <!--状态1-->
-                <div class="card-start">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dd class="card-top"><span>在买方已依约付款，且同意支付尾款的前提下，卖方可否以限购导致合同目的无法实现为由行使法定解除权？</span></dd>
-                                <dd class="card-zhong">(2016)沪 0115 民初 67704 号</dd>
-                                <dd class="card-bottom">上海市浦东新区人民法院</dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <!--end-->
-                <!--状态2-->
-                <div class="card-end">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dd class="oncard-top">
-                                    <span>本院认为，……现系争房屋已由被告装修入住数年，原告也已取得被告支付的大部分房款，在被告同意支付剩余房屋尾款的情况下，原告的合同目的已然能够实现。根据合同约定原告应协助被告办理系争房屋的过户手续，此系原告的合同义务而非原告的合同目的，原告以被告限购致使无法办理过户手续为由称其合同目的无法实现，与事实不符，本院不予认同。</span>
-                                    <p>郑卫青、吴 丹、杨斯空<br>2018年4月10日</p>
-                                </dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <!--end-->
-            </a>*@
-        </div>
-    </div>
-    <!--end-->
-    <!--案号-->
-    <Modal width="630px" v-model="moda11" class-name="top-modal" :mask-closable="false"
-           title="(2016)沪 0115 民初 67704 号">
-        <div class="neirong-eject">
-            <ul>
-                <li><img src="ima/anhao-1.jpg"></li>
-            </ul>
-        </div>
-        <div slot="footer">&nbsp;</div>
-    </Modal>
-
-    <com-footer></com-footer>
-    <!--end-->
-</div>
-    
 @section scripts{
     <script>
         var app = new Vue({
             el: '#app',
             data: {
+                modal1: false, 
+                caseCardUpdateDto: {},
+                moda12: false,
+                currentItem: {},
                 currentPage: 1,
                 pagesize: 10,
                 wherePart: {
@@ -129,7 +194,9 @@
                     courtId: '',
                 },
                 moda11: false,
-                items:[]
+                items: [],
+                loading: false,
+                noMore:false
             },
             watch: {
                 currentPage: function () {
@@ -141,12 +208,33 @@
                 }
             },
             computed: {
+                disabled() {
+                    return this.loading || this.noMore
+                },
                 where: function () {
-                    return this.$refs.headFilter.where;
+                    //return this.$refs.headFilter.where;
+                    var where = '1=1';
+                    for (var i in this.wherePart) {
+                        if (i == 'keyword') { return; }
+                        console.log(i, this.wherePart[i])
+                        var data = this.wherePart[i];
+                        if (!data) continue;
+                        if (i == 'courtId') {
+                            where += ` and (caseInitial.caseSource.court1Id=${data} or caseInitial.caseSource.court2id=${data})`;
+                        } else {
+                            where += ` and caseInitial.caseSource.${i}=${data}`;
+                        }
 
+                    }
+                    return where;
                 },
             },
             methods: {
+                load() {
+                    debugger
+                    this.loading = true;
+                    this.currentPage++;
+                },
                 loadSource: function () {
                     var that = this;
                     ////数据获取接口
@@ -156,15 +244,31 @@
                     //})
 
                     //请求案例卡分页
-                    abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where}).done( (data)=> {
-                        that.items = data;
+                    abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where }).done((data) => {
+                        this.loading = false;
+                        if (data.length == 0) {
+                            this.noMore = true;
+                        }
+
+                        data.data.forEach(el => {
+                            el.isRotate = false;
+                        })
+                        that.items = data.data;
                         //that.items = [{ id: 1, title: 'a', content: 'b', lawyerFirms:[] }]
                         console.log(data)
                     })
                 },
                 getLawyer: function (item) {
                     return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
-                }
+                },
+                //保存案例卡
+                updateCaseCard() {
+                    var that = this;
+                    func.runAsync(abp.services.app.workbench.updateSingleCard({ id: this.caseCardUpdateDto.id, title: this.caseCardUpdateDto.title, content: this.caseCardUpdateDto.content }).done(function () {
+                        this.moda11 = false;
+                        that.$Message.success("保存成功");
+                    }))
+                },
             },
             mounted: function () {
                 this.loadSource();

@@ -3025,6 +3025,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'getCaseProcessInfo'
+    abp.services.app.workbench.getCaseProcessInfo = function(id, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Workbench/GetCaseProcessInfo' + abp.utils.buildQueryString([{ name: 'id', value: id }]) + '',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
     // action 'updateInitial'
     abp.services.app.workbench.updateInitial = function(caseInitialUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -3035,44 +3043,56 @@ abp.services = abp.services || {};
     };
 
     // action 'publishInitial'
-    abp.services.app.workbench.publishInitial = function(id, ajaxParams) {
+    abp.services.app.workbench.publishInitial = function(caseInitialUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/PublishInitial' + abp.utils.buildQueryString([{ name: 'id', value: id }]) + '',
-        type: 'POST'
+        url: abp.appPath + 'api/services/app/Workbench/PublishInitial',
+        type: 'POST',
+        data: JSON.stringify(caseInitialUpdateDto)
       }, ajaxParams));;
     };
 
     // action 'updateFine'
-    abp.services.app.workbench.updateFine = function(caseInitialId, caseFineDtos, ajaxParams) {
+    abp.services.app.workbench.updateFine = function(caseFineUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/UpdateFine' + abp.utils.buildQueryString([{ name: 'caseInitialId', value: caseInitialId }]) + '',
+        url: abp.appPath + 'api/services/app/Workbench/UpdateFine',
         type: 'PUT',
-        data: JSON.stringify(caseFineDtos)
+        data: JSON.stringify(caseFineUpdateDto)
       }, ajaxParams));;
     };
 
     // action 'publishFine'
-    abp.services.app.workbench.publishFine = function(caseInitialId, ajaxParams) {
+    abp.services.app.workbench.publishFine = function(caseFineUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/PublishFine' + abp.utils.buildQueryString([{ name: 'caseInitialId', value: caseInitialId }]) + '',
-        type: 'POST'
+        url: abp.appPath + 'api/services/app/Workbench/PublishFine',
+        type: 'POST',
+        data: JSON.stringify(caseFineUpdateDto)
       }, ajaxParams));;
     };
 
     // action 'updateCard'
-    abp.services.app.workbench.updateCard = function(caseInitialId, caseCardDtos, ajaxParams) {
+    abp.services.app.workbench.updateCard = function(caseCardUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/UpdateCard' + abp.utils.buildQueryString([{ name: 'caseInitialId', value: caseInitialId }]) + '',
+        url: abp.appPath + 'api/services/app/Workbench/UpdateCard',
         type: 'PUT',
-        data: JSON.stringify(caseCardDtos)
+        data: JSON.stringify(caseCardUpdateDto)
       }, ajaxParams));;
     };
 
     // action 'publishCard'
-    abp.services.app.workbench.publishCard = function(caseInitialId, ajaxParams) {
+    abp.services.app.workbench.publishCard = function(caseCardUpdateDto, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Workbench/PublishCard' + abp.utils.buildQueryString([{ name: 'caseInitialId', value: caseInitialId }]) + '',
-        type: 'POST'
+        url: abp.appPath + 'api/services/app/Workbench/PublishCard',
+        type: 'POST',
+        data: JSON.stringify(caseCardUpdateDto)
+      }, ajaxParams));;
+    };
+
+    // action 'updateSingleCard'
+    abp.services.app.workbench.updateSingleCard = function(caseCardDto, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Workbench/UpdateSingleCard',
+        type: 'PUT',
+        data: JSON.stringify(caseCardDto)
       }, ajaxParams));;
     };
 
@@ -3677,9 +3697,9 @@ abp.services = abp.services || {};
     };
 
     // action 'getLoginInfo'
-    abp.services.app.weiXin.getLoginInfo = function(ajaxParams) {
+    abp.services.app.weiXin.getLoginInfo = function(guid, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/WeiXin/GetLoginInfo',
+        url: abp.appPath + 'api/services/app/WeiXin/GetLoginInfo' + abp.utils.buildQueryString([{ name: 'guid', value: guid }]) + '',
         type: 'GET'
       }, ajaxParams));;
     };

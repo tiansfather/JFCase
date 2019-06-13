@@ -34,9 +34,9 @@ namespace Master.Case
         ///律师说
         /// </summary>
         public string LawyerOpinion { get; set; }
-        public virtual ICollection<CaseNodeDto> CaseNodes { get; set; }
-        public virtual ICollection<CaseLabelDto> CaseLabels { get; set; }
-        public JudgeInfo JudgeInfo { get; set; }
+        public virtual ICollection<CaseNodeDto> CaseNodes { get; set; } = new List<CaseNodeDto>();
+        public virtual ICollection<CaseLabelDto> CaseLabels { get; set; } = new List<CaseLabelDto>();
+        public JudgeInfo JudgeInfo { get; set; } = new JudgeInfo();
         public string Remarks { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 body,html,a,header,article,footer,html,section,img,nav,dl,dt,dd,ol,ul,li,i,form,span,div{margin:0;padding:0;border:0;font:inherit;vertical-align:baseline;word-wrap:break-word;}
 table{border-collapse:collapse;border-spacing:0}
 table th, table td {padding:0;}
@@ -250,10 +250,12 @@ html{width:100%;height:100%;overflow-x:hidden;}
 .jianfa-guandiancard .ny-guandiancard li dl{float:left;width:100%;border-radius:10px;border:1px solid #754c24;background:#fff;padding:6px;box-sizing:border-box;}
 .jianfa-guandiancard .ny-guandiancard li dd{float:left;width:100%; text-align:justify;font-size:14px;line-height:24px;color:#999;}
 .jianfa-guandiancard .ny-guandiancard li dd.card-top{float:left;width:100%;line-height:24px;color:#754c24;border-radius:10px;border:1px solid #eae4de;padding:10px;box-sizing:border-box;}
-.jianfa-guandiancard .ny-guandiancard li dd.card-top span{height:250px;display:table-cell;vertical-align:middle;overflow:auto;}
+/*.jianfa-guandiancard .ny-guandiancard li dd.card-top span{height:250px;display:table-cell;vertical-align:middle;overflow:auto;}rrr*/
+.jianfa-guandiancard .ny-guandiancard li dd.card-top span{height:250px;display:table-cell;vertical-align:middle;overflow:auto;word-break: break-all;}
 
 .jianfa-guandiancard .ny-guandiancard li dd.oncard-top{float:left;width:100%;line-height:24px;color:#754c24;border-radius:10px;border:1px solid #eae4de;padding:10px;box-sizing:border-box;display:table-cell;overflow:auto;}
-.jianfa-guandiancard .ny-guandiancard li dd.oncard-top span{height:277px;display:table-cell;/*vertical-align:middle;*/overflow:auto;}
+/*.jianfa-guandiancard .ny-guandiancard li dd.oncard-top span{height:277px;display:table-cell;overflow:auto;}rrr*/
+.jianfa-guandiancard .ny-guandiancard li dd.oncard-top span{height:277px;display:table-cell;/*vertical-align:middle;*/overflow:auto;word-break: break-all;}
 .jianfa-guandiancard .ny-guandiancard li dd.oncard-top p{float:left;width:100%;line-height:24px; text-align:right;color:#754c24;padding:15px 10px 5px 10px;box-sizing:border-box;}
 
 .jianfa-guandiancard .ny-guandiancard li dd.card-zhong{float:left;width:100%;line-height:24px;text-align:center;color:#754c24;background:#f7f0e9;border-radius:15px; margin:15px 0 0 0;border:1px solid #eae4de;box-sizing:border-box;transition: all 0.3s ease 0s;}
@@ -274,13 +276,15 @@ transition: ease-in-out 600ms;
 
 }
 .card-start:before {position: absolute;display: block;z-index: -1;}
-.paiban:hover .card-start {transform: rotateY(180deg);}
-.paiban:nth-child(even):hover .card-start{transform: rotateY(-180deg);}
+/*.paiban:hover .card-start {transform: rotateY(180deg);}*/
+.paiban.rotate-card .card-start {transform: rotateY(180deg);}
+/*.paiban:nth-child(even):hover .card-start{transform: rotateY(-180deg);}*/
 
 .card-end {transform: rotateY(-180deg);}
-.paiban:hover .card-end {transform: rotateY(0deg);}
-.paiban:nth-child(even) .card-end {transform: rotateY(180deg);}
-.paiban:nth-child(even):hover .card-end {transform: rotateY(0deg);}
+/*.paiban:hover .card-end {transform: rotateY(0deg);}*/
+.paiban.rotate-card .card-end {transform: rotateY(0deg);}
+/*.paiban:nth-child(even) .card-end {transform: rotateY(180deg);}
+.paiban:nth-child(even):hover .card-end {transform: rotateY(0deg);}*/
 /*end*/
 /*我的文件*/
 .jianfa-wenjiancard{width:100%;max-width:1100px;padding:0 10px;box-sizing:border-box;margin:0 auto 46px auto;overflow:auto;}
@@ -407,4 +411,52 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
 }
 
 /*::-webkit-scrollbar-button {background-color: #764c24;}*/
-
+/*新增内容*/
+.el-checkbox-button.is-checked {
+    border: 1px solid #c69c6d;
+    color: #fff;
+    background: #c69c6d;
+}
+.ivu-page{
+    text-align:right;
+}
+.el-checkbox-button__inner {
+    padding: 0 !important;
+    font-size: 12px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow:none !important;
+}
+    .el-checkbox-button__inner:hover{
+        color:#fff !important;
+    }
+    .el-message-box .el-button--primary {
+    }
+.el-message-box .btn-footer-qx, .el-message-box .btn-footer{
+    display:inline-block !important;
+    padding:0px !important;
+}
+.btn-footer {
+    background: #754c24 !important;
+}
+.btn-footer:hover {
+    background: #4a3016 !important;
+}
+.btn-footer-qx:hover {
+    background: #4a3016 !important;
+}
+.jianfa-jiagong .jiagong-content .bjli .bjdl{
+    /*overflow:hidden;*/
+    padding:0px;
+}
+.el-checkbox__label, .el-checkbox__input.is-checked + .el-checkbox__label {
+    font-size: 12px;
+    color: #c69c6c
+}
+.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    border-color: #c69c6d;
+    background-color: #c69c6d;
+}
+.is-focus .el-checkbox__inner, .el-checkbox__inner:hover {
+    border-color: #c69c6d !important;
+}
