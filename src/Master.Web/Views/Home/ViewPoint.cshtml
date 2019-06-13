@@ -21,9 +21,9 @@
 
 }
 
-    <div id="app" v-cloak>
+    <div id="app" v-cloak style="display:none">
         <!--顶部-->
-        <com-header></com-header>
+        <com-header active-name="3"></com-header>
 
         <!---01-->
         <div class="jianfa-content">
@@ -254,8 +254,7 @@
                             el.isRotate = false;
                         })
                         that.items = data.data;
-                        //that.items = [{ id: 1, title: 'a', content: 'b', lawyerFirms:[] }]
-                        console.log(data)
+                        $("#app").show();
                     })
                 },
                 getLawyer: function (item) {

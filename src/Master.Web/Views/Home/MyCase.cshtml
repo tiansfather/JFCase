@@ -4,7 +4,7 @@
     ViewData["Title"] = "我的案例";
 }
 
-<div id="app">
+<div id="app" style="display:none">
     <!--顶部-->
     <com-header active-name="我的案例"></com-header>
     <!--案源库-01-->
@@ -85,7 +85,7 @@
                                 </td>
                                 <td class="on">{{item.publishDate}}</td>
                                 <td class="on">{{item.readNumber}}</td>
-                                <td class="on"><a :href="'/Home/Process?EncrypedId='+item.encrypedId"><img src="/assets/jianfa/ima/jia-icon-2.png"></a></td>
+                                <td class="on"><a :href="'/Home/Process?EncrypedId='+item.encrypedId"><img src="/assets/jianfa/ima/mywj-icon-1.png"></a></td>
                             </tr>
 
                             @*<tr>
@@ -202,6 +202,7 @@
                         that.items = res.data;
                         //that.items = [{ id: 1, subjectId: null, remarks: 'bb', caseStatus: 1 }]
                         that.totalCount = res.count;
+                        $("#app").show();
                     }));
                     abp.services.app.myCase.getSummary().done(function (data) {
                         that.summary = data;
