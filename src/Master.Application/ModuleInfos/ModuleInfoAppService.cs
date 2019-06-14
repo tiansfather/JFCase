@@ -15,12 +15,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
+using Abp.Runtime.Caching;
 using System.Threading.Tasks;
+using Abp.Events.Bus;
 
 namespace Master.Module
 {
     [AbpAuthorize]
-    public class ModuleInfoAppService:MasterAppServiceBase<ModuleInfo,int>
+    public class ModuleInfoAppService : MasterAppServiceBase<ModuleInfo, int>
     {
         private IModuleInfoManager _moduleManager;
         private IHttpContextAccessor _httpContextAccessor;
@@ -29,7 +31,7 @@ namespace Master.Module
             _moduleManager = moduleManager;
             _httpContextAccessor = httpContextAccessor;
         }
-        public virtual async Task AddModuleInfo(string moduleName,string moduleKey)
+        public virtual async Task AddModuleInfo(string moduleName, string moduleKey)
         {
             if (string.IsNullOrEmpty(moduleName))
             {
@@ -37,8 +39,8 @@ namespace Master.Module
             }
             var moduleInfo = new ModuleInfo()
             {
-                ModuleKey=moduleKey,
-                ModuleName=moduleName
+                ModuleKey = moduleKey,
+                ModuleName = moduleName
             };
             await _moduleManager.AddModuleInfo(moduleInfo);
         }
@@ -63,7 +65,7 @@ namespace Master.Module
 
                 return new { allCount = allCount, inCount = inCount, outCount = outCount };
             }
-                
+
         }
         /// <summary>
         /// 列信息
@@ -84,7 +86,7 @@ namespace Master.Module
                 var columns = ObjectMapper.Map<List<ColumnInfoDto>>(moduleInfo.ColumnInfos.OrderBy(o => o.Sort));
                 return columns;
             }
-                
+
         }
         /// <summary>
         /// 按钮信息
@@ -112,18 +114,18 @@ namespace Master.Module
                 return btns;
             }
         }
-                
-        
+
+
         /// <summary>
         /// 更新列信息
         /// </summary>
         /// <param name="columns"></param>
         /// <param name="moduleInfoId"></param>
         /// <returns></returns>
-        public async Task UpdateColumns(IEnumerable<ColumnInfo> columns,int moduleInfoId)
+        public async Task UpdateColumns(IEnumerable<ColumnInfo> columns, int moduleInfoId)
         {
             var module = await Repository.GetAllIncluding(o => o.ColumnInfos).Where(o => o.Id == moduleInfoId).SingleAsync();
-            
+
             await _moduleManager.UpdateColumns(columns.ToList(), module);
         }
         /// <summary>
@@ -134,7 +136,7 @@ namespace Master.Module
         /// <returns></returns>
         public async Task UpdateBtns(IEnumerable<BtnInfoDto> btns, int moduleInfoId)
         {
-            foreach(var btn in btns)
+            foreach (var btn in btns)
             {
                 btn.Normalize();
             }
@@ -165,11 +167,11 @@ namespace Master.Module
         /// <returns></returns>
         [DontWrapResult]
         public override async Task<ResultPageDto> GetPageResult(RequestPageDto request)
-        {            
-            var pageResult =await GetPageResultQueryable(request);
-            
+        {
+            var pageResult = await GetPageResultQueryable(request);
+
             var data = await pageResult.Queryable.Include(o => o.CreatorUser).Include(o => o.ColumnInfos)
-                
+
                 .Select(o => new { o.Id, o.ModuleKey, o.ModuleName, o.IsInterModule, Creator = o.CreatorUser.Name, CreationTime = o.CreationTime.ToString("yyyy-MM-dd HH:mm"), ColumnCount = o.ColumnInfos.Count, BtnCount = o.Buttons.Count }).ToListAsync();
 
             var result = new ResultPageDto()
@@ -183,7 +185,7 @@ namespace Master.Module
         }
         protected async override Task<PagedResult<ModuleInfo>> GetPageResultQueryable(RequestPageDto request)
         {
-            var query= await GetQueryable(request);
+            var query = await GetQueryable(request);
             //如果是Host登录，从session中获取账套信息
             if (AbpSession.MultiTenancySide == Abp.MultiTenancy.MultiTenancySides.Host)
             {
@@ -199,9 +201,9 @@ namespace Master.Module
         protected override async Task<IQueryable<ModuleInfo>> BuildKeywordQueryAsync(string keyword, IQueryable<ModuleInfo> query)
         {
             return (await (base.BuildKeywordQueryAsync(keyword, query)))
-                .Where(o=>o.ModuleKey.Contains(keyword) || o.ModuleName.Contains(keyword));
+                .Where(o => o.ModuleKey.Contains(keyword) || o.ModuleName.Contains(keyword));
         }
-        
+
         #endregion
 
         #region 初始化
@@ -213,25 +215,39 @@ namespace Master.Module
         {
             var context = Repository.GetDbContext() as MasterDbContext;
             new TenantDefaultModuleBuilder(context, AbpSession.TenantId.Value).Create();
+            var allCacheKeys = await Manager.GetAll().Select(o => o.ModuleKey + "@" + AbpSession.TenantId).ToListAsync();
+            //清空所有模块缓存
+            await CacheManager.GetCache<string, ModuleInfo>("ModuleInfo").RemoveAsync(allCacheKeys.ToArray());
         }
         /// <summary>
         /// 重置模块
         /// </summary>
         /// <param name="moduleInfoIds"></param>
+        /// <param name="hard"></param>
         /// <returns></returns>
-        public virtual async Task InitModuleInfo(IEnumerable<int> moduleInfoIds)
+        public virtual async Task InitModuleInfo(IEnumerable<int> moduleInfoIds, bool hard = false)
         {
             var manager = Manager as ModuleInfoManager;
             var context = Repository.GetDbContext() as MasterDbContext;
-            var builder=new TenantDefaultModuleBuilder(context, AbpSession.TenantId.Value);
+            var builder = new TenantDefaultModuleBuilder(context, AbpSession.TenantId.Value);
 
             var modules = await Manager.GetListByIdsAsync(moduleInfoIds);
-            //直接删除
-            await Repository.HardDeleteAsync(o=>modules.Select(m=>m.Id).Contains(o.Id));
+            if (hard)
+            {
+                //直接删除
+                await Repository.HardDeleteAsync(o => modules.Select(m => m.Id).Contains(o.Id));
+            }
+            else
+            {
+                //仅删除内置列和按钮
+                await Resolve<IRepository<ColumnInfo, int>>().HardDeleteAsync(o => moduleInfoIds.Contains(o.ModuleInfoId) && o.IsInterColumn);
+                await Resolve<IRepository<ModuleButton, int>>().HardDeleteAsync(o => moduleInfoIds.Contains(o.ModuleInfoId));
+            }
+
             await CurrentUnitOfWork.SaveChangesAsync();
             foreach (var module in modules)
             {
-                
+
                 var type = manager.FindRelativeType(module);
                 var menuItemDefinition = manager.FindRelativeMenuDefinition(module.ModuleKey);
                 if (type != null)
@@ -240,15 +256,17 @@ namespace Master.Module
                 }
                 else
                 {
-                    
+
                     builder.CreateAddInMenuFromMenuDefinition(menuItemDefinition);
                 }
+                //触发事件
+                await EventBus.Default.TriggerAsync(new ModuleInfoChangedEventData() { ModuleKey = module.ModuleKey, TenantId = module.TenantId });
             }
         }
         #endregion
 
         #region 前端调整表格的记忆接口
-        private async Task<ColumnInfo> GetModuleColumn(string moduleKey,string columnKey)
+        private async Task<ColumnInfo> GetModuleColumn(string moduleKey, string columnKey)
         {
             var manager = Manager as ModuleInfoManager;
             var moduleInfo = await manager.GetAll()
@@ -273,7 +291,7 @@ namespace Master.Module
         /// <param name="columnKey"></param>
         /// <param name="isFixed"></param>
         /// <returns></returns>
-        public virtual async Task SetColumnFixed(string moduleKey,string columnKey,bool isFixed=true)
+        public virtual async Task SetColumnFixed(string moduleKey, string columnKey, bool isFixed = true)
         {
             var manager = Manager as ModuleInfoManager;
             var moduleInfo = await manager.GetAll()
@@ -293,7 +311,7 @@ namespace Master.Module
             if (isFixed)
             {
                 //固定列需要将对应列左侧所有列均设置为固定列
-                foreach(var column in moduleInfo.ColumnInfos.Where(o=>o.IsShownInList && o.Sort < columnInfo.Sort))
+                foreach (var column in moduleInfo.ColumnInfos.Where(o => o.IsShownInList && o.Sort < columnInfo.Sort))
                 {
                     column.SetData("fixed", "left");
                 }
@@ -301,11 +319,13 @@ namespace Master.Module
             else
             {
                 //取消固定列需要将对应列右侧所有固定列取消固定
-                foreach (var column in moduleInfo.ColumnInfos.Where(o => o.IsShownInList && o.Sort > columnInfo.Sort && o.GetData<string>("fixed")=="left"))
+                foreach (var column in moduleInfo.ColumnInfos.Where(o => o.IsShownInList && o.Sort > columnInfo.Sort && o.GetData<string>("fixed") == "left"))
                 {
                     column.RemoveData("fixed");
                 }
             }
+
+            _moduleManager.RemoveModuleInfoCache(moduleKey, AbpSession.TenantId.Value);
         }
         /// <summary>
         /// 设置列宽
@@ -314,11 +334,12 @@ namespace Master.Module
         /// <param name="columnKey"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        public virtual async Task SetColumnWidth(string moduleKey,string columnKey,int width)
+        public virtual async Task SetColumnWidth(string moduleKey, string columnKey, int width)
         {
-            var columnInfo =await GetModuleColumn(moduleKey, columnKey);
+            var columnInfo = await GetModuleColumn(moduleKey, columnKey);
 
             columnInfo.SetData("width", width.ToString());
+            _moduleManager.RemoveModuleInfoCache(moduleKey, AbpSession.TenantId.Value);
         }
         /// <summary>
         /// 设置列的显示与否
@@ -327,11 +348,12 @@ namespace Master.Module
         /// <param name="columnKey"></param>
         /// <param name="visible"></param>
         /// <returns></returns>
-        public virtual async Task SetColumnVisible(string moduleKey,string columnKey,bool visible)
+        public virtual async Task SetColumnVisible(string moduleKey, string columnKey, bool visible)
         {
             var columnInfo = await GetModuleColumn(moduleKey, columnKey);
 
             columnInfo.IsShownInList = visible;
+            _moduleManager.RemoveModuleInfoCache(moduleKey, AbpSession.TenantId.Value);
         }
         /// <summary>
         /// 设置排序
@@ -350,14 +372,16 @@ namespace Master.Module
 
             for (var sort = 1; sort <= columnKeys.Count(); sort++)
             {
-                var columnKey = columnKeys[sort-1];
-                var columnInfo = oldColumnInfos.Where(o => o.ColumnKey.ToLower()== columnKey.ToLower()).SingleOrDefault();
-                if (columnInfo != null) {
+                var columnKey = columnKeys[sort - 1];
+                var columnInfo = oldColumnInfos.Where(o => o.ColumnKey.ToLower() == columnKey.ToLower()).SingleOrDefault();
+                if (columnInfo != null)
+                {
                     columnInfo.Sort = sort;
                 }
             }
 
             await CurrentUnitOfWork.SaveChangesAsync();
+            _moduleManager.RemoveModuleInfoCache(moduleKey, AbpSession.TenantId.Value);
         }
         #endregion
     }

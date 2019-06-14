@@ -219,7 +219,7 @@ namespace Master.Entity
                 .Where(ou => ou.Id != BaseTree.Id)
                 .ToList();
 
-            if (siblings.Any(ou => ou.DisplayName == BaseTree.DisplayName))
+            if (siblings.Any(ou => ou.Name == BaseTree.Name))
             {
                 throw new UserFriendlyException("名称重复");
             }
