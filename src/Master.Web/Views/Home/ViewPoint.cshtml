@@ -114,7 +114,7 @@
         </Modal>
         <com-footer></com-footer>
         <!--end-->
-        <el-dialog title="提示"
+        <el-dialog title="案例卡修改"
                    :visible.sync="modal1"
                    width="1000px">
             <div style="display:flex;">
@@ -171,8 +171,8 @@
             </div>
 
             <span slot="footer" class="dialog-footer">
-                <el-button @@click="previewVisible = false">保存</el-button>
-                <el-button @@click="previewVisible = false">关闭</el-button>
+                <el-button @@click="updateCaseCard();">保存</el-button>
+                <el-button @@click="modal1 = false">关闭</el-button>
             </span>
         </el-dialog>
     </div>
@@ -264,7 +264,7 @@
                 updateCaseCard() {
                     var that = this;
                     func.runAsync(abp.services.app.workbench.updateSingleCard({ id: this.caseCardUpdateDto.id, title: this.caseCardUpdateDto.title, content: this.caseCardUpdateDto.content }).done(function () {
-                        this.moda11 = false;
+                        app.modal1 = false;
                         that.$Message.success("保存成功");
                     }))
                 },
