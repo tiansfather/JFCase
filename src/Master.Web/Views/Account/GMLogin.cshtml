@@ -30,6 +30,7 @@
     <script src="/assets/layuiadmin/layui/layui.js" asp-append-version="true"></script>
     <script src="~/view-resources/Views/_Bundles/base.min.js" asp-append-version="true"></script>
     <script src="~/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
+    <script src="/assets/js/abp.layer.js" asp-append-version="true"></script>
     <script src="~/assets/js/global.js" asp-append-version="true"></script>
     <script src="~/scripts/GetAll.js" type="text/javascript"></script>
     @*<script src="~/scripts/GetScripts.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
@@ -45,14 +46,16 @@
         }, config.layuiExtends));
     </script>
     <style>
-         .layadmin-user-login-main {
+        .layadmin-user-login-main {
             background: rgba(244,244,244,0.8);
         }
-        .layadmin-user-login-box{
-            padding:20px 40px;
+
+        .layadmin-user-login-box {
+            padding: 20px 40px;
         }
-        body{
-            overflow:hidden;
+
+        body {
+            overflow: hidden;
         }
         /*#LAY-user-login {
             background: #214D90 url(~/Views/MES/images/bg3.jpg);

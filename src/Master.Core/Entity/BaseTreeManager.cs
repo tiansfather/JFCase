@@ -31,7 +31,13 @@ namespace Master.Entity
                 throw new UserFriendlyException($"未找到{name}对应知识树节点");
             }
 
-            return nodes.Where(o => o.RelativeNodeId == baseTree.Id);
+            return await GetTypeNodesByKnowledgeNode(baseTree);
+        }
+        public virtual async Task<IEnumerable<BaseTree>> GetTypeNodesByKnowledgeNode(BaseTree knowledgeNode)
+        {
+            var nodes = await GetAllList();
+
+            return nodes.Where(o => o.RelativeNodeId == knowledgeNode.Id);
         }
         public virtual async Task<IEnumerable<string>> GetNamesFromTopLevel(BaseTree node)
         {            
@@ -71,12 +77,11 @@ namespace Master.Entity
         /// <summary>
         /// 通过树类型和节点名称获取树节点
         /// </summary>
-        /// <param name="displayName"></param>
-        /// <param name="discriminator"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        public virtual async Task<BaseTree> GetByName(string displayName,string discriminator)
+        public virtual async Task<BaseTree> GetByName(string name)
         {
-            return await GetAll().Where(o => o.Discriminator == discriminator && o.DisplayName == displayName)
+            return await GetAll().Where(o => o.Name == name)
                 .FirstOrDefaultAsync();
         }
         /// <summary>

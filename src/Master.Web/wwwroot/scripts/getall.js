@@ -1666,9 +1666,9 @@ abp.services = abp.services || {};
     };
 
     // action 'initModuleInfo'
-    abp.services.app.moduleInfo.initModuleInfo = function(moduleInfoIds, ajaxParams) {
+    abp.services.app.moduleInfo.initModuleInfo = function(moduleInfoIds, hard, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/ModuleInfo/InitModuleInfo',
+        url: abp.appPath + 'api/services/app/ModuleInfo/InitModuleInfo' + abp.utils.buildQueryString([{ name: 'hard', value: hard }]) + '',
         type: 'POST',
         data: JSON.stringify(moduleInfoIds)
       }, ajaxParams));;

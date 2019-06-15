@@ -460,3 +460,13 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
 .is-focus .el-checkbox__inner, .el-checkbox__inner:hover {
     border-color: #c69c6d !important;
 }
+.el-slider__button {
+    border-radius: 0px !important;
+    border: 1px solid #c69c6c;
+    width:25px;
+    height:25px;
+    line-height:20px;
+}
+.el-slider__bar {
+    background: #c69c6c;
+}

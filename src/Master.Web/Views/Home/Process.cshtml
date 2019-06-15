@@ -142,15 +142,15 @@
                                         </div>
 
                                         <div class="bjdd on">
-                                            <bt>
+                                            <bt style="margin-bottom:15px;">
                                                 <i8 class="style-chaal-20">诉请及判决</i8>
                                             </bt>
                                             <div class="fleft style-chaal-42">
                                                 <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.judgeContent"></textarea>
                                             </div>
                                             <template>
-                                                <div class="block" style="float:left;">
-                                                    <el-slider v-model="caseInitialUpdateDto.judgeInfo.supportRate" step="5" vertical height="145px">
+                                                <div class="block" style="float:left;" id="slider1Container">
+                                                    <el-slider v-model="caseInitialUpdateDto.judgeInfo.supportRate" step="5" vertical height="145px" @@change="setSliderValue">
                                                     </el-slider>
                                                 </div>
                                             </template>
@@ -170,8 +170,8 @@
                                                           class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeContent"></textarea>
                                             </div>
                                             <template>
-                                                <div class="block" style="float:left;">
-                                                    <el-slider v-model="caseInitialUpdateDto.judgeInfo.reverseSupportRate"step="5" vertical height="145px">
+                                                <div class="block" style="float:left;" id="slider2Container">
+                                                    <el-slider v-model="caseInitialUpdateDto.judgeInfo.reverseSupportRate"step="5" vertical height="145px" @@change="setSliderValue">
                                                     </el-slider>
                                                 </div>
                                             </template>
@@ -602,6 +602,8 @@
                         if (this.caseCardUpdateDto.caseCards.length == 0) {
                             this.caseCardUpdateDto.caseCards.push({ title: '', content: '' });
                         }
+                        //设置slider内部文字
+                        this.setSliderValue();
                     })
                     await abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
                         this.knowledgeTree = res;
@@ -827,6 +829,11 @@
                             });
                         }))
                     })
+                },
+                //设置滑动条的值
+                setSliderValue() {
+                    $("#slider1Container .el-slider__button").html(this.caseInitialUpdateDto.judgeInfo.supportRate);
+                    $("#slider2Container .el-slider__button").html(this.caseInitialUpdateDto.judgeInfo.reverseSupportRate);
                 }
             },
             watch: {
