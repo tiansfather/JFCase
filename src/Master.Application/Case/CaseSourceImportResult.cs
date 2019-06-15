@@ -31,6 +31,7 @@ namespace Master.Case
         {
             using (var baseTreeManagerWrapper=IocManager.Instance.ResolveAsDisposable<BaseTreeManager>())
             {
+                var baseTreeManager = baseTreeManagerWrapper.Object;
                 this.CaseSourceUpdateDto = new CaseSourceUpdateDto()
                 {
                     SourceSN = this.SourceSN
@@ -44,11 +45,12 @@ namespace Master.Case
                         CaseSourceUpdateDto.Id = caseSource.Id;
                     }
                 }
-                var allBaseTrees=await baseTreeManagerWrapper.Object.GetAllList();
+                var allBaseTrees=await baseTreeManager.GetAllList();
 
-                var allAnYous = await baseTreeManagerWrapper.Object.GetTypeNodesByKnowledgeName("案由");
-                var allCities= await baseTreeManagerWrapper.Object.GetTypeNodesByKnowledgeName("城市");
-                var allCourts=await baseTreeManagerWrapper.Object.GetTypeNodesByKnowledgeName("法院");
+                var allAnYous = await baseTreeManager.GetTypeNodesByKnowledgeName("案由");
+                var allCities= await baseTreeManager.GetTypeNodesByKnowledgeName("城市");
+                var allCourts=await baseTreeManager.GetTypeNodesByParentKnowledgeName("城市");
+                
 
                 #region 城市案由法院的关联验证
                 var node_city = allCities.FirstOrDefault(o => o.DisplayName == City);

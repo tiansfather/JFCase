@@ -33,6 +33,23 @@ namespace Master.Entity
 
             return await GetTypeNodesByKnowledgeNode(baseTree);
         }
+        public virtual async Task<IEnumerable<BaseTree>> GetTypeNodesByParentKnowledgeName(string name)
+        {            
+
+            var parentKnowledgeNode = await GetByName(name);
+            if (parentKnowledgeNode == null)
+            {
+                throw new UserFriendlyException($"未找到{name}对应知识树节点");
+            }
+            var childNodes = await FindChildrenAsync(parentKnowledgeNode.Id);//初级法院二级法院三级法院
+
+            var nodes = new List<BaseTree>();
+            foreach (var childNode in childNodes)
+            {
+                nodes.AddRange(await GetTypeNodesByKnowledgeNode(childNode));
+            }
+            return nodes;
+        }
         public virtual async Task<IEnumerable<BaseTree>> GetTypeNodesByKnowledgeNode(BaseTree knowledgeNode)
         {
             var nodes = await GetAllList();

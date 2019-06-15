@@ -80,14 +80,10 @@ namespace Master.Case
         public virtual async Task<object> GetCourts()
         {
             var manager = Manager as BaseTreeManager;
-            var cityNode = await manager.GetByName("城市");
-            var childNodes = await manager.FindChildrenAsync(cityNode.Id);//初级法院二级法院三级法院
+            //var cityNode = await manager.GetByName("城市");
+            //var childNodes = await manager.FindChildrenAsync(cityNode.Id);//初级法院二级法院三级法院
 
-            var nodes = new List<BaseTree>();
-            foreach(var childNode in childNodes)
-            {
-                nodes.AddRange(await manager.GetTypeNodesByKnowledgeNode(childNode));
-            }
+            var nodes = await manager.GetTypeNodesByParentKnowledgeName("城市");
             return nodes.Select(o => new
             {
                 o.Id,

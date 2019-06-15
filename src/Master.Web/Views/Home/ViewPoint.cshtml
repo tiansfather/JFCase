@@ -13,10 +13,10 @@
             color: blue;
             border-bottom: 1px solid blue;
         }
-        .ny-guandiancard{
+        /*.ny-guandiancard{
             height:420px;
             overflow:auto;
-        }
+        }*/
     </style>
 
 }
@@ -54,7 +54,7 @@
             <div v-show="items.length===0">
                 <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例卡哦，请减少查询条件再试试看。</h1>
             </div>
-            <div class="ny-guandiancard"  v-if="items.length">
+            <div class="ny-guandiancard" v-if="items.length">
                 <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}">
                     <!--状态1-->
                     <div class="card-start">
@@ -93,8 +93,8 @@
                 </a>
 
             </div>
-            <p v-if="loading">加载中...</p>
-            <p v-if="noMore">没有更多了</p>
+            <p v-if="loading" style="text-align:center">加载中...</p>
+            <p v-if="noMore" style="text-align:center">没有更多了</p>
         </div>
         <!--end-->
         <!--案号-->
@@ -112,9 +112,69 @@
             <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
             <div slot="footer">&nbsp;</div>
         </Modal>
+        <Modal width="1000px" v-model="modal1" class-name="center-modal" :mask-closable="false">
+            <div style="display:flex;">
+                <div class="bjdd on">
+                    <bm class="style-pa-20">
+                        <i8 class="style-chaal-20">案例卡正面</i8>
+                    </bm>
+                    <div class="style-pa-1">
+                        <div class="jianfa-guandiancard">
+                            <div class="ny-guandiancard">
+                                <!--状态2-->
+                                <ul>
+                                    <li>
+                                        <dl>
+                                            <dd class="card-top">
+                                                <textarea name="" class="textarea-k" v-model="caseCardUpdateDto.title" style="height:250px"></textarea>
+                                            </dd>
+                                            <dd class="card-zhong">
+                                                {{caseCardUpdateDto.sourceSN}}
+                                            </dd>
+                                            <dd class="card-bottom">{{caseCardUpdateDto.court1}}</dd>
+                                        </dl>
+                                    </li>
+                                </ul>
+                                <!--end-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bjdd on">
+                    <bm class="style-pa-20">
+                        <i8 class="style-chaal-20">案例卡背面</i8>
+                    </bm>
+                    <div class="style-pa-1">
+                        <div class="jianfa-guandiancard">
+                            <div class="ny-guandiancard">
+                                <!--状态2-->
+                                <ul>
+                                    <li>
+                                        <dl>
+                                            <dd class="oncard-top">
+                                                <textarea name="" class="textarea-k" v-model="caseCardUpdateDto.content"></textarea>
+                                                <p>{{caseCardUpdateDto.lawyerFirms?getLawyer(caseCardUpdateDto):''}}<br>{{caseCardUpdateDto.publishDate}}</p>
+                                            </dd>
+                                        </dl>
+                                    </li>
+                                </ul>
+                                <!--end-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div slot="footer">
+                <div class="but-foot" style="margin:0px auto;overflow:auto;">
+                    <div class="but-left-foot"><Button class="btn-footer" @@click="updateCaseCard();">保存</Button></div>
+                    <div class="but-right-foot"><Button class="btn-footer-qx" @@click="modal1 = false">关闭</Button></div>
+                </div>
+            </div>
+        </Modal>
         <com-footer></com-footer>
         <!--end-->
-        <el-dialog title="案例卡修改"
+        @*<el-dialog title="案例卡修改"
                    :visible.sync="modal1"
                    width="1000px">
             <div style="display:flex;">
@@ -130,7 +190,7 @@
                                     <li>
                                         <dl>
                                             <dd class="card-top">
-                                                <textarea name=""  class="textarea-k" v-model="caseCardUpdateDto.title"></textarea>
+                                                <textarea name="" class="textarea-k" v-model="caseCardUpdateDto.title" style="height:250px"></textarea>
                                             </dd>
                                             <dd class="card-zhong">
                                                 {{caseCardUpdateDto.sourceSN}}
@@ -174,7 +234,7 @@
                 <el-button @@click="updateCaseCard();">保存</el-button>
                 <el-button @@click="modal1 = false">关闭</el-button>
             </span>
-        </el-dialog>
+        </el-dialog>*@
     </div>
 
 @section scripts{
@@ -187,7 +247,7 @@
                 moda12: false,
                 currentItem: {},
                 currentPage: 1,
-                pagesize: 10,
+                pagesize: 6,
                 wherePart: {
                     anyouId: '',
                     cityId: '',
@@ -231,7 +291,7 @@
             },
             methods: {
                 load() {
-                    debugger
+                    //debugger
                     this.loading = true;
                     this.currentPage++;
                 },
@@ -246,14 +306,14 @@
                     //请求案例卡分页
                     abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where }).done((data) => {
                         this.loading = false;
-                        if (data.length == 0) {
+                        if (data.data.length == 0) {
                             this.noMore = true;
                         }
 
                         data.data.forEach(el => {
                             el.isRotate = false;
                         })
-                        that.items = data.data;
+                        that.items = that.items.concat(data.data);
                         $("#app").show();
                     })
                 },
