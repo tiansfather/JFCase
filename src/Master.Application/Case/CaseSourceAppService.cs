@@ -163,6 +163,15 @@ namespace Master.Case
         }
         private List<CaseSourceImportResult> ReadFromDataTable(DataTable dataTable)
         {
+            //验证表头
+            var needColumNames = new string[] { "案号", "城市", "一审法院", "审理法院", "案由", "代理律师", "审判人员", "裁判时间" };
+            foreach(var needColumnName in needColumNames)
+            {
+                if (!dataTable.Columns.Contains(needColumnName))
+                {
+                    throw new UserFriendlyException($"列\"{needColumnName}\"未在表格中存在");
+                }
+            }
             var result = new List<CaseSourceImportResult>();
             foreach(DataRow row in dataTable.Rows)
             {

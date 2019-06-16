@@ -144,7 +144,7 @@
             <div class="layui-header">
                 <!-- 头部区域 -->
                 @await Component.InvokeAsync(typeof(TopBarNavViewComponent))
-                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right" style="right:20px;">
                     <li class="layui-nav-item layui-hide-xs" lay-unselect v-show="text" v-cloak :tips="tipsText">
                         <a href="javascript:;" class="gonggao" style="padding:0 10px;">
                             <i class="iconfont icon-gonggao"></i>
@@ -172,11 +172,6 @@
                             <i class="layui-icon layui-icon-theme"></i>
                         </a>
                     </li>
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                        <a href="javascript:;" custom-event="lock" title="@L("锁屏")">
-                            <i class="layui-icon layui-icon-zlock-l"></i>
-                        </a>
-                    </li>
                     <li class="layui-nav-item" lay-unselect>
                         <a href="javascript:;">
                             <cite>@Model.User.Name</cite>
@@ -189,9 +184,9 @@
                         </dl>
                     </li>
 
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    @*<li class="layui-nav-item layui-hide-xs" lay-unselect>
                         <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
-                    </li>
+                    </li>*@
                     <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
                         <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
                     </li>

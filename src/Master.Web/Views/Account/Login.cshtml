@@ -14,6 +14,13 @@
 	var softTitle = WebCoreConfiguration.SoftName;
 	AbpAntiForgeryManager.SetCookie(Context);
 }
+@section styles{ 
+    <style>
+        .error input{
+            border:1px solid red;
+        }
+    </style>
+}
     <div id="app">
        
         <div class="jianfa-ewm login" >
@@ -51,23 +58,25 @@
                     <ul>
                         <li class="tips">填写个人信息</li>
                         <li class="explain">
+
                             <dl>
                                 <dd>
                                     <i3><img :src="currentItem.avata" width="70" height="70"></i3>
                                 </dd>
-                                <dd>
+                                <dd :class="{error:!currentItem.name && validating}">
                                     <label class="label-text">真实姓名</label>
                                     <input type="text" class="i-text" v-model="currentItem.name" placeholder="请输入你的真实姓名" />
+
                                 </dd>
-                                <dd>
+                                <dd :class="{error:!currentItem.workLocation && validating}">
                                     <label class="label-text">律所全称</label>
                                     <input type="text" class="i-text" v-model="currentItem.workLocation" placeholder="请输入你的当前所在律所" />
                                 </dd>
-                                <dd>
+                                <dd :class="{error:!currentItem.phoneNumber && validating}">
                                     <label class="label-text">手机号码</label>
                                     <input type="text" class="i-text" v-model="currentItem.phoneNumber" placeholder="请输入你的手机号码" />
                                 </dd>
-                                <dd>
+                                <dd :class="{error:!currentItem.email && validating}">
                                     <label class="label-text">邮箱</label>
                                     <input type="text" class="i-text" v-model="currentItem.email" placeholder="请输入你的邮箱" />
                                 </dd>
@@ -76,7 +85,7 @@
                                     <input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" />
                                 </dd>
                                 @*<dd>您的邮箱<input type="text" class="i-text" v-model="currentItem.email" placeholder="请输入你的邮箱" /></dd>
-        <dd>您的留言<input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" /></dd>*@
+            <dd>您的留言<input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" /></dd>*@
                             </dl>
                         </li>
                         <li>
@@ -114,7 +123,8 @@
                     email:'',
                     avata: '',
                     remarks:''
-                }
+                },
+                validating: false//是否验证状态
             },
 			computed: {
 				qrCode: function () {
@@ -151,7 +161,19 @@
                     }, 3000);
                 },
                 doSubmit: function () {
-                    //todo:数据验证
+                    this.validating = true;
+                    var requireRules = {
+                        "name": "请输入真实姓名",
+                        "workLocation": "请输入律师事务所",
+                        "phoneNumber": "请输入手机号",
+                        "email": "请输入邮箱"
+                    };
+                    for (var rule in requireRules) {
+                        if (!this.currentItem[rule]) {
+                            this.$message.error(requireRules[rule]);
+                            return false;
+                        }
+                    }
                     abp.message.confirm("确认提交?").done(function () {                        
                         func.runAsync(abp.services.app.newMiner.register(app.currentItem).done(function () {
                             abp.message.success("您的注册申请已提交，我们将会在X个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！")
