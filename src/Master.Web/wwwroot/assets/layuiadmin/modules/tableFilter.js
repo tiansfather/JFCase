@@ -4,7 +4,6 @@
  * @author: 杨玉杰
  */
 layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
-
     var $ = layui.jquery,
         table = layui.table,
         form = layui.form,
@@ -84,7 +83,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 $fixedRigthTableHead = $table.next().children('.layui-table-box').children('.layui-table-fixed-r').children('.layui-table-header').children('table'),
                 tableId = $table.attr('id'),
                 columns = [].concat.apply([], myTable.cols),
-                filterItems = myTable.filter?myTable.filter.items||['column','data','condition','editCondition','excel']:['column','data','condition','editCondition','excel'],
+                filterItems = myTable.filter ? myTable.filter.items || ['column', 'data', 'condition', 'editCondition', 'excel'] : ['column', 'data', 'condition', 'editCondition', 'excel'],
                 needFilter = false, // 是否存在筛选列需要进行初始化
                 initFilter = false, // 是否为第一次筛选
                 mainExcel = typeof myTable.excel == 'undefined' || ((myTable.excel && (typeof myTable.excel.on == 'undefined' || myTable.excel.on)) ? myTable.excel : false);
@@ -92,39 +91,39 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
             for (var i = 0; i < columns.length; i++) {
                 if (columns[i].field && columns[i].filter) {
                     needFilter = true;
-                    if ($tableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.soul-table-filter').length===0) {
+                    if ($tableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.soul-table-filter').length === 0) {
                         initFilter = true;
-                        if ($tableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').length>0) {
-                            $tableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').hide()
-                            $tableHead.find('th[data-field="'+columns[i].field+'"]').children().append('<span class="layui-table-sort soul-table-filter layui-inline" data-column="'+columns[i].field+'" lay-sort="'+$tableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').attr('lay-sort')+'" '+(typeof columns[i].filter.split === 'undefined'?'':'data-split="'+columns[i].filter.split+'"')+'><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
+                        if ($tableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').length > 0) {
+                            $tableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').hide()
+                            $tableHead.find('th[data-field="' + columns[i].field + '"]').children().append('<span class="layui-table-sort soul-table-filter layui-inline" data-column="' + columns[i].field + '" lay-sort="' + $tableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').attr('lay-sort') + '" ' + (typeof columns[i].filter.split === 'undefined' ? '' : 'data-split="' + columns[i].filter.split + '"') + '><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
                         } else {
-                            $tableHead.find('th[data-field="'+columns[i].field+'"]').children().append('<span class="soul-table-filter layui-inline" data-column="'+columns[i].field+'" '+(typeof columns[i].filter.split === 'undefined'?'':'data-split="'+columns[i].filter.split+'"')+'><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
+                            $tableHead.find('th[data-field="' + columns[i].field + '"]').children().append('<span class="soul-table-filter layui-inline" data-column="' + columns[i].field + '" ' + (typeof columns[i].filter.split === 'undefined' ? '' : 'data-split="' + columns[i].filter.split + '"') + '><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
                         }
-                        if ($fixedLeftTableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').length>0) {
-                            $fixedLeftTableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').hide()
-                            $fixedLeftTableHead.find('th[data-field="'+columns[i].field+'"]').children().append('<span class="layui-table-sort soul-table-filter layui-inline" data-column="'+columns[i].field+'" lay-sort="'+$fixedLeftTableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').attr('lay-sort')+'" '+(typeof columns[i].filter.split === 'undefined'?'':'data-split="'+columns[i].filter.split+'"')+'><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
+                        if ($fixedLeftTableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').length > 0) {
+                            $fixedLeftTableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').hide()
+                            $fixedLeftTableHead.find('th[data-field="' + columns[i].field + '"]').children().append('<span class="layui-table-sort soul-table-filter layui-inline" data-column="' + columns[i].field + '" lay-sort="' + $fixedLeftTableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').attr('lay-sort') + '" ' + (typeof columns[i].filter.split === 'undefined' ? '' : 'data-split="' + columns[i].filter.split + '"') + '><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
                         } else {
-                            $fixedLeftTableHead.find('th[data-field="'+columns[i].field+'"]').children().append('<span class="soul-table-filter layui-inline" data-column="'+columns[i].field+'" '+(typeof columns[i].filter.split === 'undefined'?'':'data-split="'+columns[i].filter.split+'"')+'><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
+                            $fixedLeftTableHead.find('th[data-field="' + columns[i].field + '"]').children().append('<span class="soul-table-filter layui-inline" data-column="' + columns[i].field + '" ' + (typeof columns[i].filter.split === 'undefined' ? '' : 'data-split="' + columns[i].filter.split + '"') + '><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
                         }
-                        if ($fixedRigthTableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').length>0) {
-                            $fixedRigthTableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').hide()
-                            $fixedRigthTableHead.find('th[data-field="'+columns[i].field+'"]').children().append('<span class="layui-table-sort soul-table-filter layui-inline" data-column="'+columns[i].field+'" lay-sort="'+$fixedRigthTableHead.find('th[data-field="'+columns[i].field+'"]').children().children('.layui-table-sort').attr('lay-sort')+'" '+(typeof columns[i].filter.split === 'undefined'?'':'data-split="'+columns[i].filter.split+'"')+'><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
+                        if ($fixedRigthTableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').length > 0) {
+                            $fixedRigthTableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').hide()
+                            $fixedRigthTableHead.find('th[data-field="' + columns[i].field + '"]').children().append('<span class="layui-table-sort soul-table-filter layui-inline" data-column="' + columns[i].field + '" lay-sort="' + $fixedRigthTableHead.find('th[data-field="' + columns[i].field + '"]').children().children('.layui-table-sort').attr('lay-sort') + '" ' + (typeof columns[i].filter.split === 'undefined' ? '' : 'data-split="' + columns[i].filter.split + '"') + '><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
                         } else {
-                            $fixedRigthTableHead.find('th[data-field="'+columns[i].field+'"]').children().append('<span class="soul-table-filter layui-inline" data-column="'+columns[i].field+'" '+(typeof columns[i].filter.split === 'undefined'?'':'data-split="'+columns[i].filter.split+'"')+'><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
+                            $fixedRigthTableHead.find('th[data-field="' + columns[i].field + '"]').children().append('<span class="soul-table-filter layui-inline" data-column="' + columns[i].field + '" ' + (typeof columns[i].filter.split === 'undefined' ? '' : 'data-split="' + columns[i].filter.split + '"') + '><i class="soul-icon soul-icon-filter"></i><i class="soul-icon soul-icon-filter-asc"></i><i class="soul-icon soul-icon-filter-desc"></i></span>')
                         }
                     }
                 }
             }
-            if (!needFilter) {return} //如果没筛选列，直接退出
+            if (!needFilter) { return } //如果没筛选列，直接退出
             table_cache[myTable.id] = myTable // 缓存table配置
 
             // 渲染底部筛选条件
             if (!(myTable.filter && typeof myTable.filter.bottom != 'undefined' && !myTable.filter.bottom) && $table.next().children('.soul-bottom-contion').length === 0) {
                 $table.next().children('.layui-table-box').after('<div class="soul-bottom-contion"><div class="condition-items"></div><div class="editCondtion"><a class="layui-btn layui-btn-primary">编辑筛选条件</a></div></div>')
                 var changeHeight = $table.next().children('.layui-table-box').children('.layui-table-body').outerHeight() - $table.next().children('.soul-bottom-contion').outerHeight();
-                if (myTable.page && $table.next().children('.layui-table-page').hasClass('layui-hide')) {changeHeight += $table.next().children('.layui-table-page').outerHeight()}
+                if (myTable.page && $table.next().children('.layui-table-page').hasClass('layui-hide')) { changeHeight += $table.next().children('.layui-table-page').outerHeight() }
                 $table.next().children('.layui-table-box').children('.layui-table-body').css('height', changeHeight)
-                $table.next().children('.layui-table-box').children('.layui-table-fixed').children('.layui-table-body').css('height', changeHeight-getScrollWidth())
+                $table.next().children('.layui-table-box').children('.layui-table-fixed').children('.layui-table-body').css('height', changeHeight - getScrollWidth())
                 $table.next().children('.soul-bottom-contion').children('.condition-items').css('width', ($table.next().children('.soul-bottom-contion').width() - $table.next().children('.soul-bottom-contion').children('.editCondtion').width()) + 'px');
                 $table.next().children('.soul-bottom-contion').children('.editCondtion').children('a').on('click', function () {
                     _this.showConditionBoard(myTable);
@@ -142,7 +141,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 oDiv.style.overflowY = "scroll";
                 scroll = oDiv.clientWidth;
                 document.body.removeChild(oDiv);
-                return noScroll-scroll;
+                return noScroll - scroll;
             }
 
             /**
@@ -153,7 +152,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 this.bindFilterClick(myTable);
 
                 // 表头样式
-                var where = where_cache[myTable.id]||{},
+                var where = where_cache[myTable.id] || {},
                     filterSos = JSON.parse(where.filterSos ? where.filterSos : '[]');
 
                 for (var i = 0; i < filterSos.length; i++) {
@@ -185,7 +184,10 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
 
                 return;
             } else {
-                where_cache[myTable.id] = {}
+                console.log(myTable.where);
+                //where_cache[myTable.id] = {}
+                //modi20190613 解决当前台where查询改变后插件中不缓存查询条件的问题
+                where_cache[myTable.id] = myTable.where;
             }
 
             /**
@@ -202,7 +204,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         where_cache[myTable.id].field = obj.field;
                         where_cache[myTable.id].order = obj.type;
 
-                        table.render($.extend(myTable,{
+                        table.render($.extend(myTable, {
                             initSort: obj
                             , where: where_cache[myTable.id]
                             , page: {
@@ -224,7 +226,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 soulFilterList.push('<li class="soul-sort" data-value="asc" ><i class="soul-icon soul-icon-asc"></i> 升序排列 </li>');
                 soulFilterList.push('<li class="soul-sort" data-value="desc"  style="border-bottom: 1px solid #e6e6e6"><i class="soul-icon soul-icon-desc"></i> 降序排列 </li>');
                 for (var i = 0; i < filterItems.length; i++) {
-                    if (filterItems[i]==='excel' && !mainExcel){
+                    if (filterItems[i] === 'excel' && !mainExcel) {
                         continue
                     }
                     soulFilterList.push(filterItemsHtml[filterItems[i]]);
@@ -347,7 +349,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         left = $(this).parent().offset().left - $('#soul-columns' + tableId).width();
                         animate = 'fadeIn2Right'
                     }
-                    $('#soul-columns' + tableId).css({'top': $(this).offset().top, 'left': left})
+                    $('#soul-columns' + tableId).css({ 'top': $(this).offset().top, 'left': left })
                         .removeClass().addClass(animate + ' animated');
                 });
                 // 显示数据下拉
@@ -373,7 +375,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     }
 
                     $('#soulDropList' + tableId).find('.' + field + 'DropList li input[type=checkbox]:checked').prop('checked', false);
-                    var where = where_cache[myTable.id]||{},
+                    var where = where_cache[myTable.id] || {},
                         filterSos = JSON.parse(where.filterSos ? where.filterSos : null),
                         id = '', prefix = '';
                     if (filterSos) {
@@ -396,7 +398,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         split: $('#main-list' + tableId).data('split')
                     }).html($('#soulDropList' + tableId).find('.' + field + 'DropList li').clone());
 
-                    $('#soul-dropList' + tableId).css({'top': $(this).offset().top, 'left': left})
+                    $('#soul-dropList' + tableId).css({ 'top': $(this).offset().top, 'left': left })
                         .show().removeClass().addClass(animate + ' animated');
                     setTimeout(function () {
                         $('#soul-dropList' + tableId + '>.filter-search>input').focus() // 聚焦搜索框
@@ -441,7 +443,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     }
 
                     var filterSo, conditionHtml = [],
-                        where = where_cache[myTable.id]||{},
+                        where = where_cache[myTable.id] || {},
                         filterSos = JSON.parse(where.filterSos ? where.filterSos : null);
                     if (filterSos) {
                         for (var i = 0; i < filterSos.length; i++) {
@@ -509,9 +511,9 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         }
                         conditionHtml.push('</tbody></table><div style="text-align: center; padding-top: 5px"><button class="layui-btn layui-btn-sm" data-type="add"><i class="layui-icon">&#xe654;</i>添加</button><span style="display: inline-block;width: 50px"></span><button class="layui-btn layui-btn-sm" data-type="search"><i class="layui-icon">&#xe615;</i>查询</button></div>')
 
-                        $('#soul-condition' + tableId).data({head: 'true', id: filterSo ? filterSo.id || '' : ''})
+                        $('#soul-condition' + tableId).data({ head: 'true', id: filterSo ? filterSo.id || '' : '' })
                             .html(conditionHtml.join(''))
-                            .css({'top': $(this).offset().top, 'left': left})
+                            .css({ 'top': $(this).offset().top, 'left': left })
                             .show().removeClass().addClass(animate + ' animated');
 
                         $('.condition-table').on('click', function () {
@@ -609,7 +611,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         function updateTrWhere($tr) {
                             var id = $tr.data('id'),
                                 groupId = $('#soul-condition' + tableId).data('id'),
-                                prefix = $tr.find('input[lay-filter="soul-coondition-switch"]:checked').prop('checked')?'and':'or',
+                                prefix = $tr.find('input[lay-filter="soul-coondition-switch"]:checked').prop('checked') ? 'and' : 'or',
                                 type = $tr.find('select').val(),
                                 value = $tr.find('.value').val(),
                                 head = $('#soul-condition' + tableId).data('head') == 'true';
@@ -772,7 +774,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         columnField.push($(this).data('column'));
                     }
                 });
-                if (filterItems.indexOf('data')!=-1) {
+                if (filterItems.indexOf('data') != -1) {
                     if (typeof myTable.url != 'undefined' && myTable.page) {
                         var datas = JSON.parse(JSON.stringify(myTable.where)), url = myTable.url;
                         datas['filterColumns'] = JSON.stringify(columnField);//modi by tiansfather
@@ -805,8 +807,8 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                                                     list = tempList;
                                                 }
                                                 list.sort(function (a, b) {
-                                                    if (isNaN(a)||isNaN(b)) {
-                                                        return String(a)>=String(b)
+                                                    if (isNaN(a) || isNaN(b)) {
+                                                        return String(a) >= String(b)
                                                     } else {
                                                         return Number(a) - Number(b)
                                                     }
@@ -861,7 +863,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                                     for (var i = 0; i < list.length; i++) {
                                         var tempList2 = list[i].split(columnsConfigs[j].filter.split);
                                         for (var k = 0; k < tempList2.length; k++) {
-                                            if (tempList.indexOf(tempList2[k])===-1) {
+                                            if (tempList.indexOf(tempList2[k]) === -1) {
                                                 tempList.push(tempList2[k])
                                             }
                                         }
@@ -869,8 +871,8 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                                     list = tempList;
                                 }
                                 list.sort(function (a, b) {
-                                    if (isNaN(a)||isNaN(b)) {
-                                        return String(a)>=String(b)
+                                    if (isNaN(a) || isNaN(b)) {
+                                        return String(a) >= String(b)
                                     } else {
                                         return Number(a) - Number(b)
                                     }
@@ -878,7 +880,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                                 var ul = [];
                                 ul.push("<ul class='" + key + "DropList' data-value='" + key + "'>");
                                 for (var i = 0; i < list.length; i++) {
-                                    if (list[i]===''){continue}
+                                    if (list[i] === '') { continue }
                                     var line = {};
                                     line[key] = list[i];
                                     ul.push('<li data-value="' + list[i].toString().toLowerCase() + '"><input type="checkbox" value="' + list[i] + '" title="' + ((columnsConfigs[j].templet && typeof columnsConfigs[j].templet == 'function' ? columnsConfigs[j].templet.call(this, line) : list[i]) + "").replace(/\"|\'/g, '\'') + '" lay-skin="primary" lay-filter="soulDropList' + tableId + '"></li>')
@@ -902,7 +904,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
             var _this = this,
                 $table = $(myTable.elem),
                 tableId = $table.attr('id'),
-                where = where_cache[myTable.id]||{},
+                where = where_cache[myTable.id] || {},
                 tableFilterTypes = where.tableFilterType ? JSON.parse(where.tableFilterType) : {},
                 filterSos = where.filterSos ? JSON.parse(where.filterSos) : [],
                 filterBoard = [], fieldMap = {}, firstColumn,
@@ -1056,7 +1058,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     .data('group', $(obj).parents('li:eq(2)').data('id') || '')
                     .data('refresh', $('.soul-edit-out .out_auto').prop('checked'))
                     .show()
-                    .css({top: top, left: left})
+                    .css({ top: top, left: left })
                     .removeClass().addClass('fadeIn2Up animated')
                     .find('li[data-field="' + $(obj).parent().data('field') + '"]')
                     .addClass('soul-bf-selected')
@@ -1099,7 +1101,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     .data('group', $(obj).parents('li:eq(2)').data('id') || '')
                     .data('refresh', $('.soul-edit-out .out_auto').prop('checked'))
                     .show()
-                    .css({top: top, left: left})
+                    .css({ top: top, left: left })
                     .removeClass().addClass('fadeIn2Up animated')
             }
 
@@ -1118,7 +1120,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     prefix = $(obj).parent().data('prefix'),
                     value = $(obj).parent().data('value'),
                     refresh = $('.soul-edit-out .out_auto').prop('checked'),
-                    where = where_cache[myTable.id]||{},
+                    where = where_cache[myTable.id] || {},
                     filterSos = where.filterSos ? JSON.parse(where.filterSos) : [];
 
                 switch (mode) {
@@ -1140,7 +1142,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         $('#soul-dropList' + tableId + '>ul').data('id', id).data('head', head).data('refresh', refresh).data('prefix', prefix).html($('#soulDropList' + tableId).find('.' + field + 'DropList li').clone());
                         form.render('checkbox', 'orm');
                         top = $(obj).offset().top + $(obj).outerHeight();
-                        $('#soul-dropList' + tableId).css({'top': top, 'left': left})
+                        $('#soul-dropList' + tableId).css({ 'top': top, 'left': left })
                             .show().removeClass().addClass('fadeIn2Up animated');
                         setTimeout(function () {
                             $('#soul-dropList' + tableId + '>.filter-search>input').focus() // 聚焦搜索框
@@ -1458,7 +1460,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 _this.hideCondition(myTable, false);
                 $('[id^=main-list]').hide();
 
-                $('#main-list' + tableId).data({'field': $that.data('column'),'split':$that.data('split')});
+                $('#main-list' + tableId).data({ 'field': $that.data('column'), 'split': $that.data('split') });
 
                 $('#soul-columns' + tableId + ' [type=checkbox]').attr('disabled', false);
                 // if (myTable.cols[0][0].type=='checkbox') {
@@ -1477,14 +1479,14 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     clearTimeout(mainListTimeOut)
                 }
                 var left, animate;
-                if ($that.offset().left + $('#main-list'+tableId).outerWidth() < document.body.clientWidth) {
+                if ($that.offset().left + $('#main-list' + tableId).outerWidth() < document.body.clientWidth) {
                     left = $that.offset().left + 10;
                     animate = 'fadeIn2Left';
                 } else {
-                    left = $that.offset().left - $('#main-list'+tableId).outerWidth();
+                    left = $that.offset().left - $('#main-list' + tableId).outerWidth();
                     animate = 'fadeIn2Right';
                 }
-                $('#main-list' + tableId).data('type',myTable.where.tableFilterType?JSON.parse(myTable.where.tableFilterType)[$that.data('column')]||'':'').hide().css({
+                $('#main-list' + tableId).data('type', myTable.where.tableFilterType ? JSON.parse(myTable.where.tableFilterType)[$that.data('column')] || '' : '').hide().css({
                     'top': $that.offset().top + 10,
                     'left': left
                 }).show().removeClass().addClass(animate + ' animated');
@@ -1516,18 +1518,18 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
 
             $(window).on('resize', function () {
                 // 减去底部筛选的高度
-                if ($table.next().children('.soul-bottom-contion').length>0) {
+                if ($table.next().children('.soul-bottom-contion').length > 0) {
                     setTimeout(function () {
-                        $table.next().children('.soul-bottom-contion').children('.condition-items').css('width', $table.next().children('.soul-bottom-contion').width()-$table.next().children('.soul-bottom-contion').children('.editCondtion').outerWidth());
+                        $table.next().children('.soul-bottom-contion').children('.condition-items').css('width', $table.next().children('.soul-bottom-contion').width() - $table.next().children('.soul-bottom-contion').children('.editCondtion').outerWidth());
 
                         var bodyHeight = $table.next().height() - $table.next().children('.soul-bottom-contion').outerHeight()
-                        if ($table.next().children('.layui-table-tool').length>0) {
+                        if ($table.next().children('.layui-table-tool').length > 0) {
                             bodyHeight = bodyHeight - $table.next().children('.layui-table-tool').outerHeight();
                         }
-                        if ($table.next().children('.layui-table-total').length>0) {
+                        if ($table.next().children('.layui-table-total').length > 0) {
                             bodyHeight = bodyHeight - $table.next().children('.layui-table-total').outerHeight();
                         }
-                        if ($table.next().children('.layui-table-page').length>0) {
+                        if ($table.next().children('.layui-table-page').length > 0) {
                             bodyHeight = bodyHeight - $table.next().children('.layui-table-page').outerHeight();
                         }
 
@@ -1601,7 +1603,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
          */
         , updateWhere: function (myTable, filterSo) {
             var _this = this,
-                where = where_cache[myTable.id]||{},
+                where = where_cache[myTable.id] || {},
                 filterSos = JSON.parse(where.filterSos ? where.filterSos : '[]');
 
             if (filterSo.id || filterSo.groupId) {
@@ -1620,7 +1622,9 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 }))
             }
             myTable.where['filterSos'] = JSON.stringify(filterSos);
-            where_cache[myTable.id] = myTable.where;
+            //where_cache[myTable.id] = myTable.where;
+            //modi 20190613 修正查询条件问题
+            where_cache[myTable.id].filterSos = myTable.where['filterSos'];
 
             function updateFilterSo(filterSo, newFilterSo) {
                 var isMatch = false;
@@ -1656,7 +1660,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 $table = $(myTable.elem),
                 scrollLeft = $table.next().children('.layui-table-box').children('.layui-table-main').scrollLeft();
 
-            isFilterReload[myTable.id]=true;
+            isFilterReload[myTable.id] = true;
             if (typeof myTable.url != 'undefined' && myTable.page) {
                 $table.data('scrollLeft', scrollLeft);
                 /**
@@ -1743,7 +1747,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 case "in":
                     if (filterSo.values && filterSo.values.length > 0) {
                         if (filterSo.split) {
-                            var tempList = (item[field]+'').split(filterSo.split);
+                            var tempList = (item[field] + '').split(filterSo.split);
                             var tempStatus = false;
                             for (var i = 0; i < tempList.length; i++) {
                                 if (filterSo.values.indexOf(tempList[i]) !== -1) {
@@ -1752,7 +1756,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                             }
                             status = tempStatus;
                         } else {
-                            status = filterSo.values.indexOf(item[field]+'') !== -1
+                            status = filterSo.values.indexOf(item[field] + '') !== -1
                         }
                     } else {
                         return show;
@@ -1764,35 +1768,35 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     }
                     switch (filterSo.type) {
                         case "eq":
-                            status = isNaN(item[field])||isNaN(value) ? item[field] === value : Number(item[field]) === Number(value);
+                            status = isNaN(item[field]) || isNaN(value) ? item[field] === value : Number(item[field]) === Number(value);
                             break;
                         case "ne":
-                            status = isNaN(item[field])||isNaN(value) ? item[field] !== value : Number(item[field]) !== Number(value);
+                            status = isNaN(item[field]) || isNaN(value) ? item[field] !== value : Number(item[field]) !== Number(value);
                             break;
                         case "gt":
-                            status = isNaN(item[field])||isNaN(value) ? item[field] > value : Number(item[field]) > Number(value);
+                            status = isNaN(item[field]) || isNaN(value) ? item[field] > value : Number(item[field]) > Number(value);
                             break;
                         case "ge":
-                            status = isNaN(item[field])||isNaN(value) ? item[field] >= value : Number(item[field]) >= Number(value);
+                            status = isNaN(item[field]) || isNaN(value) ? item[field] >= value : Number(item[field]) >= Number(value);
                             break;
                         case "lt":
-                            status = isNaN(item[field])||isNaN(value) ? item[field] < value : Number(item[field]) < Number(value);
+                            status = isNaN(item[field]) || isNaN(value) ? item[field] < value : Number(item[field]) < Number(value);
                             break;
                         case "le":
-                            status = isNaN(item[field])||isNaN(value) ? item[field] <= value : Number(item[field]) <= Number(value);
+                            status = isNaN(item[field]) || isNaN(value) ? item[field] <= value : Number(item[field]) <= Number(value);
                             break;
                         case "contain":
-                            status = (item[field]+'').indexOf(value) !== -1;
+                            status = (item[field] + '').indexOf(value) !== -1;
                             break;
                         case "notContain":
-                            status = (item[field]+'').indexOf(value) === -1;
+                            status = (item[field] + '').indexOf(value) === -1;
                             break;
                         case "start":
-                            status = (item[field]+'').indexOf(value) === 0;
+                            status = (item[field] + '').indexOf(value) === 0;
                             break;
                         case "end":
-                            var d = (item[field]+'').length - (value+'').length;
-                            status = d >= 0 && (item[field]+'').lastIndexOf(value) === d;
+                            var d = (item[field] + '').length - (value + '').length;
+                            status = d >= 0 && (item[field] + '').lastIndexOf(value) === d;
                             break;
                         case "null":
                             status = typeof item[field] === 'undefined' || $.isEmpty(item[field]);
@@ -1810,24 +1814,24 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                             status = true;
                             break;
                         case 'yesterday':
-                            status = item[field] && isBetween(dateVal,getToday()-1, getToday()-86400);
+                            status = item[field] && isBetween(dateVal, getToday() - 1, getToday() - 86400);
                             break;
                         case 'thisWeek':
-                            status = item[field] && isBetween(dateVal,getFirstDayOfWeek(), getFirstDayOfWeek()+86400*7-1);
+                            status = item[field] && isBetween(dateVal, getFirstDayOfWeek(), getFirstDayOfWeek() + 86400 * 7 - 1);
                             break;
                         case 'lastWeek':
-                            status = item[field] && isBetween(dateVal,getFirstDayOfWeek()-86400*7, getFirstDayOfWeek()-1);
+                            status = item[field] && isBetween(dateVal, getFirstDayOfWeek() - 86400 * 7, getFirstDayOfWeek() - 1);
                             break;
                         case 'thisMonth':
-                            status = item[field] && isBetween(dateVal,getFirstDayOfMonth(), getCurrentMonthLast());
+                            status = item[field] && isBetween(dateVal, getFirstDayOfMonth(), getCurrentMonthLast());
                             break;
                         case 'thisYear':
-                            status = item[field] && isBetween(dateVal,new Date(new Date().getFullYear(), 1, 1)/1000, new Date(new Date().getFullYear()+1, 1, 1)/1000-1);
+                            status = item[field] && isBetween(dateVal, new Date(new Date().getFullYear(), 1, 1) / 1000, new Date(new Date().getFullYear() + 1, 1, 1) / 1000 - 1);
                             break;
                         case 'specific':
                             var dateFormat = dateVal.getFullYear();
-                            dateFormat += '-'+(timeAdd0(dateVal.getMonth()+1));
-                            dateFormat += '-'+timeAdd0(dateVal.getDate());
+                            dateFormat += '-' + (timeAdd0(dateVal.getMonth() + 1));
+                            dateFormat += '-' + timeAdd0(dateVal.getDate());
                             status = item[field] && dateFormat == value
                             break;
                     }
@@ -1840,28 +1844,28 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
             // 本周第一天
             function getFirstDayOfWeek() {
                 var now = new Date();
-                var weekday = now.getDay()||7; //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
-                return new Date(now.setDate(now.getDate()-weekday+1)).setHours(0, 0, 0, 0) / 1000;//往前算（weekday-1）天，年份、月份会自动变化
+                var weekday = now.getDay() || 7; //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
+                return new Date(now.setDate(now.getDate() - weekday + 1)).setHours(0, 0, 0, 0) / 1000;//往前算（weekday-1）天，年份、月份会自动变化
             }
             //获取当月第一天
-            function getFirstDayOfMonth () {
+            function getFirstDayOfMonth() {
                 return new Date(new Date().setDate(1)).setHours(0, 0, 0, 0) / 1000;
             }
             //获取当月最后一天最后一秒
-            function getCurrentMonthLast(){
-                var date=new Date();
-                var currentMonth=date.getMonth();
-                var nextMonth=++currentMonth;
-                var nextMonthFirstDay=new Date(date.getFullYear(),nextMonth,1);
-                return nextMonthFirstDay/1000 -1;
+            function getCurrentMonthLast() {
+                var date = new Date();
+                var currentMonth = date.getMonth();
+                var nextMonth = ++currentMonth;
+                var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+                return nextMonthFirstDay / 1000 - 1;
             }
-            function isBetween(v , a , b) {
-                return (v.getTime()/1000)>=a&&(v.getTime()/1000)<=b;
+            function isBetween(v, a, b) {
+                return (v.getTime() / 1000) >= a && (v.getTime() / 1000) <= b;
             }
             function timeAdd0(str) {
                 str += "";
-                if(str.length<=1){
-                    str='0'+str;
+                if (str.length <= 1) {
+                    str = '0' + str;
                 }
                 return str
             }
@@ -1886,13 +1890,13 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
             $('#soul-condition' + tableId).html(conditionHtml.join(''));
             var filterDate = util.toDateString(new Date(), 'yyyy-MM-dd');
             if (filterSo) {
-                $('#soul-condition' + tableId).data({'id': filterSo.id, 'head': 'true'});
+                $('#soul-condition' + tableId).data({ 'id': filterSo.id, 'head': 'true' });
                 $('#soul-condition' + tableId + '>.' + field + 'Condition' + ' [name^=datetime][value="' + filterSo.type + '"]').prop('checked', true);
                 if (filterSo.type == 'specific') {
                     filterDate = filterSo.value
                 }
             } else {
-                $('#soul-condition' + tableId).data({'id': '', 'head': 'true'});
+                $('#soul-condition' + tableId).data({ 'id': '', 'head': 'true' });
                 $('#soul-condition' + tableId + '>.' + field + 'Condition' + ' [name^=datetime][value="all"]').prop('checked', true);
             }
 
@@ -1965,7 +1969,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
             } else {
                 top = top - $('#soul-condition' + tableId).outerHeight() - 10;
             }
-            $('#soul-condition' + tableId).css({'top': top, 'left': left})
+            $('#soul-condition' + tableId).css({ 'top': top, 'left': left })
                 .show().removeClass().addClass(animate + ' animated');
 
         }
@@ -2032,14 +2036,14 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
         }
         , renderBottomCondition: function (myTable) {
             var _this = this,
-                where = where_cache[myTable.id]||{},
+                where = where_cache[myTable.id] || {},
                 filterSos = where.filterSos ? JSON.parse(where.filterSos) : [],
                 tableFilterTypes = where.tableFilterType ? JSON.parse(where.tableFilterType) : {},
                 $table = $(myTable.elem),
                 tableId = $table.attr('id'),
                 $bottomCondition = $table.next().children('.soul-bottom-contion'),
                 fieldMap = {}, bcHtml = [],
-                filterItems = myTable.filter?myTable.filter.items||['column','data','condition','editCondition','excel']:['column','data','condition','editCondition','excel'],
+                filterItems = myTable.filter ? myTable.filter.items || ['column', 'data', 'condition', 'editCondition', 'excel'] : ['column', 'data', 'condition', 'editCondition', 'excel'],
                 columns = [].concat.apply([], myTable.cols);
             for (var i = 0; i < columns.length; i++) {
                 if (columns[i].field && columns[i].filter) {
@@ -2078,10 +2082,10 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
             // 3. 条件选择
             if ($('#soul-bf-type' + tableId).length == 0) {
                 bcHtml.push('<div id="soul-bf-type' + tableId + '" style="display: none;"><ul>')
-                if (filterItems.indexOf('data')!=-1) {
+                if (filterItems.indexOf('data') != -1) {
                     bcHtml.push('<li data-value="in" data-mode="in">筛选数据</li>')
                 }
-                if (filterItems.indexOf('condition')!=-1) {
+                if (filterItems.indexOf('condition') != -1) {
                     bcHtml.push('<li data-value="all" data-mode="date">选择日期</li>')
                     for (var key in conditionChangeItems) {
                         bcHtml.push('<li data-value="' + key + '" data-mode="condition">' + conditionChangeItems[key] + '</li>')
@@ -2119,7 +2123,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     .data('prefix', $(this).parent().data('prefix'))
                     .data('refresh', true)
                     .show()
-                    .css({top: top, left: left})
+                    .css({ top: top, left: left })
                     .removeClass().addClass('fadeIn2Up animated')
                     .find('li[data-value="' + $(this).parent().data('prefix') + '"]')
                     .addClass('soul-bf-selected')
@@ -2145,7 +2149,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     .data('group', $(this).parent().parent().data('id') || '')
                     .data('refresh', true)
                     .show()
-                    .css({top: top, left: left})
+                    .css({ top: top, left: left })
                     .removeClass().addClass('fadeIn2Up animated')
                     .find('li[data-field="' + $(this).parent().data('field') + '"]')
                     .addClass('soul-bf-selected')
@@ -2191,7 +2195,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                     .data('group', $(this).parent().parent().data('id') || '')
                     .data('refresh', true)
                     .show()
-                    .css({top: top, left: left})
+                    .css({ top: top, left: left })
                     .removeClass().addClass('fadeIn2Up animated')
             })
 
@@ -2228,7 +2232,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         $('#soul-dropList' + tableId + '>ul').data('id', id).data('head', head).data('refresh', true).data('prefix', prefix).html($('#soulDropList' + tableId).find('.' + field + 'DropList li').clone());
                         form.render('checkbox', 'orm');
                         top = $(this).offset().top - $('#soul-dropList' + tableId).outerHeight() - 10;
-                        $('#soul-dropList' + tableId).css({'top': top, 'left': left})
+                        $('#soul-dropList' + tableId).css({ 'top': top, 'left': left })
                             .show().removeClass().addClass('fadeIn2Up animated');
                         setTimeout(function () {
                             $('#soul-dropList' + tableId + '>.filter-search>input').focus() // 聚焦搜索框
@@ -2435,9 +2439,9 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
         , export: function (myTable, curExcel) {
             var loading = layer.msg('文件下载中', {
                 icon: 16
-                ,time: -1
-                ,anim: -1
-                ,fixed: false
+                , time: -1
+                , anim: -1
+                , fixed: false
             });
             var columns = [].concat.apply([], myTable.cols),
                 data = JSON.parse(JSON.stringify(myTable.data || layui.table.cache[myTable.id])),
@@ -2450,8 +2454,8 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                 mainExcel = typeof myTable.excel == 'undefined' || ((myTable.excel && (typeof myTable.excel.on == 'undefined' || myTable.excel.on)) ? myTable.excel : false),
                 mainExcel = mainExcel == true ? {} : mainExcel || {},
                 curExcel = curExcel || {},
-                filename = curExcel.filename?(typeof curExcel.filename === 'function'?curExcel.filename.call(this):curExcel.filename)
-                    : mainExcel.filename?(typeof mainExcel.filename === 'function'?mainExcel.filename.call(this):mainExcel.filename)
+                filename = curExcel.filename ? (typeof curExcel.filename === 'function' ? curExcel.filename.call(this) : curExcel.filename)
+                    : mainExcel.filename ? (typeof mainExcel.filename === 'function' ? mainExcel.filename.call(this) : mainExcel.filename)
                         : '表格数据.xlsx',
                 type = filename.substring(filename.lastIndexOf('.') + 1, filename.length)
 
@@ -2467,7 +2471,7 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         data = res.data
                     },
                     error: function (res) {
-                        layer.msg('请求异常！',{icon:2,anim:6});
+                        layer.msg('请求异常！', { icon: 2, anim: 6 });
                         ajaxStatus = false;
                     }
                 })
@@ -2545,34 +2549,34 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
                         return {
                             v: curIndex !== 0 && columnsMap[field].templet ?
                                 typeof columnsMap[field].templet == 'function' ?
-                                    $('<div>' + columnsMap[field].templet(line) + '</div>').find(':input').length===0?$('<div>' + columnsMap[field].templet(line) + '</div>').text():$tableBody.children('tbody').children('tr[data-index='+(curIndex-1)+']').children('td[data-field="'+field+'"]').find(':input').val() || line[field] || ''
-                                    : $('<div>'+$(columnsMap[field].templet).html()+'</div>').find(':input').length===0?$('<div>'+$(columnsMap[field].templet).html()+'</div>').text():$tableBody.children('tbody').children('tr[data-index='+(curIndex-1)+']').children('td[data-field="'+field+'"]').find(':input').val() || line[field] || ''
+                                    $('<div>' + columnsMap[field].templet(line) + '</div>').find(':input').length === 0 ? $('<div>' + columnsMap[field].templet(line) + '</div>').text() : $tableBody.children('tbody').children('tr[data-index=' + (curIndex - 1) + ']').children('td[data-field="' + field + '"]').find(':input').val() || line[field] || ''
+                                    : $('<div>' + $(columnsMap[field].templet).html() + '</div>').find(':input').length === 0 ? $('<div>' + $(columnsMap[field].templet).html() + '</div>').text() : $tableBody.children('tbody').children('tr[data-index=' + (curIndex - 1) + ']').children('td[data-field="' + field + '"]').find(':input').val() || line[field] || ''
                                 : line[field] || '',// v 代表单元格的值
                             s: {// s 代表样式
                                 alignment: {
                                     horizontal: 'center',
                                     vertical: 'center'
                                 },
-                                font: {name: family, sz: size, color: {rgb: color}},
+                                font: { name: family, sz: size, color: { rgb: color } },
                                 fill: {
-                                    fgColor: {rgb: bgColor, bgColor: {indexed: 64}}
+                                    fgColor: { rgb: bgColor, bgColor: { indexed: 64 } }
                                 },
                                 border: {
                                     top: {
                                         style: 'thin',
-                                        color: {indexed: 64}
+                                        color: { indexed: 64 }
                                     },
                                     bottom: {
                                         style: 'thin',
-                                        color: {indexed: 64}
+                                        color: { indexed: 64 }
                                     },
                                     left: {
                                         style: 'thin',
-                                        color: {indexed: 64}
+                                        color: { indexed: 64 }
                                     },
                                     right: {
                                         style: 'thin',
-                                        color: {indexed: 64}
+                                        color: { indexed: 64 }
                                     },
                                 }
                             },
@@ -2587,14 +2591,13 @@ layui.define(['table', 'form', 'laydate', 'util', 'excel'], function (exports) {
             excel.exportExcel({
                 sheet1: data
             }, filename, type, {
-                extend: {
-                    '!cols': colConf
-                }
-            });
+                    extend: {
+                        '!cols': colConf
+                    }
+                });
             layer.close(loading);
         }
     };
-
     // 输出
     exports('tableFilter', mod);
 });

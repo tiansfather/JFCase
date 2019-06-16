@@ -112,16 +112,16 @@ namespace Master.Module
 
         }
 
-        public virtual async Task RemoveModuleInfoCache(string moduleKey, int tenantId)
+        public virtual void RemoveModuleInfoCache(string moduleKey, int tenantId)
         {
             var key = moduleKey + "@" + tenantId;
             CacheManager.GetCache<string, ModuleInfo>("ModuleInfo").Remove(key);
-            //同时更新权限表，对于不存在的按钮，取消权限
-            var buttonPermissions = Resolve<IRepository<ModuleButton, int>>().GetAll().Where(o => o.ModuleInfo.ModuleKey == moduleKey).Select(o => $"Module.{moduleKey}.Button.{o.ButtonKey}").ToList();
-            Resolve<IRepository<PermissionSetting, int>>().Delete(o => !buttonPermissions.Contains(o.Name) && o.Name.StartsWith($"Module.{moduleKey}.Button"));
-            //取消权限缓存
-            CacheManager.GetCache<int, IList<Permission>>("ModuleInfoPermission").Remove(tenantId);
-            CacheManager.GetCache<int, IList<Permission>>("Permissions").Remove(tenantId);
+            ////同时更新权限表，对于不存在的按钮，取消权限
+            //var buttonPermissions = Resolve<IRepository<ModuleButton, int>>().GetAll().Where(o => o.ModuleInfo.ModuleKey == moduleKey).Select(o => $"Module.{moduleKey}.Button.{o.ButtonKey}").ToList();
+            //Resolve<IRepository<PermissionSetting, int>>().Delete(o => !buttonPermissions.Contains(o.Name) && o.Name.StartsWith($"Module.{moduleKey}.Button"));
+            ////取消权限缓存
+            //CacheManager.GetCache<int, IList<Permission>>("ModuleInfoPermission").Remove(tenantId);
+            //CacheManager.GetCache<int, IList<Permission>>("Permissions").Remove(tenantId);
         }
         #region 通过模块寻找对应的定义类
         /// <summary>
@@ -221,9 +221,17 @@ namespace Master.Module
                 moduleInfo.ColumnInfos.Add(column);
             }
             //列信息预处理
-            foreach (var column in moduleInfo.ColumnInfos)
+            var sort = 1;
+            foreach (var column in moduleInfo.ColumnInfos.OrderBy(o => o.Sort))
             {
                 column.Normalize();
+                column.Sort = sort++;
+            }
+            //操作列必须在最后
+            var operationColumn = moduleInfo.ColumnInfos.SingleOrDefault(o => o.IsOperationColumn);
+            if (operationColumn != null)
+            {
+                operationColumn.Sort = moduleInfo.ColumnInfos.Max(o => o.Sort) + 1;
             }
             //触发事件
             await EventBus.Default.TriggerAsync(new ModuleInfoChangedEventData() { ModuleKey = moduleInfo.ModuleKey, TenantId = moduleInfo.TenantId });

@@ -3,7 +3,7 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "工作台";
 }
-<div id="app">
+<div id="app" style="display:none">
     <!--顶部-->
     <com-header active-name="工作台"></com-header>
     
@@ -162,6 +162,7 @@
                         //caseSourceStatus为案例状态：1待加工，2加工中
                         //对应的加工页地址为/Home/Process?encrypedId=加密后的id
                         that.sources = data;
+                        $("#app").show();
                     })
                 }
             },

@@ -344,9 +344,9 @@ namespace Master.Users
                 .Count(o => o.CreatorUserId == entity.Id && (o.CaseStatus == CaseStatus.展示中 ));
             return new
             {
-                Avata = entity.GetPropertyValue("Avata"),
-                AnYou = entity.GetPropertyValue("AnYou"),//所属领域
-                AnYouId = entity.GetPropertyValue("AnYouId"),//所属领域Id
+                Avata = entity.GetPropertyValue<string>("Avata"),
+                AnYou = entity.GetPropertyValue<string>("AnYou"),//所属领域
+                AnYouId = entity.GetPropertyValue<int?>("AnYouId"),//所属领域Id
                 entity.Name,
                 caseCount,
                 entity.Id,

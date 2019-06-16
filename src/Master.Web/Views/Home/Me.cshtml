@@ -87,8 +87,16 @@
                         <el-form-item label="律所">
                             <el-input v-model="userData.workLocation" placeholder="律所"></el-input>
                         </el-form-item>
+                        
                         <el-form-item label="所属领域">
-                            <el-input v-model="userData.anYouId" placeholder="所属领域"></el-input>
+                            @*<el-input v-model="userData.anYouId" placeholder="所属领域"></el-input>*@
+                            <el-select v-model="userData.anYouId" placeholder="所属领域" style="width:100%">
+                                <el-option v-for="item in anYous"
+                                           :key="item.id"
+                                           :label="item.displayName"
+                                           :value="item.id">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                         <el-form-item label="已完成案例">
                             <el-input v-model="userData.caseCount" placeholder="已完成案例" :disabled="true"></el-input>
@@ -109,15 +117,22 @@
         </div>
         @section scripts{
             <script>
-                new Vue({
+                var app=new Vue({
                     el: '#app',
                     data: {
                         editMode: false,
-                        userData: {}
+                        userData: {},
+                        anYous:[]
                     },
                     methods: {
                         update: function () {
-                            abp.services.app.user.updateUserInfo(this.userData)
+                            var that = this;
+                            abp.message.confirm('确认提交?', function () {
+                                func.runAsync(abp.services.app.user.updateUserInfo(that.userData).done(() => {
+                                    location.reload();
+                                }))
+                            })
+                            
 
                         }
                     },
@@ -125,7 +140,9 @@
                         abp.services.app.user.getById(abp.session.userId).done(data => {
                             this.userData = data;
                         })
-
+                        abp.services.app.type.getAnYous().done(data => {
+                            this.anYous = data;
+                        });
                     }
                 })
                                 ////请求用户信息的接口

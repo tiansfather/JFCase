@@ -31,7 +31,30 @@ namespace Master.Entity
                 throw new UserFriendlyException($"未找到{name}对应知识树节点");
             }
 
-            return nodes.Where(o => o.RelativeNodeId == baseTree.Id);
+            return await GetTypeNodesByKnowledgeNode(baseTree);
+        }
+        public virtual async Task<IEnumerable<BaseTree>> GetTypeNodesByParentKnowledgeName(string name)
+        {            
+
+            var parentKnowledgeNode = await GetByName(name);
+            if (parentKnowledgeNode == null)
+            {
+                throw new UserFriendlyException($"未找到{name}对应知识树节点");
+            }
+            var childNodes = await FindChildrenAsync(parentKnowledgeNode.Id);//初级法院二级法院三级法院
+
+            var nodes = new List<BaseTree>();
+            foreach (var childNode in childNodes)
+            {
+                nodes.AddRange(await GetTypeNodesByKnowledgeNode(childNode));
+            }
+            return nodes;
+        }
+        public virtual async Task<IEnumerable<BaseTree>> GetTypeNodesByKnowledgeNode(BaseTree knowledgeNode)
+        {
+            var nodes = await GetAllList();
+
+            return nodes.Where(o => o.RelativeNodeId == knowledgeNode.Id);
         }
         public virtual async Task<IEnumerable<string>> GetNamesFromTopLevel(BaseTree node)
         {            
@@ -71,12 +94,11 @@ namespace Master.Entity
         /// <summary>
         /// 通过树类型和节点名称获取树节点
         /// </summary>
-        /// <param name="displayName"></param>
-        /// <param name="discriminator"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        public virtual async Task<BaseTree> GetByName(string displayName,string discriminator)
+        public virtual async Task<BaseTree> GetByName(string name)
         {
-            return await GetAll().Where(o => o.Discriminator == discriminator && o.DisplayName == displayName)
+            return await GetAll().Where(o => o.Name == name)
                 .FirstOrDefaultAsync();
         }
         /// <summary>
@@ -219,7 +241,7 @@ namespace Master.Entity
                 .Where(ou => ou.Id != BaseTree.Id)
                 .ToList();
 
-            if (siblings.Any(ou => ou.DisplayName == BaseTree.DisplayName))
+            if (siblings.Any(ou => ou.Name == BaseTree.Name))
             {
                 throw new UserFriendlyException("名称重复");
             }

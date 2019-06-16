@@ -4,7 +4,7 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "判例库";
 }
-<div id="app" v-cloak>
+<div id="app" v-cloak style="display:none">
     <!--顶部-->
     <com-header active-name="工作台"></com-header>
     <!--案源库-01-->
@@ -227,6 +227,7 @@
                     //数据获取接口
                     func.runAsync(abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.wherePart.keyword }).done((res) => {
                         that.items = res.data;
+                        $("#app").show();
                         that.totalCount = res.count;
                     }))
                 },

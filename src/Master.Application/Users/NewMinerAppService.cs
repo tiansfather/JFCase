@@ -66,6 +66,7 @@ namespace Master.Users
                 user.Id = 0;
                 user.SetPropertyValue("NickName", newMiner.NickName);
                 user.SetPropertyValue("Avata", newMiner.Avata);
+                user.TenantId = AbpSession.TenantId;
                 await userManger.InsertAndGetIdAsync(user);
                 await userManger.SetRoles(user, new int[] { role.Id });
                 user.Logins = new List<UserLogin>() {

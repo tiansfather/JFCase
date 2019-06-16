@@ -20,7 +20,10 @@ namespace Master.Case
         protected override async Task<IQueryable<CaseFine>> GetQueryable(RequestPageDto request)
         {
             var query = await base.GetQueryable(request);
-            return query.Include("CaseInitial.CaseSource.AnYou");
+            return query.Include("CaseInitial.CaseSource.AnYou")
+                .Where(o => o.CaseInitial.CaseSource.OwerId == AbpSession.UserId)
+                .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架);
+            ;
         }
         protected override object PageResultConverter(CaseFine entity)
         {
@@ -44,7 +47,7 @@ namespace Master.Case
         public virtual async Task<object> GetSummary()
         {
             //精加工数量
-            var caseFineCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId );
+            var caseFineCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && o.CaseStatus == CaseStatus.展示中 || o.CaseStatus == CaseStatus.下架);
 
             return new
             {

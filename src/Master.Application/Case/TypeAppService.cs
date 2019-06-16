@@ -34,7 +34,7 @@ namespace Master.Case
         }
         public virtual async Task<List<BaseTreeDto>> GetTypesByParentName(string name)
         {
-            var baseTree = await Resolve<BaseTreeManager>().GetByName(name, "BaseType");
+            var baseTree = await Resolve<BaseTreeManager>().GetByName(name);
             if (baseTree == null)
             {
                 return new List<BaseTreeDto>();
@@ -79,7 +79,11 @@ namespace Master.Case
         #region 法院
         public virtual async Task<object> GetCourts()
         {
-            var nodes = await GetTypesByKnowledgeName("法院");
+            var manager = Manager as BaseTreeManager;
+            //var cityNode = await manager.GetByName("城市");
+            //var childNodes = await manager.FindChildrenAsync(cityNode.Id);//初级法院二级法院三级法院
+
+            var nodes = await manager.GetTypeNodesByParentKnowledgeName("城市");
             return nodes.Select(o => new
             {
                 o.Id,
