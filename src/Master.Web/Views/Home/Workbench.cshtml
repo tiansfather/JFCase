@@ -3,6 +3,9 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "工作台";
 }
+<style>
+
+</style>
 <div id="app" style="display:none">
     <!--顶部-->
     <com-header active-name="工作台"></com-header>
@@ -82,11 +85,12 @@
             </div>
         </div>
     </Modal>
-    <!--添加-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
-        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
-        <div slot="footer">&nbsp;</div>
-    </Modal>
+    <!--pdf-->
+    @await Html.PartialAsync("PDFFrame")
+    @*<Modal width="630px" v-model="moda12" class-name="pdfmodal vertical-center-modal" :mask-closable="false" :title="currentItem.sourceSN" >
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" :style="{width:'100%',height:$(window).height()*0.8+'px'}"></iframe>
+        <div slot="footer" ></div>
+    </Modal>*@
 
     <!--footer-->
     <com-footer></com-footer>

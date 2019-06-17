@@ -97,31 +97,31 @@
                     </li>
                     <li>
                         <dl class="xian">
-                                <dd class="style-bf-20-a">
-                                    <template>
-                                        <i-select placeholder="请选择城市" v-model="wherePart.cityId" >
-                                            <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                        </i-select>
-                                    </template>
-                                </dd>
-                                @*<dd class="style-bf-20-b">
-                                    <template>
-                                        <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
-                                            <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                        </i-select>
-                                    </template>
-                                </dd>*@
-                                <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')">
-                                    <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect" >
-                                        <i-option v-for="opt in getOptions(item)" :value="opt.id"
-                                                  :key="opt.id">{{ opt.displayName }}</i-option>
+                            <dd class="style-bf-20-a">
+                                <template>
+                                    <i-select placeholder="请选择城市" v-model="wherePart.cityId">
+                                        <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                     </i-select>
-                                </dd>
-                            </dl>
-                        </li>
+                                </template>
+                            </dd>
+                            @*<dd class="style-bf-20-b">
+                                <template>
+                                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
+                                        <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </dd>*@
+                            <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')">
+                                <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect">
+                                    <i-option v-for="opt in getOptions(item)" :value="opt.id"
+                                              :key="opt.id">{{ opt.displayName }}</i-option>
+                                </i-select>
+                            </dd>
+                        </dl>
+                    </li>
 
                     <li>
-                        <dl class="xianb xuanzeStyle" >
+                        <dl class="xianb xuanzeStyle">
                             <dd class="style-bf-8">
                                 <div class="btn-title-bz">关键词筛选：</div>
                             </dd>
@@ -177,9 +177,9 @@
                     <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看。</h1>
                 </div>
                 <ul v-show="items.length">
-                    <li class="style-chaal-40" >
+                    <li class="style-chaal-40">
                         <template>
-                            <div class="infinite-list-wrapper" >
+                            <div class="infinite-list-wrapper">
                                 <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled">
                                     <a href="javascript:;">
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
@@ -204,21 +204,21 @@
 
                         </template>
                         @*<dl>
-                    <dd v-for="item in [{title:'t',introduction:'34321',readNumber:125,id:12}]" :key="item.id" @@click="getViewMsg(item.id)">
-                        <i1>
-                            <div class="left-cha1"><img src="ima/index-2.png"></div>
-                            <div class="right-cha1">
-                                {{item.title}}
-                            </div>
-                        </i1>
-                        <i2>
-                            <div class="top-cha1">
-                                {{item.introduction}}
-                            </div>
-                            <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
-                        </i2>
-                    </dd>
-                </dl>*@
+                            <dd v-for="item in [{title:'t',introduction:'34321',readNumber:125,id:12}]" :key="item.id" @@click="getViewMsg(item.id)">
+                                <i1>
+                                    <div class="left-cha1"><img src="ima/index-2.png"></div>
+                                    <div class="right-cha1">
+                                        {{item.title}}
+                                    </div>
+                                </i1>
+                                <i2>
+                                    <div class="top-cha1">
+                                        {{item.introduction}}
+                                    </div>
+                                    <div class="bottom-cha1"><span>{{item.readNumber}}</span><i class="jianfa fa-eye"></i></div>
+                                </i2>
+                            </dd>
+                        </dl>*@
                     </li>
                     <li class="on style-chaal-60" v-if="caseInfo">
                         <dl class="on">
@@ -350,10 +350,11 @@
         <!--footer-->
         <com-footer></com-footer>
         <!--end-->
-        <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="caseInfo.source.sourceSN">
+        @*<Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="caseInfo.source.sourceSN">
             <iframe :src="'/pdfviewer/web/viewer.html?file='+caseInfo.source.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
             <div slot="footer">&nbsp;</div>
-        </Modal>
+        </Modal>*@
+        @await Html.PartialAsync("PDFFrame")
     </div>
 @section scripts{
     <script>

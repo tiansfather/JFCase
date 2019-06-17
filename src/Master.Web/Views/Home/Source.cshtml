@@ -15,42 +15,42 @@
                     <dl>
                         <dd>当前位置：案例工厂 > 判例库 > 筛选 ：</dd>
                         @*<dd class="xchu">上海<span>×</span></dd>
-                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                     </dl>
                 </li>
                 <li>
                     <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
 
                     @*<dl class="xian">
-                        <dd class="style-bf-20">
-                            <template>
-                                <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
-                                    <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                        <dd class="style-bf-20">
-                            <template>
-                                <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
-                                    <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                        <dd class="style-bf-20">
-                            <template>
-                                <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
-                                    <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
-                                    <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
-                                </i-select>
-                            </template>
-                        </dd>
-                        <dd class="style-bf-30">
-                            <template>
-                                <i-input v-model="wherePart.keyword" size="small" placeholder="请输入关键词等信息..." />
-                            </template>
-                        </dd>
-                        <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
-                    </dl>*@
+                            <dd class="style-bf-20">
+                                <template>
+                                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
+                                        <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </dd>
+                            <dd class="style-bf-20">
+                                <template>
+                                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
+                                        <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </dd>
+                            <dd class="style-bf-20">
+                                <template>
+                                    <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
+                                        <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                                        <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </dd>
+                            <dd class="style-bf-30">
+                                <template>
+                                    <i-input v-model="wherePart.keyword" size="small" placeholder="请输入关键词等信息..." />
+                                </template>
+                            </dd>
+                            <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
+                        </dl>*@
                 </li>
                 <li class="on">您的工作台已有 <span class="shuzi">{{workbenchCount}}</span> 个案例，还可以选择 <span class="shuzi">{{canChooseCount}}</span> 个案例:</li>
                 <li v-show="items.length==0">
@@ -69,7 +69,7 @@
                                 <th width="120">生效日期</th>
                                 <th>处理记录</th>
                                 <th width="50">操作</th>
-                            </tr>                            
+                            </tr>
                             <tr v-for="(item,index) in items">
                                 <td>{{item.city}}</td>
                                 <td>{{item.court1}}</td>
@@ -79,8 +79,8 @@
                                 <td>{{getLawyer(item)}}</td>
                                 <td>{{item.validDate}}</td>
                                 <td>
-                                    <Poptip trigger="hover"   v-if="item.history.length>0">
-                                        <span >{{item.history.length}}</span>
+                                    <Poptip trigger="hover" v-if="item.history.length>0">
+                                        <span>{{item.history.length}}</span>
                                         <div slot="content">
                                             <table width="200">
                                                 <tr><td>序号</td><td>放回时间</td><td>放回原因</td></tr>
@@ -103,10 +103,10 @@
                 </li>
             </ul>
         </div>
-        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[10, 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0"/>
+        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[10, 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
     </div>
 
-    
+
     <!--end-->
     <!--添加1-->
     <Modal width="428px" v-model="modal1" class-name="center-modal" :mask-closable="false" @@on-ok="choose">
@@ -117,16 +117,11 @@
         </div>
     </Modal>
     <!--添加-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
-        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
-        @*<div class="neirong-eject">
-            <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%"></iframe>
-            <ul>
-                <li><img src="ima/anhao-1.jpg"></li>
-            </ul>
-        </div>*@
-        <div slot="footer">&nbsp;</div>
-    </Modal>
+    @await Html.PartialAsync("PDFFrame")
+    @*<Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>*@
     <!--
     <div slot="footer">
     <Button class="btn-footer" @@click="submit">确认</Button><Button class="btn-footer" @@click="submit">取消</Button>

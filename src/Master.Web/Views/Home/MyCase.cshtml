@@ -15,7 +15,7 @@
                     <dl>
                         <dd>当前位置：案例工厂 > 首页 > 工作台 > 我的案例 ：</dd>
                         <!--<dd class="xchu">上海<span>×</span></dd>
-            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>-->
+                        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>-->
                     </dl>
                 </li>
                 <li>
@@ -62,7 +62,7 @@
                             <tr v-for="(item,index) in items">
                                 <td class="on">
                                     <template>
-                                        <i-switch :value="item.caseStatus==1" @@on-change="changeStatus(item,$event)"/>
+                                        <i-switch :value="item.caseStatus==1" @@on-change="changeStatus(item,$event)" />
                                     </template>
                                 </td>
                                 <td class="on">{{item.anYou}}</td>
@@ -89,25 +89,25 @@
                             </tr>
 
                             @*<tr>
-                                <td class="on">
-                                    <template>
-                                        <i-switch :value="true" />
-                                    </template>
-                                </td>
-                                <td class="on">房屋买卖纠纷（二手）</td>
-                                <td class="on"><a @@click="moda12 = true">(2016)沪 0115 民初 67704 号</a></td>
-                                <td class="on">
-                                    <template>
-                                        <i-select placeholder="请选择专题" v-model="model3" size="small">
-                                            <i-option v-for="item in subjects" :value="item.value" :key="item.value">{{ item.label }}</i-option>
-                                        </i-select>
-                                    </template>
-                                </td>
-                                <td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>
-                                <td class="on">2016/04/10</td>
-                                <td class="on">888</td>
-                                <td class="on"><a href=""><img src="ima/jia-icon-2.png"></a></td>
-                            </tr>*@
+                                    <td class="on">
+                                        <template>
+                                            <i-switch :value="true" />
+                                        </template>
+                                    </td>
+                                    <td class="on">房屋买卖纠纷（二手）</td>
+                                    <td class="on"><a @@click="moda12 = true">(2016)沪 0115 民初 67704 号</a></td>
+                                    <td class="on">
+                                        <template>
+                                            <i-select placeholder="请选择专题" v-model="model3" size="small">
+                                                <i-option v-for="item in subjects" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+                                            </i-select>
+                                        </template>
+                                    </td>
+                                    <td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>
+                                    <td class="on">2016/04/10</td>
+                                    <td class="on">888</td>
+                                    <td class="on"><a href=""><img src="ima/jia-icon-2.png"></a></td>
+                                </tr>*@
                         </table>
                     </div>
                 </li>
@@ -125,14 +125,11 @@
         </div>
     </Modal>
     <!--添加-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
-        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
-        <div slot="footer">&nbsp;</div>
-        <!--
-        <div slot="footer">
-        <Button class="btn-footer" @@click="submit">确认</Button><Button class="btn-footer" @@click="submit">取消</Button>
-        </div>-->
-    </Modal>
+    @await Html.PartialAsync("PDFFrame")
+    @*<Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>*@
     <!--end-->
     <!--footer-->
     <com-footer></com-footer>
