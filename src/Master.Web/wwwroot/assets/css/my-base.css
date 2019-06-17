@@ -24,3 +24,19 @@
     padding-right: 5px;
     box-sizing: border-box;
 }
+.jianfa-jiagong .jiagong-content .bjli .bjdl {
+    height: calc(100vh - 156px);
+}
+.index-daohang {
+    width: calc(78vh + 60px);
+}
+    .index-daohang .dh-left, .index-daohang .dh-right {
+        width: 25vh;
+        height: 25vh;
+        background-size: 25vh!important;
+    }
+    .index-daohang .dh-middle {
+        width: 28vh;
+        height: 28vh;
+        background-size: 28vh!important;
+    }
