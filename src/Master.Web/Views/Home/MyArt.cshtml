@@ -15,7 +15,7 @@
                     <dl>
                         <dd>当前位置：案例工厂 > 首页 > 工作台 > 我的精品 > 筛选 ：</dd>
                         @*<dd class="xchu">上海<span>×</span></dd>
-                <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                     </dl>
                 </li>
                 <li>
@@ -75,13 +75,13 @@
                             </tr>
 
                             @*<tr>
-                        <td class="on">房屋买卖纠纷（二手）</td>
-                        <td class="on">(2016)沪 0115 民初 67704 号</td>
-                        <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
-                        <td class="on">2016/04/10</td>
-                        <td class="on">我的备注内容备注内容…</td>
-                        <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
-                    </tr>*@
+                                    <td class="on">房屋买卖纠纷（二手）</td>
+                                    <td class="on">(2016)沪 0115 民初 67704 号</td>
+                                    <td class="on"><a @@click="moda12 = true">在确保买方能够付款的前提下…<i class="jianfa fa-eye"></i></a></td>
+                                    <td class="on">2016/04/10</td>
+                                    <td class="on">我的备注内容备注内容…</td>
+                                    <td class="on"><a href="加工页.html"><img src="ima/jia-icon-2.png"></a></td>
+                                </tr>*@
 
                         </table>
                     </div>
@@ -91,10 +91,11 @@
         <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[10, 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
     </div>
     <!--end-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
-        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
-        <div slot="footer">&nbsp;</div>
-    </Modal>
+    @*<Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>*@
+    @await Html.PartialAsync("PDFFrame")
     <!--end-->
     <!--footer-->
     <com-footer></com-footer>

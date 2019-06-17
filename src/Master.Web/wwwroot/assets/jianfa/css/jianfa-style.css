@@ -475,3 +475,12 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
 .pdfmodal .ivu-modal-body{
     padding:0px;
 }
+
+.pdfmodal .ivu-modal-footer{
+    display:none;
+}
+.vertical-center-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
