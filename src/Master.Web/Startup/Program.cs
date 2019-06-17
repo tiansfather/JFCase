@@ -8,7 +8,7 @@ namespace Master.Web.Startup
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
-                .UseKestrel()
+                .UseKestrel(options=>options.Limits.MaxRequestBodySize=null)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
