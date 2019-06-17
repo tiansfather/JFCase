@@ -66,7 +66,7 @@
                                     </template>
                                 </td>
                                 <td class="on">{{item.anYou}}</td>
-                                <td class="on"><a @@click="moda12 = true">{{item.sourceSN}}</a></td>
+                                <td class="on"><a @@click="currentItem=item;moda12 = true">{{item.sourceSN}}</a></td>
                                 <td class="on">
                                     <template>
                                         <i-select placeholder="请选择专题" v-model="item.subjectId" size="small" @@on-change="changeSubject(item,$event)">
@@ -125,12 +125,8 @@
         </div>
     </Modal>
     <!--添加-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" title="(2016)沪 0115 民初 67704 号">
-        <div class="neirong-eject">
-            <ul>
-                <li><img src="ima/anhao-1.jpg"></li>
-            </ul>
-        </div>
+    <Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
         <div slot="footer">&nbsp;</div>
         <!--
         <div slot="footer">

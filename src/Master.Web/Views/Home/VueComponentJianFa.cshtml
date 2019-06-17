@@ -44,7 +44,16 @@
                     </i-Menu>
                     <!--end-->
                 </div>
-                <div class="portrait-pic"><a href="/Home/Me"><img :src="avata" border="0" width="36" height="36"></a></div>
+                <div class="portrait-pic">
+                    <el-dropdown>
+                        <img :src="avata" border="0" width="36" height="36" style="cursor:pointer">
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item><a href="/Home/Me">个人信息</a></el-dropdown-item>                            
+                            <el-dropdown-item divided><a href="/Account/Logout">退出登录</a></el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    @*<a href="/Home/Me"><img :src="avata" border="0" width="36" height="36"></a>*@
+                </div>
             </div>
         </div>
     </script>

@@ -117,7 +117,7 @@
         </div>
     </Modal>
     <!--添加-->
-    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="currentItem.sourceSN">
+    <Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
         <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
         @*<div class="neirong-eject">
             <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%"></iframe>
