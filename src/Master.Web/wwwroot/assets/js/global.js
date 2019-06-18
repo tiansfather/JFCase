@@ -413,6 +413,7 @@ var func = {
                 });
             }, xhr: function (index, e) {
                 var percent = e.loaded / e.total;//计算百分比
+                console.log(percent);
                 percent = Math.round(parseFloat(percent.toFixed(2)) * 100);//解决小数点问题
                 layui.element.progress('progress_' + index + '', percent + '%');
                 //console.log(index+"-----" + percent);
