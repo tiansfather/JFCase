@@ -381,7 +381,7 @@ option:hover{background: #f5f5f5;}*/
 footer {float:left;position:absolute;bottom:0;width:100%;}
 footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
 /*底部内页*/
-.footer-ny {float:left;position:fixed;bottom:0;width:100%;background:#754c24;z-index:999;}
+.footer-ny {float:left;position:fixed;bottom:0;width:100%;background:#754c24;z-index:899;}
 .footer-ny .ziti-b{text-align:center; height:36px; line-height:36px; color:#fff;}
 
 /**/

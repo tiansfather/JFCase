@@ -194,7 +194,7 @@
                                     <a href="javascript:;">
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
                                             <i1>
-                                                <div class="left-cha1"><img src="ima/index-2.png"></div>
+                                                <div class="left-cha1"><img :src="item.avata"></div>
                                                 <div class="right-cha1">
                                                     {{item.title}}
                                                 </div>
@@ -241,7 +241,7 @@
 
                             <dd class="on">
                                 <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
-                                <a @@click="moda12 = true">
+                                <a @@click="currentItem=caseInfo.source;moda12 = true">
                                     <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
                                 </a>
                                 <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
@@ -318,7 +318,7 @@
                                                                 <dd class="card-top">
                                                                     <span>{{item.title}}</span>
                                                                 </dd>
-                                                                <dd class="card-zhong" @@click.stop.prevent="moda12 = true">
+                                                                <dd class="card-zhong" >
                                                                     <span>{{caseInfo.source.sourceSN}}</span>
                                                                 </dd>
                                                                 <dd class="card-bottom">
@@ -371,6 +371,7 @@
         var app = new Vue({
             el: '#app',
             data: {
+                currentItem: {},
                 currentPage: 1,
                 pagesize: 10,
                 items: [],
