@@ -360,7 +360,7 @@
                                                                         <dd class="card-zhong">
                                                                             {{source.sourceSN}}
                                                                         </dd>
-                                                                        <dd class="card-bottom">{{source.court1}}</dd>
+                                                                        <dd class="card-bottom">{{source.court2||source.court1}}</dd>
                                                                     </dl>
                                                                 </li>
                                                             </ul>
@@ -435,7 +435,7 @@
 
         <div class="jianfa-guandiancard style-pa-46">
             <div class="ny-guandiancard">
-                <a @@click="isRotate= !isRotate" class="paiban" :class="{'rotate-card':isRotate}">
+                <a @@click="isRotate= !isRotate" class="paiban" :class="{'rotate-card':isRotate}" style="width:100%">
                     <!--状态1-->
                     <div class="card-start">
                         <ul>
@@ -448,7 +448,7 @@
                                         <span>  {{source.sourceSN}}</span>
                                     </dd>
                                     <dd class="card-bottom">
-                                        {{source.court1}}
+                                        {{source.court2||source.court1}}
                                     </dd>
                                 </dl>
                             </li>

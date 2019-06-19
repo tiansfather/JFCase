@@ -40,7 +40,7 @@ namespace Master.Module
         /// <summary>
         /// 默认每页数量
         /// </summary>
-        public int DefaultLimit { get; set; } = 10;
+        public int DefaultLimit { get; set; } = 50;
         /// <summary>
         /// 每页数量可选值
         /// </summary>

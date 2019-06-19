@@ -176,7 +176,7 @@
                     //return this.$refs.headFilter.where;
                     var where = '1=1';
                     for (var i in this.wherePart) {
-                        if (i == 'keyword') { return;}
+                        if (i == 'keyword') { continue; }
                         console.log(i,this.wherePart[i])
                         var data = this.wherePart[i];
                         if (!data) continue;

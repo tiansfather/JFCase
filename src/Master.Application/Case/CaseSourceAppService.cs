@@ -164,7 +164,7 @@ namespace Master.Case
         private List<CaseSourceImportResult> ReadFromDataTable(DataTable dataTable)
         {
             //验证表头
-            var needColumNames = new string[] { "案号", "城市", "一审法院", "审理法院", "案由", "代理律师", "审判人员", "裁判时间" };
+            var needColumNames = new string[] { "案号", "城市", "一审法院", "二审法院", "案由", "代理律师", "审判人员", "裁判时间" };
             foreach(var needColumnName in needColumNames)
             {
                 if (!dataTable.Columns.Contains(needColumnName))
@@ -190,7 +190,7 @@ namespace Master.Case
                 SourceSN = dataRow["案号"].ToString(),
                 City = dataRow["城市"].ToString(),
                 Court1 = dataRow["一审法院"].ToString(),
-                Court2 = dataRow["审理法院"].ToString(),
+                Court2 = dataRow["二审法院"].ToString(),
                 AnYou = dataRow["案由"].ToString(),
                 Lawyer = dataRow["代理律师"].ToString(),
                 TrialPeople = dataRow["审判人员"].ToString(),
