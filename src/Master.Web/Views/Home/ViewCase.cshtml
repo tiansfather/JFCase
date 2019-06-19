@@ -85,6 +85,14 @@
         .jianfa-chaanli .chaanli-content li dl {
             height: calc(100vh - 324px);
         }
+        .paiban {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .card-start, .card-end, .jianfa-guandiancard .ny-guandiancard ul {
+            width: auto;
+        }
     </style>
 }
     <div id="app" v-cloak style="display:none">
@@ -309,7 +317,8 @@
                                 <i5 class="fleft tjustify">
                                     <div class="jianfa-guandiancard style-pa-46">
                                         <div class="ny-guandiancard">
-                                            <a @@click="item.isRotate= !item.isRotate" style="width:100%;" class="paiban" v-for="(item,index) in caseInfo.initial.caseCards" :class="{'on':(index+1)%3==2,'rotate-card':item.isRotate}" v-if="items.length">
+                                            <a @@click="item.isRotate= !item.isRotate" style="width:100%;" class="paiban" v-for="(item,index) in caseInfo.initial.caseCards" :class="{'rotate-card':item.isRotate}" v-if="items.length">
+                                                @* 'on':(index+1)%3==2, *@
                                                 <!--状态1-->
                                                 <div class="card-start">
                                                     <ul>
@@ -318,7 +327,7 @@
                                                                 <dd class="card-top">
                                                                     <span>{{item.title}}</span>
                                                                 </dd>
-                                                                <dd class="card-zhong" >
+                                                                <dd class="card-zhong">
                                                                     <span>{{caseInfo.source.sourceSN}}</span>
                                                                 </dd>
                                                                 <dd class="card-bottom">
