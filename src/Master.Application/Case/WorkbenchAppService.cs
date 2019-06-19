@@ -185,6 +185,9 @@ namespace Master.Case
             if (caseInitial != null)
             {
                 caseInitial.MapTo(caseInitialDto);
+                //移除未发布的案例卡及精加工
+                caseInitialDto.CaseFines.RemoveAll(o => o.CaseStatus != CaseStatus.展示中);
+                caseInitialDto.CaseCards.RemoveAll(o => o.CaseStatus != CaseStatus.展示中);
             }
 
             return new

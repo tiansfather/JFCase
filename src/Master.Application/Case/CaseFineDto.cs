@@ -13,5 +13,6 @@ namespace Master.Case
         public string Content { get; set; }
         public string MediaPath { get; set; }
         public string Remarks { get; set; }
+        public CaseStatus CaseStatus { get; set; }
     }
 }
