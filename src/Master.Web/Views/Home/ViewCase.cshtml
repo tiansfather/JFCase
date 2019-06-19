@@ -122,7 +122,7 @@
                                 </template>
                             </dd>*@
                             <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')">
-                                <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect" >
+                                <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect" collapse-tags>
                                     <i-option v-for="opt in getOptions(item)" :value="opt.id"
                                               :key="opt.id">{{ opt.displayName }}</i-option>
                                 </i-select>

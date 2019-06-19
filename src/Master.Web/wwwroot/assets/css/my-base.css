@@ -40,3 +40,9 @@
         height: 28vh;
         background-size: 28vh!important;
     }
+.style-pa-1 {
+    position: relative;
+     margin: 0; 
+    left: 50%;
+    transform: translate(-50%);
+}
