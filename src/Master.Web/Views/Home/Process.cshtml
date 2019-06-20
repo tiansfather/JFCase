@@ -18,6 +18,9 @@
     .style-chaal-42 {
         width: calc(50% - 19px);
     }
+    .error input, .error textarea, .error .ivu-select-selection {
+        border: 1px solid red;
+    }
     </style>
 }
 
@@ -54,7 +57,7 @@
                     <div class="bjdl on">
                         <template>
                             <Tabs size="small" type="card">
-                                <Tab-Pane label="初加工">
+                                <Tab-Pane label="初加工" class="initialPanel">
                                     <div class="bqian">
 
                                         <div class="bjdd on">
@@ -86,7 +89,7 @@
                                         </div>
 
                                         <div class="bjdd on">
-                                            <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')">
+                                            <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')" :class="{error:validatingInitial && !selectHasValue(selectValues['案由'][index])}" :errmsg="'请选择'+item.displayName">
                                                 <template>
                                                     <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues['案由'][index]" @@on-change="changeInitialSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect">
                                                         <i-option v-for="opt in getOptions(item)" :value="opt.id"
@@ -122,8 +125,8 @@
                                             </div>
                                         </div>
 
-                                        <div class="bjdd on">
-                                            <div class="fleft xian-1 style-chaal-100">
+                                        <div class="bjdd on" :class="{error:validatingInitial && !caseInitialUpdateDto.subjectId}" errmsg="请选择专题">
+                                            <div class="fleft xian-1 style-chaal-100" >
                                                 <template>
                                                     <i-select placeholder="请选择专题" clearable  v-model="caseInitialUpdateDto.subjectId">
                                                         <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
@@ -136,7 +139,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">案例聚焦</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100">
+                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.title}" errmsg="请正确定填写案例聚焦">
                                                 <textarea name=""
                                                           class="textarea" v-model="caseInitialUpdateDto.title"></textarea>
                                             </div>
@@ -146,13 +149,13 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">案例概述</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100">
+                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.introduction}" errmsg="请正确定填写案例概述">
                                                 <textarea name=""
                                                           class="textarea-sp" v-model="caseInitialUpdateDto.introduction"></textarea>
                                             </div>
                                         </div>
 
-                                        <div class="bjdd on">
+                                        <div class="bjdd on" :class="{error:validatingInitial && !caseInitialUpdateDto.judgeInfo.judgeContent}" errmsg="请正确定填写诉请及判决">
                                             <bt style="margin-bottom:15px;">
                                                 <i8 class="style-chaal-20">诉请及判决</i8>
                                             </bt>
@@ -197,7 +200,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">法律法规</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100">
+                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.law}" errmsg="请正确定填写法律法规">
                                                 <textarea name=""
                                                           class="textarea" v-model="caseInitialUpdateDto.law"></textarea>
                                             </div>
@@ -207,7 +210,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">经验分享</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100">
+                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.experience}" errmsg="请正确定填写经验分享">
                                                 <textarea name="" class="textarea" v-model="caseInitialUpdateDto.experience"></textarea>
                                             </div>
                                         </div>
@@ -216,7 +219,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">简法律师说</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100">
+                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.lawyerOpinion}" errmsg="请正确定填写简法律师说">
                                                 <textarea name="" class="textarea" v-model="caseInitialUpdateDto.lawyerOpinion"></textarea>
                                             </div>
                                         </div>
@@ -363,7 +366,7 @@
                                                             <ul>
                                                                 <li>
                                                                     <dl>
-                                                                        <dd class="card-top">
+                                                                        <dd class="card-top" :class="{error:validatingCard && !item.title}">
                                                                             <textarea name=""
                                                                                       class="textarea-k" v-model="item.title"></textarea>
                                                                         </dd>
@@ -391,7 +394,7 @@
                                                             <ul>
                                                                 <li>
                                                                     <dl>
-                                                                        <dd class="oncard-top">
+                                                                        <dd class="oncard-top" :class="{error:validatingCard && !item.content}">
                                                                             <textarea name="" class="textarea-k" v-model="item.content"></textarea>
                                                                             <p>{{trialPeople}}<br>{{source.publishDate}}</p>
                                                                         </dd>
@@ -657,6 +660,8 @@
                     "初加工":[]
                 },
                 checkboxGroup1: ['上海'],
+                validatingInitial: false,//初加工验证状态
+                validatingCard:false,//案例卡验证状态
             },
             computed: {
                 //审判组织
@@ -680,10 +685,18 @@
 
             },
             methods: {
+                //下拉选择是否有值
+                selectHasValue(value) {
+                    if (func.typeof(value) === "array") {
+                        return value.length > 0;
+                    } else {
+                        return value;
+                    }
+                },
                 async loadData() {
                     var that = this;
                     //获取判例对应的数据
-                    await abp.services.app.workbench.getCaseProcessInfo(id).done( (res)=> {
+                    var loadCase= abp.services.app.workbench.getCaseProcessInfo(id).done( (res)=> {
                         this.source = res.source;
                         this.caseInitialUpdateDto = res.caseInitialUpdateDto;
                         this.caseFineUpdateDto = res.caseFineUpdateDto;
@@ -703,24 +716,27 @@
                         //设置slider内部文字
                         this.setSliderValue();
                     })
-                    await abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
+                    var loadKnowledge= abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
                         this.knowledgeTree = res;
                     })
-                    await abp.services.app.baseTree.getTypeTreeJsonByParentId().done((res) => {
+                    var loadType= abp.services.app.baseTree.getTypeTreeJsonByParentId().done((res) => {
                         this.typeTree = res;
                     })
                     //获取所有标签数据
-                    await abp.services.app.type.getAllLabels().done(res => {
+                    var loadLabel= abp.services.app.type.getAllLabels().done(res => {
                         this.labels = res;
                     })
                     //加载专题数据
-                    await abp.services.app.type.getSubjects().done( (res)=> {
+                    var loadSubject= abp.services.app.type.getSubjects().done( (res)=> {
                         this.subjects = res;
                     })
-                    //初始化下拉选择
-                    this.initSelects();
-                    //初始化标签选择
-                    this.initLabels();
+                    Promise.all([loadCase, loadKnowledge, loadType, loadLabel, loadSubject]).then(obj => {
+                        //初始化下拉选择
+                        this.initSelects();
+                        //初始化标签选择
+                        this.initLabels();
+                    })
+                    
                     //abp.services.app.type.getAnYous().done(function (data) {
                     //    that.anYous = data;
                     //});
@@ -832,6 +848,7 @@
                 },
                 //保存初加工
                 updateInitial() {
+                    this.validatingInitial = false;
                     var that = this;
                     func.runAsync(abp.services.app.workbench.updateInitial(this.caseInitialUpdateDto).done(function () {
                         that.$Message.success("保存成功");
@@ -840,19 +857,33 @@
                 //发布初加工
                 publishInitial() {
                     var that = this;
-                    abp.message.confirm("您确定完成本案例的初加工了吗？发布后大家都能看到了哦。", function () {
-                        func.runAsync(abp.services.app.workbench.publishInitial(that.caseInitialUpdateDto).done(function () {
-                            that.$Modal.confirm({
-                                title: '成功',
-                                content: '案例初加工内容发布成功！您可至“我的案例”中查看并继续对案例做精加工或创建案例卡',
-                                okText: '去“我的案例”',
-                                cancelText: '继续加工本案例',
-                                onOk: () => {
-                                    location.href = '/Home/MyCase';
-                                },
-                            });
-                        }))
+                    this.validatingInitial = true;
+                    this.$nextTick(function () {
+                        if ($(".initialPanel [errmsg].error").length > 0) {
+                            //数据验证
+                            $(".initialPanel [errmsg].error").each(function () {
+                                abp.message.error($(this).attr("errmsg"));
+                                return false;
+                            })
+                            return false;
+                        }
+
+
+                        abp.message.confirm("您确定完成本案例的初加工了吗？发布后大家都能看到了哦。", function () {
+                            func.runAsync(abp.services.app.workbench.publishInitial(that.caseInitialUpdateDto).done(function () {
+                                that.$Modal.confirm({
+                                    title: '成功',
+                                    content: '案例初加工内容发布成功！您可至“我的案例”中查看并继续对案例做精加工或创建案例卡',
+                                    okText: '去“我的案例”',
+                                    cancelText: '继续加工本案例',
+                                    onOk: () => {
+                                        location.href = '/Home/MyCase';
+                                    },
+                                });
+                            }))
+                        })
                     })
+                    
                 },
                 //添加案例卡
                 addCaseCard() {
@@ -871,12 +902,18 @@
                 //保存案例卡
                 updateCaseCard() {
                     var that = this;
+                    that.validatingCard = false;
                     func.runAsync(abp.services.app.workbench.updateCard(this.caseCardUpdateDto).done(function () {
                         that.$Message.success("保存成功");
                     }))
                 },
                 publishCaseCard() {
                     var that = this;
+                    that.validatingCard = true;
+                    if (this.caseCardUpdateDto.caseCards.filter(o => !o.title || !o.content).length > 0) {
+                        abp.message.error("请填写完整");
+                        return false;
+                    }
                     abp.message.confirm("您确定完成案例卡制作了吗？发布后大家都能看到了哦。", function () {
                         func.runAsync(abp.services.app.workbench.publishCard(that.caseCardUpdateDto).done(function () {
                             that.$Modal.confirm({
