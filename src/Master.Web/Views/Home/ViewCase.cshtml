@@ -93,6 +93,14 @@
         .card-start, .card-end, .jianfa-guandiancard .ny-guandiancard ul {
             width: auto;
         }
+        .jianfa-guandiancard {
+            overflow: inherit;
+        }
+            .jianfa-guandiancard .ny-guandiancard li dd.oncard-top span {
+                height: 277px;
+                padding: 0 10px;
+                display: inline-block;
+            }
     </style>
 }
     <div id="app" v-cloak style="display:none">
@@ -547,6 +555,9 @@
                                 el.isRotate = false;
                             })
                             that.caseInfo = res;
+                            Vue.nextTick(function () {
+                                $('.style-chaal-60>dl').scrollTop(0)
+                            })
                         })
                     })
                 },
