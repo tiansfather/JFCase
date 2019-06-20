@@ -29,3 +29,8 @@ parentId若不传则返回所有知识树节点，不然返回对应节点下的
 3.提交树节点
 新增：abp.services.app.baseTree.submit({name:'b',parentId:16,remarks:'test',treeNodeType:0})
 修改：abp.services.app.baseTree.submit({id:16,name:'b',parentId:null,remarks:'test',treeNodeType:0})
+
+
+
+公众号密钥
+83020188a43c1745965d2a70e75d6b40

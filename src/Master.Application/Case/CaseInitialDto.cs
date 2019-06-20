@@ -50,10 +50,10 @@ namespace Master.Case
 
         public CaseStatus CaseStatus { get; set; }
 
-        public virtual ICollection<CaseNodeDto> CaseNodes { get; set; } = new List<CaseNodeDto>();
-        public virtual ICollection<CaseLabelDto> CaseLabels { get; set; } = new List<CaseLabelDto>();
-        public virtual ICollection<CaseFineDto> CaseFines { get; set; } = new List<CaseFineDto>();
-        public virtual ICollection<CaseCardDto> CaseCards { get; set; } = new List<CaseCardDto>();
+        public virtual List<CaseNodeDto> CaseNodes { get; set; } = new List<CaseNodeDto>();
+        public virtual List<CaseLabelDto> CaseLabels { get; set; } = new List<CaseLabelDto>();
+        public virtual List<CaseFineDto> CaseFines { get; set; } = new List<CaseFineDto>();
+        public virtual List<CaseCardDto> CaseCards { get; set; } = new List<CaseCardDto>();
 
         /// <summary>
         /// 诉情及判决

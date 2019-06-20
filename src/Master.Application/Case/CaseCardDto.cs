@@ -12,5 +12,6 @@ namespace Master.Case
         public string Title { get; set; }
         public string Content { get; set; }
         public string Remarks { get; set; }
+        public CaseStatus CaseStatus { get; set; }
     }
 }

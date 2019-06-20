@@ -8,8 +8,11 @@
 <style>
     .jianfa-guandiancard .ny-guandiancard li dl{width:325px;}
     .xuanzeStyle .el-checkbox-button:last-child .el-checkbox-button__inner { vertical-align: top;line-height: 26px; }
-    .style-chaal-42 {
-        width: calc(50% - 19px);
+    .jianfa-chaanli .chaanli-content li dl dd i4, .jianfa-chaanli .chaanli-content li dl dd i5{
+        width:100%;
+    }
+    .jianfa-chaanli .chaanli-content li dl{
+        height:auto;
     }
     </style>
 }
@@ -175,7 +178,7 @@
                                             </div>
                                             <template>
                                                 <div class="block" style="float:left;" id="slider2Container">
-                                                    <el-slider v-model="caseInitialUpdateDto.judgeInfo.reverseSupportRate"step="5" vertical height="145px" @@change="setSliderValue">
+                                                    <el-slider v-model="caseInitialUpdateDto.judgeInfo.reverseSupportRate" step="5" vertical height="145px" @@change="setSliderValue">
                                                     </el-slider>
                                                 </div>
                                             </template>
@@ -222,7 +225,7 @@
                                             </div>
                                         </div>
                                         <div class="bjdd">
-                                            <a href="" class="btn-submit-jgy" @@click.prevent="publishInitial">发布</a><a href="" class="btn-submit-jgy" @@click.prevent="updateInitial">保存</a><a href="" class="btn-submit-jgy">预览</a>
+                                            <a href="" class="btn-submit-jgy" @@click.prevent="publishInitial">发布</a><a href="" class="btn-submit-jgy" @@click.prevent="updateInitial">保存</a><a href="" class="btn-submit-jgy" @@click.prevent="previewInitialVisible=true;">预览</a>
                                         </div>
                                     </div>
 
@@ -347,7 +350,7 @@
                                             <div class="bjdd on">
                                                 <bm class="style-pa-20">
                                                     <i8 class="style-chaal-20">案例卡正面</i8>
-                                                    <el-button type="text" @@click="previewVisible = true;currentItem=item;">预览案例卡</el-button>
+                                                    <el-button type="text" @@click="previewCardVisible = true;currentItem=item;">预览案例卡</el-button>
                                                 </bm>
                                                 <div class="style-pa-1">
                                                     <div class="jianfa-guandiancard">
@@ -431,11 +434,97 @@
 
     <com-footer></com-footer>
     <!--end-->
+    <Modal title="初加工预览"
+               v-model="previewInitialVisible"
+           class-name="center-modal"
+               width="600px" >
+        <div class="jianfa-chaanli" style="height:600px;overflow:auto">
+            <div class="chaanli-content">
+                <ul>
+                    <li>
+                        <dl >
 
-    <el-dialog title="案例卡预览"
-               :visible.sync="previewVisible"
-               width="400px">
+                            <dd class="on">
+                                <i4 class="fleft tjustify">
+                                    {{caseInitialUpdateDto.title}}
+                                </i4>
+                            </dd>
 
+                            @*<dd class="on">
+                <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
+                <a @@click="currentItem=caseInfo.source;moda12 = true">
+                    <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+                </a>
+                <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
+            </dd>*@
+
+
+                            <dd class="on">
+                                <i5 class="fleft tjustify">
+                                    <!-- 概述 -->
+                                    {{caseInitialUpdateDto.introduction}}
+                                </i5>
+                            </dd>
+
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">诉请及判决</i8>
+                                </bt>
+                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.introduction}}</i6>
+                                <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInitialUpdateDto.judgeInfo.supportRate+'px'}">{{caseInitialUpdateDto.judgeInfo.supportRate}}%</span></i5c>
+                                <!--调节h50 h60.....-->
+                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.judgeResult}}</i6>
+                            </dd>
+
+                            <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
+                                <bf>
+                                    <i9 class="fright">反诉判决</i9>
+                                </bf>
+                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeContent}}</i6>
+                                <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInitialUpdateDto.judgeInfo.reverseSupportRate+'px'}">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span></i5c>
+                                <!--调节h50 h60.....-->
+                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeResult}}</i6>
+                            </dd>
+
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">法律法规</i8>
+                                </bt>
+                                <i6 class="fleft tjustify width100">
+                                    {{caseInitialUpdateDto.law}}
+                                </i6>
+                            </dd>
+
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">经验分享</i8>
+                                </bt>
+                                <i6 class="fleft tjustify width100">
+                                    {{caseInitialUpdateDto.experience}}
+                                </i6>
+                            </dd>
+
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20 width100">简法律师说</i8>
+                                </bt>
+                                <i6 class="fleft tjustify width100">
+                                    {{caseInitialUpdateDto.lawyerOpinion}}
+                                </i6>
+                            </dd>
+
+
+                        </dl>
+                    </li>
+                </ul>
+                
+            </div>
+            
+        </div>
+        <div slot="footer">
+        </div>
+    </Modal>
+    <Modal width="400px" v-model="previewCardVisible" class-name="center-modal" :mask-closable="false" title="案例卡预览">
         <div class="jianfa-guandiancard style-pa-46">
             <div class="ny-guandiancard">
                 <a @@click="isRotate= !isRotate" class="paiban" :class="{'rotate-card':isRotate}" style="width:100%">
@@ -447,7 +536,7 @@
                                     <dd class="card-top">
                                         <span>{{currentItem.title}}</span>
                                     </dd>
-                                    <dd class="card-zhong" @@click.stop.prevent="moda12 = true;previewVisible=false;">
+                                    <dd class="card-zhong" @@click.stop.prevent="moda12 = true;previewCardVisible=false;">
                                         <span>  {{source.sourceSN}}</span>
                                     </dd>
                                     <dd class="card-bottom">
@@ -475,15 +564,15 @@
                 </a>
             </div>
         </div>
-        <span slot="footer" class="dialog-footer">
-            <el-button @@click="previewVisible = false">关闭</el-button>
-        </span>
-    </el-dialog>
-
-    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="source.sourceSN">
-        <iframe :src="'/pdfviewer/web/viewer.html?file='+source.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
-        <div slot="footer">&nbsp;</div>
+        <div slot="footer">
+        </div>
     </Modal>
+        
+
+        <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="source.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+source.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>
 </div>
 
 @section scripts{
@@ -507,7 +596,8 @@
                 moda12: false,
                 currentItem: {},
                 isRotate:false,
-                previewVisible:false,
+                previewCardVisible: false,
+                previewInitialVisible:false,
                 part: {
                     city: '',
                     court: '',
