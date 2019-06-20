@@ -484,3 +484,11 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
     align-items: center;
     justify-content: center;
 }
+.jianfa-guandiancard .ny-guandiancard li dd.oncard-top span {
+    height: 277px;
+    padding: 0 10px;
+    display: inline-block;
+}
+.ivu-select-item {
+    padding:5px 0;
+}

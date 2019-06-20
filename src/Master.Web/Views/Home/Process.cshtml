@@ -125,7 +125,7 @@
                                         <div class="bjdd on">
                                             <div class="fleft xian-1 style-chaal-100">
                                                 <template>
-                                                    <i-select placeholder="请选择专题" v-model="caseInitialUpdateDto.subjectId">
+                                                    <i-select placeholder="请选择专题" clearable  v-model="caseInitialUpdateDto.subjectId">
                                                         <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                                     </i-select>
                                                 </template>

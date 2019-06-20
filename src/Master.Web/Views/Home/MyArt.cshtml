@@ -22,14 +22,14 @@
                     <dl class="xian">
                         <dd class="style-bf-40">
                             <template>
-                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small">
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small" clearable >
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-20">
                             <template>
-                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" size="small">
+                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" size="small" clearable >
                                     <i-option v-for="item in caseStatuses" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>

@@ -62,21 +62,21 @@
         <dl class="xian">
             <dd class="style-bf-20">
                 <template>
-                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
+                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small" clearable >
                         <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                     </i-select>
                 </template>
             </dd>
             <dd class="style-bf-20">
                 <template>
-                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
+                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small" clearable >
                         <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                     </i-select>
                 </template>
             </dd>
             <dd class="style-bf-20">
                 <template>
-                    <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
+                    <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small" clearable >
                         <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
                         <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
                     </i-select>

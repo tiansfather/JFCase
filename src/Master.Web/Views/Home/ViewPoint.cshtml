@@ -113,12 +113,12 @@
             <div slot="footer">&nbsp;</div>
         </Modal>*@
         @await Html.PartialAsync("PDFFrame")
-        <Modal width="1000px" v-model="modal1" class-name="center-modal" :mask-closable="false">
+        <Modal width="750px" v-model="modal1" class-name="center-modal" :mask-closable="false">
             <div style="display:flex;">
                 <div class="bjdd on">
-                    <bm class="style-pa-20">
+                    @*<bm class="style-pa-20">
                         <i8 class="style-chaal-20">案例卡正面</i8>
-                    </bm>
+                    </bm>*@
                     <div class="style-pa-1">
                         <div class="jianfa-guandiancard">
                             <div class="ny-guandiancard">
@@ -143,9 +143,9 @@
                 </div>
 
                 <div class="bjdd on">
-                    <bm class="style-pa-20">
+                    @*<bm class="style-pa-20">
                         <i8 class="style-chaal-20">案例卡背面</i8>
-                    </bm>
+                    </bm>*@
                     <div class="style-pa-1">
                         <div class="jianfa-guandiancard">
                             <div class="ny-guandiancard">
