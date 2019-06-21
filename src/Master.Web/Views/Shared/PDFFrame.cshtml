@@ -1,4 +1,4 @@
-﻿<Modal width="630px" v-model="moda12" class-name="pdfmodal vertical-center-modal" :mask-closable="false" :title="currentItem.sourceSN">
+﻿<Modal width="930px" v-model="moda12" class-name="pdfmodal vertical-center-modal" :mask-closable="false" :title="currentItem.sourceSN">
     <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" :style="{width:'100%',height:$(window).height()*0.8+'px'}"></iframe>
     <div slot="footer"></div>
 </Modal>

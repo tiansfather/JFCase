@@ -83,7 +83,7 @@
                                 <dl>
                                     <dd class="oncard-top">
                                         <span>{{item.content}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
-                                        <p>{{getLawyer(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
+                                        <p>{{getTrialPeople(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
                                     </dd>
                                 </dl>
                             </li>
@@ -155,7 +155,7 @@
                                         <dl>
                                             <dd class="oncard-top">
                                                 <textarea name="" class="textarea-k" v-model="caseCardUpdateDto.content"></textarea>
-                                                <p>{{caseCardUpdateDto.lawyerFirms?getLawyer(caseCardUpdateDto):''}}<br>{{caseCardUpdateDto.publishDate}}</p>
+                                                <p>{{getTrialPeople(caseCardUpdateDto)}}<br>{{caseCardUpdateDto.publishDate}}</p>
                                             </dd>
                                         </dl>
                                     </li>
@@ -320,6 +320,14 @@
                 },
                 getLawyer: function (item) {
                     return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
+                },
+                getTrialPeople(item) {
+                    if (!item.trialPeople) return '';
+                    var str = ''
+                    item.trialPeople.forEach(el => {
+                        str += `${el.trialRole}：${el.name}\n`
+                    })
+                    return str
                 },
                 //保存案例卡
                 updateCaseCard() {

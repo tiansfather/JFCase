@@ -132,6 +132,11 @@ namespace Master.Case
                         person.TrialRole = TrialRole.书记员;
                         person.Name = o.Replace("书记员", "");
                     }
+                    if (o.IndexOf("法官助理") >= 0)
+                    {
+                        person.TrialRole = TrialRole.法官助理;
+                        person.Name = o.Replace("法官助理", "");
+                    }
                     return person;
                 });
                 this.CaseSourceUpdateDto.TrialPeople = trialPeople.ToList();

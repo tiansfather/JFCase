@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using Abp.Domain.Repositories;
 using Abp.UI;
 using Master.Dto;
 using Master.Entity;
@@ -73,7 +74,17 @@ namespace Master.Case
             {
                 throw new UserFriendlyException("该案例已临时下架，敬请谅解，请查看其它案例。");
             }
-            caseInitial.ReadNumber++;
+            var readHistoryRepository = Resolve<IRepository<CaseReadHistory, int>>();
+            if(await readHistoryRepository.CountAsync(o=>o.CaseInitialId==caseInitialId && o.CreatorUserId == AbpSession.UserId) == 0)
+            {
+                caseInitial.ReadNumber++;
+                await readHistoryRepository.InsertAsync(new CaseReadHistory()
+                {
+                    CaseInitialId = caseInitialId
+                }
+                );
+            }
+            
             return caseInitial.CaseSourceId;
         }
     }

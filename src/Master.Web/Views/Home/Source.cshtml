@@ -60,14 +60,14 @@
                     <div class="li-table table-stripe">
                         <table width="100%">
                             <tr>
-                                <th>城市</th>
-                                <th>一审法院</th>
-                                <th>二审法院</th>
+                                <th width="50">城市</th>
+                                <th width="80">一审法院</th>
+                                <th width="80">二审法院</th>
                                 <th width="220">案号</th>
-                                <th width="120">案由	</th>
-                                <th width="180">代理律师</th>
-                                <th width="120">生效日期</th>
-                                <th>处理记录</th>
+                                <th width="150">案由</th>
+                                <th >代理律师</th>
+                                <th width="100">生效日期</th>
+                                <th width="70">处理记录</th>
                                 <th width="50">操作</th>
                             </tr>
                             <tr v-for="(item,index) in items">
@@ -82,8 +82,8 @@
                                     <Poptip trigger="hover" v-if="item.history.length>0">
                                         <span>{{item.history.length}}</span>
                                         <div slot="content">
-                                            <table width="200">
-                                                <tr><td>序号</td><td>放回时间</td><td>放回原因</td></tr>
+                                            <table width="300" align="center">
+                                                <tr><td align="center">序号</td><td align="center">放回时间</td><td align="center">放回原因</td></tr>
                                                 <tr v-for="(record,recordIndex) in item.history">
                                                     <td>{{recordIndex+1}}</td>
                                                     <td>{{record.creationTime}}</td>
@@ -94,7 +94,7 @@
                                     </Poptip>
                                     <span v-else>无</span>
                                 </td>
-                                <td><a @@click="currentItem=item;modal1 = true"><img src="/assets/jianfa/ima/jia-icon.png"></a><!--<Button @@click="modal1 = true" class="btn-img"></Button>--></td>
+                                <td><a @@click="currentItem=item;choose()"><img src="/assets/jianfa/ima/jia-icon.png"></a><!--<Button @@click="modal1 = true" class="btn-img"></Button>--></td>
                             </tr>
                         </table>
 
@@ -211,7 +211,7 @@
                 choose: function () {
                     var that = this;
                     abp.services.app.workbench.choose(this.currentItem.id).done(function () {
-                        that.$Message.success("判例已放入您的工作台!");
+                        that.$Message.success("判例添加成功，请至工作台加工！");
                         //重新加载判例库，并更新工作台数量;
                         that.loadSource();
                         that.loadWorkBenchCount();
@@ -247,7 +247,7 @@
                 //    });
                 //},
                 getLawyer: function (item) {
-                    return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
+                    return item.lawyerFirms.map(function (o) { return o.firmName+":"+o.lawyer; }).join(',');
                 }
             },
             mounted: function () {

@@ -63,6 +63,7 @@ namespace Master.EntityFrameworkCore
         public virtual DbSet<NewMiner> NewMiner { get; set; }
         public virtual DbSet<CaseSource> CaseSource { get; set; }
         public virtual DbSet<CaseInitial> CaseInitial { get; set; }
+        public virtual DbSet<CaseReadHistory> CaseReadHistory { get; set; }
         public virtual DbSet<EmailLog> EmailLog { get; set; }
         public virtual DbSet<CaseSourceHistory> CaseSourceHistory { get; set; }
         public virtual DbSet<CaseFine> CaseFine { get; set; }

@@ -43,7 +43,7 @@ namespace Master.Case
                 entity.CaseInitial.CaseSource.SourceSN,
                 entity.Title,
                 entity.Content,
-                entity.CaseInitial.CaseSource.TrialPeople,
+                TrialPeople = entity.CaseInitial.CaseSource.TrialPeople.Select(o => new { o.Name, TrialRole = o.TrialRole.ToString() }),
                 entity.CaseInitial.CaseSource.LawyerFirms,
                 entity.CaseInitial.CaseSource.ValidDate,
                 entity.CaseInitial.CaseSource.SourceFile,
