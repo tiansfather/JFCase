@@ -5,8 +5,8 @@
 }
 @section styles{ 
     <style>
-        .jianfa-chaanli .chaanli-content .cha-item-wrap i1{
-            display:flex;
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i1 {
+            display: flex;
         }
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 {
             width: 100%;
@@ -28,6 +28,7 @@
                 border-radius: 50px;
             }
         .jianfa-chaanli .chaanli-content .cha-item-wrap .right-cha1 {
+            font-size:16px;
             width: 85%;
             background: #c69c6d;
             color: #fff;
@@ -44,8 +45,14 @@
             padding: 3px 0 10px 0;
             border-bottom: 1px solid #c69c6d;
             line-height: 24px;
-            color: #c69c6d;
+            color: #754c24;
             transition: all 0.5s ease 0s;
+            line-height:24px;
+            height: 96px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+            overflow: hidden;
         }
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1 {
             width: 100%;
@@ -54,11 +61,23 @@
             padding: 3px 0 0 0;
             transition: all 0.5s ease 0s;
         }
-        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .top-cha1{
-            min-height:8em;
-        }
         .jianfa-chaanli .chaanli-content li dl dd i4, .jianfa-chaanli .chaanli-content li dl dd i5{
+            font-size:16px;
             width: 100%;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6 {
+            height: 106px;
+            overflow: auto;
+            color: #505050;
+            box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
+        }
+        .jianfa-chaanli .chaanli-content li dl dd .support-rate {
+            float: left;
+            width: 6%;
+            margin: 0 5%;
+            line-height: 106px;
+            color: #754C24;
+            font-weight: 700;
         }
         .jianfa-chaanli .chaanli-content li dl dd i6.width100{
             width:100%;
@@ -68,9 +87,9 @@
         .jianfa-guandiancard .ny-guandiancard li dl {
             width: 325px;
         }
-        .jianfa-chaanli .chaanli-content li dl dd{
-            margin:0;
-        }
+        /*.jianfa-chaanli .chaanli-content li dl dd {
+            margin: 20px 0;
+        }*/
         .xuanzeStyle label {
             width: 70px;
             margin: 0;
@@ -96,7 +115,26 @@
         .jianfa-guandiancard {
             overflow: inherit;
         }
-            
+
+
+        .jianfa-chaanli .chaanli-content li dl dd.on, .jianfa-chaanli .chaanli-content li dl dd {
+            line-height:24px;
+            font-size: 14px;
+        }
+
+            .jianfa-chaanli .chaanli-content li dl dd i5b {
+                color:#754c24;
+                border:none;
+                background: #fff;
+            }
+                .jianfa-chaanli .chaanli-content li dl dd i5b:hover{
+                    border:none;
+                }
+        .flex-center{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 }
     <div id="app" v-cloak style="display:none">
@@ -182,7 +220,7 @@
                             </dd>
                             <dd class="style-bf-47">
                                 <template>
-                                    <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." />
+                                    <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." style="font-size:14px;"/>
                                 </template>
                             </dd>
                             <dd class="style-bf-10-b"><Button class="btn-search" type="button" @@click="doSearch">筛选</Button></dd>
@@ -256,7 +294,7 @@
                                 <a @@click="currentItem=caseInfo.source;moda12 = true">
                                     <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
                                 </a>
-                                <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
+                                <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishDate}}</i7>
                             </dd>
 
 
@@ -270,24 +308,26 @@
                             <dd class="on">
                                 <bt>
                                     <i8 class="style-chaal-20">诉请及判决</i8>
-                                </bt>
-                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.introduction}}</i6>
-                                <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>
+                                </bt> 
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.introduction}}</i6>
+                                <span class="support-rate">{{caseInfo.initial.judgeInfo.supportRate}}%</span>
+                                @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
                                 <!--调节h50 h60.....-->
-                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.judgeResult}}</i6>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.judgeInfo.judgeResult}}</i6>
                             </dd>
 
                             <dd class="on" v-if="caseInfo.initial.judgeInfo.reverseJudgeContent">
                                 <bf>
                                     <i9 class="fright">反诉判决</i9>
                                 </bf>
-                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</i6>
-                                <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</i6>
+                                <span class="support-rate">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span>
+                                @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>*@
                                 <!--调节h50 h60.....-->
-                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</i6>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</i6>
                             </dd>
 
-                            <dd class="on">
+                            <dd class="on" v-show="caseInfo.initial.law">
                                 <bt>
                                     <i8 class="style-chaal-20">法律法规</i8>
                                 </bt>
@@ -296,7 +336,7 @@
                                 </i6>
                             </dd>
 
-                            <dd class="on">
+                            <dd class="on" v-show="caseInfo.initial.experience">
                                 <bt>
                                     <i8 class="style-chaal-20">经验分享</i8>
                                 </bt>
@@ -305,7 +345,7 @@
                                 </i6>
                             </dd>
 
-                            <dd class="on">
+                            <dd class="on" v-show="caseInfo.initial.lawyerOpinion">
                                 <bt>
                                     <i8 class="style-chaal-20 width100">简法律师说</i8>
                                 </bt>
