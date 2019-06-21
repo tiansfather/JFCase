@@ -4,31 +4,80 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "加工页";
 }
-@section styles{ 
-<style>
-    .jianfa-guandiancard .ny-guandiancard li dl{width:325px;}
-    .xuanzeStyle .el-checkbox-button:last-child .el-checkbox-button__inner { vertical-align: top;line-height: 26px; }
-    .jianfa-chaanli .chaanli-content li dl dd i4, .jianfa-chaanli .chaanli-content li dl dd i5{
-        width:100%;
-    }
-    .jianfa-chaanli .chaanli-content li dl{
-        height:auto;
-    }
-    .jianfa-jiagong, .jianfa-content {
-        max-width: 1400px;
-    }
-    .style-chaal-42 {
-        width: calc(50% - 19px);
-    }
-    .error input, .error textarea, .error .ivu-select-selection {
-        border: 1px solid red;
-    }
-    .title-bz{
-        text-align:center;
-    }
-    .style-chaal-33-b{
-        width:auto;
-    }
+@section styles{
+    <style>
+        .jianfa-guandiancard .ny-guandiancard li dl {
+            width: 325px;
+        }
+
+        .xuanzeStyle .el-checkbox-button:last-child .el-checkbox-button__inner {
+            vertical-align: top;
+            line-height: 26px;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl dd i4, .jianfa-chaanli .chaanli-content li dl dd i5 {
+            width: 100%;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl {
+            height: auto;
+        }
+
+        .jianfa-jiagong, .jianfa-content {
+            max-width: 1400px;
+        }
+
+        .style-chaal-42 {
+            width: calc(50% - 19px);
+        }
+
+        .error input, .error textarea, .error .ivu-select-selection {
+            border: 1px solid red;
+        }
+
+        .ivu-tabs-nav {
+            width: 100%;
+        }
+
+        .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+            width: 33.3%;
+        }
+
+        .jianfa-jiagong .jiagong-content .bjli .bjdl .bjdd i5 {
+            border-radius: 5px 0 0 5px;
+            text-align: center;
+        }
+
+        .jianfa-jiagong .jiagong-content .bjli .bjdl .bjdd i7 {
+            border-radius: 0 5px 5px 0;
+            border: 1px solid #f2f2f2;
+            padding: 5px 10px 5px 10px;
+            background: #f7f0e8;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s;
+        }
+
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+
+        .style-chaal-50 .el-icon-arrow-right {
+            float: left;
+            line-height: 24px;
+            transition: all .5s ease 0s;
+        }
+
+        .title-bz {
+            text-align: center;
+        }
+
+        .style-chaal-33-b {
+            width: auto;
+        }
     </style>
 }
 
@@ -36,7 +85,7 @@
     <!--顶部-->
     <com-header></com-header>
     <!--案源库-01-->
-    <div class="jianfa-content" >
+    <div class="jianfa-content">
         <div class="ny-content">
             <ul>
                 <li>
@@ -66,40 +115,47 @@
                         <template>
                             <Tabs size="small" type="card">
                                 <Tab-Pane label="初加工" class="initialPanel">
-                                    <div class="bqian">
+                                    <div class="bqian" @@mouseleave="sourceDetailShow=false">
 
-                                        <div class="bjdd on">
-                                            <i5 class="fleft style-chaal-50">{{source.sourceSN}}</i5>
+                                        <div class="bjdd on" @@mouseover="sourceDetailShow=true">
+                                            <i5 class="fleft style-chaal-50">
+                                                <i class="el-icon-arrow-right" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>{{source.sourceSN}}
+                                            </i5>
                                             <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
                                         </div>
+                                        <transition name="fade">
+                                            <div v-show="sourceDetailShow">
+                                                <div class="bjdd on">
+                                                    <div class="fleft style-chaal-20-w">一审法院：</div>
+                                                    <div class="fleft style-chaal-80-w">{{source.court1}}</div>
+                                                </div>
 
-                                        <div class="bjdd on">
-                                            <div class="fleft style-chaal-20-w">一审法院：</div>
-                                            <div class="fleft style-chaal-80-w">{{source.court1}}</div>
-                                        </div>
+                                                <div class="bjdd on">
+                                                    <div class="fleft style-chaal-20-w">二审法院：</div>
+                                                    <div class="fleft style-chaal-80-w">{{source.court2}}</div>
+                                                </div>
 
-                                        <div class="bjdd on">
-                                            <div class="fleft style-chaal-20-w">二审法院：</div>
-                                            <div class="fleft style-chaal-80-w">{{source.court2}}</div>
-                                        </div>
+                                                <div class="bjdd on">
+                                                    <div class="fleft style-chaal-20-w">审判组织：</div>
+                                                    <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
+                                                </div>
 
-                                        <div class="bjdd on">
-                                            <div class="fleft style-chaal-20-w">审判组织：</div>
-                                            <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
-                                        </div>
-
-                                        <div class="bjdd on xian-1">
-                                            <div class="fleft style-chaal-20-w">代理律师：</div>
-                                            <div class="fleft style-chaal-80-w">
-                                                {{lawyerFirms}}
+                                                <div class="bjdd on xian-1">
+                                                    <div class="fleft style-chaal-20-w">代理律师：</div>
+                                                    <div class="fleft style-chaal-80-w">
+                                                        {{lawyerFirms}}
+                                                    </div>
+                                                    <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
+                                                </div>
                                             </div>
-                                            <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
-                                        </div>
+
+                                        </transition>
+
 
                                         <div class="bjdd on">
                                             <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')" :class="{error:validatingInitial && !selectHasValue(selectValues['案由'][index])}" :errmsg="'请选择'+item.displayName" :style="{width:calcSelectWidth(item)}">
                                                 <template>
-                                                    <i-select :placeholder="item.displayName" v-model="selectValues['案由'][index]" @@on-change="changeInitialSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect" >
+                                                    <i-select :placeholder="item.displayName" v-model="selectValues['案由'][index]" @@on-change="changeInitialSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect">
                                                         <i-option v-for="opt in getOptions(item)" :value="opt.id"
                                                                   :key="opt.id">{{ opt.displayName }}</i-option>
                                                     </i-select>
@@ -134,9 +190,9 @@
                                         </div>
 
                                         <div class="bjdd on" :class="{error:validatingInitial && !caseInitialUpdateDto.subjectId}" errmsg="请选择专题">
-                                            <div class="fleft xian-1 style-chaal-100" >
+                                            <div class="fleft xian-1 style-chaal-100">
                                                 <template>
-                                                    <i-select placeholder="请选择专题" clearable  v-model="caseInitialUpdateDto.subjectId">
+                                                    <i-select placeholder="请选择专题" clearable v-model="caseInitialUpdateDto.subjectId">
                                                         <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                                     </i-select>
                                                 </template>
@@ -450,14 +506,14 @@
     <com-footer></com-footer>
     <!--end-->
     <Modal title="初加工预览"
-               v-model="previewInitialVisible"
+           v-model="previewInitialVisible"
            class-name="center-modal"
-               width="600px" >
+           width="600px">
         <div class="jianfa-chaanli" style="height:600px;overflow:auto">
             <div class="chaanli-content">
                 <ul>
                     <li>
-                        <dl >
+                        <dl>
 
                             <dd class="on">
                                 <i4 class="fleft tjustify">
@@ -466,12 +522,12 @@
                             </dd>
 
                             @*<dd class="on">
-                <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
-                <a @@click="currentItem=caseInfo.source;moda12 = true">
-                    <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
-                </a>
-                <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
-            </dd>*@
+                                    <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
+                                    <a @@click="currentItem=caseInfo.source;moda12 = true">
+                                        <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+                                    </a>
+                                    <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
+                                </dd>*@
 
 
                             <dd class="on">
@@ -532,9 +588,9 @@
                         </dl>
                     </li>
                 </ul>
-                
+
             </div>
-            
+
         </div>
         <div slot="footer">
         </div>
@@ -582,12 +638,12 @@
         <div slot="footer">
         </div>
     </Modal>
-        
 
-        <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="source.sourceSN">
-            <iframe :src="'/pdfviewer/web/viewer.html?file='+source.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
-            <div slot="footer">&nbsp;</div>
-        </Modal>
+
+    <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="source.sourceSN">
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+source.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+        <div slot="footer">&nbsp;</div>
+    </Modal>
 </div>
 
 @section scripts{
@@ -596,6 +652,7 @@
         var app=new Vue({
             el: '#app',
             data: {
+                sourceDetailShow:false,//一审法院等，默认不显示，移上去显示
                 value1:50,
                 theme1: 'primary',
                 value: '',
@@ -744,7 +801,7 @@
                         //初始化标签选择
                         this.initLabels();
                     })
-                    
+
                     //abp.services.app.type.getAnYous().done(function (data) {
                     //    that.anYous = data;
                     //});
@@ -781,7 +838,7 @@
                     var rootNode = this.knowledgeTree.filter(o => o.name == knowledgeName)[0];//如对应案由节点知识树节点
                     var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code);//所有子节点，包含子级
                     var selects = subNodes.map(function (o) { return { id: o.id, name: o.name, displayName: o.displayName, enableMultiSelect: o.enableMultiSelect, parentId: o.parentId } });
-                    
+
                     return selects;
                 },
                 //获取级联选择框的option
@@ -795,7 +852,7 @@
                     if (parentNode) {
                         return allOptions.filter(o => o.parentId == parentNode.baseTreeId);
                     }
-                    
+
                     return [];
                 },
                 //初加工级联选择改变
@@ -821,7 +878,7 @@
                     //        //如果是取消选中的，清除casenode里的值
                     //        this.caseInitialUpdateDto.caseNodes.splice(this.caseInitialUpdateDto.caseNodes.indexOf(node), 1);
                     //    }
-                        
+
                     //} else {
                     //    this.caseInitialUpdateDto.caseNodes.push({ relName: item.name, relValue: selectedNode.displayName, baseTreeId: value });
                     //}
@@ -891,7 +948,7 @@
                             }))
                         })
                     })
-                    
+
                 },
                 //添加案例卡
                 addCaseCard() {
@@ -905,7 +962,7 @@
                     } else {
                         this.caseCardUpdateDto.caseCards[0].title = '';
                         this.caseCardUpdateDto.caseCards[0].content = '';
-                    }                    
+                    }
                 },
                 //保存案例卡
                 updateCaseCard() {
