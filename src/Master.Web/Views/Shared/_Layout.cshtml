@@ -4,14 +4,19 @@
 @using Abp.Web.Security.AntiForgery
 @using Master
 @using Master.Configuration
+@using Microsoft.AspNetCore.Http
 @inject Master.Timing.AppTimes AppTimes
 @inject IAbpAntiForgeryManager AbpAntiForgeryManager
 @inject IMultiTenancyConfig MultiTenancyConfig
 @inject WebCoreConfiguration WebCoreConfiguration
+@inject IHttpContextAccessor ContextAccessor
 @{
     Layout = null;
     AbpAntiForgeryManager.SetCookie(Context);
-    
+    if (ContextAccessor.HttpContext.Session.Get<Master.Authentication.User>("LoginInfo") == null)
+    {
+        ContextAccessor.HttpContext.Response.Redirect("/Account/Login");
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -74,7 +79,7 @@
     @RenderSection("MainBody", required: false)
     @*<div class="layui-anim layui-anim-upbit" data-anim="layui-anim-upbit">
 
-    </div>*@
+        </div>*@
     @RenderBody()
 
 

@@ -169,7 +169,7 @@
                     </li>
                     <li>
                         <dl class="xian" style="display:flex;   ">
-                            <dd class="style-bf-20-a">
+                            <dd class="style-bf-20-a" style="width:160px">
                                 <template>
                                     <i-select placeholder="请选择城市" v-model="wherePart.cityId" clearable>
                                         <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
@@ -183,13 +183,13 @@
                                     </i-select>
                                 </template>
                             </dd>*@
-                            <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')">
+                            <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')" :style="{width:calcSelectWidth(item)}">
                                 <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect" collapse-tags>
                                     <i-option v-for="opt in getOptions(item)" :value="opt.id"
                                               :key="opt.id">{{ opt.displayName }}</i-option>
                                 </i-select>
                             </dd>
-                            <dd class="style-bf-20-b">
+                            <dd class="style-bf-20-b" style="width:140px">
                                 <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable>
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
@@ -256,10 +256,10 @@
                 <ul v-show="items.length">
                     <li class="style-chaal-40">
                         <template>
-                            <div class="infinite-list-wrapper">
+                            <div class="infinite-list-wrapper"  :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}">
                                 <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled">
                                     <a href="javascript:;">
-                                        <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)" :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}">
+                                        <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
                                             <i1>
                                                 <div class="left-cha1"><img :src="item.avata"></div>
                                                 <div class="right-cha1">
@@ -311,7 +311,7 @@
                                 <a @@click="currentItem=caseInfo.source;moda12 = true">
                                     <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
                                 </a>
-                                <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishDate}}</i7>
+                                <i7 class="fleft tright style-chaal-33">{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
                             </dd>
 
 
@@ -326,7 +326,7 @@
                                 <bt>
                                     <i8 class="style-chaal-20">诉请及判决</i8>
                                 </bt> 
-                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.introduction}}</i6>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.judgeInfo.judgeContent}}</i6>
                                 <span class="support-rate">{{caseInfo.initial.judgeInfo.supportRate}}%</span>
                                 @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
                                 <!--调节h50 h60.....-->
@@ -655,6 +655,10 @@
                     abp.services.app.type.getCities().done(function (data) {
                         that.cities = data;
                     });
+                },
+                //计算下拉选择的宽度
+                calcSelectWidth(item) {
+                    return item.displayName == "纠纷原因" ? "calc(100% - 800px)" : "160px";
                 }
             },
             mounted() {

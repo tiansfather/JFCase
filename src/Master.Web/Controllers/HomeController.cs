@@ -31,6 +31,8 @@ using Master.Domain;
 using Abp.Configuration.Startup;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
+using Microsoft.AspNetCore.Http;
+
 namespace Master.Web.Controllers
 {    
     
@@ -182,6 +184,10 @@ namespace Master.Web.Controllers
             return Content("ok");
         }
 
-        
+        public IActionResult Session()
+        {
+            var user = HttpContext.Session.Get<User>("LoginInfo");
+            return Content(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+        }
     }
 }

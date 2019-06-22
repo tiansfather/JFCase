@@ -365,9 +365,9 @@ function initIndex() {
     }
 
 
-    setInterval("app.toReadNotices()", 60000);
-    app.toReadNotices();
-    app.scrollBulletin();
+    //setInterval("app.toReadNotices()", 60000);
+    //app.toReadNotices();
+    //app.scrollBulletin();
 }
 
 function checkToken() {

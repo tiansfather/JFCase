@@ -189,7 +189,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="bjdd on" :class="{error:validatingInitial && !caseInitialUpdateDto.subjectId}" errmsg="请选择专题">
+                                        <div class="bjdd on" >
                                             <div class="fleft xian-1 style-chaal-100">
                                                 <template>
                                                     <i-select placeholder="请选择专题" clearable v-model="caseInitialUpdateDto.subjectId">
@@ -203,7 +203,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">案例聚焦</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.title}" errmsg="请正确定填写案例聚焦">
+                                            <div class="fleft style-chaal-100" >
                                                 <textarea name=""
                                                           class="textarea" v-model="caseInitialUpdateDto.title"></textarea>
                                             </div>
@@ -213,13 +213,13 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">案例概述</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.introduction}" errmsg="请正确定填写案例概述">
+                                            <div class="fleft style-chaal-100" >
                                                 <textarea name=""
                                                           class="textarea-sp" v-model="caseInitialUpdateDto.introduction"></textarea>
                                             </div>
                                         </div>
 
-                                        <div class="bjdd on" :class="{error:validatingInitial && !caseInitialUpdateDto.judgeInfo.judgeContent}" errmsg="请正确定填写诉请及判决">
+                                        <div class="bjdd on" >
                                             <bt style="margin-bottom:15px;">
                                                 <i8 class="style-chaal-20">诉请及判决</i8>
                                             </bt>
@@ -264,7 +264,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">法律法规</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.law}" errmsg="请正确定填写法律法规">
+                                            <div class="fleft style-chaal-100" >
                                                 <textarea name=""
                                                           class="textarea" v-model="caseInitialUpdateDto.law"></textarea>
                                             </div>
@@ -274,7 +274,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">经验分享</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.experience}" errmsg="请正确定填写经验分享">
+                                            <div class="fleft style-chaal-100" >
                                                 <textarea name="" class="textarea" v-model="caseInitialUpdateDto.experience"></textarea>
                                             </div>
                                         </div>
@@ -283,7 +283,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">简法律师说</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" :class="{error:validatingInitial && !caseInitialUpdateDto.lawyerOpinion}" errmsg="请正确定填写简法律师说">
+                                            <div class="fleft style-chaal-100" >
                                                 <textarea name="" class="textarea" v-model="caseInitialUpdateDto.lawyerOpinion"></textarea>
                                             </div>
                                         </div>
