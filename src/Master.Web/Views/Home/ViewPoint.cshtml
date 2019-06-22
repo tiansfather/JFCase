@@ -13,6 +13,8 @@
             color: blue;
             border-bottom: 1px solid blue;
         }
+        .jianfa-guandiancard .ny-guandiancard li dd.card-top span{font-size:16px;}
+        .jianfa-guandiancard .ny-guandiancard li dd.oncard-top span{padding:0 15px;}
         /*.ny-guandiancard{
             height:420px;
             overflow:auto;
@@ -62,7 +64,7 @@
                             <li>
                                 <dl>
                                     <dd class="card-top">
-                                        <span>{{item.title}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
+                                        <span>{{item.title}} </span>
                                     </dd>
                                     <dd class="card-zhong" @@click.stop.prevent="currentItem=item;moda12 = true">
                                         <span>{{item.sourceSN}}</span>
@@ -82,7 +84,7 @@
                             <li>
                                 <dl>
                                     <dd class="oncard-top">
-                                        <span>{{item.content}}&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp; &emsp;  </span>
+                                        <span>{{item.content}} </span>
                                         <p>{{getTrialPeople(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
                                     </dd>
                                 </dl>

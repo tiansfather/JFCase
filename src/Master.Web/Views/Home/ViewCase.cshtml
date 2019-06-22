@@ -102,7 +102,7 @@
         }
         /*----*/
         .jianfa-chaanli .chaanli-content li dl {
-            height: calc(100vh - 324px);
+            height: calc(100vh - 281px);
         }
         .paiban {
             width: 100%;
@@ -135,6 +135,10 @@
             justify-content: center;
             align-items: center;
         }
+        .r-head-search_dl {
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 }
     <div id="app" v-cloak style="display:none">
@@ -145,21 +149,29 @@
             <div class="ny-content">
                 <ul>
                     <li>
-                        <dl>
-                            <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
-                            @*<dd class="xchu">
-                                上海<span>
-                                    ×
-                                </span>
+                        <dl class="r-head-search_dl">
+                            <dd style="flex:1;">当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
+
+                            <dd class="">
+                                <template>
+                                    <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." style="font-size:14px;width:300px;" />
+                                </template>
                             </dd>
-                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                            <dd class="style-bf-10-b"><Button class="btn-search" type="button" @@click="labelCheckVisible=!labelCheckVisible">{{labelCheckVisible?'收起':'更多'}}筛选条件</Button></dd>
+                            <dd class="style-bf-10-b"><Button class="btn-search" type="button" @@click="doSearch">筛选</Button></dd>
+                            @*<dd class="xchu">
+            上海<span>
+                ×
+            </span>
+        </dd>
+        <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                         </dl>
                     </li>
                     <li>
-                        <dl class="xian">
+                        <dl class="xian" style="display:flex;   ">
                             <dd class="style-bf-20-a">
                                 <template>
-                                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" clearable >
+                                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" clearable>
                                         <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                     </i-select>
                                 </template>
@@ -177,10 +189,15 @@
                                               :key="opt.id">{{ opt.displayName }}</i-option>
                                 </i-select>
                             </dd>
+                            <dd class="style-bf-20-b">
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable>
+                                    <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                </i-select>
+                            </dd>
                         </dl>
                     </li>
 
-                    <li>
+                    <li v-show="labelCheckVisible">
                         <dl class="xianb xuanzeStyle">
                             <dd class="style-bf-8">
                                 <div class="btn-title-bz">关键词筛选：</div>
@@ -193,7 +210,7 @@
                         </dl>
                     </li>
 
-                    <li>
+                    <li v-show="labelCheckVisible">
                         <dl class="xianb xuanzeStyle">
                             <dd class="style-bf-8">
                                 <div class="btn-title-bz">标签筛选：</div>
@@ -206,26 +223,26 @@
                         </dl>
                     </li>
 
-                    <li>
+                   @*<li>
                         <dl class="xian">
                             <dd class="style-bf-8">
                                 <div class="btn-title-bz">专题筛选：</div>
                             </dd>
                             <dd class="style-bf-35">
-                                <template>
+                               <template>
                                     <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small" clearable >
                                         <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                     </i-select>
                                 </template>
                             </dd>
-                            <dd class="style-bf-47">
+                           <dd class="style-bf-47">
                                 <template>
                                     <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." style="font-size:14px;"/>
                                 </template>
                             </dd>
                             <dd class="style-bf-10-b"><Button class="btn-search" type="button" @@click="doSearch">筛选</Button></dd>
                         </dl>
-                    </li>
+                    </li>*@
                 </ul>
             </div>
         </div>
@@ -242,7 +259,7 @@
                             <div class="infinite-list-wrapper">
                                 <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled">
                                     <a href="javascript:;">
-                                        <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
+                                        <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)" :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}">
                                             <i1>
                                                 <div class="left-cha1"><img :src="item.avata"></div>
                                                 <div class="right-cha1">
@@ -281,7 +298,7 @@
                         </dl>*@
                     </li>
                     <li class="on style-chaal-60" v-if="caseInfo">
-                        <dl class="on">
+                        <dl class="on"  :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}">
 
                             <dd class="on">
                                 <i4 class="fleft tjustify">
@@ -358,11 +375,17 @@
                                 <bt>
                                     <i8 class="style-chaal-20">案例卡</i8>
                                 </bt>
-                                <i5 class="fleft tjustify">
+                                <div >
+                                    <div v-for="(item,index) in caseInfo.initial.caseCards">
+                                        <i5 class="fleft tjustify" style="margin: 10px 0;min-height: 6em;">{{item.title}}</i5>
+                                        <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                    </div>
+                                </div>
+                                @*<i5 class="fleft tjustify">
                                     <div class="jianfa-guandiancard style-pa-46">
                                         <div class="ny-guandiancard">
                                             <a @@click="item.isRotate= !item.isRotate" style="width:100%;" class="paiban" v-for="(item,index) in caseInfo.initial.caseCards" :class="{'rotate-card':item.isRotate}" v-if="items.length">
-                                                @* 'on':(index+1)%3==2, *@
+                                                <!--'on':(index+1)%3==2, -->
                                                 <!--状态1-->
                                                 <div class="card-start">
                                                     <ul>
@@ -401,7 +424,7 @@
                                             <p v-else>暂无案例卡</p>
                                         </div>
                                     </div>
-                                </i5>
+                                </i5>*@
                             </dd>
 
                         </dl>
@@ -424,6 +447,7 @@
         var app = new Vue({
             el: '#app',
             data: {
+                labelCheckVisible:false,//更多筛选，显示与否
                 currentItem: {},
                 currentPage: 1,
                 pagesize: 10,
