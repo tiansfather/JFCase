@@ -326,7 +326,7 @@
                 getTrialPeople(item) {
                     if (!item.trialPeople) return '';
                     var str = ''
-                    item.trialPeople.forEach(el => {
+                    item.trialPeople.filter(o=>o.name).forEach(el => {
                         str += `${el.trialRole}：${el.name}\n`
                     })
                     return str
