@@ -29,6 +29,7 @@ using Master.Models.TokenAuth;
 using Master.EntityFrameworkCore;
 using Master.Domain;
 using Abp.Configuration.Startup;
+using Microsoft.AspNetCore.Http;
 
 namespace Master.Web.Controllers
 {    
@@ -43,6 +44,7 @@ namespace Master.Web.Controllers
         private readonly IExternalAuthConfiguration _externalAuthConfiguration;
 
 
+        public IHttpContextAccessor HttpContextAccessor { get; set; }
         public IRepository<BaseTree,int> BaseTreeRepository { get; set; }
         public IRepository<Tenant,int> TenantRepository { get; set; }
         public ITypeFinder TypeFinder { get; set; }
@@ -66,6 +68,13 @@ namespace Master.Web.Controllers
         [AbpMvcAuthorize]
         public async Task<ActionResult> Index()
         {
+
+            if (HttpContext.Session.Get<User>("LoginInfo") == null)
+            {
+                Response.Cookies.Delete("token");
+                return Redirect("/Account/Login");
+            }
+
             var user = AbpSession.ToUserIdentifier();
             Session.Dto.LoginInformationDto loginInfo;
             try
@@ -82,6 +91,7 @@ namespace Master.Web.Controllers
             {
                 loginInfo.User.HomeUrl = "Manager/Default";
             }
+            
             return View(loginInfo);
         }
         public IActionResult Default()

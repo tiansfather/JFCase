@@ -86,7 +86,7 @@ namespace Master.BaseTrees
         /// </summary>
         /// <param name="baseTreeDto"></param>
         /// <returns></returns>
-        public virtual async Task Submit(BaseTreeDto baseTreeDto)
+        public virtual async Task<object> Submit(BaseTreeDto baseTreeDto)
         {
             BaseTree baseTree = null;
             if (string.IsNullOrWhiteSpace(baseTreeDto.DisplayName) || baseTreeDto.TreeNodeType == TreeNodeType.Knowledge)
@@ -123,8 +123,16 @@ namespace Master.BaseTrees
                     }
                 }
                 baseTreeDto.MapTo(baseTree);
-                await BaseTreeManager.UpdateAsync(baseTree);
+                await BaseTreeManager.UpdateAsync(baseTree);                
             }
+            await CurrentUnitOfWork.SaveChangesAsync();
+            return new
+            {
+                baseTree.Id,
+                baseTree.ParentId,
+                baseTree.Name,
+                baseTree.DisplayName
+            };
         } 
         #endregion
 

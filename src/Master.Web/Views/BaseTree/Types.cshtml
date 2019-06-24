@@ -101,7 +101,7 @@
 
 @section scripts{
     <script>
-        var app, nodes,knowledgeNodes;
+        var app, nodes,knowledgeNodes,currentNode,ztreeObj;
         var searchKeys = {};
         
         config.ready = function () {
@@ -194,9 +194,10 @@
                             return false;
                         }
                         abp.message.confirm("确认提交?", function () {
-                            abp.services.app.baseTree.submit(app.currentItem).done(function () {
+                            abp.services.app.baseTree.submit(app.currentItem).done(function (obj) {
                                 layer.msg("提交成功");
-                                config.refresh();
+                                zTreeObj.addNodes(currentNode, obj);
+                                //config.refresh();
                             })
                         })
 
@@ -227,7 +228,7 @@
                     })
                     //this.doAdd();
                     window.ztree = function () {
-                        var zTreeObj;
+                        //var zTreeObj;
                         var setting = {
                             view: { selectedMulti: false },
                             data: {
@@ -245,6 +246,7 @@
                             callback: {
                                 onClick: function (event, treeId, treeNode) {
                                     app.currentItem = treeNode;
+                                    currentNode = treeNode;
                                     refresh();
                                     //searchKeys.parentId = treeNode.id;
                                     //config.reloadTable();
