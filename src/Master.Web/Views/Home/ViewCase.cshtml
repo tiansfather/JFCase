@@ -66,7 +66,7 @@
             width: 100%;
         }
         .jianfa-chaanli .chaanli-content li dl dd i6 {
-            height: 106px;
+            height: 83px;
             overflow: auto;
             color: #505050;
             box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
@@ -75,7 +75,7 @@
             float: left;
             width: 6%;
             margin: 0 5%;
-            line-height: 106px;
+            line-height: 83px;
             color: #754C24;
             font-weight: 700;
         }
@@ -102,7 +102,7 @@
         }
         /*----*/
         .jianfa-chaanli .chaanli-content li dl {
-            height: calc(100vh - 281px);
+         
         }
         .paiban {
             width: 100%;
@@ -256,8 +256,8 @@
                 <ul v-show="items.length">
                     <li class="style-chaal-40">
                         <template>
-                            <div class="infinite-list-wrapper"  :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}">
-                                <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled">
+                            <div class="infinite-list-wrapper" >
+                                <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled"  :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}">
                                     <a href="javascript:;">
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
                                             <i1>
@@ -326,22 +326,29 @@
                                 <bt>
                                     <i8 class="style-chaal-20">诉请及判决</i8>
                                 </bt> 
-                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.judgeInfo.judgeContent}}</i6>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeContent}}</p>
+                                </i6>
                                 <span class="support-rate">{{caseInfo.initial.judgeInfo.supportRate}}%</span>
                                 @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
                                 <!--调节h50 h60.....-->
-                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.judgeInfo.judgeResult}}</i6>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeResult}}</p></i6>
                             </dd>
 
                             <dd class="on" v-if="caseInfo.initial.judgeInfo.reverseJudgeContent">
                                 <bf>
                                     <i9 class="fright">反诉判决</i9>
                                 </bf>
-                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</i6>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</p>
+                                </i6>
                                 <span class="support-rate">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span>
                                 @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>*@
                                 <!--调节h50 h60.....-->
-                                <i6 class="fleft tjustify style-chaal-42-h flex-center">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</i6>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</p>
+                                </i6>
                             </dd>
 
                             <dd class="on" v-show="caseInfo.initial.law">
