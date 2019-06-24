@@ -732,11 +732,13 @@
                 //审判组织
                 trialPeople() {
                     if (!this.source.trialPeople) return '';
-                    var str=''
-                    this.source.trialPeople.forEach(el => {
-                        str += `${el.trialRole}：${el.name}\n`
-                    })
-                    return str
+                    return this.source.trialPeople.map(el => el.name).join('、')
+                    //if (!this.source.trialPeople) return '';
+                    //var str=''
+                    //this.source.trialPeople.forEach(el => {
+                    //    str += `${el.trialRole}：${el.name}\n`
+                    //})
+                    //return str
                 },
                 //代理律师
                 lawyerFirms() {
