@@ -324,12 +324,14 @@
                     return item.lawyerFirms.map(function (o) { return o.lawyer; }).join(',');
                 },
                 getTrialPeople(item) {
-                    if (!item.trialPeople) return '';
-                    var str = ''
-                    item.trialPeople.filter(o=>o.name).forEach(el => {
-                        str += `${el.trialRole}：${el.name}\n`
-                    })
-                    return str
+                     if (!item.trialPeople) return '';
+                    return item.trialPeople.map(el => el.name).join('、')
+                   
+                    //var str = ''
+                    //item.trialPeople.forEach(el => {
+                    //    str += `${el.trialRole}：${el.name}\n`
+                    //})
+                    //return str
                 },
                 //保存案例卡
                 updateCaseCard() {

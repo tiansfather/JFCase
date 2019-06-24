@@ -58,3 +58,13 @@
 .jianfa-guandiancard .ny-guandiancard li dd.card-top span {
     display: inherit;
 }
+.ivu-menu-item-selected a{
+    display:block;
+}
+.ivu-menu-horizontal .ivu-menu-item, .ivu-menu-horizontal .ivu-menu-submenu {
+    padding: 0;
+}
+.ivu-menu-horizontal .ivu-menu-submenu{
+    width:21%;
+    text-align:center;
+}
