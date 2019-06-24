@@ -257,7 +257,7 @@
                     <li class="style-chaal-40">
                         <template>
                             <div class="infinite-list-wrapper" >
-                                <dl class="list" v-infinite-scroll="loadScroll" infinite-scroll-disabled="disabled"  :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}">
+                                <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}" id="scrollWrapper">
                                     <a href="javascript:;">
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
                                             <i1>
@@ -274,9 +274,10 @@
                                             </i2>
                                         </dd>
                                     </a>
+                                    <p v-if="loading" style="text-align:center">加载中...</p>
+                                    <p v-if="noMore" style="text-align:center">没有更多了</p>
                                 </dl>
-                                <p v-if="loading">加载中...</p>
-                                <p v-if="noMore">没有更多了</p>
+                                
                             </div>
 
                         </template>
@@ -378,7 +379,7 @@
                                 </i6>
                             </dd>
 
-                            <dd class="on">
+                            <dd class="on" v-show="caseInfo.initial.caseCards && caseInfo.initial.caseCards.length">
                                 <bt>
                                     <i8 class="style-chaal-20">案例卡</i8>
                                 </bt>
@@ -514,6 +515,12 @@
                 }
             },
             methods: {
+                load() {
+                    //debugger
+                    this.loading = true;
+                    this.currentPage++;
+                    this.loadSource();
+                },
                 doSearch() {
                     this.currentPage = 1;
                     this.items = [];
@@ -617,7 +624,7 @@
                     abp.services.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
                         //caseSourceId为对应的案源id
                         //获取案例详情
-                        abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
+                        func.runAsync(abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
                             res.initial.caseCards.forEach(el => {
                                 el.isRotate = false;
                             })
@@ -625,7 +632,7 @@
                             Vue.nextTick(function () {
                                 $('.style-chaal-60>dl').scrollTop(0)
                             })
-                        })
+                        }));
                     })
                 },
                 loadSource() {
@@ -641,7 +648,7 @@
                             //第一次就点击第一条
                             this.getViewMsg(that.items[0].id)
                         }
-                        this.currentPage++;
+                        //this.currentPage++;
                         $("#app").show();
                         //that.items = res.data;
                         //that.totalCount = res.count;
@@ -688,7 +695,18 @@
                     //初始化标签选择
                     this.initLabels();
                 })
-                
+                document.getElementById("scrollWrapper").onscroll = function () {
+                    //var height = document.getElementById("divData").offsetHeight;//250
+                    //var height=$("#divData").height();//250
+                    var scrollHeight = document.getElementById("scrollWrapper").scrollHeight;//251
+                    var scrollTop = document.getElementById("scrollWrapper").scrollTop;//0-18
+                    var clientHeight = document.getElementById("scrollWrapper").clientHeight;//233
+
+                    if (scrollHeight - clientHeight == scrollTop && !app.loading && !app.noMore) {
+                        //滚动条滚到最底部
+                        app.load();
+                    }
+                };
             }
         })
         ////请求案例分页

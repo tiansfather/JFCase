@@ -460,7 +460,7 @@
                                                                     <dl>
                                                                         <dd class="oncard-top" :class="{error:validatingCard && !item.content}">
                                                                             <textarea name="" class="textarea-k" v-model="item.content"></textarea>
-                                                                            <p>{{trialPeople}}<br>{{source.publishDate}}</p>
+                                                                            <p>{{trialPeople}}<br>{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</p>
                                                                         </dd>
                                                                     </dl>
                                                                 </li>
@@ -625,7 +625,7 @@
                                 <dl>
                                     <dd class="oncard-top">
                                         <span>{{currentItem.content}} </span>
-                                        <p>{{trialPeople}}<br>{{source.publishDate}}</p>
+                                        <p>{{trialPeople}}<br>{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</p>
                                     </dd>
                                 </dl>
                             </li>
