@@ -69,7 +69,7 @@ namespace Master.Web.Controllers
         public async Task<ActionResult> Index()
         {
 
-            if (HttpContext.Session.Get<User>("LoginInfo") == null)
+            if (HttpContext.Session.Get<int?>("LoginInfo") == null)
             {
                 Response.Cookies.Delete("token");
                 return Redirect("/Account/Login");

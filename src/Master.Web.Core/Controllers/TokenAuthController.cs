@@ -89,7 +89,7 @@ namespace Master.Controllers
 
             await UserManager.UpdateAsync(loginResult.User);
 
-            HttpContext.Session.Set("LoginInfo", loginResult.User);
+            HttpContext.Session.Set("LoginInfo", loginResult.User.Id);
 
             return result;
         }
@@ -129,7 +129,7 @@ namespace Master.Controllers
                         
                         await UserManager.UpdateAsync(loginResult.User);
 
-                        HttpContext.Session.Set("LoginInfo", loginResult.User);
+                        HttpContext.Session.Set("LoginInfo", loginResult.User.Id);
 
                         return result;
                     }
