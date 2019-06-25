@@ -78,6 +78,7 @@
                                     <button v-if="currentItem.id" class="layui-btn layui-btn-normal" type="button" @@click="addNode(currentItem.id)">新增子节点数据</button>
                                     <button class="layui-btn" type="button" @@click="doSave" v-if="currentItem.parentId">@L("保存")</button>
                                     <button v-if="!isAdd && currentItem.parentId" class="layui-btn layui-btn-danger" @@click="doDelete" type="button">@L("删除")</button>
+                                    <button  class="layui-btn layui-btn-primary" type="button" onclick="config.refresh()">刷新树</button>
                                 </div>
                                 @*<vc:form-submit param="@(new FormSubmitViewParam() { ModuleKey="Organization",ButtonKey="Submit",Callback="submitCallback"})"></vc:form-submit>*@
                                 @*<div class="layui-form-item">
@@ -196,7 +197,10 @@
                         abp.message.confirm("确认提交?", function () {
                             abp.services.app.baseTree.submit(app.currentItem).done(function (obj) {
                                 layer.msg("提交成功");
-                                zTreeObj.addNodes(currentNode, obj);
+                                if (!app.currentItem.id) {
+                                    zTreeObj.addNodes(currentNode, obj);
+                                }
+                                
                                 //config.refresh();
                             })
                         })
