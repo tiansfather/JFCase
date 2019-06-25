@@ -78,6 +78,13 @@
         .style-chaal-33-b {
             width: auto;
         }
+        .jianfa-jiagong{padding:0;}
+        .ivu-tabs-nav-wrap {
+            position: fixed;
+            width: calc(45vw - 24px);
+            max-width: 606px;
+            z-index: 999;
+        }
     </style>
 }
 
@@ -116,40 +123,42 @@
                             <Tabs size="small" type="card">
                                 <Tab-Pane label="初加工" class="initialPanel">
                                     <div class="bqian" @@mouseleave="sourceDetailShow=false">
-
-                                        <div class="bjdd on" @@mouseover="sourceDetailShow=true">
-                                            <i5 class="fleft style-chaal-50">
-                                                <i class="el-icon-arrow-right" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>{{source.sourceSN}}
-                                            </i5>
-                                            <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
-                                        </div>
-                                        <transition name="fade">
-                                            <div v-show="sourceDetailShow">
-                                                <div class="bjdd on">
-                                                    <div class="fleft style-chaal-20-w">一审法院：</div>
-                                                    <div class="fleft style-chaal-80-w">{{source.court1}}</div>
-                                                </div>
-
-                                                <div class="bjdd on">
-                                                    <div class="fleft style-chaal-20-w">二审法院：</div>
-                                                    <div class="fleft style-chaal-80-w">{{source.court2}}</div>
-                                                </div>
-
-                                                <div class="bjdd on">
-                                                    <div class="fleft style-chaal-20-w">审判组织：</div>
-                                                    <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
-                                                </div>
-
-                                                <div class="bjdd on xian-1">
-                                                    <div class="fleft style-chaal-20-w">代理律师：</div>
-                                                    <div class="fleft style-chaal-80-w">
-                                                        {{lawyerFirms}}
-                                                    </div>
-                                                    <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
-                                                </div>
+                                        <div>
+                                            <div class="bjdd on" @@mouseover="sourceDetailShow=true">
+                                                <i5 class="fleft style-chaal-50">
+                                                    <i class="el-icon-arrow-right" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>{{source.sourceSN}}
+                                                </i5>
+                                                <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
                                             </div>
+                                            <transition name="fade">
+                                                <div v-show="sourceDetailShow">
+                                                    <div class="bjdd on">
+                                                        <div class="fleft style-chaal-20-w">一审法院：</div>
+                                                        <div class="fleft style-chaal-80-w">{{source.court1}}</div>
+                                                    </div>
 
-                                        </transition>
+                                                    <div class="bjdd on">
+                                                        <div class="fleft style-chaal-20-w">二审法院：</div>
+                                                        <div class="fleft style-chaal-80-w">{{source.court2}}</div>
+                                                    </div>
+
+                                                    <div class="bjdd on">
+                                                        <div class="fleft style-chaal-20-w">审判组织：</div>
+                                                        <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
+                                                    </div>
+
+                                                    <div class="bjdd on xian-1">
+                                                        <div class="fleft style-chaal-20-w">代理律师：</div>
+                                                        <div class="fleft style-chaal-80-w">
+                                                            {{lawyerFirms}}
+                                                        </div>
+                                                        <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
+                                                    </div>
+                                                </div>
+
+                                            </transition>
+                                        </div>
+                                     
 
 
                                         <div class="bjdd on">
