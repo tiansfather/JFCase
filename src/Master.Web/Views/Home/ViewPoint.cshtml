@@ -157,7 +157,7 @@
                                         <dl>
                                             <dd class="oncard-top">
                                                 <textarea name="" class="textarea-k" v-model="caseCardUpdateDto.content"></textarea>
-                                                <p>{{getTrialPeople(caseCardUpdateDto)}}<br>{{caseCardUpdateDto.publishDate}}</p>
+                                                <p>{{getTrialPeople(caseCardUpdateDto)}}<br>{{new Date(caseCardUpdateDto.validDate).pattern('yyyy年MM月dd日')}}</p>
                                             </dd>
                                         </dl>
                                     </li>
@@ -325,7 +325,7 @@
                 },
                 getTrialPeople(item) {
                      if (!item.trialPeople) return '';
-                    return item.trialPeople.map(el => el.name).join('、')
+                    return item.trialPeople.filter(o=>o.name).map(el => el.name).join('、')
                    
                     //var str = ''
                     //item.trialPeople.forEach(el => {

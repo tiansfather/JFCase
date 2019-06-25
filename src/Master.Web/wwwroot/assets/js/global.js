@@ -368,7 +368,7 @@ var func = {
             acceptMime: options.acceptMime||null,
             multiple: false,
             number: 10,
-            size: 204800,
+            size: 512000,
             url:!options.temp? '/file/upload/':'/file/upload?temp=true'
             , choose: function (obj) {
                 if (window.isReUpload) { window.isReUpload = false; return; }

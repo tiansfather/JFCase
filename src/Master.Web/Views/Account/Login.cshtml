@@ -105,6 +105,9 @@
 
 @section scripts{
 <script>
+    if (self != top) {
+        top.location.href = '/Account/Login';
+    }
     $("body").addClass("index-bj");
 
     var guid = "@ViewBag.Guid";

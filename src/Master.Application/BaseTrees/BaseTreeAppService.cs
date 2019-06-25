@@ -131,7 +131,11 @@ namespace Master.BaseTrees
                 baseTree.Id,
                 baseTree.ParentId,
                 baseTree.Name,
-                baseTree.DisplayName
+                baseTree.DisplayName,
+                baseTree.Code,
+                baseTree.RelativeNodeId,
+                baseTree.Sort,
+                baseTree.TreeNodeType
             };
         } 
         #endregion

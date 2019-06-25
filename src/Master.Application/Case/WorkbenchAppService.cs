@@ -285,7 +285,8 @@ namespace Master.Case
                     Court2 = caseSource.Court2?.DisplayName,
                     caseSource.LawyerFirms,
                     TrialPeople = caseSource.TrialPeople.Select(o => new { o.Name, TrialRole = o.TrialRole.ToString() }),
-                    caseSource.SourceFile
+                    caseSource.SourceFile,
+                    caseSource.ValidDate
                 },
                 caseInitialUpdateDto,
                 caseFineUpdateDto,

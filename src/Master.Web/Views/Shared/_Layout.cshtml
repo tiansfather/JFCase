@@ -13,7 +13,7 @@
 @{
     Layout = null;
     AbpAntiForgeryManager.SetCookie(Context);
-    if (ContextAccessor.HttpContext.Session.Get<Master.Authentication.User>("LoginInfo") == null)
+    if (ContextAccessor.HttpContext.Session.Get<int?>("LoginInfo") == null)
     {
         ContextAccessor.HttpContext.Response.Redirect("/Account/Login");
     }

@@ -2423,6 +2423,29 @@ abp.services = abp.services || {};
 
   })();
 
+  // controller 'console'
+  (function(){
+
+    abp.services.app.console = abp.services.app.console || {};
+
+    // action 'getSummary'
+    abp.services.app.console.getSummary = function(ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Console/GetSummary',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
+    // action 'getSourceSummary'
+    abp.services.app.console.getSourceSummary = function(ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Console/GetSourceSummary',
+        type: 'GET'
+      }, ajaxParams));;
+    };
+
+  })();
+
   // controller 'myArt'
   (function(){
 
