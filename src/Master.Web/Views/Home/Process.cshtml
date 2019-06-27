@@ -79,11 +79,21 @@
             width: auto;
         }
         .jianfa-jiagong{padding:0;}
-        .ivu-tabs-nav-wrap {
+        .ivu-tabs-nav-wrap, .source-first {
             position: fixed;
             width: calc(45vw - 24px);
             max-width: 606px;
             z-index: 999;
+        }
+        .source-first {
+            margin-top: 41px;
+            background: #fff;
+            width: calc(45vw - 44px);
+            margin-left: 10px;
+            max-width: 586px;
+        }
+        .ivu-tabs .ivu-tabs-tabpane {
+            transition: all 0.5s ease 0s;
         }
     </style>
 }
@@ -119,48 +129,45 @@
 
                 <div class="bjli on style-chaal-45">
                     <div class="bjdl on">
+                        <div class="source-first" @@mouseleave="sourceDetailShow=false" >
+                            <div class="bjdd on" @@mouseover="sourceDetailShow=true">
+                                <i5 class="fleft style-chaal-50">
+                                    <i class="el-icon-arrow-right" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>{{source.sourceSN}}
+                                </i5>
+                                <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
+                            </div>
+                            <transition name="fade">
+                                <div v-show="sourceDetailShow">
+                                    <div class="bjdd on">
+                                        <div class="fleft style-chaal-20-w">一审法院：</div>
+                                        <div class="fleft style-chaal-80-w">{{source.court1}}</div>
+                                    </div>
+
+                                    <div class="bjdd on">
+                                        <div class="fleft style-chaal-20-w">二审法院：</div>
+                                        <div class="fleft style-chaal-80-w">{{source.court2}}</div>
+                                    </div>
+
+                                    <div class="bjdd on">
+                                        <div class="fleft style-chaal-20-w">审判组织：</div>
+                                        <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
+                                    </div>
+
+                                    <div class="bjdd on xian-1">
+                                        <div class="fleft style-chaal-20-w">代理律师：</div>
+                                        <div class="fleft style-chaal-80-w">
+                                            {{lawyerFirms}}
+                                        </div>
+                                        <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
+                                    </div>
+                                </div>
+
+                            </transition>
+                        </div>
                         <template>
                             <Tabs size="small" type="card">
-                                <Tab-Pane label="初加工" class="initialPanel">
-                                    <div class="bqian" @@mouseleave="sourceDetailShow=false">
-                                        <div>
-                                            <div class="bjdd on" @@mouseover="sourceDetailShow=true">
-                                                <i5 class="fleft style-chaal-50">
-                                                    <i class="el-icon-arrow-right" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>{{source.sourceSN}}
-                                                </i5>
-                                                <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
-                                            </div>
-                                            <transition name="fade">
-                                                <div v-show="sourceDetailShow">
-                                                    <div class="bjdd on">
-                                                        <div class="fleft style-chaal-20-w">一审法院：</div>
-                                                        <div class="fleft style-chaal-80-w">{{source.court1}}</div>
-                                                    </div>
-
-                                                    <div class="bjdd on">
-                                                        <div class="fleft style-chaal-20-w">二审法院：</div>
-                                                        <div class="fleft style-chaal-80-w">{{source.court2}}</div>
-                                                    </div>
-
-                                                    <div class="bjdd on">
-                                                        <div class="fleft style-chaal-20-w">审判组织：</div>
-                                                        <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
-                                                    </div>
-
-                                                    <div class="bjdd on xian-1">
-                                                        <div class="fleft style-chaal-20-w">代理律师：</div>
-                                                        <div class="fleft style-chaal-80-w">
-                                                            {{lawyerFirms}}
-                                                        </div>
-                                                        <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
-                                                    </div>
-                                                </div>
-
-                                            </transition>
-                                        </div>
-                                     
-
-
+                                <Tab-Pane label="初加工" class="initialPanel" :style="{'margin-top':sourceDetailShow?'238px':'46px'}">
+                                    <div class="bqian">
                                         <div class="bjdd on">
                                             <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')" :class="{error:validatingInitial && !selectHasValue(selectValues['案由'][index])}" :errmsg="'请选择'+item.displayName" :style="{width:calcSelectWidth(item)}">
                                                 <template>
@@ -188,17 +195,17 @@
                                                 </el-checkbox-group>
 
                                                 @*<input type="checkbox" id="bq2" /><label for="bq2">标签</label>
-                                                    <input type="checkbox" id="bq3" checked /><label for="bq3">标签</label>
-                                                    <input type="checkbox" id="bq4" /><label for="bq4">标签</label>
-                                                    <input type="checkbox" id="bq5" /><label for="bq5">标签</label>
-                                                    <input type="checkbox" id="bq6" checked /><label for="bq6">标签</label>
-                                                    <input type="checkbox" id="bq7" /><label for="bq7">标签</label>
-                                                    <input type="checkbox" id="bq8" /><label for="bq8">标签</label>
-                                                    <input type="checkbox" id="bq9" /><label for="bq9">标签</label>*@
+                                <input type="checkbox" id="bq3" checked /><label for="bq3">标签</label>
+                                <input type="checkbox" id="bq4" /><label for="bq4">标签</label>
+                                <input type="checkbox" id="bq5" /><label for="bq5">标签</label>
+                                <input type="checkbox" id="bq6" checked /><label for="bq6">标签</label>
+                                <input type="checkbox" id="bq7" /><label for="bq7">标签</label>
+                                <input type="checkbox" id="bq8" /><label for="bq8">标签</label>
+                                <input type="checkbox" id="bq9" /><label for="bq9">标签</label>*@
                                             </div>
                                         </div>
 
-                                        <div class="bjdd on" >
+                                        <div class="bjdd on">
                                             <div class="fleft xian-1 style-chaal-100">
                                                 <template>
                                                     <i-select placeholder="请选择专题" clearable v-model="caseInitialUpdateDto.subjectId">
@@ -212,7 +219,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">案例聚焦</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" >
+                                            <div class="fleft style-chaal-100">
                                                 <textarea name=""
                                                           class="textarea" v-model="caseInitialUpdateDto.title"></textarea>
                                             </div>
@@ -222,13 +229,13 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">案例概述</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" >
+                                            <div class="fleft style-chaal-100">
                                                 <textarea name=""
                                                           class="textarea-sp" v-model="caseInitialUpdateDto.introduction"></textarea>
                                             </div>
                                         </div>
 
-                                        <div class="bjdd on" >
+                                        <div class="bjdd on">
                                             <bt style="margin-bottom:15px;">
                                                 <i8 class="style-chaal-20">诉请及判决</i8>
                                             </bt>
@@ -273,7 +280,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">法律法规</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" >
+                                            <div class="fleft style-chaal-100">
                                                 <textarea name=""
                                                           class="textarea" v-model="caseInitialUpdateDto.law"></textarea>
                                             </div>
@@ -283,7 +290,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">经验分享</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" >
+                                            <div class="fleft style-chaal-100">
                                                 <textarea name="" class="textarea" v-model="caseInitialUpdateDto.experience"></textarea>
                                             </div>
                                         </div>
@@ -292,7 +299,7 @@
                                             <bt>
                                                 <i8 class="style-chaal-20">简法律师说</i8>
                                             </bt>
-                                            <div class="fleft style-chaal-100" >
+                                            <div class="fleft style-chaal-100">
                                                 <textarea name="" class="textarea" v-model="caseInitialUpdateDto.lawyerOpinion"></textarea>
                                             </div>
                                         </div>
@@ -310,7 +317,7 @@
                                     </div>
 
                                 </Tab-Pane>
-                                <Tab-Pane label="精加工">
+                                <Tab-Pane label="精加工" :style="{'margin-top':sourceDetailShow?'238px':'46px'}">
                                     <div class="bqian">
                                         <template v-for="(item,index) in caseFineUpdateDto.caseFines">
                                             <div class="bjdd on">
@@ -356,9 +363,9 @@
                                         </div>
                                     </div>
                                 </Tab-Pane>
-                                <Tab-Pane label="案例卡">
+                                <Tab-Pane label="案例卡" :style="{'margin-top':sourceDetailShow?'238px':'46px'}">
                                     <div class="bqian">
-                                        <div class="bjdd on">
+                                        @*<div class="bjdd on">
                                             <i5 class="fleft style-chaal-50">{{source.sourceSN}}</i5>
                                             <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
                                         </div>
@@ -384,47 +391,47 @@
                                                 {{lawyerFirms}}
                                             </div>
                                             <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
-                                        </div>
+                                        </div>*@
 
                                         @*<div class="bjdd on">
-                                                <div class="fleft style-chaal-33-b">
-                                                    <template>
-                                                        <i-select placeholder="请选择案由" v-model="part.anyou">
-                                                            <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                                        </i-select>
-                                                    </template>
-                                                </div>
-                                                <div class="fleft style-chaal-33-b">
-                                                    <template>
-                                                        <i-select placeholder="请选择城市" v-model="part.city">
-                                                            <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                                        </i-select>
-                                                    </template>
-                                                </div>
-                                                <div class="fleft style-chaal-33">
-                                                    <template>
-                                                        <i-select placeholder="请选择法院" v-model="part.court">
-                                                            <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
-                                                            <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
-                                                        </i-select>
-                                                    </template>
-                                                </div>
-                                            </div>
+                            <div class="fleft style-chaal-33-b">
+                                <template>
+                                    <i-select placeholder="请选择案由" v-model="part.anyou">
+                                        <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </div>
+                            <div class="fleft style-chaal-33-b">
+                                <template>
+                                    <i-select placeholder="请选择城市" v-model="part.city">
+                                        <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </div>
+                            <div class="fleft style-chaal-33">
+                                <template>
+                                    <i-select placeholder="请选择法院" v-model="part.court">
+                                        <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                                        <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                                    </i-select>
+                                </template>
+                            </div>
+                        </div>
 
-                                            <div class="bjdd on xian-1">
-                                                <div class="xuanzeStyle ">
-                                                    <div class="title-bz">添加关键词：</div>
-                                                    <input type="checkbox" id="bq1" /><label for="bq1">关键词</label>
-                                                    <input type="checkbox" id="bq2" checked /><label for="bq2">关键词</label>
-                                                    <input type="checkbox" id="bq3" /><label for="bq3">关键词</label>
-                                                    <input type="checkbox" id="bq4" /><label for="bq4">关键词</label>
-                                                    <input type="checkbox" id="bq5" /><label for="bq5">关键词</label>
-                                                    <input type="checkbox" id="bq6" /><label for="bq6">关键词</label>
-                                                    <input type="checkbox" id="bq7" /><label for="bq7">关键词</label>
-                                                    <input type="checkbox" id="bq8" /><label for="bq8">关键词</label>
-                                                    <input type="checkbox" id="bq9" /><label for="bq9">关键词</label>
-                                                </div>
-                                            </div>*@
+                        <div class="bjdd on xian-1">
+                            <div class="xuanzeStyle ">
+                                <div class="title-bz">添加关键词：</div>
+                                <input type="checkbox" id="bq1" /><label for="bq1">关键词</label>
+                                <input type="checkbox" id="bq2" checked /><label for="bq2">关键词</label>
+                                <input type="checkbox" id="bq3" /><label for="bq3">关键词</label>
+                                <input type="checkbox" id="bq4" /><label for="bq4">关键词</label>
+                                <input type="checkbox" id="bq5" /><label for="bq5">关键词</label>
+                                <input type="checkbox" id="bq6" /><label for="bq6">关键词</label>
+                                <input type="checkbox" id="bq7" /><label for="bq7">关键词</label>
+                                <input type="checkbox" id="bq8" /><label for="bq8">关键词</label>
+                                <input type="checkbox" id="bq9" /><label for="bq9">关键词</label>
+                            </div>
+                        </div>*@
                                         <template v-for="(item,index) in caseCardUpdateDto.caseCards">
 
                                             <div class="bjdd on">
@@ -502,8 +509,8 @@
                         <div class="bqian">
 
                             @*<div class="bjdd">
-                                    <a href="" class="btn-submit-jgy">发布</a><a href="" class="btn-submit-jgy">保存</a><a href="" class="btn-submit-jgy">预览</a>
-                                </div>*@
+                <a href="" class="btn-submit-jgy">发布</a><a href="" class="btn-submit-jgy">保存</a><a href="" class="btn-submit-jgy">预览</a>
+            </div>*@
                         </div>
                     </div>
                 </div>
