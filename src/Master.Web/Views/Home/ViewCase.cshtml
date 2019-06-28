@@ -43,7 +43,7 @@
             width: 100%;
             text-align: justify;
             padding: 3px 0 10px 0;
-            border-bottom: 1px solid #c69c6d;
+            border-bottom: 1px solid #f2f2f2;
             line-height: 24px;
             color: #754c24;
             transition: all 0.5s ease 0s;
@@ -53,6 +53,7 @@
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 4;
             overflow: hidden;
+            margin-bottom:7px;
         }
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1 {
             width: 100%;
@@ -61,13 +62,14 @@
             padding: 3px 0 0 0;
             transition: all 0.5s ease 0s;
         }
-        .jianfa-chaanli .chaanli-content li dl dd i4, .jianfa-chaanli .chaanli-content li dl dd i5{
+        .jianfa-chaanli .chaanli-content li dl dd i4{
             font-size:16px;
             width: 100%;
         }
+         .jianfa-chaanli .chaanli-content li dl dd i5{
+            width:100%;
+        }
         .jianfa-chaanli .chaanli-content li dl dd i6 {
-            height: 83px;
-            overflow: auto;
             color: #505050;
             box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
         }
@@ -78,6 +80,8 @@
             line-height: 83px;
             color: #754C24;
             font-weight: 700;
+            text-align:center;
+            font-size:16px;
         }
         .jianfa-chaanli .chaanli-content li dl dd i6.width100{
             width:100%;
@@ -139,9 +143,19 @@
             display: flex;
             justify-content: space-between;
         }
+        .jianfa-chaanli .chaanli-content li dl dd i5b:hover {
+            background: #fff;
+            color: #754c24;
+            text-decoration: underline;
+            border-radius: 0;
+            box-sizing: border-box;
+        }
+        .jianfa-content .ny-content li dl.xian {
+            padding: 0 0 16px 0;
+        }
     </style>
 }
-    <div id="app" v-cloak style="display:none">
+    <div id="app" v-cloak>
         <!--顶部-->
         <com-header active-name="2"></com-header>
         <!--案源库-01-->
@@ -168,7 +182,7 @@
                         </dl>
                     </li>
                     <li>
-                        <dl class="xian" style="display:flex;   ">
+                        <dl class="xian" style="display:flex;justify-content:space-between;">
                             <dd class="style-bf-20-a" style="width:160px">
                                 <template>
                                     <i-select placeholder="请选择城市" v-model="wherePart.cityId" clearable>
@@ -189,7 +203,7 @@
                                               :key="opt.id">{{ opt.displayName }}</i-option>
                                 </i-select>
                             </dd>
-                            <dd class="style-bf-20-b" style="width:140px">
+                            <dd class="style-bf-20-b" style="width:140px;padding-right: 0;">
                                 <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable>
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
@@ -257,7 +271,7 @@
                     <li class="style-chaal-40">
                         <template>
                             <div class="infinite-list-wrapper" >
-                                <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}" id="scrollWrapper">
+                                <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 291px)':'calc(100vh - 207px)'}" id="scrollWrapper">
                                     <a href="javascript:;">
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
                                             <i1>
@@ -299,7 +313,7 @@
                         </dl>*@
                     </li>
                     <li class="on style-chaal-60" v-if="caseInfo">
-                        <dl class="on"  :style="{height:labelCheckVisible?'calc(100vh - 281px)':'calc(100vh - 197px)'}">
+                        <dl class="on"  :style="{height:labelCheckVisible?'calc(100vh - 291px)':'calc(100vh - 207px)'}">
 
                             <dd class="on">
                                 <i4 class="fleft tjustify">
@@ -338,9 +352,7 @@
                             </dd>
 
                             <dd class="on" v-if="caseInfo.initial.judgeInfo.reverseJudgeContent">
-                                <bf>
-                                    <i9 class="fright">反诉判决</i9>
-                                </bf>
+                                <bt><i8 class="style-chaal-20">反诉判决</i8></bt>
                                 <i6 class="fleft tjustify style-chaal-42-h flex-center">
                                     <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</p>
                                 </i6>
@@ -524,7 +536,7 @@
                 doSearch() {
                     this.currentPage = 1;
                     this.items = [];
-                    this.loadSource();
+                    this.loadSource(true);
                 },
                 //初始化下拉选择，目的是为了构建数据对象存放动态select的v-model
                 initSelects() {
@@ -635,13 +647,15 @@
                         }));
                     })
                 },
-                loadSource() {
+                loadSource(bol) {
                     var that = this;
                     func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword ,searchKeys:this.searchKeys}).done((res) => {
                         this.loading = false;
                         if (res.data.length == 0) {
                             this.$Message.info('已经没有数据了');
                             this.noMore = true;
+                        } else if(bol) {
+                            this.$Message.info('符合您筛选条件的案例共有'+res.data.length+'个')
                         }
                         that.items = that.items.concat(res.data);
                         if (this.currentPage === 1 && that.items.length>0) {
