@@ -44,7 +44,7 @@
                         </dl>
                     </li>
                     <li>
-                        <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
+                        <head-select-filter :where-part="wherePart" @@click="doSearch" ref="headFilter"></head-select-filter>
                     </li>
 
                 </ul>
@@ -261,15 +261,6 @@
                 loading: false,
                 noMore:false
             },
-            watch: {
-                currentPage: function () {
-                    this.loadSource();
-                },
-                pagesize: function () {
-                    //this.currentPage = 1;
-                    this.loadSource();
-                }
-            },
             computed: {
                 disabled() {
                     return this.loading || this.noMore
@@ -297,8 +288,17 @@
                     //debugger
                     this.loading = true;
                     this.currentPage++;
+                    this.loadSource();
                 },
-                loadSource: function () {
+                doSearch() {
+                    this.currentPage = 1;
+                    this.loading = true;
+                    this.noMore = false;
+                    this.items = [];
+                    this.loadSource(true);
+                },
+                loadSource: function (bol) {
+                    
                     var that = this;
                     ////数据获取接口
                     //abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {

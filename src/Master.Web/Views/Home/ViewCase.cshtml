@@ -655,7 +655,7 @@
                             this.$Message.info('已经没有数据了');
                             this.noMore = true;
                         } else if(bol) {
-                            this.$Message.info('符合您筛选条件的案例共有'+res.data.length+'个')
+                            this.$Message.info('符合您筛选条件的案例共有'+res.count+'个')
                         }
                         that.items = that.items.concat(res.data);
                         if (this.currentPage === 1 && that.items.length>0) {
