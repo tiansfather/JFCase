@@ -80,8 +80,9 @@ namespace Master.Roles
             var resultData = new List<object>();
             foreach(var d in data)
             {
-                var users = (await UserManager.GetUsersInRoleAsync(d.Id)).Select(o => new { o.Id, o.Name });
-                resultData.Add(new { d.Id,d.Creator,d.CreationTime,d.DisplayName,d.IsStatic,d.Remarks,Users=users});
+                //var users = (await UserManager.GetUsersInRoleAsync(d.Id)).Select(o => new { o.Id, o.Name });
+                //resultData.Add(new { d.Id,d.Creator,d.CreationTime,d.DisplayName,d.IsStatic,d.Remarks,Users=users});
+                resultData.Add(new { d.Id, d.Creator, d.CreationTime, d.DisplayName, d.IsStatic, d.Remarks });
             }
 
             var result = new ResultPageDto()
