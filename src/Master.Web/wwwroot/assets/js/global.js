@@ -956,6 +956,6 @@ function showPdf(filePath,fileName) {
         shadeClose: false,
         shade: 0.8,
         area: ['100%', '100%'],
-        content: '/pdfviewer/web/viewer.html?file=' + filePath
+        content: '/pdfviewer/web/viewer.html?file=' + encodeURIComponent(filePath)
     });
 }
