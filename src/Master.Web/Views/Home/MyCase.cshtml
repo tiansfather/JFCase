@@ -85,7 +85,7 @@
                                 </td>
                                 <td class="on">{{item.publishDate}}</td>
                                 <td class="on">{{item.readNumber}}</td>
-                                <td class="on"><a :href="'/Home/Process?EncrypedId='+item.encrypedId"><img src="/assets/jianfa/ima/mywj-icon-1.png"></a></td>
+                                <td class="on"><a :href="'/Home/Process?EncrypedId='+encodeURIComponent(item.encrypedId)"><img src="/assets/jianfa/ima/mywj-icon-1.png"></a></td>
                             </tr>
 
                             @*<tr>

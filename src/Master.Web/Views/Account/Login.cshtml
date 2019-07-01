@@ -31,7 +31,9 @@
                     <ul>
                         <li class="eiweima-a"><a ><img :src="qrCode" width="170" height="170"></a></li>
                         <li>请使用微信扫码登陆</li>
-                        <li class="explain">这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字</li>
+                        <li class="explain">
+                            一份代理律师水平高超、诉讼方案正确高效<br/>举证质证精彩<br/>法官说理充分，极具说服力的民事判决书<br/>就是一个百宝箱，甚至一座金矿<br/>很多有价值的信息等待我们去挖掘！
+                        </li>
                     </ul>
                 </div>
                 <!--登陆-02-->
@@ -39,13 +41,13 @@
                     <ul>
                         <li class="tips">提示说明</li>
                         <li class="explain">
-                            这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占位文字这是假字说明注解占：<br><br>
+                            工厂尚处于试运营阶段，仅对注册律师开放。如您满足下列条件，非常欢迎您的加入：<br><br>
 
-                            1.位文字这是假字说明注解占位文字这是假字说明注；<br>
-                            1.位文字这是假字说明注解占位文字这是假字说明注；<br>
-                            1.位文字这是假字说明注解占位文字这是假字说明注；<br><br>
+                            1、民事诉讼领域执业律师，独立执业5年以上；<br>
+                            2、认同律师专业化发展的理念，已经或正在完成专业化转型；<br>
+                            3、为此，愿意每周拿出1-2小时，并愿意分享自己的观点。<br><br>
 
-                            假字说明注解占位文字这是假字说明注；假字说明注解占位文字这是假字说明注；
+                            @*假字说明注解占位文字这是假字说明注；假字说明注解占位文字这是假字说明注；*@
                         </li>
                         <li>
                             <i1><a @@click="step=3" class="btn-submit">填写信息</a></i1>
@@ -64,17 +66,17 @@
                                     <i3><img :src="currentItem.avata" width="70" height="70"></i3>
                                 </dd>
                                 <dd :class="{error:!currentItem.name && validating}">
-                                    <label class="label-text">真实姓名</label>
-                                    <input type="text" class="i-text" v-model="currentItem.name" placeholder="请输入你的真实姓名" />
+                                    <label class="label-text">姓名</label>
+                                    <input type="text" class="i-text" v-model="currentItem.name" placeholder="请输入你的姓名" />
 
                                 </dd>
                                 <dd :class="{error:!currentItem.workLocation && validating}">
-                                    <label class="label-text">律所全称</label>
+                                    <label class="label-text">律所</label>
                                     <input type="text" class="i-text" v-model="currentItem.workLocation" placeholder="请输入你的当前所在律所" />
                                 </dd>
                                 <dd :class="{error:!currentItem.phoneNumber && validating}">
-                                    <label class="label-text">手机号码</label>
-                                    <input type="text" class="i-text" v-model="currentItem.phoneNumber" placeholder="请输入你的手机号码" />
+                                    <label class="label-text">手机</label>
+                                    <input type="text" class="i-text" v-model="currentItem.phoneNumber" placeholder="请输入你的手机" />
                                 </dd>
                                 <dd :class="{error:!currentItem.email && validating}">
                                     <label class="label-text">邮箱</label>
@@ -166,9 +168,9 @@
                 doSubmit: function () {
                     this.validating = true;
                     var requireRules = {
-                        "name": "请输入真实姓名",
-                        "workLocation": "请输入律师事务所",
-                        "phoneNumber": "请输入手机号",
+                        "name": "请输入姓名",
+                        "workLocation": "请输入律所",
+                        "phoneNumber": "请输入手机",
                         "email": "请输入邮箱"
                     };
                     for (var rule in requireRules) {
