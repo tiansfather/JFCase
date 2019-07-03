@@ -3,6 +3,170 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "我的案例";
 }
+@section styles{ 
+    <style>
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i1 {
+            display: flex;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 {
+            width: 100%;
+            border: 1px solid #f2f2f2;
+            padding: 5px 10px 3px 10px;
+            border-radius: 5px;
+            margin: 10px 0 0 0;
+            overflow: auto;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap  .left-cha1 {
+            width: 15%;
+            padding: 0 5px 0 0;
+            box-sizing: border-box;
+        }
+            .jianfa-chaanli .chaanli-content .cha-item-wrap .left-cha1 img {
+                width: 100%;
+                max-width: 54px;
+                border-radius: 50px;
+            }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap .right-cha1 {
+            font-size:16px;
+            width: 85%;
+            background: #c69c6d;
+            color: #fff;
+            line-height: 22px;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 0 0 0 0;
+            box-sizing: border-box;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .top-cha1 {
+            width: 100%;
+            text-align: justify;
+            padding: 3px 0 10px 0;
+            border-bottom: 1px solid #f2f2f2;
+            line-height: 24px;
+            color: #754c24;
+            transition: all 0.5s ease 0s;
+            line-height:24px;
+            /*height: 96px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+            overflow: hidden;*/
+            margin-bottom:7px;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1 {
+            width: 100%;
+            color: #c69c6d;
+            line-height: 24px;
+            padding: 3px 0 0 0;
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i4{
+            font-size:16px;
+            width: 100%;
+        }
+         .jianfa-chaanli .chaanli-content li dl dd i5{
+            width:100%;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6 {
+            color: #505050;
+            border:none;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6.style-chaal-42-h {
+            box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
+        }
+        .jianfa-chaanli .chaanli-content li dl dd .support-rate {
+            float: left;
+            width: 16%;
+            /*margin: 0 5%;*/
+            line-height: 83px;
+            color: #754C24;
+            font-weight: 700;
+            text-align:center;
+            font-size:16px;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6.width100{
+            width:100%;
+            min-height:8em;
+        }
+
+        .jianfa-guandiancard .ny-guandiancard li dl {
+            width: 325px;
+        }
+        /*.jianfa-chaanli .chaanli-content li dl dd {
+            margin: 20px 0;
+        }*/
+        .xuanzeStyle label {
+            width: 70px;
+            margin: 0;
+            height: 24px;
+            line-height: 24px;
+        }
+        .el-checkbox-button:last-child .el-checkbox-button__inner {
+            vertical-align: top;
+            line-height: 22px;
+        }
+        /*----*/
+        .jianfa-chaanli .chaanli-content li dl {
+         
+        }
+        .paiban {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .card-start, .card-end, .jianfa-guandiancard .ny-guandiancard ul {
+            width: auto;
+        }
+        .jianfa-guandiancard {
+            overflow: inherit;
+        }
+
+
+        .jianfa-chaanli .chaanli-content li dl dd.on, .jianfa-chaanli .chaanli-content li dl dd {
+            line-height:24px;
+            font-size: 14px;
+        }
+
+            .jianfa-chaanli .chaanli-content li dl dd i5b {
+                color:#754c24;
+                border:none;
+                background: #fff;
+            }
+                .jianfa-chaanli .chaanli-content li dl dd i5b:hover{
+                    border:none;
+                }
+        .flex-center{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .r-head-search_dl {
+            display: flex;
+            justify-content: space-between;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i5b:hover {
+            background: #fff;
+            color: #754c24;
+            text-decoration: underline;
+            border-radius: 0;
+            box-sizing: border-box;
+        }
+        .jianfa-content .ny-content li dl.xian {
+            padding: 0 0 16px 0;
+        }
+        .style-chaal-42-h{height:auto;}
+        i6.fleft.tjustify.style-chaal-42-h.flex-center::-webkit-scrollbar {
+            width: 0 !important
+        }
+        i6.fleft.tjustify.style-chaal-42-h.flex-center {
+            overflow: -moz-scrollbars-none;
+        }
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1{padding:0;line-height:14px;}
+        /*.jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 i{font-size:16px;}*/
+    </style>
+}
 
 <div id="app" style="display:none">
     <!--顶部-->
@@ -126,104 +290,119 @@
     </Modal>
     <!--添加-->
 
-    <Modal width="428px" v-model="modalViewCase" class-name="center-modal" :mask-closable="false">
-        <div v-if="caseInfo">
-            <dl class="on">
-                <dd class="on">
-                    <i4 class="fleft tjustify">
-                        {{caseInfo.initial.title}}
-                    </i4>
-                </dd>
+    <Modal width="708" v-model="modalViewCase" class-name="center-modal" :mask-closable="false">
+        <div class="jianfa-chaanli">
+            <div class="chaanli-content" style="float:none;margin:0">
+                <ul>
+                    <li class="on">
+                        <div v-if="caseInfo">
+                            <dl class="on" style="height:70vh;border:none;">
+                                <dd class="on">
+                                    <i4 class="fleft tjustify">
+                                        {{caseInfo.initial.title}}
+                                    </i4>
+                                </dd>
 
-                <dd class="on">
-                    <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court2||caseInfo.source.court1}}</i7>
-                    <a @@click="currentItem=caseInfo.source;moda12 = true">
-                        <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
-                    </a>
-                    <i7 class="fleft tright style-chaal-33">{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
-                </dd>
+                                <dd class="on">
+                                    <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court2||caseInfo.source.court1}}</i7>
+                                    <a @@click="currentItem=caseInfo.source;moda12 = true">
+                                        <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+                                    </a>
+                                    <i7 class="fleft tright style-chaal-33">{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
+                                </dd>
 
 
-                <dd class="on">
-                    <i5 class="fleft tjustify">
-                        <!-- 概述 -->
-                        {{caseInfo.initial.introduction}}
-                    </i5>
-                </dd>
+                                <dd class="on">
+                                    <i5 class="fleft tjustify">
+                                        <!-- 概述 -->
+                                        {{caseInfo.initial.introduction}}
+                                    </i5>
+                                </dd>
 
-                <dd class="on">
-                    <bt>
-                        <i8 class="style-chaal-20">诉请及判决</i8>
-                    </bt>
-                    <div style="display:flex;width:100%">
-                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeContent}}</p>
-                        </i6>
-                        <span class="support-rate">{{caseInfo.initial.judgeInfo.supportRate}}%</span>
-                        @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
-                        <!--调节h50 h60.....-->
-                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeResult}}</p>
-                        </i6>
-                    </div>
+                                <dd class="on">
+                                    <bt>
+                                        <i8 class="style-chaal-20">诉请及判决</i8>
+                                    </bt>
+                                    <div style="display:flex;width:100%">
+                                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeContent}}</p>
+                                        </i6>
+                                        <span class="support-rate">{{caseInfo.initial.judgeInfo.supportRate}}%</span>
+                                        @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
+                                        <!--调节h50 h60.....-->
+                                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeResult}}</p>
+                                        </i6>
+                                    </div>
 
-                </dd>
+                                </dd>
 
-                <dd class="on" v-if="caseInfo.initial.judgeInfo.reverseJudgeContent">
-                    <bt><i8 class="style-chaal-20">反诉判决</i8></bt>
-                    <div style="display:flex;width:100%">
-                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</p>
-                        </i6>
-                        <span class="support-rate">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span>
-                        @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>*@
-                        <!--调节h50 h60.....-->
-                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</p>
-                        </i6>
-                    </div>
-                </dd>
+                                <dd class="on" v-if="caseInfo.initial.judgeInfo.reverseJudgeContent">
+                                    <bt><i8 class="style-chaal-20">反诉判决</i8></bt>
+                                    <div style="display:flex;width:100%">
+                                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</p>
+                                        </i6>
+                                        <span class="support-rate">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span>
+                                        @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>*@
+                                        <!--调节h50 h60.....-->
+                                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</p>
+                                        </i6>
+                                    </div>
+                                </dd>
 
-                <dd class="on" v-show="caseInfo.initial.law">
-                    <bt>
-                        <i8 class="style-chaal-20">法律法规</i8>
-                    </bt>
-                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.law">
-                        @*{{caseInfo.initial.law}}*@
-                    </i6>
-                </dd>
+                                <dd class="on" v-show="caseInfo.initial.law">
+                                    <bt>
+                                        <i8 class="style-chaal-20">法律法规</i8>
+                                    </bt>
+                                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.law">
+                                        @*{{caseInfo.initial.law}}*@
+                                    </i6>
+                                </dd>
 
-                <dd class="on" v-show="caseInfo.initial.experience">
-                    <bt>
-                        <i8 class="style-chaal-20">经验分享</i8>
-                    </bt>
-                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.experience">
-                        @*{{caseInfo.initial.experience}}*@
-                    </i6>
-                </dd>
+                                <dd class="on" v-show="caseInfo.initial.experience">
+                                    <bt>
+                                        <i8 class="style-chaal-20">经验分享</i8>
+                                    </bt>
+                                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.experience">
+                                        @*{{caseInfo.initial.experience}}*@
+                                    </i6>
+                                </dd>
 
-                <dd class="on" v-show="caseInfo.initial.lawyerOpinion">
-                    <bt>
-                        <i8 class="style-chaal-20 width100">简法律师说</i8>
-                    </bt>
-                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.lawyerOpinion">
-                        @*{{caseInfo.initial.lawyerOpinion}}*@
-                    </i6>
-                </dd>
+                                <dd class="on" v-show="caseInfo.initial.lawyerOpinion">
+                                    <bt>
+                                        <i8 class="style-chaal-20 width100">简法律师说</i8>
+                                    </bt>
+                                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.lawyerOpinion">
+                                        @*{{caseInfo.initial.lawyerOpinion}}*@
+                                    </i6>
+                                </dd>
 
-                <dd class="on" v-show="caseInfo.initial.caseCards && caseInfo.initial.caseCards.length">
-                    <bt>
-                        <i8 class="style-chaal-20">案例卡</i8>
-                    </bt>
-                    <div>
-                        <div v-for="(item,index) in caseInfo.initial.caseCards">
-                            <i5 class="fleft tjustify" style="margin: 10px 0;min-height: 6em;">{{item.title}}</i5>
-                            <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                <dd class="on" v-show="caseInfo.initial.caseCards && caseInfo.initial.caseCards.length">
+                                    <bt>
+                                        <i8 class="style-chaal-20">案例卡</i8>
+                                    </bt>
+                                    <div>
+                                        <div v-for="(item,index) in caseInfo.initial.caseCards">
+                                            <i5 class="fleft tjustify" style="margin: 10px 0;min-height: 6em;">{{item.title}}</i5>
+                                            <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                        </div>
+                                    </div>
+                                </dd>
+
+                            </dl>
                         </div>
-                    </div>
-                </dd>
 
-            </dl>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div slot="footer">
+            <div class="but-foot" style="margin:0px auto;overflow:auto;width:72px;">
+                <div class="but-right-foot"><Button class="btn-footer-qx" @@click="modalViewCase = false">关闭</Button></div>
+            </div>
         </div>
     </Modal>
 
