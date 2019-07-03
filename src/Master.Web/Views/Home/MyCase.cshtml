@@ -22,14 +22,14 @@
                     <dl class="xian">
                         <dd class="style-bf-40">
                             <template>
-                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small" clearable >
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small" clearable>
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-20">
                             <template>
-                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" size="small" clearable >
+                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" size="small" clearable>
                                     <i-option v-for="item in caseStatuses" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
@@ -66,10 +66,10 @@
                                     </template>
                                 </td>
                                 <td class="on">{{item.anYou}}</td>
-                                <td class="on"><a @@click="currentItem=item;moda12 = true">{{item.sourceSN}}</a></td>
+                                <td class="on"><a @@click="getViewMsg(item.id);modalViewCase = true">{{item.sourceSN}}</a></td>
                                 <td class="on">
                                     <template>
-                                        <i-select placeholder="请选择专题" v-model="item.subjectId" clearable  size="small" @@on-change="changeSubject(item,$event)">
+                                        <i-select placeholder="请选择专题" v-model="item.subjectId" clearable size="small" @@on-change="changeSubject(item,$event)">
                                             <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                         </i-select>
                                     </template>
@@ -125,6 +125,109 @@
         </div>
     </Modal>
     <!--添加-->
+
+    <Modal width="428px" v-model="modalViewCase" class-name="center-modal" :mask-closable="false">
+        <div v-if="caseInfo">
+            <dl class="on">
+                <dd class="on">
+                    <i4 class="fleft tjustify">
+                        {{caseInfo.initial.title}}
+                    </i4>
+                </dd>
+
+                <dd class="on">
+                    <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court2||caseInfo.source.court1}}</i7>
+                    <a @@click="currentItem=caseInfo.source;moda12 = true">
+                        <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+                    </a>
+                    <i7 class="fleft tright style-chaal-33">{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
+                </dd>
+
+
+                <dd class="on">
+                    <i5 class="fleft tjustify">
+                        <!-- 概述 -->
+                        {{caseInfo.initial.introduction}}
+                    </i5>
+                </dd>
+
+                <dd class="on">
+                    <bt>
+                        <i8 class="style-chaal-20">诉请及判决</i8>
+                    </bt>
+                    <div style="display:flex;width:100%">
+                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeContent}}</p>
+                        </i6>
+                        <span class="support-rate">{{caseInfo.initial.judgeInfo.supportRate}}%</span>
+                        @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
+                        <!--调节h50 h60.....-->
+                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeResult}}</p>
+                        </i6>
+                    </div>
+
+                </dd>
+
+                <dd class="on" v-if="caseInfo.initial.judgeInfo.reverseJudgeContent">
+                    <bt><i8 class="style-chaal-20">反诉判决</i8></bt>
+                    <div style="display:flex;width:100%">
+                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</p>
+                        </i6>
+                        <span class="support-rate">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span>
+                        @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>*@
+                        <!--调节h50 h60.....-->
+                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                            <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</p>
+                        </i6>
+                    </div>
+                </dd>
+
+                <dd class="on" v-show="caseInfo.initial.law">
+                    <bt>
+                        <i8 class="style-chaal-20">法律法规</i8>
+                    </bt>
+                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.law">
+                        @*{{caseInfo.initial.law}}*@
+                    </i6>
+                </dd>
+
+                <dd class="on" v-show="caseInfo.initial.experience">
+                    <bt>
+                        <i8 class="style-chaal-20">经验分享</i8>
+                    </bt>
+                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.experience">
+                        @*{{caseInfo.initial.experience}}*@
+                    </i6>
+                </dd>
+
+                <dd class="on" v-show="caseInfo.initial.lawyerOpinion">
+                    <bt>
+                        <i8 class="style-chaal-20 width100">简法律师说</i8>
+                    </bt>
+                    <i6 class="fleft tjustify width100" v-html="caseInfo.initial.lawyerOpinion">
+                        @*{{caseInfo.initial.lawyerOpinion}}*@
+                    </i6>
+                </dd>
+
+                <dd class="on" v-show="caseInfo.initial.caseCards && caseInfo.initial.caseCards.length">
+                    <bt>
+                        <i8 class="style-chaal-20">案例卡</i8>
+                    </bt>
+                    <div>
+                        <div v-for="(item,index) in caseInfo.initial.caseCards">
+                            <i5 class="fleft tjustify" style="margin: 10px 0;min-height: 6em;">{{item.title}}</i5>
+                            <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                        </div>
+                    </div>
+                </dd>
+
+            </dl>
+        </div>
+    </Modal>
+
+
     @await Html.PartialAsync("PDFFrame")
     @*<Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
             <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
@@ -153,6 +256,7 @@
                 currentItem: {},
                 modal1: false,
                 moda12: false,
+                modalViewCase:false,
                 subjects: [],//专题
                 caseStatuses: [{ id: 1, displayName: '展示中' },  {id:3,displayName:'下架'}],
                 model2: '',
@@ -162,7 +266,13 @@
                     caseCount: 0,
                     caseCardCount: 0,
                     caseFineCount:0
-                }
+                },
+                caseInfo: {
+                    source: {},
+                    initial: {
+                        judgeInfo: {}
+                    }
+                },
                 //end//
             },
             watch: {
@@ -189,6 +299,27 @@
                 }
             },
             methods: {
+        
+                getViewMsg(caseInitialId) {
+                    var that = this;
+                    abp.services.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
+                        //caseSourceId为对应的案源id
+                        //获取案例详情
+                        func.runAsync(abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
+                            res.initial.caseCards.forEach(el => {
+                                el.isRotate = false;
+                            })
+                            res.initial.law = replaceHtml(res.initial.law);
+                            res.initial.experience = replaceHtml(res.initial.experience);
+                            res.initial.lawyerOpinion = replaceHtml(res.initial.lawyerOpinion);
+                            that.caseInfo = res;
+                        }));
+                    })
+                    function replaceHtml(html) {
+                        if (!html) { return ""; }
+                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                    }
+                },
                 loadSource() {
                     var that = this;
                     func.runAsync(abp.services.app.myCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
