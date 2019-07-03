@@ -175,4 +175,148 @@
             this.loadTypes();
         }
     })
+
+</script>
+<script type="text/x-template" id="viewCase">
+
+    <div class="jianfa-chaanli">
+        <div class="chaanli-content">
+            <div v-show="items.length===0">
+                <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看。</h1>
+            </div>
+            <ul v-show="items.length">
+                <li class="style-chaal-40">
+                    <template>
+                        <div class="infinite-list-wrapper">
+                            <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 291px)':'calc(100vh - 207px)'}" id="scrollWrapper">
+                                <a href="javascript:;">
+                                    <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
+                                        <i1>
+                                            <div class="left-cha1"><img :src="item.avata"></div>
+                                            <div class="right-cha1">
+                                                {{item.title}}
+                                            </div>
+                                        </i1>
+                                        <i2>
+                                            <div class="top-cha1">
+                                                {{item.introduction}}
+                                            </div>
+                                            <div class="bottom-cha1">
+                                                <span>{{item.readNumber}}</span>
+                                                <span style="color:#754c24; margin-right: 10px;">阅读量</span>
+                                                @*<i class="jianfa fa-eye"></i>*@
+                                            </div>
+                                        </i2>
+                                    </dd>
+                                </a>
+                                <p v-if="loading" style="text-align:center">加载中...</p>
+                                <p v-if="noMore" style="text-align:center">没有更多了</p>
+                            </dl>
+
+                        </div>
+
+                    </template>
+                </li>
+                <li class="on style-chaal-60" v-if="caseInfo">
+                    <dl class="on" :style="{height:labelCheckVisible?'calc(100vh - 291px)':'calc(100vh - 207px)'}">
+
+                        <dd class="on">
+                            <i4 class="fleft tjustify">
+                                {{caseInfo.initial.title}}
+                            </i4>
+                        </dd>
+
+                        <dd class="on">
+                            <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court2||caseInfo.source.court1}}</i7>
+                            <a @@click="currentItem=caseInfo.source;moda12 = true">
+                                <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+                            </a>
+                            <i7 class="fleft tright style-chaal-33">{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
+                        </dd>
+
+
+                        <dd class="on">
+                            <i5 class="fleft tjustify">
+                                <!-- 概述 -->
+                                {{caseInfo.initial.introduction}}
+                            </i5>
+                        </dd>
+
+                        <dd class="on">
+                            <bt>
+                                <i8 class="style-chaal-20">诉请及判决</i8>
+                            </bt>
+                            <div style="display:flex;width:100%">
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeContent}}</p>
+                                </i6>
+                                <span class="support-rate">{{caseInfo.initial.judgeInfo.supportRate}}%</span>
+                                @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
+                                <!--调节h50 h60.....-->
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeResult}}</p>
+                                </i6>
+                            </div>
+
+                        </dd>
+
+                        <dd class="on" v-if="caseInfo.initial.judgeInfo.reverseJudgeContent">
+                            <bt><i8 class="style-chaal-20">反诉判决</i8></bt>
+                            <div style="display:flex;width:100%">
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</p>
+                                </i6>
+                                <span class="support-rate">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span>
+                                @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>*@
+                                <!--调节h50 h60.....-->
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</p>
+                                </i6>
+                            </div>
+                        </dd>
+
+                        <dd class="on" v-show="caseInfo.initial.law">
+                            <bt>
+                                <i8 class="style-chaal-20">法律法规</i8>
+                            </bt>
+                            <i6 class="fleft tjustify width100" v-html="caseInfo.initial.law">
+                                @*{{caseInfo.initial.law}}*@
+                            </i6>
+                        </dd>
+
+                        <dd class="on" v-show="caseInfo.initial.experience">
+                            <bt>
+                                <i8 class="style-chaal-20">经验分享</i8>
+                            </bt>
+                            <i6 class="fleft tjustify width100" v-html="caseInfo.initial.experience">
+                                @*{{caseInfo.initial.experience}}*@
+                            </i6>
+                        </dd>
+
+                        <dd class="on" v-show="caseInfo.initial.lawyerOpinion">
+                            <bt>
+                                <i8 class="style-chaal-20 width100">简法律师说</i8>
+                            </bt>
+                            <i6 class="fleft tjustify width100" v-html="caseInfo.initial.lawyerOpinion">
+                                @*{{caseInfo.initial.lawyerOpinion}}*@
+                            </i6>
+                        </dd>
+
+                        <dd class="on" v-show="caseInfo.initial.caseCards && caseInfo.initial.caseCards.length">
+                            <bt>
+                                <i8 class="style-chaal-20">案例卡</i8>
+                            </bt>
+                            <div>
+                                <div v-for="(item,index) in caseInfo.initial.caseCards">
+                                    <i5 class="fleft tjustify" style="margin: 10px 0;min-height: 6em;">{{item.title}}</i5>
+                                    <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                </div>
+                            </div>
+                        </dd>
+
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
 </script>
