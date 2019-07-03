@@ -485,7 +485,7 @@
         @await Html.PartialAsync("PDFFrame")
     </div>
 @section scripts{
-    <script>
+    <script type="text/babel">
         var app = new Vue({
             el: '#app',
             data: {
@@ -662,16 +662,21 @@
                             res.initial.caseCards.forEach(el => {
                                 el.isRotate = false;
                             })
-                            res.initial.law = res.initial.law.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;')
-                            res.initial.experience = res.initial.experience.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;')
-                            res.initial.lawyerOpinion = res.initial.lawyerOpinion.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;')
+                            res.initial.law = replaceHtml(res.initial.law);
+                            res.initial.experience = replaceHtml(res.initial.experience);
+                            res.initial.lawyerOpinion = replaceHtml(res.initial.lawyerOpinion);
                             that.caseInfo = res;
                             Vue.nextTick(function () {
                                 $('.style-chaal-60>dl').scrollTop(0)
                             })
                         }));
                     })
+                    function replaceHtml(html) {
+                        if (!html) { return ""; }
+                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                    }
                 },
+
                 loadSource(bol) {
                     var that = this;
                     func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword ,searchKeys:this.searchKeys}).done((res) => {
