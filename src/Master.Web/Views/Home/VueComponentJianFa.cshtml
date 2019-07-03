@@ -134,9 +134,11 @@
                     var data = this.whereParts[i];
                     if (!data) continue;
                     if (i == 'courtId') {
-                        where += ` and (court1Id=${data} or court2id=${data})`;
+                        //where += ` and (court1Id=${data} or court2id=${data})`;
+                        where += " and (court1Id="+data+" or court2id="+data+")";
                     } else {
-                        where += ` and ${i}=${data}`;
+                        //where += ` and ${i}=${data}`;
+                        where += ' and '+i+'='+data;
                     }
 
                 }
@@ -167,7 +169,7 @@
                     this.filterCourtByCity= [];
                 } else {
                     var that = this;
-                    this.filterCourtByCity = this.courts.filter(o => o.parentId == val);
+                    this.filterCourtByCity = this.courts.filter(function (o) { return o.parentId == val;});
                 }
             }
         },
