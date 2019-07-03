@@ -497,3 +497,6 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
 .ivu-page{
     margin-bottom:50px;
 }
+.ivu-modal {
+    margin: 0 !important;
+}

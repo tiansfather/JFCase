@@ -230,7 +230,7 @@
                                     </template>
                                 </td>
                                 <td class="on">{{item.anYou}}</td>
-                                <td class="on"><a @@click="getViewMsg(item.id);modalViewCase = true">{{item.sourceSN}}</a></td>
+                                <td class="on"><a @@click="view(item.sourceId);modalViewCase = true">{{item.sourceSN}}</a></td>
                                 <td class="on">
                                     <template>
                                         <i-select placeholder="请选择专题" v-model="item.subjectId" clearable size="small" @@on-change="changeSubject(item,$event)">
@@ -290,7 +290,7 @@
     </Modal>
     <!--添加-->
 
-    <Modal width="708" v-model="modalViewCase" class-name="center-modal" :mask-closable="false">
+    <Modal width="708" v-model="modalViewCase" class-name="center-modal" :mask-closable="true">
         <div class="jianfa-chaanli">
             <div class="chaanli-content" style="float:none;margin:0">
                 <ul>
@@ -479,11 +479,10 @@
             },
             methods: {
         
-                getViewMsg(caseInitialId) {
+                
+                view(caseSourceId) {
                     var that = this;
-                    abp.services.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
-                        //caseSourceId为对应的案源id
-                        //获取案例详情
+                    //获取案例详情
                         func.runAsync(abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
                             res.initial.caseCards.forEach(el => {
                                 el.isRotate = false;
@@ -493,7 +492,6 @@
                             res.initial.lawyerOpinion = replaceHtml(res.initial.lawyerOpinion);
                             that.caseInfo = res;
                         }));
-                    })
                     function replaceHtml(html) {
                         if (!html) { return ""; }
                         return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
