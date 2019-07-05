@@ -11,7 +11,7 @@
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 {
             width: 100%;
             border: 1px solid #f2f2f2;
-            padding: 5px 10px 3px 10px;
+            padding: 0 10px;
             border-radius: 5px;
             margin: 10px 0 0 0;
             overflow: auto;
@@ -59,11 +59,16 @@
             width: 100%;
             color: #c69c6d;
             line-height: 24px;
-            padding: 3px 0 0 0;
             transition: all 0.5s ease 0s;
+            display:flex;
+            justify-content:space-between;
         }
-        .jianfa-chaanli .chaanli-content li dl dd i4{
-            font-size:16px;
+        .jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 span {
+            float:none;
+            padding: 0
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i4 {
+            font-size: 16px;
             width: 100%;
         }
          .jianfa-chaanli .chaanli-content li dl dd i5{
@@ -154,7 +159,7 @@
             box-sizing: border-box;
         }
         .jianfa-content .ny-content li dl.xian {
-            padding: 0 0 16px 0;
+            padding: 0 0 11px 0;
         }
         .style-chaal-42-h{height:auto;}
         i6.fleft.tjustify.style-chaal-42-h.flex-center::-webkit-scrollbar {
@@ -163,7 +168,7 @@
         i6.fleft.tjustify.style-chaal-42-h.flex-center {
             overflow: -moz-scrollbars-none;
         }
-        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1{padding:0;line-height:14px;}
+        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1{padding:0;line-height:30px;}
         /*.jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 i{font-size:16px;}*/
     </style>
 }
@@ -193,7 +198,7 @@
         <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                         </dl>
                     </li>
-                    <li>
+                    <li style="padding-bottom:10px;">
                         <dl class="xian" style="display:flex;justify-content:space-between;">
                             <dd class="style-bf-20-a" style="width:160px">
                                 <template>
@@ -297,8 +302,10 @@
                                                     {{item.introduction}}
                                                 </div>
                                                 <div class="bottom-cha1">
-                                                    <span>{{item.readNumber}}</span>
-                                                    <span style="color:#754c24; margin-right: 10px;">阅读量</span>
+                                                    <span>发布时间：&nbsp;{{item.publishDate}}</span>
+                                                    <span>阅读量&nbsp;{{item.readNumber}}</span>
+                                                    @*<span></span>
+                                                    <span style="color:#754c24; margin-right: 10px;"></span>*@
                                                     @*<i class="jianfa fa-eye"></i>*@
                                                 </div>
                                             </i2>
@@ -338,11 +345,11 @@
                             </dd>
 
                             <dd class="on">
-                                <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court2||caseInfo.source.court1}}</i7>
+                                <i7 class="fleft tleft style-chaal-33">审理法院：{{caseInfo.source.court2||caseInfo.source.court1}}</i7>
                                 <a @@click="currentItem=caseInfo.source;moda12 = true">
                                     <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
                                 </a>
-                                <i7 class="fleft tright style-chaal-33">{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
+                                <i7 class="fleft tright style-chaal-33">生效日期：{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
                             </dd>
 
 

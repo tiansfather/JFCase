@@ -28,17 +28,23 @@
     height: calc(100vh - 156px);
 }
 .index-daohang {
-    width: calc(78vh + 60px);
+    width: calc(74vh + 260px);
 }
+    .index-daohang .dh-left {
+        margin: 18px 130px 0 0;
+    }
+    .index-daohang .dh-right {
+        margin: 18px 0 0 130px;
+    }
     .index-daohang .dh-left, .index-daohang .dh-right {
-        width: 25vh;
-        height: 25vh;
-        background-size: 25vh!important;
+        width: 23vh;
+        height: 31.88vh;
+        background-size: 23vh 31.88vh !important;
     }
     .index-daohang .dh-middle {
         width: 28vh;
-        height: 28vh;
-        background-size: 28vh!important;
+        height: 32vh;
+        background-size: 28vh 32vh!important;
     }
 .style-pa-1 {
     position: relative;
