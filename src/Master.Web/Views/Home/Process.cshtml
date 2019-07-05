@@ -98,7 +98,7 @@
     </style>
 }
 
-<div id="app">
+<div id="app" v-cloak>
     <!--顶部-->
     <com-header></com-header>
     <!--案源库-01-->
@@ -666,7 +666,7 @@
 @section scripts{
     <script type="text/babel">
         var id =@ViewBag.Id;//此id为案源的id
-        var app=new Vue({
+        window.app=new Vue({
             el: '#app',
             data: {
                 sourceDetailShow:false,//一审法院等，默认不显示，移上去显示
