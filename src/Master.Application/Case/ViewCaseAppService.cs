@@ -68,6 +68,7 @@ namespace Master.Case
                 entity.Title,
                 entity.Introduction,
                 entity.ReadNumber,
+                PublishDate=entity.PublishDate?.ToString("yyyy-MM-dd"),
                 Avata= entity.CreatorUser.GetPropertyValue("Avata")
             };
         }
