@@ -177,7 +177,7 @@
             <ul>
                 <li>
                     <dl>
-                        <dd>当前位置：案例工厂 > 首页 > 工作台 > 我的案例 ：</dd>
+                        <dd>您已完成有 <span class="shuzi">{{summary.caseCount}}</span> 个案例，其中包含精品<span class="shuzi">{{summary.caseFineCount}}</span> 个、案例卡 <span class="shuzi">{{summary.caseCardCount}}</span> 个</dd>
                         <!--<dd class="xchu">上海<span>×</span></dd>
                         <dd class="xchu">房屋买卖纠纷<span>×</span></dd>-->
                     </dl>
@@ -186,27 +186,27 @@
                     <dl class="xian">
                         <dd class="style-bf-40">
                             <template>
-                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small" clearable>
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable>
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-20">
                             <template>
-                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" size="small" clearable>
+                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus"  clearable>
                                     <i-option v-for="item in caseStatuses" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-30">
                             <template>
-                                <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." />
+                                <i-input v-model="keyword" placeholder="请输入关键词等信息..." />
                             </template>
                         </dd>
-                        <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
+                        <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource" style="height:30px">筛选</Button></dd>
                     </dl>
                 </li>
-                <li class="on">您已完成有 <span class="shuzi">{{summary.caseCount}}</span> 个案例，其中包含精品<span class="shuzi">{{summary.caseFineCount}}</span> 个、案例卡 <span class="shuzi">{{summary.caseCardCount}}</span> 个</li>
+                @*<li class="on">您已完成有 <span class="shuzi">{{summary.caseCount}}</span> 个案例，其中包含精品<span class="shuzi">{{summary.caseFineCount}}</span> 个、案例卡 <span class="shuzi">{{summary.caseCardCount}}</span> 个</li>*@
                 <li v-show="items.length==0">
                     <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看，或联系管理员。</h1>
                 </li>

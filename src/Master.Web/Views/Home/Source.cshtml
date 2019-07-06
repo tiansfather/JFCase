@@ -32,17 +32,18 @@
     <div class="jianfa-content">
         <div class="ny-content">
             <ul>
-                <li class="on" style="display:flex;justify-content:space-between;">
+
+                <li style="display:flex;justify-content:space-between;">
                     <p>您的工作台已有 <span class="shuzi">{{workbenchCount}}</span> 个案例，还可以选择 <span class="shuzi">{{canChooseCount}}</span> 个案例:</p>
                     <a href="/Home/WorkBench" class="back-button1">返回我的工作台</a>
                 </li>
-                <li>
+                @*<li>
                     <dl>
                         <dd>当前位置：案例工厂 > 判例库 > 筛选 ：</dd>
-                        @*<dd class="xchu">上海<span>×</span></dd>
-                <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                        <dd class="xchu">上海<span>×</span></dd>
+                <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
                     </dl>
-                </li>
+                </li>*@
                 <li>
                     <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
 

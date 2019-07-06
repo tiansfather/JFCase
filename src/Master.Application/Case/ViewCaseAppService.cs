@@ -62,6 +62,8 @@ namespace Master.Case
         }
         protected override object PageResultConverter(CaseInitial entity)
         {
+            var caseCount = Manager.GetAll()
+                .Count(o => o.CreatorUserId == entity.CreatorUserId && (o.CaseStatus == CaseStatus.展示中));
             return new
             {
                 entity.Id,
@@ -69,7 +71,11 @@ namespace Master.Case
                 entity.Introduction,
                 entity.ReadNumber,
                 PublishDate=entity.PublishDate?.ToString("yyyy-MM-dd"),
-                Avata= entity.CreatorUser.GetPropertyValue("Avata")
+                Avata= entity.CreatorUser.GetPropertyValue("Avata"),
+                AnYou = entity.CreatorUser.GetPropertyValue<string>("AnYou"),
+                CreatorName =entity.CreatorUser.Name,
+                entity.CreatorUser.WorkLocation,
+                caseCount
             };
         }
 

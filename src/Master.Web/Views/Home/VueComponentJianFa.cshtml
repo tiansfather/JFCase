@@ -95,21 +95,21 @@
         <dl class="xian">
             <dd class="style-bf-20">
                 <template>
-                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small" clearable >
+                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId"  clearable >
                         <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                     </i-select>
                 </template>
             </dd>
             <dd class="style-bf-20">
                 <template>
-                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small" clearable >
+                    <i-select placeholder="请选择城市" v-model="wherePart.cityId"  clearable >
                         <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                     </i-select>
                 </template>
             </dd>
             <dd class="style-bf-20">
                 <template>
-                    <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small" clearable >
+                    <i-select placeholder="请选择法院" v-model="wherePart.courtId"  clearable >
                         <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
                         <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
                     </i-select>
@@ -117,10 +117,10 @@
             </dd>
             <dd class="style-bf-30">
                 <template>
-                    <i-input v-model="wherePart.keyword" size="small" placeholder="请输入关键词等信息..." />
+                    <i-input v-model="wherePart.keyword"  placeholder="请输入关键词等信息..." />
                 </template>
             </dd>
-            <dd class="style-bf-10"><button class="btn-search" @@click="$emit('click')">筛选</button></dd>
+            <dd class="style-bf-10"><button class="btn-search" @@click="$emit('click')" style="height:30px">筛选</button></dd>
         </dl>
     </script>
 <script>

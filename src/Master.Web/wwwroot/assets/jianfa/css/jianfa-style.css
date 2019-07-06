@@ -416,9 +416,9 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
     border: 1px solid #c69c6d;
     
 }
-    .el-checkbox-button.is-checked .el-checkbox-button__inner {
+    /*.el-checkbox-button.is-checked .el-checkbox-button__inner {
         color: #606266;
-    }
+    }*/
     .ivu-page {
         text-align: right;
     }
@@ -458,6 +458,11 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
 .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
     border-color: #c69c6d;
     background-color: #c69c6d;
+}
+.el-checkbox-button.is-checked {
+    border: 1px solid #c69c6d;
+    color: #fff;
+    background: #c69c6d;
 }
 .is-focus .el-checkbox__inner, .el-checkbox__inner:hover {
     border-color: #c69c6d !important;

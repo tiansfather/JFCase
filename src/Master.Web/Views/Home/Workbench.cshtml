@@ -63,8 +63,8 @@
                         <dd class="card-bottom">
                             <p class="fleft">{{item.caseSourceStatus==1?'待加工':'加工中'}}...</p>
                             <p>
-                                <a class="icon-button" @@click.prevent="currentItem=item;modal1 = true">马上加工</a>
-                                <a class="icon-button" :href="'/Home/Process?encrypedId='+encodeURIComponent(item.encrypedId)">放回</a>
+                                <a class="icon-button" :href="'/Home/Process?encrypedId='+encodeURIComponent(item.encrypedId)">马上加工</a>
+                                <a class="icon-button"  @@click.prevent="currentItem=item;modal1 = true">放回</a>
                             </p>
                         </dd>
                     </dl>
