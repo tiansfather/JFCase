@@ -11,7 +11,7 @@
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 {
             width: 100%;
             border: 1px solid #f2f2f2;
-            padding: 0 10px;
+            padding: 0;
             border-radius: 5px;
             margin: 10px 0 0 0;
             overflow: auto;
@@ -42,7 +42,8 @@
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .top-cha1 {
             width: 100%;
             text-align: justify;
-            padding: 3px 0 10px 0;
+            padding:10px;
+            padding-top: 3px;
             border-bottom: 1px solid #f2f2f2;
             line-height: 24px;
             color: #754c24;
@@ -57,11 +58,14 @@
         }
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1 {
             width: 100%;
-            color: #c69c6d;
+            color: #505050;
+            background: #e6e6e6;
             line-height: 24px;
             transition: all 0.5s ease 0s;
-            display:flex;
-            justify-content:space-between;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            line-height: 30px;
         }
         .jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 span {
             float:none;
@@ -103,14 +107,15 @@
             margin: 20px 0;
         }*/
         .xuanzeStyle label {
-            width: 70px;
-            margin: 0;
-            height: 24px;
-            line-height: 24px;
+            width:auto;
+            min-width: 70px;
+            height: 20px;
+            line-height: 20px;
+            margin: 5px;
+            font-size: 0;
         }
         .el-checkbox-button:last-child .el-checkbox-button__inner {
-            vertical-align: top;
-            line-height: 22px;
+            vertical-align: middle;
         }
         /*----*/
         .jianfa-chaanli .chaanli-content li dl {
@@ -138,15 +143,19 @@
                 color:#754c24;
                 border:none;
                 background: #fff;
+                line-height:20px;
             }
                 .jianfa-chaanli .chaanli-content li dl dd i5b:hover{
                     border:none;
                 }
-        .flex-center{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+            .jianfa-chaanli .chaanli-content li dl dd i7{
+                line-height:20px;
+            }
+            .flex-center {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
         .r-head-search_dl {
             display: flex;
             justify-content: space-between;
@@ -168,7 +177,23 @@
         i6.fleft.tjustify.style-chaal-42-h.flex-center {
             overflow: -moz-scrollbars-none;
         }
-        .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1{padding:0;line-height:30px;}
+        .ivu-select-selection:hover .ivu-select-arrow:nth-of-type(1) {
+            display: inline-block;
+        }
+        .isSelected .ivu-select-selection .ivu-select-arrow:nth-of-type(1) {
+            display:block!important;
+        }
+        .isSelected .ivu-select-arrow {
+            display: none !important;
+        }
+        .el-checkbox-button.is-checked {
+            border: 1px solid #c69c6d;
+            color: #fff;
+            background: #c69c6d;
+        }
+            .el-checkbox-button.is-checked .el-checkbox-button__inner {
+                color: #fff;
+            }
         /*.jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 i{font-size:16px;}*/
     </style>
 }
@@ -202,7 +227,7 @@
                         <dl class="xian" style="display:flex;justify-content:space-between;">
                             <dd class="style-bf-20-a" style="width:160px">
                                 <template>
-                                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" clearable>
+                                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" clearable :class="{isSelected:wherePart.cityId}">
                                         <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                     </i-select>
                                 </template>
@@ -215,13 +240,13 @@
                                 </template>
                             </dd>*@
                             <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')" :style="{width:calcSelectWidth(item)}">
-                                <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect" collapse-tags>
+                                <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event);isSelected(item,index)&&(labelCheckVisible=true)" :clearable="true" :multiple="item.enableMultiSelect" collapse-tags  :class="{isSelected:isSelected(item,index)}">
                                     <i-option v-for="opt in getOptions(item)" :value="opt.id"
                                               :key="opt.id">{{ opt.displayName }}</i-option>
                                 </i-select>
                             </dd>
                             <dd class="style-bf-20-b" style="width:140px;padding-right: 0;">
-                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable>
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable :class="{isSelected:wherePart.subjectId}">
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </dd>
@@ -288,7 +313,7 @@
                     <li class="style-chaal-40">
                         <template>
                             <div class="infinite-list-wrapper" >
-                                <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 291px)':'calc(100vh - 207px)'}" id="scrollWrapper">
+                                <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 301px)':'calc(100vh - 207px)'}" id="scrollWrapper">
                                     <a href="javascript:;">
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
                                             <i1>
@@ -336,7 +361,7 @@
                         </dl>*@
                     </li>
                     <li class="on style-chaal-60" v-if="caseInfo">
-                        <dl class="on" :style="{height:labelCheckVisible?'calc(100vh - 291px)':'calc(100vh - 207px)'}">
+                        <dl class="on" :style="{height:labelCheckVisible?'calc(100vh - 301px)':'calc(100vh - 207px)'}">
 
                             <dd class="on">
                                 <i4 class="fleft tjustify">
@@ -556,6 +581,9 @@
                 }
             },
             methods: {
+                isSelected(item,index){
+                    return item.enableMultiSelect?(this.selectValues[index]&&this.selectValues[index].length):this.selectValues[index];
+                },
                 load() {
                     //debugger
                     this.loading = true;

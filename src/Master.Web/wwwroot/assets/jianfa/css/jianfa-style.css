@@ -288,7 +288,7 @@ transition: ease-in-out 600ms;
 /*end*/
 /*我的文件*/
 .jianfa-wenjiancard{width:100%;max-width:1200px;padding:0 10px;box-sizing:border-box;margin:0 auto 46px auto;overflow:auto;}
-.jianfa-wenjiancard .ny-wenjiancard{float:left;width:100%;/*margin:56px 0 36px 0;*/margin:20px 0 0 0;overflow:auto;}
+.jianfa-wenjiancard .ny-wenjiancard{float:left;width:100%;/*margin:56px 0 36px 0;*/margin:15px 0 0 0;overflow:auto;}
 .jianfa-wenjiancard .ny-wenjiancard ul{float:left;width:100%;padding:0;}
 .jianfa-wenjiancard .ny-wenjiancard li{float:left;margin:0;width:31%;padding:12px;box-sizing:border-box;background:#f7f0e9;/*border:1px solid #f5f5f5;border-radius:10px;border:1px solid #754c24;background:#fff;*/margin:0 0 30px 0;}
 .jianfa-wenjiancard .ny-wenjiancard li.on{float:left;position:relative;width:31%;margin:0 3.5%;}
@@ -296,8 +296,8 @@ transition: ease-in-out 600ms;
 .jianfa-wenjiancard .ny-wenjiancard li dd{float:left;width:100%; text-align:center;font-size:14px;line-height:24px;color:#999;}
 .jianfa-wenjiancard .ny-wenjiancard li dd.card-top{float:left;width:100%;line-height:24px;color:#754c24;border-radius:10px;border:1px solid #c69b6e;padding:10px;box-sizing:border-box;background:#fff; padding:20px 12px 40px 12px;}
 .jianfa-wenjiancard .ny-wenjiancard li dd.card-top p{font-size:14px;display:block;line-height:26px;border-bottom:1px solid #c69b6e; margin:10px 0 0 0;}
-.jianfa-wenjiancard .ny-wenjiancard li dd.card-top p a{ display:block;width:100%;line-height:26px;border-top:1px solid #e9e4de;border-left:1px solid #e9e4de;border-right:1px solid #e9e4de;background:#f7f0e8;}
-.jianfa-wenjiancard .ny-wenjiancard li dd.card-top p a:hover{border-top:1px solid #e9e4de;border-left:1px solid #e9e4de;border-right:1px solid #e9e4de;background:#c69c6c;color:#fff;}
+.jianfa-wenjiancard .ny-wenjiancard li dd.card-top p a{ display:block;width:100%;line-height:26px;box-sizing:border-box;font-size:18px;}
+.jianfa-wenjiancard .ny-wenjiancard li dd.card-top p a:hover{border-bottom:1px solid #c69c6d;line-height:25px;}
 .jianfa-wenjiancard .ny-wenjiancard li dd.card-top p.wzys1{color:#c69c6c;}
 /*
 .jianfa-wenjiancard .ny-wenjiancard li dd.oncard-top{float:left;width:100%;line-height:24px;color:#754c24;border-radius:10px;border:1px solid #eae4de;padding:10px;box-sizing:border-box;display:table-cell;overflow:auto;}

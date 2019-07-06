@@ -4,7 +4,29 @@
     ViewData["Title"] = "工作台";
 }
 <style>
-
+    .jianfa-wenjiancard .ny-wenjiancard li dd.card-top p{
+        border:none;
+    }
+    .icon-button{
+        display: inline-block;
+        width: auto;
+        height: 24px;
+        line-height: 24px;
+        border: 0;
+        text-align: center;
+        font-size: 12px;
+        color: #fff;
+        background: #c69c6c;
+        border-radius: 4px;
+        transition: all 0.5s ease 0s;
+        cursor: pointer;
+        padding: 0 8px;
+        margin: 0 5px;
+    }
+    .card-bottom{
+        display:flex;
+        justify-content:space-between;
+    }
 </style>
 <div id="app" style="display:none">
     <!--顶部-->
@@ -16,7 +38,8 @@
             <ul>
                 <li>
                     <dl class="xian">
-                        <dd>当前位置：案例工厂 > 工作台：</dd>
+                        <dd>我的工作台中待加工案例共{{waitNumber}}个</dd>
+                        @*<dd>当前位置：案例工厂 > 工作台：</dd>*@
                     </dl>
                 </li>
             </ul>
@@ -39,8 +62,10 @@
                         </dd>
                         <dd class="card-bottom">
                             <p class="fleft">{{item.caseSourceStatus==1?'待加工':'加工中'}}...</p>
-                            <p><a @@click.prevent="currentItem=item;modal1 = true"><i class="mywj-icon-2"></i></a></p>
-                            <p><a :href="'/Home/Process?encrypedId='+encodeURIComponent(item.encrypedId)"><i class="mywj-icon-1"></i></a></p>
+                            <p>
+                                <a class="icon-button" @@click.prevent="currentItem=item;modal1 = true">马上加工</a>
+                                <a class="icon-button" :href="'/Home/Process?encrypedId='+encodeURIComponent(item.encrypedId)">放回</a>
+                            </p>
                         </dd>
                     </dl>
                 </li>
@@ -124,6 +149,9 @@
                 //用户是否还可以添加判例
                 canAdd: function () {
                     return this.userIsAcitve && this.sources.length < abp.setting.getInt("maxWorkbenchCaseCount");
+                },
+                waitNumber:function(){
+                    return this.sources?this.sources.filter(el=>el.caseSourceStatus==1).length:0
                 }
             },
             //

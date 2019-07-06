@@ -4,6 +4,27 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "判例库";
 }
+@section styles{ 
+    <style>
+        .jianfa-content .ny-content li .li-table td{color:#505050;}
+        .back-button1{
+            display: block;
+            width: auto;
+            height: 24px;
+            line-height: 24px;
+            padding:0 8px;
+            border: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #fff;
+            background: #c69c6c;
+            border-radius: 4px;
+            transition: all 0.5s ease 0s;
+            cursor: pointer;
+        }
+        .jianfa-content .ny-content li .li-table td{height:50px;}
+    </style>
+}
 <div id="app" v-cloak style="display:none">
     <!--顶部-->
     <com-header active-name="工作台"></com-header>
@@ -11,48 +32,51 @@
     <div class="jianfa-content">
         <div class="ny-content">
             <ul>
+                <li class="on" style="display:flex;justify-content:space-between;">
+                    <p>您的工作台已有 <span class="shuzi">{{workbenchCount}}</span> 个案例，还可以选择 <span class="shuzi">{{canChooseCount}}</span> 个案例:</p>
+                    <a href="/Home/WorkBench" class="back-button1">返回我的工作台</a>
+                </li>
                 <li>
                     <dl>
                         <dd>当前位置：案例工厂 > 判例库 > 筛选 ：</dd>
                         @*<dd class="xchu">上海<span>×</span></dd>
-                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
+                <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                     </dl>
                 </li>
                 <li>
                     <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
 
                     @*<dl class="xian">
-                            <dd class="style-bf-20">
-                                <template>
-                                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
-                                        <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                    </i-select>
-                                </template>
-                            </dd>
-                            <dd class="style-bf-20">
-                                <template>
-                                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
-                                        <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                                    </i-select>
-                                </template>
-                            </dd>
-                            <dd class="style-bf-20">
-                                <template>
-                                    <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
-                                        <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
-                                        <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
-                                    </i-select>
-                                </template>
-                            </dd>
-                            <dd class="style-bf-30">
-                                <template>
-                                    <i-input v-model="wherePart.keyword" size="small" placeholder="请输入关键词等信息..." />
-                                </template>
-                            </dd>
-                            <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
-                        </dl>*@
+                <dd class="style-bf-20">
+                    <template>
+                        <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
+                            <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                        </i-select>
+                    </template>
+                </dd>
+                <dd class="style-bf-20">
+                    <template>
+                        <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
+                            <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                        </i-select>
+                    </template>
+                </dd>
+                <dd class="style-bf-20">
+                    <template>
+                        <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
+                            <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                            <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                        </i-select>
+                    </template>
+                </dd>
+                <dd class="style-bf-30">
+                    <template>
+                        <i-input v-model="wherePart.keyword" size="small" placeholder="请输入关键词等信息..." />
+                    </template>
+                </dd>
+                <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
+            </dl>*@
                 </li>
-                <li class="on">您的工作台已有 <span class="shuzi">{{workbenchCount}}</span> 个案例，还可以选择 <span class="shuzi">{{canChooseCount}}</span> 个案例:</li>
                 <li v-show="items.length==0">
                     <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的判例哦，请减少查询条件再试试看，或联系管理员。</h1>
                 </li>
@@ -65,7 +89,7 @@
                                 <th width="80">二审法院</th>
                                 <th width="220">案号</th>
                                 <th width="150">案由</th>
-                                <th >代理律师</th>
+                                <th>代理律师</th>
                                 <th width="100">生效日期</th>
                                 <th width="70">处理记录</th>
                                 <th width="50">操作</th>
@@ -103,7 +127,7 @@
                 </li>
             </ul>
         </div>
-        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[10, 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
+        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[ 50, 100,200]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
     </div>
 
 
@@ -146,7 +170,7 @@
                 },
                 totalCount: 0,//判例总数
                 currentPage: 1,
-                pagesize:10,
+                pagesize:50,
                 keyword: '',
                 items: [],
                 currentItem: {},
