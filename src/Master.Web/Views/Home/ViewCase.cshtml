@@ -195,6 +195,7 @@
                 color: #fff;
             }
         /*.jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 i{font-size:16px;}*/
+        
     </style>
 }
     <div id="app" v-cloak>
@@ -214,7 +215,7 @@
                                 </template>
                             </dd>
                             @*<dd class="style-bf-10-b"><Button class="btn-search" type="button" @@click="labelCheckVisible=!labelCheckVisible">{{labelCheckVisible?'收起':'更多'}}筛选条件</Button></dd>*@
-                            <dd class="style-bf-10-b"><Button class="btn-search" type="button" @@click="doSearch" style="height:30px">搜索</Button></dd>
+                            <dd style="padding:1px 0 0 10px"><Button class="btn-search" type="button" @@click="doSearch" style="height:30px;width:50px">搜索</Button></dd>
                             @*<dd class="xchu">
             上海<span>
                 ×
@@ -225,9 +226,9 @@
                     </li>
                     <li style="padding-bottom:10px;">
                         <dl class="xian" style="display:flex;justify-content:space-between;">
-                            <dd class="style-bf-20-a" style="width:160px">
+                            <dd class="style-bf-20-a" style="width:80px">
                                 <template>
-                                    <i-select placeholder="请选择城市" v-model="wherePart.cityId" clearable :class="{isSelected:wherePart.cityId}">
+                                    <i-select placeholder="城市" v-model="wherePart.cityId" clearable :class="{isSelected:wherePart.cityId}">
                                         <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                     </i-select>
                                 </template>
@@ -240,13 +241,13 @@
                                 </template>
                             </dd>*@
                             <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')" :style="{width:calcSelectWidth(item)}">
-                                <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event);fVisibleChange(item,index)" :clearable="true" :multiple="item.enableMultiSelect" collapse-tags  :class="{isSelected:isSelected(item,index)}">
+                                <i-select :placeholder="item.displayName+(item.enableMultiSelect?'(可多选)':'')" v-model="selectValues[index]" @@on-change="changeSelect(item,$event);fVisibleChange(item,index)" :clearable="true" :multiple="item.enableMultiSelect" collapse-tags  :class="{isSelected:isSelected(item,index)}">
                                     <i-option v-for="opt in getOptions(item)" :value="opt.id"
                                               :key="opt.id">{{ opt.displayName }}</i-option>
                                 </i-select>
                             </dd>
-                            <dd class="style-bf-20-b" style="width:140px;padding-right: 0;">
-                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable :class="{isSelected:wherePart.subjectId}">
+                            <dd class="style-bf-20-b" style="width:230px;padding-right: 0;">
+                                <i-select placeholder="专题" v-model="wherePart.subjectId" clearable :class="{isSelected:wherePart.subjectId}">
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </dd>
@@ -770,7 +771,7 @@
                 },
                 //计算下拉选择的宽度
                 calcSelectWidth(item) {
-                    return item.displayName == "纠纷原因" ? "calc(100% - 800px)" : "160px";
+                    return item.displayName == "纠纷原因" ? "calc(100% - 770px)" : "150px";
                 }
             },
             mounted() {
