@@ -104,7 +104,7 @@ html{width:100%;height:100%;overflow-x:hidden;}
 .jianfa-content .ny-content li .li-table tr{text-align:center;}
 /*.jianfa-content .ny-content li .li-table tr.tbcolor{background:#f2f2f2;}*/
 .jianfa-content .ny-content li .li-table td{text-align:center;height:30px;border:0;color:#754c24;}
-.jianfa-content .ny-content li .li-table td.on{text-align:center;height:40px;border:0;color:#c69c6d;}
+.jianfa-content .ny-content li .li-table td.on{text-align:center;height:50px;border:0;color:#505050;}
 .jianfa-content .ny-content li .li-table td.on a{color:#c69c6d;}
 .jianfa-content .ny-content li .li-table td.on i{font-size:20px; padding:0 0 0 10px;}
 .jianfa-content .ny-content li .li-table td a:hover{text-decoration: underline;}

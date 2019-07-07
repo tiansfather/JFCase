@@ -165,6 +165,14 @@
         }
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1{padding:0;line-height:14px;}
         /*.jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 i{font-size:16px;}*/
+        .jianfa-content .ny-content li .li-table td.on a.edit {
+            width: 50px;
+            line-height: 20px;
+            background: #c69c6d;
+            color: #fff;
+            display: inherit;
+            border-radius: 5px;
+        }
     </style>
 }
 
@@ -249,7 +257,12 @@
                                 </td>
                                 <td class="on">{{item.publishDate}}</td>
                                 <td class="on">{{item.readNumber}}</td>
-                                <td class="on"><a :href="'/Home/Process?EncrypedId='+encodeURIComponent(item.encrypedId)"><img src="/assets/jianfa/ima/mywj-icon-1.png"></a></td>
+                                @*<td class="on"><a :href="'/Home/Process?EncrypedId='+encodeURIComponent(item.encrypedId)"><img src="/assets/jianfa/ima/mywj-icon-1.png"></a></td>*@
+                                <td class="on">
+                                    <a :href="'/Home/Process?EncrypedId='+encodeURIComponent(item.encrypedId)" class="edit">
+                                        修订
+                                     </a>
+                                </td>
                             </tr>
 
                             @*<tr>
@@ -277,7 +290,7 @@
                 </li>
             </ul>
         </div>
-        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[10, 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
+        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[ 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
     </div>
     <!--end-->
     <!--添加1-->
@@ -429,7 +442,7 @@
                 },
                 totalCount: 0,//判例总数
                 currentPage: 1,
-                pagesize: 10,
+                pagesize: 20,
                 keyword: '',
                 items: [],
                 currentItem: {},
