@@ -318,16 +318,17 @@
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
                                             <i1>
                                                 <div class="left-cha1">
-                                                    <el-dropdown placement="bottom-start">
+                                                    <el-dropdown placement="bottom-start" >
                                                         <img :src="item.avata">
                                                         <el-dropdown-menu slot="dropdown">
                                                             <el-dropdown-item>
                                                                 <div style="width:420px">
                                                                     {{item.creatorName}},{{item.workLocation}},所属领域:{{item.anYou}};<br />已完成案例：{{item.caseCount}}个
-                                                                </div></el-dropdown-item>
+                                                                </div>
+                                                            </el-dropdown-item>
                                                         </el-dropdown-menu>
                                                     </el-dropdown>
-                                                    
+
                                                 </div>
                                                 <div class="right-cha1">
                                                     {{item.title}}

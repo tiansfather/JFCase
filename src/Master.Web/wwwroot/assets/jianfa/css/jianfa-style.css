@@ -162,7 +162,7 @@ html{width:100%;height:100%;overflow-x:hidden;}
 .jianfa-chaanli .chaanli-content li dl dd i5{border-radius:5px;border:1px solid #f2f2f2;padding:5px 10px 5px 10px;color:#764c24;background:#f7f0e8;line-height:24px;}
 .jianfa-chaanli .chaanli-content li dl dd i5b{border-radius:5px; text-align:center;border:1px solid #f2f2f2;padding:5px 10px 5px 10px;color:#764c24;background:#f7f0e8;line-height:24px;transition: all 0.3s ease 0s;}
 /*.jianfa-chaanli .chaanli-content li dl dd i5b a{border-radius:5px; text-align:center;border:1px solid #f2f2f2;padding:5px 10px 5px 10px;color:#764c24;background:#f7f0e8;line-height:24px;}*/
-.jianfa-chaanli .chaanli-content li dl dd i5b:hover{border-radius:5px; text-align:center;border:1px solid #f2f2f2;padding:5px 10px 5px 10px;color:#fff;background:#c69c6c;line-height:24px;}
+.jianfa-chaanli .chaanli-content li dl dd i5b:hover{border-radius:5px; text-align:center;border:1px solid #f2f2f2;padding:5px 10px 5px 10px;color:#fff;background:#c69c6c;line-height:20px;}
 .jianfa-chaanli .chaanli-content li dl dd i5c{float:left;position:relative;border-radius:5px;border:1px solid #f2f2f2;color:#764c24;background:#f7f0e8;line-height:24px; text-align:center;}
 .jianfa-chaanli .chaanli-content li dl dd i5c span{width:100%; display:block;position:absolute;border-radius:5px;background:#c69c6c;color:#fff;line-height:35px;}
 /*百分比高度*/
