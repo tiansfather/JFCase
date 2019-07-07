@@ -240,7 +240,7 @@
                                 </template>
                             </dd>*@
                             <dd class="style-bf-20-b" v-for="(item,index) in getSelects('案例属性体系')" :style="{width:calcSelectWidth(item)}">
-                                <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event);isSelected(item,index)&&(labelCheckVisible=true)" :clearable="true" :multiple="item.enableMultiSelect" collapse-tags  :class="{isSelected:isSelected(item,index)}">
+                                <i-select :placeholder="'请选择'+item.displayName" v-model="selectValues[index]" @@on-change="changeSelect(item,$event);fVisibleChange(item,index)" :clearable="true" :multiple="item.enableMultiSelect" collapse-tags  :class="{isSelected:isSelected(item,index)}">
                                     <i-option v-for="opt in getOptions(item)" :value="opt.id"
                                               :key="opt.id">{{ opt.displayName }}</i-option>
                                 </i-select>
@@ -594,6 +594,11 @@
                 }
             },
             methods: {
+                fVisibleChange(item,index){
+                    if(this.isSelected(item,index)&&(this.getLabels('标签').length||this.getLabels('关键字').length)){
+                        this.labelCheckVisible=true
+                    }
+                },
                 isSelected(item,index){
                     return item.enableMultiSelect?(this.selectValues[index]&&this.selectValues[index].length):this.selectValues[index];
                 },
