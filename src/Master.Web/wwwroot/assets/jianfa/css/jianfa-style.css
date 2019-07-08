@@ -84,8 +84,8 @@ html{width:100%;height:100%;overflow-x:hidden;}
 .style-bf-8{width:8%;box-sizing:border-box; padding:1px 7px 0 0px;}
 .style-bf-10{width:10%;box-sizing:border-box; padding:1px 0px 0 0px;}
 .style-bf-20{width:20%;box-sizing:border-box; padding:0 15px 0 0px;}
-.style-bf-20-a{width:20%;box-sizing:border-box; padding:0 7px 0 0;}
-.style-bf-20-b{width:20%;box-sizing:border-box; padding:0 7px 0 7px;}
+.style-bf-20-a{width:20%;box-sizing:border-box; padding:0 5px 0 0;}
+.style-bf-20-b{width:20%;box-sizing:border-box; padding:0 5px 0 5px;}
 .style-bf-20-c{width:20%;box-sizing:border-box; padding:0 0px 0 7px;}
 .style-bf-30{width:30%;box-sizing:border-box; padding:0 15px 0 0px;}
 .style-bf-40{width:40%;box-sizing:border-box; padding:0 15px 0 0px;}
@@ -502,6 +502,10 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
 .ivu-page{
     margin-bottom:50px;
 }
-.ivu-modal {
+.pdfmodal .ivu-modal {
     margin: 0 !important;
+}
+.ivu-select-multiple .ivu-select-selection .ivu-select-placeholder {
+    text-align: center;
+    color: #c69c6c
 }
