@@ -165,6 +165,14 @@
         }
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1{padding:0;line-height:14px;}
         /*.jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 i{font-size:16px;}*/
+        .jianfa-content .ny-content li .li-table td.on a.edit {
+            width: 50px;
+            line-height: 20px;
+            background: #c69c6d;
+            color: #fff;
+            display: inline-block;
+            border-radius: 5px;
+        }
     </style>
 }
 
@@ -177,7 +185,7 @@
             <ul>
                 <li>
                     <dl>
-                        <dd>当前位置：案例工厂 > 首页 > 工作台 > 我的案例 ：</dd>
+                        <dd>您已完成有 <span class="shuzi">{{summary.caseCount}}</span> 个案例，其中包含精品<span class="shuzi">{{summary.caseFineCount}}</span> 个、案例卡 <span class="shuzi">{{summary.caseCardCount}}</span> 个</dd>
                         <!--<dd class="xchu">上海<span>×</span></dd>
                         <dd class="xchu">房屋买卖纠纷<span>×</span></dd>-->
                     </dl>
@@ -186,27 +194,27 @@
                     <dl class="xian">
                         <dd class="style-bf-40">
                             <template>
-                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small" clearable>
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable>
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-20">
                             <template>
-                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" size="small" clearable>
+                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus"  clearable>
                                     <i-option v-for="item in caseStatuses" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-30">
                             <template>
-                                <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." />
+                                <i-input v-model="keyword" placeholder="请输入关键词等信息..." />
                             </template>
                         </dd>
-                        <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
+                        <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource" style="height:30px">筛选</Button></dd>
                     </dl>
                 </li>
-                <li class="on">您已完成有 <span class="shuzi">{{summary.caseCount}}</span> 个案例，其中包含精品<span class="shuzi">{{summary.caseFineCount}}</span> 个、案例卡 <span class="shuzi">{{summary.caseCardCount}}</span> 个</li>
+                @*<li class="on">您已完成有 <span class="shuzi">{{summary.caseCount}}</span> 个案例，其中包含精品<span class="shuzi">{{summary.caseFineCount}}</span> 个、案例卡 <span class="shuzi">{{summary.caseCardCount}}</span> 个</li>*@
                 <li v-show="items.length==0">
                     <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看，或联系管理员。</h1>
                 </li>
@@ -215,13 +223,13 @@
                         <table width="100%">
                             <tr>
                                 <th width="80">目前状态</th>
-                                <th width="220">案由</th>
-                                <th width="220">案号	</th>
-                                <th width="220">专题</th>
-                                <th width="50">备注</th>
-                                <th>发布时间</th>
-                                <th width="80">预览量</th>
-                                <th width="50">操作</th>
+                                <th width="150">案由</th>
+                                <th width="250">案号	</th>
+                                <th width="250">专题</th>
+                                <th width="200">备注</th>
+                                <th width="100">发布时间</th>
+                                <th width="100">预览量</th>
+                                <th width="70">操作</th>
                             </tr>
                             <tr v-for="(item,index) in items">
                                 <td class="on">
@@ -230,7 +238,7 @@
                                     </template>
                                 </td>
                                 <td class="on">{{item.anYou}}</td>
-                                <td class="on"><a @@click="getViewMsg(item.id);modalViewCase = true">{{item.sourceSN}}</a></td>
+                                <td class="on"><a @@click="view(item.sourceId);modalViewCase = true">{{item.sourceSN}}</a></td>
                                 <td class="on">
                                     <template>
                                         <i-select placeholder="请选择专题" v-model="item.subjectId" clearable size="small" @@on-change="changeSubject(item,$event)">
@@ -249,7 +257,12 @@
                                 </td>
                                 <td class="on">{{item.publishDate}}</td>
                                 <td class="on">{{item.readNumber}}</td>
-                                <td class="on"><a :href="'/Home/Process?EncrypedId='+encodeURIComponent(item.encrypedId)"><img src="/assets/jianfa/ima/mywj-icon-1.png"></a></td>
+                                @*<td class="on"><a :href="'/Home/Process?EncrypedId='+encodeURIComponent(item.encrypedId)"><img src="/assets/jianfa/ima/mywj-icon-1.png"></a></td>*@
+                                <td class="on">
+                                    <a :href="'/Home/Process?EncrypedId='+encodeURIComponent(item.encrypedId)" class="edit">
+                                        修订
+                                     </a>
+                                </td>
                             </tr>
 
                             @*<tr>
@@ -277,7 +290,7 @@
                 </li>
             </ul>
         </div>
-        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[10, 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
+        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[ 20, 50, 100]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
     </div>
     <!--end-->
     <!--添加1-->
@@ -290,7 +303,7 @@
     </Modal>
     <!--添加-->
 
-    <Modal width="708" v-model="modalViewCase" class-name="center-modal" :mask-closable="false">
+    <Modal width="708" v-model="modalViewCase" class-name="center-modal" :mask-closable="true">
         <div class="jianfa-chaanli">
             <div class="chaanli-content" style="float:none;margin:0">
                 <ul>
@@ -429,7 +442,7 @@
                 },
                 totalCount: 0,//判例总数
                 currentPage: 1,
-                pagesize: 10,
+                pagesize: 20,
                 keyword: '',
                 items: [],
                 currentItem: {},
@@ -479,11 +492,10 @@
             },
             methods: {
         
-                getViewMsg(caseInitialId) {
+                
+                view(caseSourceId) {
                     var that = this;
-                    abp.services.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
-                        //caseSourceId为对应的案源id
-                        //获取案例详情
+                    //获取案例详情
                         func.runAsync(abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
                             res.initial.caseCards.forEach(el => {
                                 el.isRotate = false;
@@ -493,7 +505,6 @@
                             res.initial.lawyerOpinion = replaceHtml(res.initial.lawyerOpinion);
                             that.caseInfo = res;
                         }));
-                    })
                     function replaceHtml(html) {
                         if (!html) { return ""; }
                         return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');

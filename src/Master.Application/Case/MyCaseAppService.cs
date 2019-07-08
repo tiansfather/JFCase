@@ -51,6 +51,7 @@ namespace Master.Case
                 entity.Id,
                 EncrypedId = SimpleStringCipher.Instance.Encrypt(entity.CaseSource.Id.ToString(), null, null),//加密后的案源id
                 entity.CaseSource.SourceSN,
+                SourceId=entity.CaseSource.Id,
                 entity.CaseSource.SourceFile,
                 AnYou = entity.CaseSource.AnYou.DisplayName,
                 entity.Remarks,
