@@ -44,7 +44,7 @@
             text-align: justify;
             padding:10px;
             padding-top: 3px;
-            border-bottom: 1px solid #f2f2f2;
+            /*border-bottom: 1px solid #f2f2f2;*/
             line-height: 24px;
             color: #754c24;
             transition: all 0.5s ease 0s;
@@ -56,9 +56,11 @@
             overflow: hidden;*/
             margin-bottom:7px;
         }
+        .jianfa-chaanli .chaanli-content li dl dd:hover i2 .top-cha1{border:none}
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1 {
             width: 100%;
-            color: #505050;
+            font-size: 12px;
+            color: #b4b4b4;
             background: #e6e6e6;
             line-height: 24px;
             transition: all 0.5s ease 0s;
@@ -66,6 +68,8 @@
             justify-content: space-between;
             padding: 0 10px;
             line-height: 30px;
+            border: 1px solid #b4b4b4;
+            border-radius: 5px;
         }
         .jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 span {
             float:none;
@@ -194,6 +198,9 @@
             .el-checkbox-button.is-checked .el-checkbox-button__inner {
                 color: #fff;
             }
+        .jianfa-chaanli .chaanli-content li dl dd:hover i2 .bottom-cha1 {
+            background: #f7f0e8;
+        }
         /*.jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 i{font-size:16px;}*/
     </style>
 }
@@ -594,6 +601,30 @@
                 }
             },
             methods: {
+                refresh(){
+                    function animate(s){
+                        s.fadeOut(300).fadeIn(300).fadeOut(300).fadeIn(300).fadeOut(300).fadeIn(300)
+                    }
+                    var s=$('.ivu-select');
+                    s.eq(2).on('click',(...args)=>{
+                        if(!this.selectValues[0]){
+                            console.log('没有')
+                            animate(s.eq(1))
+                        }
+                    })
+                    s.eq(3).on('click',(...args)=>{
+                        if(!this.selectValues[1]){
+                            console.log('没有')
+                            animate(s.eq(2))
+                        }
+                    })
+                     s.eq(4).on('click',(...args)=>{
+                        if(!this.selectValues[1]){
+                            console.log('没有')
+                            animate(s.eq(2))
+                        }
+                    })
+                },
                 fVisibleChange(item,index){
                     if(this.isSelected(item,index)&&(this.getLabels('标签').length||this.getLabels('关键字').length)){
                         this.labelCheckVisible=true
