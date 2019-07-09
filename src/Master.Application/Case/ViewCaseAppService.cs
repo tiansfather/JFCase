@@ -20,7 +20,8 @@ namespace Master.Case
             var query=await base.GetQueryable(request);
             return query
                 .Include(o=>o.CreatorUser)
-                .Where(o=>o.CaseStatus==CaseStatus.展示中);
+                .Where(o=>o.CaseStatus==CaseStatus.展示中)
+                .OrderByDescending(o=>o.PublishDate);
         }
         protected override async Task<IQueryable<CaseInitial>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseInitial> query)
         {

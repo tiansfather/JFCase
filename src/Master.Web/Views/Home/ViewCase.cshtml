@@ -44,7 +44,7 @@
             text-align: justify;
             padding:10px;
             padding-top: 3px;
-            /*border-bottom: 1px solid #f2f2f2;*/
+            border:none;
             line-height: 24px;
             color: #754c24;
             transition: all 0.5s ease 0s;
@@ -68,7 +68,7 @@
             justify-content: space-between;
             padding: 0 10px;
             line-height: 30px;
-            border: 1px solid #b4b4b4;
+            border: 1px solid #f2f2f2;
             border-radius: 5px;
         }
         .jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 span {
@@ -821,6 +821,7 @@
                     this.initSelects();
                     //初始化标签选择
                     this.initLabels();
+                    Vue.nextTick(this.refresh);
                 })
                 document.getElementById("scrollWrapper").onscroll = function () {
                     //var height = document.getElementById("divData").offsetHeight;//250
@@ -834,6 +835,7 @@
                         app.load();
                     }
                 };
+                
             }
         })
         ////请求案例分页
