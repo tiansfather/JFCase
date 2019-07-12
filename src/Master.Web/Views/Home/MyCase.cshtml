@@ -517,6 +517,7 @@
                         //that.items = [{ id: 1, subjectId: null, remarks: 'bb', caseStatus: 1 }]
                         that.totalCount = res.count;
                         $("#app").show();
+                        $(document).scrollTop(0)
                     }));
                     abp.services.app.myCase.getSummary().done(function (data) {
                         that.summary = data;

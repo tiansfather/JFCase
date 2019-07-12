@@ -249,6 +249,7 @@
                         that.items = res.data;
                         $("#app").show();
                         that.totalCount = res.count;
+                        $(document).scrollTop(0)
                     }))
                 },
                 //获取工作台数量
