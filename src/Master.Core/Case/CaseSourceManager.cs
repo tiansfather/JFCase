@@ -37,6 +37,11 @@ namespace Master.Case
             var caseInitial = await manager.GetAll().Where(o => o.CaseSourceId == id).FirstOrDefaultAsync();
             if (caseInitial != null)
             {
+                await Resolve<IRepository<CaseNode,int>>().DeleteAsync(o => o.CaseInitialId == caseInitial.Id);
+                await Resolve<IRepository<CaseLabel, int>>().DeleteAsync(o => o.CaseInitialId == caseInitial.Id);
+                await Resolve<CaseCardManager>().Repository.HardDeleteAsync(o => o.CaseInitialId == caseInitial.Id);
+                await Resolve<CaseFineManager>().Repository.HardDeleteAsync(o => o.CaseInitialId == caseInitial.Id);
+                
                 await manager.Repository.HardDeleteAsync(caseInitial);
             }
         }
