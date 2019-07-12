@@ -158,6 +158,9 @@
                 abp.ui.block();
             }
             $('body').append('<div id="abpUiBusy" class="ivu-spin ivu-spin-large ivu-spin-fix"><div class="ivu-spin-main"><span class="ivu-spin-dot"></span> <div class="ivu-spin-text"></div></div></div>')
+            if (app && app.$loading) {
+                abp.ui.loading = app.$loading();
+            }
             //改这里
             //app.$Spin.show();
             //$('body').spin(abp.libs.spinjs.spinner_config);
@@ -193,6 +196,7 @@
         if (!elm) {
             abp.ui.unblock();
             $('#abpUiBusy').remove();
+            (app && abp.ui.loading) && abp.ui.loading.close();
             //改这里
             //app.$Spin.hide();
         } else {
