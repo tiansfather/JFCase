@@ -182,6 +182,7 @@
                             func.runAsync(abp.services.app.workbench.giveBack(that.currentItem.id, reason).done(function () {
                                 that.loadSource();
                                 that.modal1 = false;
+                                that.$Message.success("放回成功");
                             }))
                         })
                         
