@@ -19,7 +19,7 @@
             display: flex;
             align-items: center;
         }
-        .jianfa-guandiancard .ny-guandiancard li dd.oncard-top span{padding:0 15px;}
+        .jianfa-guandiancard .ny-guandiancard li dd.oncard-top span{padding:0 15px;-ms-overflow-style: none;}
         .jianfa-guandiancard .ny-guandiancard li dd.card-bottom{line-height:32px;}
         /*.jianfa-guandiancard .ny-guandiancard li dd.oncard-top span{height:272px}*/
         /*.ny-guandiancard{
@@ -101,7 +101,7 @@
                                 <dl>
                                     <dd class="oncard-top">
                                         <span>{{item.content}} </span>
-                                        <p>{{getTrialPeople(item)}}<br>{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
+                                        <p>{{getTrialPeople(item)}}<br>{{new Date(item.validDate.split(' ')[0]).pattern('yyyy年MM月dd日')}}</p>
                                     </dd>
                                 </dl>
                             </li>
