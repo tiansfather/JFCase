@@ -47,7 +47,11 @@ layui.define(function (exports) {
             , admin = layui.admin
             , carousel = layui.carousel
             , echarts = layui.echarts;
-
+        Date.prototype.addDays = function (number) {
+            var adjustDate = new Date(this.getTime() + 24 * 60 * 60 * 1000 * number);
+            //alert("Date" + adjustDate.getFullYear() + "-" + adjustDate.getMonth() + "-" + adjustDate.getDate());
+            return adjustDate;
+        }
         //读取数据
         var loadSourceSummary = abp.services.app.console.getSourceSummary();
         Promise.all([loadSourceSummary]).then((d)=> {
@@ -105,7 +109,7 @@ layui.define(function (exports) {
                     },
                     xAxis: [{ //X轴
                         type: 'category',
-                        data: Array.from({ length: 7 }, (v, k) => new Date().addDay(k-6).pattern('MM-dd'))
+                        data: Array.from({ length: 7 }, (v, k) => new Date().addDays(k-6).pattern('MM-dd'))
                     }],
                     yAxis: [{  //Y轴
                         type: 'value'
