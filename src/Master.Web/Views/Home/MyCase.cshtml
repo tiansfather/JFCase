@@ -532,8 +532,9 @@
                 },
                 //设置专题
                 changeSubject(item, subjectId) {
+                    if(!subjectId){return;}
                     func.runAsync(abp.services.app.myCase.setSubject(item.id, subjectId).done(function () {
-                        app.$Message.success("提交成功");
+                        //app.$Message.success("提交成功");
                     }))
                 }
             },
