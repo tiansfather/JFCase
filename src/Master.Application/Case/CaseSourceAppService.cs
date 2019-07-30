@@ -128,10 +128,10 @@ namespace Master.Case
             };
         }
         public virtual IEnumerable<string> ReadZip(string filePath)
-        {
-            var fileNames = Common.ZipHelper.GetFileNames(Common.PathHelper.VirtualPathToAbsolutePath(filePath));
+        {            
             var fileDirectory = System.IO.Path.GetDirectoryName(Common.PathHelper.VirtualPathToAbsolutePath(filePath));
-            Common.ZipHelper.Decompression(Common.PathHelper.VirtualPathToAbsolutePath(filePath), fileDirectory);
+            var fileNames = Common.ZipHelper.Decompression(Common.PathHelper.VirtualPathToAbsolutePath(filePath), fileDirectory);
+            //var fileNames = Common.ZipHelper.GetFileNames(Common.PathHelper.VirtualPathToAbsolutePath(filePath)).ToList();
             return fileNames;
         }
         public virtual async Task<List<CaseSourceImportResult>> ReadExcel(string filePath)
