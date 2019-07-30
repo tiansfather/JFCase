@@ -52,14 +52,15 @@ namespace Master.Session
 
                 var user = await GetCurrentUserAsync();
                 output.User = ObjectMapper.Map<UserLoginInfoDto>(user);
+                var userRoles = await Resolve<UserManager>().GetRolesAsync(user);
                 //获取用户的角色
-                var roleNameList = (from userrole in _userRoleRepository.GetAll()
-                                    join u in _userRoleRepository.GetAll() on userrole.UserId equals u.Id
-                                    join role in _roleRepository.GetAll() on userrole.RoleId equals role.Id
-                                    where u.Id == user.Id
-                                    select new { role.DisplayName ,role.Name}).ToList();
-                output.User.RoleNames = roleNameList.Select(o=>o.Name).ToList();
-                output.User.RoleDisplayNames = roleNameList.Select(o => o.DisplayName).ToList();
+                //var roleNameList = (from userrole in _userRoleRepository.GetAll()
+                //                    join u in _userRoleRepository.GetAll() on userrole.UserId equals u.Id
+                //                    join role in _roleRepository.GetAll() on userrole.RoleId equals role.Id
+                //                    where u.Id == user.Id
+                //                    select new { role.DisplayName ,role.Name}).ToList();
+                output.User.RoleNames = userRoles.Select(o=>o.Name).ToList();
+                output.User.RoleDisplayNames = userRoles.Select(o => o.DisplayName).ToList();
             }
 
             return output;

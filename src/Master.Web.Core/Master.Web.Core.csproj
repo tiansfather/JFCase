@@ -38,6 +38,7 @@
     <None Remove="Views\Shared\Components\ModuleForm\MultiEdit_Form.cshtml" />
     <None Remove="Views\Shared\Components\ModuleForm\Search.cshtml" />
     <None Remove="Views\Shared\Components\ModuleForm\View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleTable\Default - 复制.cshtml" />
     <None Remove="Views\Shared\Components\ModuleTable\Default.cshtml" />
     <None Remove="Views\Shared\Components\OSTree\Default.cshtml" />
     <None Remove="Views\Shared\Components\SideBarNav\Default.cshtml" />
@@ -45,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Views\Shared\Components\ModuleTable\Default - 复制.cshtml" />
     <EmbeddedResource Include="Views\Shared\Components\SideBarNav\Default.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </EmbeddedResource>

@@ -86,7 +86,7 @@ namespace Master.Users
                     var username = request.Datas["userName"];
                     if (string.IsNullOrEmpty(username))
                     {
-                        throw new UserFriendlyException(L("用户名不能为空"));
+                        //throw new UserFriendlyException(L("用户名不能为空"));
                     }
                     var password = request.Datas["password"];
                     if (!string.IsNullOrEmpty(password))
