@@ -959,10 +959,11 @@
                                     title: '成功',
                                     content: '案例初加工内容发布成功！您可至“我的案例”中查看并继续对案例做精加工或创建案例卡',
                                     okText: '去“我的案例”',
-                                    cancelText: '继续加工本案例',
+                                    cancelText: '回工作台',
                                     onOk: () => {
                                         location.href = '/Home/MyCase';
                                     },
+                                    onCancel:()=>{location.href='/Home/WorkBench'}
                                 });
                             }))
                         })
@@ -1071,6 +1072,11 @@
             },
             async created() {
                 await this.loadData();
+                var that=this;
+                window.setInterval(function(){
+                    that.updateCaseCard();
+                    that.updateInitial();
+                },5*60*1000);
             }
         })
         //获取初加工、精加工级联层级的方式

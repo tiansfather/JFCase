@@ -62,7 +62,7 @@ namespace Master.Web.Startup
             services.AddSignalR();//使用SignalR
             services.AddMvc(options =>
             {
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             }).AddJsonOptions(options => {
                 //忽略循环引用
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;

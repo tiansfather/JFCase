@@ -215,7 +215,7 @@
                     </dl>
                 </li>
                 @*<li class="on">您已完成有 <span class="shuzi">{{summary.caseCount}}</span> 个案例，其中包含精品<span class="shuzi">{{summary.caseFineCount}}</span> 个、案例卡 <span class="shuzi">{{summary.caseCardCount}}</span> 个</li>*@
-                <li v-show="items.length==0">
+                <li v-show="items.length==0 && !loading">
                     <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看，或联系管理员。</h1>
                 </li>
                 <li v-show="items.length>0">
@@ -446,6 +446,7 @@
                 keyword: '',
                 items: [],
                 currentItem: {},
+                loading:true,
                 modal1: false,
                 moda12: false,
                 modalViewCase:false,
@@ -512,7 +513,9 @@
                 },
                 loadSource() {
                     var that = this;
+                    this.loading=true;
                     func.runAsync(abp.services.app.myCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword }).done((res) => {
+                        that.loading=false;
                         that.items = res.data;
                         //that.items = [{ id: 1, subjectId: null, remarks: 'bb', caseStatus: 1 }]
                         that.totalCount = res.count;

@@ -27,7 +27,8 @@ namespace Master.Case
                 .Include(o => o.CaseCards)
                 .Include(o => o.CaseNodes)
                 .Where(o => o.CaseSource.OwerId == AbpSession.UserId)
-                .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架);
+                .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架)
+                .OrderByDescending(o=>o.PublishDate);
 
         }
 

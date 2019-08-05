@@ -314,8 +314,9 @@
         <!--查案例-->
         <div class="jianfa-chaanli">
             <div class="chaanli-content">
-                <div v-show="items.length===0">
-                    <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例哦，请减少查询条件再试试看。</h1>
+                <div v-show="items.length===0 ">
+                    <h1 style="font-size:24px;text-align:center;margin:30px" v-show="!loading">没有符合您查询条件的案例哦，请减少查询条件再试试看。</h1>
+                    <h1 style="font-size:24px;text-align:center;margin:30px" v-show="loading">正在努力为您加载，请稍后……</h1>
                 </div>
                 <ul v-show="items.length">
                     <li class="style-chaal-40">
@@ -561,8 +562,7 @@
                 },
                 keyword:'',
                 noMore: false,
-                loading: false,
-
+                loading: true,
                 moda12: false,
 
                 caseNodes: [],
@@ -762,6 +762,7 @@
                 loadSource(bol) {
                     var that = this;
                     this.noMore=false;
+                    this.loading=true;
                     func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword ,searchKeys:this.searchKeys}).done((res) => {
                         this.loading = false;
                         if (res.data.length == 0) {

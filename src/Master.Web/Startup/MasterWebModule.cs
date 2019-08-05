@@ -48,6 +48,7 @@ namespace Master.Web.Startup
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueSheetComponent");
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueComponentJianFa");
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueFormComponentExtend");
+
         }
 
         public override void Initialize()
