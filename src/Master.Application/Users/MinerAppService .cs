@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Master.Authentication;
+using Master.Case;
 using Master.Domain;
 using Master.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,15 @@ namespace Master.Users
                 freezeCount,
                 deleteCount
             };
+        }
+        /// <summary>
+        /// 清空某矿工所有成品
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task ClearUserContent(int userId)
+        {
+            await Resolve<CaseSourceManager>().ClearCaseContentByUserId(userId);
         }
     }
 }

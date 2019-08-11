@@ -1,0 +1,111 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>Master.Web</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Views\Shared\Components\BaseTree\Default.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleButton\Default.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\DateTime.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\DateTime_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Default.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Files.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Files_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Images.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Images_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\MultiSelect.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\MultiSelect_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Number.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Number_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Reference.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Reference_bak.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Reference_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Select.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Select_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Separator.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Separator_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Switch.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Switch_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Text.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\TextArea.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\TextArea_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormItem\Text_View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleFormSubmit\Default.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleForm\Default.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleForm\MultiEdit.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleForm\MultiEdit_Form.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleForm\Search.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleForm\View.cshtml" />
+    <None Remove="Views\Shared\Components\ModuleTable\Default.cshtml" />
+    <None Remove="Views\Shared\Components\OSTree\Default.cshtml" />
+    <None Remove="Views\Shared\Components\SideBarNav\Default.cshtml" />
+    <None Remove="Views\Shared\Components\TopBarNav\Default.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\Shared\Components\SideBarNav\Default.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Shared\Components\TopBarNav\Default.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\Shared\Components\BaseTree\Default.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleButton\Default.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\DateTime.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\DateTime_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Default.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Files.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Files_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Images.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Images_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\MultiSelect.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\MultiSelect_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Number.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Number_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Reference_bak.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Reference.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Reference_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Select.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Select_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Separator.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Separator_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Switch.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Switch_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Text.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\TextArea.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\TextArea_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormItem\Text_View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleFormSubmit\Default.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleForm\Default.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleForm\MultiEdit.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleForm\MultiEdit_Form.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleForm\Search.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleForm\View.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\ModuleTable\Default.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Components\OSTree\Default.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Master.Application\Master.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Abp.AspNetCore.SignalR" Version="4.5.0" />
+    <PackageReference Include="Abp.HangFire.AspNetCore" Version="4.5.0" />
+    <PackageReference Include="Hangfire.MySql.Core" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.2.0" />
+    <PackageReference Include="QRCoder" Version="1.3.5" />
+    <PackageReference Include="Selenium.Chrome.WebDriver" Version="2.45.0" />
+    <PackageReference Include="Selenium.PhantomJS.WebDriver" Version="2.1.1" />
+    <PackageReference Include="Selenium.Support" Version="3.141.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="1.1.0" />
+    <PackageReference Include="Abp.AspNetCore" Version="4.5.0" />
+  </ItemGroup>
+</Project>

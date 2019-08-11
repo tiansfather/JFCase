@@ -33,6 +33,11 @@ namespace Master.Case
         /// <returns></returns>
         public virtual async Task ClearCaseContent(int id)
         {
+            var caseSource = await GetByIdAsync(id);
+            //设置案源状态
+            caseSource.OwerId = null;
+            caseSource.CaseSourceStatus = CaseSourceStatus.待选;
+            //清空加工内容
             var manager = Resolve<CaseInitialManager>();
             var caseInitial = await manager.GetAll().Where(o => o.CaseSourceId == id).FirstOrDefaultAsync();
             if (caseInitial != null)
@@ -43,6 +48,19 @@ namespace Master.Case
                 await Resolve<CaseFineManager>().Repository.HardDeleteAsync(o => o.CaseInitialId == caseInitial.Id);
                 
                 await manager.Repository.HardDeleteAsync(caseInitial);
+            }
+        }
+        /// <summary>
+        /// 清空用户所有加工内容
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task ClearCaseContentByUserId(int userId)
+        {
+            var caseSources = await GetAll().Where(o => o.OwerId == userId).ToListAsync();
+            foreach(var caseSource in caseSources)
+            {
+                await ClearCaseContent(caseSource.Id);
             }
         }
     }

@@ -6,6 +6,8 @@
 <div class="layui-fluid" id="LAY-app-message">
 
     <div class="layui-card">
+        <button type="button" class="layui-btn">清空此人所有成品</button>
+        <a dataid="" class="layui-btn layui-btn-xs layui-btn-danger" title="清空此人所有成品" type="button" buttonname="清空此人所有成品" modulekey="dataTable" params="" lay-event="Freeze" confirmmsg="确认清空此人所有成品?此操作无法撤消，确定继续吗？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.miner.clearUserContent" onclick="func.callModuleButtonEvent()" id="clearBtn">清空此人所有成品</a>
         <table id="dataTable" lay-filter="dataTable"></table>
 
     </div>
@@ -15,6 +17,7 @@
     <script>
         var userId = $.getUrlParam("data");
         config.ready = function () {
+            $("#clearBtn").attr("dataid", userId);
             func.runAsync(abp.services.app.caseInitial.getPageResult({ page: 1, limit: 10, where: 'creatorUserId=' + userId }).done(function (data) {
                 //构建表头
                 var cols = [
@@ -35,6 +38,9 @@
                 });
             }))
             
+        }
+        config.reloadTable = function () {
+            layui.table.reload('dataTable');
         }
     </script>
 }

@@ -408,6 +408,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'clearUserContent'
+    abp.services.app.miner.clearUserContent = function(userId, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Miner/ClearUserContent' + abp.utils.buildQueryString([{ name: 'userId', value: userId }]) + '',
+        type: 'POST'
+      }, ajaxParams));;
+    };
+
     // action 'getPageResult'
     abp.services.app.miner.getPageResult = function(request, ajaxParams) {
       return abp.ajax($.extend(true, {

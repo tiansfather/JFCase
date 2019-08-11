@@ -149,11 +149,7 @@ namespace Master.Case
         /// <returns></returns>
         public virtual async Task GiveBack(int id, string reason)
         {
-            var manager = Manager as CaseSourceManager;
-            var caseSource = await manager.GetByIdAsync(id);
-            //设置案源状态
-            caseSource.OwerId = null;
-            caseSource.CaseSourceStatus = CaseSourceStatus.待选;
+            var manager = Manager as CaseSourceManager;            
             //清空当前用户针对此案源加工的所有数据
             await manager.ClearCaseContent(id);
             //增加判例记录
