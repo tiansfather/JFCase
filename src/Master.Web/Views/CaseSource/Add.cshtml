@@ -25,7 +25,7 @@
                     <div class="layui-inline">
                         <label class="layui-form-label">案号<font color="red">*</font></label>
                         <div class="layui-input-block">
-                            <input type="text" name="SourceSN" v-model="currentItem.sourceSN" lay-verify="required" autocomplete="off" class="layui-input">
+                            <input type="text" name="SourceSN" v-model="currentItem.sourceSN" lay-verify="required" autocomplete="off" class="layui-input" :readonly="currentItem.caseSourceStatus!=-1">
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -42,6 +42,7 @@
                         <label class="layui-form-label">一审法院</label>
                         <div class="layui-input-block">
                             <select name="court1Id" lay-filter="court1Id" v-model="currentItem.court1Id">
+                                <option value="">请选择</option>
                                 <option v-for="(item,index) in courts" :value="item.id" v-text="item.name"></option>
                             </select>
                         </div>
@@ -50,6 +51,7 @@
                         <label class="layui-form-label">二审法院</label>
                         <div class="layui-input-block">
                             <select name="court2Id" lay-filter="court2Id" v-model="currentItem.court2Id">
+                                <option value="">请选择</option>
                                 <option v-for="(item,index) in courts" :value="item.id" v-text="item.name"></option>
                             </select>
                         </div>
@@ -80,7 +82,7 @@
                             <input type="text" v-model="currentItem.sourceFile" autocomplete="off" class="layui-input" lay-verify="required" readonly>
                         </div>
                         <div class="layui-input-inline">
-                            <button type="button" class="layui-btn layui-btn-normal" id="uploadBtn">上传</button>
+                            <button type="button" class="layui-btn layui-btn-normal" :class="{'layui-btn-disabled':currentItem.caseSourceStatus!=-1}" id="uploadBtn" :disabled="currentItem.caseSourceStatus!=-1">上传</button>
                         </div>
                     </div>
                 </div>

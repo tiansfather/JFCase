@@ -30,6 +30,7 @@ namespace Master.Case
         /// 判例文件
         /// </summary>
         public string SourceFile { get; set; }
+        public CaseSourceStatus CaseSourceStatus { get; set; }
 
         public void Normalize()
         {

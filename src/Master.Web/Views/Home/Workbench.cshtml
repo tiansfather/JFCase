@@ -180,6 +180,7 @@
                         abp.message.error("您选择了其它原因,请在文本框中填写具体原因");
                     } else {
                         var reason = this.choosedReasons.join(',');
+                        reason=reason.replace("other",this.otherReason);
                         abp.message.confirm("您确定要将此案例放回判例库吗？您所做的加工内容将不再保留，确定要继续吗？").done(function () {
                             func.runAsync(abp.services.app.workbench.giveBack(that.currentItem.id, reason).done(function () {
                                 that.loadSource();

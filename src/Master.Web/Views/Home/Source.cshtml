@@ -23,6 +23,7 @@
             cursor: pointer;
         }
         .jianfa-content .ny-content li .li-table td{height:50px;}
+        .historyTable td{height:20px !important;}
     </style>
 }
 <div id="app" v-cloak style="display:none">
@@ -108,11 +109,12 @@
                                     <Poptip trigger="hover" v-if="item.history.length>0">
                                         <span>{{item.history.length}}</span>
                                         <div slot="content">
-                                            <table width="300" align="center">
-                                                <tr><td align="center">序号</td><td align="center">放回时间</td><td align="center">放回原因</td></tr>
-                                                <tr v-for="(record,recordIndex) in item.history">
+                                            <table width="300" align="center" class="historyTable">
+                                                <tr><td align="center">序号</td><td align="center">放回时间</td><td align="center">放回人</td><td align="center">放回原因</td></tr>
+                                                <tr v-for="(record,recordIndex) in item.history" style="height:20px;">
                                                     <td>{{recordIndex+1}}</td>
                                                     <td>{{record.creationTime}}</td>
+                                                    <td>{{record.creator}}</td>
                                                     <td>{{record.reason}}</td>
                                                 </tr>
                                             </table>

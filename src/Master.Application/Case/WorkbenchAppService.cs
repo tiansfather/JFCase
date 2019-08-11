@@ -30,7 +30,7 @@ namespace Master.Case
                 .Include(o=>o.City)
                 .Include(o=>o.Court1)
                 .Include(o=>o.Court2)
-                .Include(o=>o.CaseSourceHistories)
+                .Include("CaseSourceHistories.CreatorUser")
                 .Where(o => o.CaseSourceStatus == CaseSourceStatus.待选 && o.OwerId == null);
         }
         protected override async Task<IQueryable<CaseSource>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseSource> query)
@@ -47,6 +47,14 @@ namespace Master.Case
         }
         protected override object PageResultConverter(CaseSource entity)
         {
+            var histories = entity.CaseSourceHistories.ToList()
+                .Select(o => new
+                {
+                    o.Reason,
+                    CreationTime=o.CreationTime.ToString("MM-dd HH:mm"),
+                    Creator=o.CreatorUser.Name
+                });
+
             return new
             {
                 entity.Id,
@@ -58,7 +66,8 @@ namespace Master.Case
                 entity.SourceSN,
                 entity.SourceFile,
                 entity.LawyerFirms,
-                History = entity.CaseSourceHistories.MapTo<List<CaseSourceHistoryDto>>()
+                //History = entity.CaseSourceHistories.MapTo<List<CaseSourceHistoryDto>>()
+                History=histories
             };
         }
         #endregion

@@ -412,7 +412,7 @@
                                 </bt>
                                 <div style="display:flex;width:100%">
                                     <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                                        <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeContent}}</p>
+                                        <p style="margin:auto;" v-html="caseInfo.initial.judgeInfo.judgeContent"></p>
                                     </i6>
                                     <span class="support-rate">{{caseInfo.initial.judgeInfo.supportRate}}%</span>
                                     @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
@@ -747,6 +747,10 @@
                             res.initial.law = replaceHtml(res.initial.law);
                             res.initial.experience = replaceHtml(res.initial.experience);
                             res.initial.lawyerOpinion = replaceHtml(res.initial.lawyerOpinion);
+                            res.initial.judgeInfo.judgeContent=replaceHtml(res.initial.judgeInfo.judgeContent);
+                            res.initial.judgeInfo.judgeResult=replaceHtml(res.initial.judgeInfo.judgeResult);
+                            res.initial.judgeInfo.reverseJudgeContent=replaceHtml(res.initial.judgeInfo.reverseJudgeContent);
+                            res.initial.judgeInfo.reverseJudgeResult=replaceHtml(res.initial.judgeInfo.reverseJudgeResult);
                             that.caseInfo = res;
                             Vue.nextTick(function () {
                                 $('.style-chaal-60>dl').scrollTop(0)

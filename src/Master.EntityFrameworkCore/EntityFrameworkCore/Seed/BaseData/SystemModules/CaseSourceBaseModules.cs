@@ -46,7 +46,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             ButtonInfos.Remove(createBtn);
             var editBtn= ButtonInfos.Single(o => o.ButtonKey == "Edit");
             editBtn.ButtonActionParam = "{\"area\": [\"100%\",\"100%\"]}";
-            editBtn.ClientShowCondition = "d.caseSourceStatus==-1";
+            //editBtn.ClientShowCondition = "d.caseSourceStatus==-1";//不下架也能进行修改
             editBtn.ButtonActionUrl = "/CaseSource/Add";
             var delBtn = ButtonInfos.Single(o => o.ButtonKey == "Delete");
             delBtn.ClientShowCondition = "d.caseSourceStatus==-1";
