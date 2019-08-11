@@ -31,7 +31,7 @@ namespace Master.Case
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task ClearCaseContent(int id)
+        public virtual async Task ClearCaseContent(int id,bool fromAdmin=false)
         {
             var caseSource = await GetByIdAsync(id);
             //设置案源状态
@@ -48,6 +48,19 @@ namespace Master.Case
                 await Resolve<CaseFineManager>().Repository.HardDeleteAsync(o => o.CaseInitialId == caseInitial.Id);
                 
                 await manager.Repository.HardDeleteAsync(caseInitial);
+
+                if (fromAdmin)
+                {
+                    //管理员操作的记录放回日志
+                    //增加判例记录
+                    var caseHistory = new CaseSourceHistory()
+                    {
+                        CaseSourceId = id,
+                        Reason = "管理员释放",
+                        CreatorUserId =caseInitial.CreatorUserId
+                    };
+                    await Resolve<CaseSourceHistoryManager>().InsertAsync(caseHistory);
+                }
             }
         }
         /// <summary>
@@ -60,7 +73,7 @@ namespace Master.Case
             var caseSources = await GetAll().Where(o => o.OwerId == userId).ToListAsync();
             foreach(var caseSource in caseSources)
             {
-                await ClearCaseContent(caseSource.Id);
+                await ClearCaseContent(caseSource.Id,true);
             }
         }
     }

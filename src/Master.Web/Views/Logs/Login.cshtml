@@ -34,7 +34,11 @@
                 elem: '#demo_E' //指定原始表格元素选择器（推荐id选择器）
                 , url: '/api/services/app/UserLoginAttempts/GetPageResult'
                 , height: 'full-100' //容器高度
-                , cols: [[{ field: 'userNameOrPhoneNumber', width: "25%", title: '用户名' }, { field: 'clientIpAddress', width: "25%", title: 'IP' }, { field: 'tenancyName', width: "25%", title: '账套名称' }, { field: 'creationTime', width: "25%", title: '登录时间' }]] //设置表头
+                , cols: [[
+                    { field: 'userNameOrPhoneNumber', width: "25%", title: '用户名' },
+                    { field: 'clientIpAddress', width: "25%", title: 'IP' },
+                    { field: 'nickName', width: "25%", title: '昵称' },
+                    { field: 'creationTime', width: "25%", title: '登录时间' }]] //设置表头
                 //,…… //更多参数参考右侧目录：基本参数选项
                 , page: true
             });

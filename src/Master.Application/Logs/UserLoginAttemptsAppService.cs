@@ -1,5 +1,6 @@
 ﻿
 using Master.Authentication;
+using Master.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,5 +25,22 @@ namespace Master.Logs
 
         //    return new { allCount = allStaffCount, inCount = inJobStaffCount, offCount = offJobStaffCount };
         //}
+
+        protected override object PageResultConverter(UserLoginAttempt entity)
+        {
+            var nickName = "";
+            if (entity.UserId.HasValue)
+            {
+                var user = Resolve<UserManager>().GetByIdAsync(entity.UserId.Value).Result;
+                nickName = user.GetPropertyValue<string>("NickName");
+            }
+            return new
+            {
+                entity.UserNameOrPhoneNumber,
+                entity.ClientIpAddress,
+                entity.CreationTime,
+                nickName
+            };
+        }
     }
 }

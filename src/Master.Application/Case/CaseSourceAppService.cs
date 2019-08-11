@@ -201,7 +201,18 @@ namespace Master.Case
         }
         #endregion
 
-       
+        /// <summary>
+        /// 管理方清空判例的加工内容
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public virtual async Task ClearContent(int[] ids)
+        {
+            foreach (var id in ids)
+            {
+                await Resolve<CaseSourceManager>().ClearCaseContent(id,true);
+            }
+        }
 
     }
 }
