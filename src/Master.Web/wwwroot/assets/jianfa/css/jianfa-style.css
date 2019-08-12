@@ -135,7 +135,7 @@ html{width:100%;height:100%;overflow-x:hidden;}
 .style-chaal-42{width:42%;box-sizing:border-box;overflow:auto;overflow:auto;}
 .style-chaal-42-h{width:42%;box-sizing:border-box;overflow:auto;height:155px;overflow:auto;}
 .jianfa-chaanli{width:100%;max-width:1200px;margin:0 auto;padding:0 10px;box-sizing:border-box;}
-.jianfa-chaanli .chaanli-content{float:left;width:100%;/*margin:56px 0 36px 0;*/margin:-46px 0 46px 0;overflow:auto;}
+.jianfa-chaanli .chaanli-content{float:left;width:100%;/*margin:56px 0 36px 0;margin:-46px 0 46px 0;*/overflow:auto;}
 /*.jianfa-chaanli .chaanli-content.on{margin:66px 0 5px 0;}*/
 .jianfa-chaanli .chaanli-content ul{float:left;width:100%;padding:0;overflow:auto;}
 .jianfa-chaanli .chaanli-content li{float:left;padding:0px;font-size:12px;overflow:auto;box-sizing:border-box;}

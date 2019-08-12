@@ -103,6 +103,38 @@
             padding: 10px;
             background: #fff;
         }
+        .jianfa-chaanli .chaanli-content li dl dd i5 {
+            margin: 10px 0px;
+            min-height: 58px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6.flex-center {
+            box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
+            height: auto;
+        }
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+       .support-rate {
+            float: left;
+            width: 8em;
+            /* margin: 0 5%; */
+            line-height: 83px;
+            color: #754C24;
+            font-weight: 700;
+            text-align: center;
+            font-size: 16px;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6 {
+            width: 100%;
+            min-height: 8em;
+            color: #505050;
+            border: none;
+        }
     </style>
 }
 
@@ -545,22 +577,22 @@
                         <dl>
 
                             <dd class="on">
-                                <i4 class="fleft tjustify">
+                                <i4 class="fleft tjustify initial-title">
                                     {{caseInitialUpdateDto.title}}
                                 </i4>
                             </dd>
 
                             @*<dd class="on">
-                                    <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
-                                    <a @@click="currentItem=caseInfo.source;moda12 = true">
-                                        <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
-                                    </a>
-                                    <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
-                                </dd>*@
+            <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
+            <a @@click="currentItem=caseInfo.source;moda12 = true">
+                <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+            </a>
+            <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
+        </dd>*@
 
 
                             <dd class="on">
-                                <i5 class="fleft tjustify">
+                                <i5 class="fleft tjustify initial-introduction">
                                     <!-- 概述 -->
                                     {{caseInitialUpdateDto.introduction}}
                                 </i5>
@@ -570,21 +602,44 @@
                                 <bt>
                                     <i8 class="style-chaal-20">诉请及判决</i8>
                                 </bt>
-                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.introduction}}</i6>
-                                <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInitialUpdateDto.judgeInfo.supportRate+'px'}">{{caseInitialUpdateDto.judgeInfo.supportRate}}%</span></i5c>
-                                <!--调节h50 h60.....-->
-                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.judgeResult}}</i6>
+                                <div style="display:flex;width:100%">
+                                    <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                        <p style="margin:auto;" v-html="caseInitialUpdateDto.judgeInfo.judgeContent"></p>
+                                    </i6>
+                                    <span class="support-rate">{{caseInitialUpdateDto.judgeInfo.supportRate}}%</span>
+                                    <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                        <p style="margin:auto;">{{caseInitialUpdateDto.judgeInfo.judgeResult}}</p>
+                                    </i6>
+                                </div>
+
+                            </dd>
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">反诉判决</i8>
+                                </bt>
+                                <div style="display:flex;width:100%">
+                                    <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                        <p style="margin:auto;" v-html="caseInitialUpdateDto.judgeInfo.reverseJudgeContent"></p>
+                                    </i6>
+                                    <span class="support-rate">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span>
+                                    <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                        <p style="margin:auto;">{{caseInitialUpdateDto.judgeInfo.reverseJudgeResult}}</p>
+                                    </i6>
+                                </div>
+
                             </dd>
 
-                            <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
-                                <bf>
-                                    <i9 class="fright">反诉判决</i9>
-                                </bf>
-                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeContent}}</i6>
-                                <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInitialUpdateDto.judgeInfo.reverseSupportRate+'px'}">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span></i5c>
-                                <!--调节h50 h60.....-->
-                                <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeResult}}</i6>
-                            </dd>
+                            <!--
+         <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
+          <bf>
+              <i9 class="fright">反诉判决</i9>
+          </bf>
+          <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeContent}}</i6>
+          <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInitialUpdateDto.judgeInfo.reverseSupportRate+'px'}">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span></i5c>
+
+          <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeResult}}</i6>
+      </dd>
+    -->
 
                             <dd class="on">
                                 <bt>
@@ -612,7 +667,18 @@
                                     {{caseInitialUpdateDto.lawyerOpinion}}
                                 </i6>
                             </dd>
-
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">法院观点</i8>
+                                </bt>
+                                <div>
+                                    <div v-for="(item,index) in caseCardUpdateDto.caseCards">
+                                        <i5 class="fleft tjustify">{{item.title}}</i5>
+                                        <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                    </div>
+                                </div>
+                            </dd>
+                      
 
                         </dl>
                     </li>
