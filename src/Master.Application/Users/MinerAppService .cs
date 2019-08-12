@@ -46,11 +46,15 @@ namespace Master.Users
         /// <summary>
         /// 清空某矿工所有成品
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="userIds"></param>
         /// <returns></returns>
-        public virtual async Task ClearUserContent(int userId)
+        public virtual async Task ClearUserContent(int[] userIds)
         {
-            await Resolve<CaseSourceManager>().ClearCaseContentByUserId(userId);
+            foreach(var userId in userIds)
+            {
+                await Resolve<CaseSourceManager>().ClearCaseContentByUserId(userId);
+            }
+            
         }
     }
 }

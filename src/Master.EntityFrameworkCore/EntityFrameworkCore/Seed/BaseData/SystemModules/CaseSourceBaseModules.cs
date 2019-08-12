@@ -38,6 +38,18 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 Sort = 2
             };
             moduleButtons.Add(UnFreezeButton);
+            //var ClearButton = new ModuleButton()
+            //{
+            //    ButtonKey = "ClearContent",
+            //    ButtonName = "清除成品",
+            //    ButtonType = ButtonType.ForSingleRow | ButtonType.ForSelectedRows,
+            //    ButtonActionType = ButtonActionType.Ajax,
+            //    ConfirmMsg = "确认清除此判例成品加工内容？",
+            //    ButtonActionUrl = $"abp.services.app.caseSource.clearContent",
+            //    ButtonClass = "layui-btn-danger",
+            //    Sort = 3
+            //};
+            //moduleButtons.Add(ClearButton);
             return moduleButtons;
         }
         public override void SetButtonsInfosMoreData(ICollection<ModuleButton> ButtonInfos)
@@ -63,6 +75,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             ColumnInfos.Single(o => o.ColumnKey == "CaseSourceStatus").SetData("width", "80");
             ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId").SetData("width", "100");
             ColumnInfos.Single(o => o.ColumnKey == "CreatorUserId").SetData("width", "100");
+            ColumnInfos.Single(o => o.ColumnKey == "Operation").SetData("width", "300");
         }
     }
 }

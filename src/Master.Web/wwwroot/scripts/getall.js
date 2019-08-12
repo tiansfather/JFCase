@@ -409,10 +409,11 @@ abp.services = abp.services || {};
     };
 
     // action 'clearUserContent'
-    abp.services.app.miner.clearUserContent = function(userId, ajaxParams) {
+    abp.services.app.miner.clearUserContent = function(userIds, ajaxParams) {
       return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Miner/ClearUserContent' + abp.utils.buildQueryString([{ name: 'userId', value: userId }]) + '',
-        type: 'POST'
+        url: abp.appPath + 'api/services/app/Miner/ClearUserContent',
+        type: 'POST',
+        data: JSON.stringify(userIds)
       }, ajaxParams));;
     };
 
@@ -2368,6 +2369,15 @@ abp.services = abp.services || {};
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/CaseSource/ReadExcel' + abp.utils.buildQueryString([{ name: 'filePath', value: filePath }]) + '',
         type: 'POST'
+      }, ajaxParams));;
+    };
+
+    // action 'clearContent'
+    abp.services.app.caseSource.clearContent = function(ids, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseSource/ClearContent',
+        type: 'POST',
+        data: JSON.stringify(ids)
       }, ajaxParams));;
     };
 
