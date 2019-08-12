@@ -88,11 +88,11 @@
                         <table width="100%">
                             <tr>
                                 <th width="50">城市</th>
-                                <th width="70">一审法院</th>
-                                <th width="70">二审法院</th>
+                                <th width="125">一审法院</th>
+                                <th width="125">二审法院</th>
                                 <th width="200">案号</th>
                                 <th width="150">案由</th>
-                                <th width="420">代理律师</th>
+                                <th width="310">代理律师</th>
                                 <th width="100">生效日期</th>
                                 <th width="80">处理记录</th>
                                 <th width="60">操作</th>
@@ -103,7 +103,7 @@
                                 <td>{{item.court2}}</td>
                                 <td><a @@click="currentItem=item;moda12 = true">{{item.sourceSN}}</a></td>
                                 <td>{{item.anYou}}</td>
-                                <td>{{getLawyer(item)}}</td>
+                                <td v-html="getLawyer(item)"></td>
                                 <td>{{item.validDate}}</td>
                                 <td>
                                     <Poptip trigger="hover" v-if="item.history.length>0">
@@ -279,7 +279,16 @@
                 //    });
                 //},
                 getLawyer: function (item) {
-                    return item.lawyerFirms.map(function (o) { return o.firmName+":"+o.lawyer; }).join(',');
+                    @*function unique (arr){
+                        var uniqueArr = [];
+                        $.each(arr, function(i, el){
+                            if($.inArray(el, uniqueArr) === -1) uniqueArr.push(el);
+                        });
+                        return uniqueArr;
+                    }
+                    var firmNames=unique( item.lawyerFirms.map(el=>el.firmName))
+                    console.log(firmNames)*@
+                    return item.lawyerFirms.map(function (o) { return o.firmName+":"+o.lawyer; }).join('<br>');
                 }
             },
             mounted: function () {

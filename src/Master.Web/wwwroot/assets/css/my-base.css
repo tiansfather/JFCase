@@ -25,7 +25,7 @@
     box-sizing: border-box;
 }
 .jianfa-jiagong .jiagong-content .bjli .bjdl {
-    height: calc(100vh - 156px);
+    height: calc(100vh - 125px);
 }
 .index-daohang {
     width: calc(74vh + 260px);

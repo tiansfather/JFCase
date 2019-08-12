@@ -172,7 +172,7 @@
             box-sizing: border-box;
         }
         .jianfa-content .ny-content li dl.xian {
-            padding: 0 0 11px 0;
+            /*padding: 0 0 11px 0;*/
         }
         .style-chaal-42-h{height:auto;}
         i6.fleft.tjustify.style-chaal-42-h.flex-center::-webkit-scrollbar {
@@ -202,7 +202,14 @@
             background: #f7f0e8;
         }
         /*.jianfa-chaanli .chaanli-content li dl dd i2 .bottom-cha1 i{font-size:16px;}*/
-        
+        .jianfa-chaanli .chaanli-content li dl dd i5 {
+            margin: 10px 0px;
+            min-height: 58px;
+            /* padding: 0; */
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
     </style>
 }
     <div id="app" v-cloak>
@@ -468,11 +475,11 @@
 
                             <dd class="on" v-show="caseInfo.initial.caseCards && caseInfo.initial.caseCards.length">
                                 <bt>
-                                    <i8 class="style-chaal-20">案例卡</i8>
+                                    <i8 class="style-chaal-20">法院观点</i8>
                                 </bt>
                                 <div>
                                     <div v-for="(item,index) in caseInfo.initial.caseCards">
-                                        <i5 class="fleft tjustify" style="margin: 10px 0;min-height: 6em;">{{item.title}}</i5>
+                                        <i5 class="fleft tjustify">{{item.title}}</i5>
                                         <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
                                     </div>
                                 </div>
