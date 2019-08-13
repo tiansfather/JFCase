@@ -83,11 +83,19 @@
                                     <input type="text" class="i-text" v-model="currentItem.email" placeholder="请输入你的邮箱" />
                                 </dd>
                                 <dd>
+                                    <label class="label-text">职业年限</label>
+                                    <input type="number" class="i-text" v-model="currentItem.workYear" placeholder="请输入你的职业年限" />
+                                </dd>
+                                <dd>
+                                    <label class="label-text">个人介绍</label>
+                                    <input type="text" class="i-text" v-model="currentItem.introduction" placeholder="请输入你的个人介绍" maxlength="140"/>
+                                </dd>
+                                <dd>
                                     <label class="label-text">留言</label>
                                     <input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" />
                                 </dd>
                                 @*<dd>您的邮箱<input type="text" class="i-text" v-model="currentItem.email" placeholder="请输入你的邮箱" /></dd>
-            <dd>您的留言<input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" /></dd>*@
+        <dd>您的留言<input type="text" class="i-text" v-model="currentItem.remarks" placeholder="" /></dd>*@
                             </dl>
                         </li>
                         <li>
@@ -124,6 +132,8 @@
                     name: '',
                     nickName:'',
                     workLocation: '',
+                    workYear:null,
+                    introduction:'',
                     phoneNumber: '',
                     email:'',
                     avata: '',

@@ -209,7 +209,7 @@ namespace Master.Case
                     caseSource.Court2Id,
                     Court2 = caseSource.Court2?.DisplayName,
                     caseSource.LawyerFirms,
-                    caseSource.ValidDate,
+                    ValidDate=caseSource.ValidDate.ToString("yyyy-MM-dd"),
                     TrialPeople=caseSource.TrialPeople.Select(o=>new { o.Name, TrialRole=o.TrialRole.ToString()}),
                     caseSource.SourceFile
                 },
