@@ -86,8 +86,11 @@
             z-index: 9;
         }
         .source-first {
+            background: #f7f0e8;
+            color: #c69c6c;
+            text-align: center;
+            line-height: 2.5;
             margin-top: 31px;
-            background: #fff;
             padding-left: 10px;
             /*width: calc(45vw - 44px);
             margin-left: 10px;
@@ -135,6 +138,16 @@
             color: #505050;
             border: none;
         }
+        .source-first-show_btn{
+            position:absolute;
+            right:5px;
+            bottom:5px;
+            font-size:16px;
+            cursor:pointer;
+        }
+        .source-first .sourcesn{
+
+        }
     </style>
 }
 
@@ -170,19 +183,24 @@
                     </div>
                 </div>
 
+                @*<i5 class="fleft style-chaal-50">
+            <i class="el-icon-arrow-right" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>{{source.sourceSN}}
+        </i5> class="bjdd on"
+        <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>*@
                 <div class="bjli on style-chaal-45">
                     <div class="bjdl on">
                         <div class="source-first" @@click="sourceDetailShow=!sourceDetailShow">
-                            <div class="bjdd on">
-                                @*@@mouseover="sourceDetailShow=true"*@
-                                <i5 class="fleft style-chaal-50">
-                                    <i class="el-icon-arrow-right" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>{{source.sourceSN}}
-                                </i5>
-                                <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
-                            </div>
+                            <i class="el-icon-arrow-right source-first-show_btn" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>
+                            <p class="sourcesn" style="color:#694d35;">{{source.sourceSN}}&nbsp;—&nbsp;{{source.anYou}}</p>
                             <transition name="fade">
                                 <div v-show="sourceDetailShow">
-                                    <div class="bjdd on">
+                                    <p>
+                                        <span v-show="source.court1">一审法院：{{source.court1}};</span>
+                                        <span v-show="source.court2">二审法院：{{source.court2}};</span>
+                                    </p>
+                                    <p>审判组织：{{trialPeople}};</p>
+                                    <p style="margin-bottom:0.5em;">代理律师：{{lawyerFirms}};</p>
+                                    @*<div class="bjdd on">
                                         <div class="fleft style-chaal-20-w">一审法院：</div>
                                         <div class="fleft style-chaal-80-w">{{source.court1}}</div>
                                     </div>
@@ -197,13 +215,13 @@
                                         <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
                                     </div>
 
-                                    <div class="bjdd on xian-1">
+                                    <div class="bjdd on">
                                         <div class="fleft style-chaal-20-w">代理律师：</div>
                                         <div class="fleft style-chaal-80-w">
                                             {{lawyerFirms}}
                                         </div>
                                         <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
-                                    </div>
+                                    </div>*@
                                 </div>
 
                             </transition>
@@ -240,13 +258,13 @@
                                                 </el-checkbox-group>
 
                                                 @*<input type="checkbox" id="bq2" /><label for="bq2">标签</label>
-                        <input type="checkbox" id="bq3" checked /><label for="bq3">标签</label>
-                        <input type="checkbox" id="bq4" /><label for="bq4">标签</label>
-                        <input type="checkbox" id="bq5" /><label for="bq5">标签</label>
-                        <input type="checkbox" id="bq6" checked /><label for="bq6">标签</label>
-                        <input type="checkbox" id="bq7" /><label for="bq7">标签</label>
-                        <input type="checkbox" id="bq8" /><label for="bq8">标签</label>
-                        <input type="checkbox" id="bq9" /><label for="bq9">标签</label>*@
+                                        <input type="checkbox" id="bq3" checked /><label for="bq3">标签</label>
+                                        <input type="checkbox" id="bq4" /><label for="bq4">标签</label>
+                                        <input type="checkbox" id="bq5" /><label for="bq5">标签</label>
+                                        <input type="checkbox" id="bq6" checked /><label for="bq6">标签</label>
+                                        <input type="checkbox" id="bq7" /><label for="bq7">标签</label>
+                                        <input type="checkbox" id="bq8" /><label for="bq8">标签</label>
+                                        <input type="checkbox" id="bq9" /><label for="bq9">标签</label>*@
                                             </div>
                                         </div>
 
@@ -285,7 +303,7 @@
                                                 <i8 class="style-chaal-20">诉请及判决</i8>
                                             </bt>
                                             <div class="fleft style-chaal-42">
-                                                <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.judgeContent"  :class="{error:validatingInitial && !caseInitialUpdateDto.judgeInfo.judgeContent}" errmsg="请填写诉请及判决"></textarea>
+                                                <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.judgeContent" :class="{error:validatingInitial && !caseInitialUpdateDto.judgeInfo.judgeContent}" errmsg="请填写诉请及判决"></textarea>
                                             </div>
                                             <template>
                                                 <div class="block" style="float:left;" id="slider1Container">
@@ -301,12 +319,13 @@
                                         </div>
 
                                         <div class="bjdd on">
-                                            <bf>
-                                                <i9 class="fright">反诉判决</i9>
+                                            <bf style="text-align:center;margin-bottom: 1em;">
+                                                反诉判决
+                                                @*<i9 class="fright">反诉判决</i9>*@
                                             </bf>
                                             <div class="fleft style-chaal-42">
                                                 <textarea name=""
-                                                          class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeContent" ></textarea>
+                                                          class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeContent"></textarea>
                                             </div>
                                             <template>
                                                 <div class="block" style="float:left;" id="slider2Container">
@@ -317,7 +336,7 @@
                                             @*<i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>*@
                                             <!--调节h50 h60.....-->
                                             <div class="fleft style-chaal-42">
-                                                <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeResult" ></textarea>
+                                                <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeResult"></textarea>
                                             </div>
                                         </div>
 
@@ -362,72 +381,72 @@
                                 <Tab-Pane label="案例卡" style="margin-top:46px;" name="2" :style="{height:tabsIndex=='2'?'':0}">
                                     <div class="bqian">
                                         @*<div class="bjdd on">
-                    <i5 class="fleft style-chaal-50">{{source.sourceSN}}</i5>
-                    <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
-                </div>
+                                    <i5 class="fleft style-chaal-50">{{source.sourceSN}}</i5>
+                                    <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
+                                </div>
 
-                <div class="bjdd on">
-                    <div class="fleft style-chaal-20-w">一审法院：</div>
-                    <div class="fleft style-chaal-80-w">{{source.court1}}</div>
-                </div>
+                                <div class="bjdd on">
+                                    <div class="fleft style-chaal-20-w">一审法院：</div>
+                                    <div class="fleft style-chaal-80-w">{{source.court1}}</div>
+                                </div>
 
-                <div class="bjdd on">
-                    <div class="fleft style-chaal-20-w">二审法院：</div>
-                    <div class="fleft style-chaal-80-w">{{source.court2}}</div>
-                </div>
+                                <div class="bjdd on">
+                                    <div class="fleft style-chaal-20-w">二审法院：</div>
+                                    <div class="fleft style-chaal-80-w">{{source.court2}}</div>
+                                </div>
 
-                <div class="bjdd on">
-                    <div class="fleft style-chaal-20-w">审判组织：</div>
-                    <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
-                </div>
+                                <div class="bjdd on">
+                                    <div class="fleft style-chaal-20-w">审判组织：</div>
+                                    <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
+                                </div>
 
-                <div class="bjdd on xian-1">
-                    <div class="fleft style-chaal-20-w">代理律师：</div>
-                    <div class="fleft style-chaal-80-w">
-                        {{lawyerFirms}}
-                    </div>
-                    <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
-                </div>*@
+                                <div class="bjdd on xian-1">
+                                    <div class="fleft style-chaal-20-w">代理律师：</div>
+                                    <div class="fleft style-chaal-80-w">
+                                        {{lawyerFirms}}
+                                    </div>
+                                    <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
+                                </div>*@
 
                                         @*<div class="bjdd on">
-                    <div class="fleft style-chaal-33-b">
-                        <template>
-                            <i-select placeholder="请选择案由" v-model="part.anyou">
-                                <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                            </i-select>
-                        </template>
-                    </div>
-                    <div class="fleft style-chaal-33-b">
-                        <template>
-                            <i-select placeholder="请选择城市" v-model="part.city">
-                                <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
-                            </i-select>
-                        </template>
-                    </div>
-                    <div class="fleft style-chaal-33">
-                        <template>
-                            <i-select placeholder="请选择法院" v-model="part.court">
-                                <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
-                                <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
-                            </i-select>
-                        </template>
-                    </div>
-                </div>
+                                    <div class="fleft style-chaal-33-b">
+                                        <template>
+                                            <i-select placeholder="请选择案由" v-model="part.anyou">
+                                                <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                            </i-select>
+                                        </template>
+                                    </div>
+                                    <div class="fleft style-chaal-33-b">
+                                        <template>
+                                            <i-select placeholder="请选择城市" v-model="part.city">
+                                                <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                            </i-select>
+                                        </template>
+                                    </div>
+                                    <div class="fleft style-chaal-33">
+                                        <template>
+                                            <i-select placeholder="请选择法院" v-model="part.court">
+                                                <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                                                <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                                            </i-select>
+                                        </template>
+                                    </div>
+                                </div>
 
-                <div class="bjdd on xian-1">
-                    <div class="xuanzeStyle ">
-                        <div class="title-bz">添加关键词：</div>
-                        <input type="checkbox" id="bq1" /><label for="bq1">关键词</label>
-                        <input type="checkbox" id="bq2" checked /><label for="bq2">关键词</label>
-                        <input type="checkbox" id="bq3" /><label for="bq3">关键词</label>
-                        <input type="checkbox" id="bq4" /><label for="bq4">关键词</label>
-                        <input type="checkbox" id="bq5" /><label for="bq5">关键词</label>
-                        <input type="checkbox" id="bq6" /><label for="bq6">关键词</label>
-                        <input type="checkbox" id="bq7" /><label for="bq7">关键词</label>
-                        <input type="checkbox" id="bq8" /><label for="bq8">关键词</label>
-                        <input type="checkbox" id="bq9" /><label for="bq9">关键词</label>
-                    </div>
-                </div>*@
+                                <div class="bjdd on xian-1">
+                                    <div class="xuanzeStyle ">
+                                        <div class="title-bz">添加关键词：</div>
+                                        <input type="checkbox" id="bq1" /><label for="bq1">关键词</label>
+                                        <input type="checkbox" id="bq2" checked /><label for="bq2">关键词</label>
+                                        <input type="checkbox" id="bq3" /><label for="bq3">关键词</label>
+                                        <input type="checkbox" id="bq4" /><label for="bq4">关键词</label>
+                                        <input type="checkbox" id="bq5" /><label for="bq5">关键词</label>
+                                        <input type="checkbox" id="bq6" /><label for="bq6">关键词</label>
+                                        <input type="checkbox" id="bq7" /><label for="bq7">关键词</label>
+                                        <input type="checkbox" id="bq8" /><label for="bq8">关键词</label>
+                                        <input type="checkbox" id="bq9" /><label for="bq9">关键词</label>
+                                    </div>
+                                </div>*@
                                         <template v-for="(item,index) in caseCardUpdateDto.caseCards">
 
                                             <div class="bjdd on">
@@ -541,11 +560,11 @@
                             </Tabs>
                         </template>
                         @*<div class="bjdd">
-                            <a href="" class="btn-submit-jgy" @@click.prevent="publishCaseFine">发布</a><a href="" @@click.prevent="updateCaseFine" class="btn-submit-jgy">保存</a>
-                        </div>
-                        <div class="bjdd">
-                            <a href="" class="btn-submit-jgy" @@click.prevent="publishCaseCard">发布</a><a href="" @@click.prevent="updateCaseCard" class="btn-submit-jgy">保存</a>
-                        </div>*@
+                    <a href="" class="btn-submit-jgy" @@click.prevent="publishCaseFine">发布</a><a href="" @@click.prevent="updateCaseFine" class="btn-submit-jgy">保存</a>
+                </div>
+                <div class="bjdd">
+                    <a href="" class="btn-submit-jgy" @@click.prevent="publishCaseCard">发布</a><a href="" @@click.prevent="updateCaseCard" class="btn-submit-jgy">保存</a>
+                </div>*@
                         <div class="bjdd source-btns">
                             <a href="" class="btn-submit-jgy" @@click.prevent="publishInitialCases">发布</a><a href="" class="btn-submit-jgy" @@click.prevent="updateInitialCases">保存</a><a href="" class="btn-submit-jgy" @@click.prevent="previewInitialVisible=true;">预览</a>
                         </div>
@@ -554,8 +573,8 @@
                         <div class="bqian">
 
                             @*<div class="bjdd">
-                <a href="" class="btn-submit-jgy">发布</a><a href="" class="btn-submit-jgy">保存</a><a href="" class="btn-submit-jgy">预览</a>
-            </div>*@
+                        <a href="" class="btn-submit-jgy">发布</a><a href="" class="btn-submit-jgy">保存</a><a href="" class="btn-submit-jgy">预览</a>
+                    </div>*@
                         </div>
                     </div>
                 </div>

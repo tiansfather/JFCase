@@ -16,17 +16,17 @@
     .ivu-menu-item-selected a {
         color: #754c24;
     }
-    #jianfa_top .top-logo .logo-pic img {
+    /*#jianfa_top .top-logo .logo-pic img {
         width: 40px;
         max-width: 40px;
         max-height: 40px;
-    }
+    }*/
     #jianfa_top .top-logo .logo-pic span{line-height:40px;float:none;display:inline}
     .daohang-top .ivu-menu-item > a, .daohang-top .ivu-menu-submenu-title {
         line-height: 30px;
     }
     .daohang-top .ivu-menu-item {
-        margin: 0 15px;
+        margin: 0 8px;
     }
     #jianfa_top .top-logo .portrait-pic{
         font-size:0;
@@ -41,10 +41,13 @@
             font-size: 0;
         }
         .jianfa-intop .intop-logo .inportrait-pic img {
-            width: 50px;
+            /*width: 50px;
             height:50px;
             max-width: 50px;
-            max-height: 50px;
+            max-height: 50px;*/
+            width: 125px;
+            max-width: inherit;
+            max-height: 40px;
         }
     .daohang-top .ivu-menu-item > a, #jianfa_top .top-logo .logo-pic span {
         color: #754c24;
@@ -53,7 +56,9 @@
     <script type="text/x-template" id="comHeader">
         <div id="jianfa_top">
             <div class="top-logo">
-                <div class="logo-pic"><img src="/assets/jianfa/ima/logo-ny.png" border="0"><span>案例工厂</span></div>
+
+                @*<div class="logo-pic"><img src="/assets/jianfa/ima/logo-ny.png" border="0"><span>案例工厂</span></div>*@
+                <div class="logo-pic"><img src="/assets/jianfa/ima/new-logo.png" border="0"></div>
                 <div class="daohang-top">
                     <!--导航-->
                     <i-Menu mode="horizontal" theme="primary" :active-name="activeName">

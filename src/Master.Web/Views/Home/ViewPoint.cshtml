@@ -80,7 +80,7 @@
                             <li>
                                 <dl>
                                     <dd class="card-top">
-                                        <span>{{item.title}} </span>
+                                        <span style="color:rgb(117, 76, 36)">{{item.title}} </span>
                                     </dd>
                                     <dd class="card-zhong" @@click.stop.prevent="currentItem=item;moda12 = true">
                                         <span>{{item.sourceSN}}</span>
@@ -100,7 +100,7 @@
                             <li>
                                 <dl>
                                     <dd class="oncard-top">
-                                        <span>{{item.content}} </span>
+                                        <span style="color:#505050">{{item.content}} </span>
                                         <p>{{getTrialPeople(item)}}<br>{{new Date(item.validDate.split(' ')[0]).pattern('yyyy年MM月dd日')}}</p>
                                     </dd>
                                 </dl>

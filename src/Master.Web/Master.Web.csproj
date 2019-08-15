@@ -752,5 +752,5 @@
     <Folder Include="App_Data\Logs\" />
     <Folder Include="wwwroot\lib\swiper\" />
   </ItemGroup>
-  <ProjectExtensions><VisualStudio><UserProperties bundleconfig_1json__JSONSchema="" appsettings_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties bundleconfig_1json__JSONSchema="" appsettings_1json__JSONSchema="http://json.schemastore.org/appsscript" /></VisualStudio></ProjectExtensions>
 </Project>

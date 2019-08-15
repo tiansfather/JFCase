@@ -80,3 +80,7 @@
     width:21%;
     text-align:center;
 }
+    .ivu-menu-horizontal .ivu-menu-submenu .ivu-select-dropdown .ivu-menu-item:hover {
+        /* background: #f3f3f3; */
+        background: rgba(198, 156, 109, .3);
+    }

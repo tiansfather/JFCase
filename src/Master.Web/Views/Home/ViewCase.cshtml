@@ -167,7 +167,7 @@
             justify-content: space-between;
         }
         .jianfa-content .ny-content li.r-head-search_dl dd.filter-dd {
-            flex: 1 1 0%;
+            
             color: #505050;
             font-size: 14px;
         }
@@ -179,7 +179,7 @@
             box-sizing: border-box;
         }
         .jianfa-content .ny-content li dl.xian {
-            /*padding: 0 0 11px 0;*/
+            padding: 0 0 11px 0;
         }
         .style-chaal-42-h{height:auto;}
         i6.fleft.tjustify.style-chaal-42-h.flex-center::-webkit-scrollbar {
@@ -217,6 +217,17 @@
             display: flex;
             align-items: center;
         }
+
+        /*.jianfa-chaanli .chaanli-content {
+            margin: -46px 0 46px 0;
+        }*/
+        .ivu-select-single .ivu-select-selection .ivu-select-placeholder, .ivu-select-single .ivu-select-selection .ivu-select-selected-value, .ivu-select-multiple .ivu-select-selection .ivu-select-placeholder {
+            color: #505050;
+            font-size:14px;
+        }
+        .jianfa-content .ny-content li dl.xian {
+            border-bottom: 1px solid #c69c6c;
+        }
     </style>
 }
     <div id="app" v-cloak>
@@ -228,7 +239,7 @@
                 <ul>
                     <li>
                         <dl class="r-head-search_dl">
-                            <dd class="">符合当前筛选条件的共{{totalCount}}个。</dd>
+                            <dd style="flex: 1 1 0%;">符合当前筛选条件的共{{totalCount}}个。</dd>
 
                             <dd class="">
                                 <template>
@@ -245,7 +256,7 @@
         <dd class="xchu">房屋买卖纠纷<span>×</span></dd>*@
                         </dl>
                     </li>
-                    <li style="padding-bottom:10px;">
+                    <li>
                         <dl class="xian" style="display:flex;justify-content:space-between;">
                             <dd class="style-bf-20-a" style="width:80px">
                                 <template>
@@ -271,6 +282,9 @@
                                 <i-select placeholder="专题" v-model="wherePart.subjectId" clearable :class="{isSelected:wherePart.subjectId}">
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
+                            </dd>
+                            <dd class="style-bf-20-b" style="width:20px;padding-right: 0;cursor:pointer;" @@click="labelCheckVisible=!labelCheckVisible">
+                                <img src="~/assets/jianfa/ima/upicon.png" :style="{transform:labelCheckVisible?'rotate(90deg)':''}"/>
                             </dd>
                         </dl>
                     </li>
@@ -336,7 +350,7 @@
                     <li class="style-chaal-40">
                         <template>
                             <div class="infinite-list-wrapper" >
-                                <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 301px)':'calc(100vh - 207px)'}" id="scrollWrapper">
+                                <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 301px)':'calc(100vh - 217px)'}" id="scrollWrapper">
                                     <a href="javascript:;">
                                         <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)" :class="{'active-cha':item.id===activeChaId}">
                                             <i1>
@@ -396,7 +410,7 @@
                         </dl>*@
                     </li>
                     <li class="on style-chaal-60" v-if="caseInfo">
-                        <dl class="on" :style="{height:labelCheckVisible?'calc(100vh - 301px)':'calc(100vh - 207px)'}">
+                        <dl class="on" :style="{height:labelCheckVisible?'calc(100vh - 301px)':'calc(100vh - 217px)'}">
 
                             <dd class="on">
                                 <i4 class="fleft tjustify">
@@ -653,6 +667,7 @@
                     this.loadSource();
                 },
                 doSearch() {
+                    this.labelCheckVisible=false;
                     this.currentPage = 1;
                     this.items = [];
                     this.loadSource(true);
