@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Master.Module;
+using Abp.Domain.Entities;
 
 namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
 {
@@ -47,6 +48,14 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
         {
             //var editBtn = ButtonInfos.Where(o => o.ButtonKey == "Edit").Single();
             //ButtonInfos.Remove(editBtn);
+        }
+
+        public override void SetColumnInfosMoreData(ICollection<ColumnInfo> ColumnInfos)
+        {
+            ColumnInfos.Single(o => o.ColumnKey == "Name").SetData("width", "100");
+            ColumnInfos.Single(o => o.ColumnKey == "UserName").SetData("width", "100");
+            ColumnInfos.Single(o => o.ColumnKey == "WorkLocation").SetData("width", "240");
+            ColumnInfos.Single(o => o.ColumnKey == "Email").SetData("width", "240");
         }
     }
 }

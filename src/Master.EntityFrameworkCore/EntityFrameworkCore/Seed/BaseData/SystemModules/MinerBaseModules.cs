@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Master.Module;
+using Abp.Domain.Entities;
 
 namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
 {
@@ -66,6 +67,14 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             deleteBtn.ButtonName = "注销";
             deleteBtn.ConfirmMsg = "矿工注销后，将不能再登陆平台，但他的数据将会被保留，确定继续吗？";
             deleteBtn.ClientShowCondition = "!d.isDelete";
+
+        }
+
+        public override void SetColumnInfosMoreData(ICollection<ColumnInfo> ColumnInfos)
+        {
+            ColumnInfos.Single(o => o.ColumnKey == "Name").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "WorkLocation").SetData("width", "240");
+            ColumnInfos.Single(o => o.ColumnKey == "Email").SetData("width", "200");
         }
     }
 }

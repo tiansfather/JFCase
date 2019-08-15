@@ -14,7 +14,7 @@ namespace Master.Case
     [InterModule("成品案例", GenerateDefaultColumns=false,GenerateDefaultButtons =false)]
     public class CaseInitial : BaseFullEntityWithTenant, IHaveStatus,IPassivable
     {
-        [InterColumn(ColumnName ="案号",ValuePath="CaseSource.SourceSN")]
+        [InterColumn(ColumnName ="案号",ValuePath="CaseSource.SourceSN",Sort =1)]
         [NotMapped]
         public string SourceSN {
             get
@@ -22,7 +22,7 @@ namespace Master.Case
                 return CaseSource.SourceSN;
             }
         }
-        [InterColumn(ColumnName = "城市", ValuePath = "CaseSource.City.DisplayName")]
+        [InterColumn(ColumnName = "城市", ValuePath = "CaseSource.City.DisplayName",Sort =2)]
         [NotMapped]
         public string City
         {
@@ -31,7 +31,7 @@ namespace Master.Case
                 return CaseSource.City.DisplayName;
             }
         }
-        [InterColumn(ColumnName = "案由", ValuePath = "CaseSource.AnYou.DisplayName")]
+        [InterColumn(ColumnName = "案由", ValuePath = "CaseSource.AnYou.DisplayName",Sort =3)]
         [NotMapped]
         public string AnYou
         {
@@ -45,7 +45,7 @@ namespace Master.Case
         public virtual CaseSource CaseSource { get; set; }
         public int? SubjectId { get; set; }
         public virtual BaseTree Subject { get; set; }
-        [InterColumn(ColumnName ="标题")]
+        [InterColumn(ColumnName ="标题",Sort =4)]
         public string Title { get; set; }
         
         /// <summary>
@@ -66,7 +66,7 @@ namespace Master.Case
         public string LawyerOpinion { get; set; }
         public string Status { get; set; }
         [NotMapped]
-        [InterColumn(ColumnName = "加工人",ValuePath = "CreatorUser.Name")]
+        [InterColumn(ColumnName = "加工人",ValuePath = "CreatorUser.Name",Sort =5)]
         public string Processor
         {
             get
@@ -77,7 +77,7 @@ namespace Master.Case
         /// <summary>
         /// 发布日期
         /// </summary>
-        [InterColumn(ColumnName = "发布日期")]
+        [InterColumn(ColumnName = "发布日期",Sort =6)]
         public DateTime? PublishDate { get; set; }
         /// <summary>
         /// 阅读量
@@ -86,16 +86,16 @@ namespace Master.Case
         /// <summary>
         /// 点赞数
         /// </summary>
-        [InterColumn(ColumnName = "点赞数")]
+        [InterColumn(ColumnName = "点赞数",Sort =7)]
         public int PraiseNumber { get; set; }
         /// <summary>
         /// 拍砖数
         /// </summary>
-        [InterColumn(ColumnName = "拍砖数")]
+        [InterColumn(ColumnName = "拍砖数",Sort =8)]
         public int BeatNumber { get; set; }
         
         public bool IsActive { get; set; }
-        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}")]
+        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}",Sort =9)]
         public CaseStatus CaseStatus { get; set; }
 
         public virtual ICollection<CaseNode> CaseNodes { get; set; } = new List<CaseNode>();

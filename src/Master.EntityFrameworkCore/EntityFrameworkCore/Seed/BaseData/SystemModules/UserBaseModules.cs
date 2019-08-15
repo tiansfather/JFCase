@@ -60,6 +60,10 @@ namespace Master.EntityFrameworkCore.Seed.BaseData
             {
                 column_operation.SetData("width", "240");
             }
+
+            ColumnInfos.Single(o => o.ColumnKey == "Name").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "CreatorUserId").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId").SetData("width", "80");
         }
         /// <summary>
         /// 得到对应的基础附加按钮
