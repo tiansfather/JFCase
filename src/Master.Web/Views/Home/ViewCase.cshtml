@@ -60,8 +60,10 @@
         .jianfa-chaanli .chaanli-content .cha-item-wrap i2 .bottom-cha1 {
             width: 100%;
             font-size: 12px;
-            color: #b4b4b4;
-            background: #e6e6e6;
+            color: #505050;
+            background: #b4b4b4;
+            /*color: #b4b4b4;
+            background: #e6e6e6;*/
             line-height: 24px;
             transition: all 0.5s ease 0s;
             display: flex;
@@ -164,6 +166,11 @@
             display: flex;
             justify-content: space-between;
         }
+        .jianfa-content .ny-content li.r-head-search_dl dd.filter-dd {
+            flex: 1 1 0%;
+            color: #505050;
+            font-size: 14px;
+        }
         .jianfa-chaanli .chaanli-content li dl dd i5b:hover {
             background: #fff;
             color: #754c24;
@@ -221,7 +228,7 @@
                 <ul>
                     <li>
                         <dl class="r-head-search_dl">
-                            <dd style="flex:1;">符合当前筛选条件的共{{totalCount}}个。</dd>
+                            <dd class="">符合当前筛选条件的共{{totalCount}}个。</dd>
 
                             <dd class="">
                                 <template>
@@ -271,7 +278,7 @@
                     <li v-show="labelCheckVisible">
                         <dl class="xianb xuanzeStyle">
                             <dd class="style-bf-8">
-                                <div class="btn-title-bz">关键词筛选：</div>
+                                <div class="btn-title-bz">关键词：</div>
                             </dd>
                             <dd class="style-bf-92">
                                 <el-checkbox-group v-model="selectKeywords" @@change="changeLabelCheck('关键词')">
@@ -284,7 +291,7 @@
                     <li v-show="labelCheckVisible">
                         <dl class="xianb xuanzeStyle">
                             <dd class="style-bf-8">
-                                <div class="btn-title-bz">标签筛选：</div>
+                                <div class="btn-title-bz">标签：</div>
                             </dd>
                             <dd class="style-bf-92">
                                 <el-checkbox-group v-model="selectLabels" @@change="changeLabelCheck('标签')">
@@ -331,7 +338,7 @@
                             <div class="infinite-list-wrapper" >
                                 <dl class="list" :style="{height:labelCheckVisible?'calc(100vh - 301px)':'calc(100vh - 207px)'}" id="scrollWrapper">
                                     <a href="javascript:;">
-                                        <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
+                                        <dd class="cha-item-wrap" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)" :class="{'active-cha':item.id===activeChaId}">
                                             <i1>
                                                 <div class="left-cha1">
                                                     <el-dropdown placement="bottom-start" >
@@ -580,6 +587,7 @@
                 knowledgeTree: [],
                 typeTree: [],
                 labels:[],
+                activeChaId:null,
             },
             computed: {
                 where() {
@@ -743,6 +751,7 @@
                     this.loadSource();
                 },
                 getViewMsg(caseInitialId) {
+                    this.activeChaId=caseInitialId;
                     var that = this;
                     abp.services.app.viewCase.view(caseInitialId).done(function (caseSourceId) {
                         //caseSourceId为对应的案源id
