@@ -41,6 +41,33 @@
                 text-align:right;
                 margin-right:50px;
             }
+
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .avatar-uploader .el-upload:hover {
+                border-color: #409EFF;
+            }
+
+        .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 178px;
+            height: 178px;
+            line-height: 178px;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 178px;
+            height: 178px;
+            display: block;
+        }
     </style>
 }
     <div id="app">
@@ -59,14 +86,23 @@
         </div>
 
             <div class="r-main-wrap me-content" v-cloak>
-                <img :src="userData.avata" alt="头像" class="me-con-avata" />
+                
                 <div v-show="!editMode">
+                    <img :src="userData.avata" alt="头像" class="me-con-avata" />
                     <p class="me-con-first" v-text="userData.name"></p>
                     <p class="me-con-first">{{userData.workLocation}}</p>
                     <div class="me-con-text">
                         <div class="me-context-wrap">
                             <label class="me-context-label ">所属领域:</label>
                             <p class="me-context-val">{{userData.anYou}}</p>
+                        </div>
+                        <div class="me-context-wrap">
+                            <label class="me-context-label ">职业年限:</label>
+                            <p class="me-context-val">{{userData.workYear}}</p>
+                        </div>
+                        <div class="me-context-wrap">
+                            <label class="me-context-label ">自我介绍:</label>
+                            <p class="me-context-val">{{userData.introduction}}</p>
                         </div>
                         <div class="me-context-wrap">
                             <label class="me-context-label ">已完成案例:</label>
@@ -79,24 +115,38 @@
                     </div>
                 </div>
                 <div v-show="editMode">
-
+                    <el-upload class="avatar-uploader"
+                               action="/file/upload"
+                               :show-file-list="false"
+                               :on-success="handleAvatarSuccess"
+                               :before-upload="beforeAvatarUpload">
+                        <img v-if="userData.avata" :src="userData.avata" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                    @*<img :src="userData.avata" alt="头像" class="me-con-avata" id="avataImg" />*@
                     <el-form :model="userData" label-width="6em">
                         <el-form-item label="姓名">
-                            <el-input v-model="userData.name" placeholder="姓名" :disabled="true"></el-input>
+                            <el-input v-model="userData.name" placeholder="姓名"></el-input>
                         </el-form-item>
                         <el-form-item label="律所">
                             <el-input v-model="userData.workLocation" placeholder="律所"></el-input>
                         </el-form-item>
-                        
+
                         <el-form-item label="所属领域">
                             @*<el-input v-model="userData.anYouId" placeholder="所属领域"></el-input>*@
-                            <el-select v-model="userData.anYouId" placeholder="所属领域" style="width:100%">
+                            <el-select v-model="userData.anYouIds" multiple placeholder="所属领域" style="width:100%">
                                 <el-option v-for="item in anYous"
                                            :key="item.id"
                                            :label="item.displayName"
                                            :value="item.id">
                                 </el-option>
                             </el-select>
+                        </el-form-item>
+                        <el-form-item label="职业年限">
+                            <el-input v-model="userData.workYear" placeholder="职业年限" type="number"></el-input>
+                        </el-form-item>
+                        <el-form-item label="自我介绍">
+                            <el-input v-model="userData.introduction" placeholder="自我介绍" type="textarea" maxlength="140" autosize></el-input>
                         </el-form-item>
                         <el-form-item label="已完成案例">
                             <el-input v-model="userData.caseCount" placeholder="已完成案例" :disabled="true"></el-input>
@@ -118,33 +168,50 @@
         @section scripts{
             <script type="text/babel">
                 window.app=new Vue({
-                    el: '#app',
-                    data: {
-                        editMode: false,
-                        userData: {},
-                        anYous:[]
-                    },
-                    methods: {
-                        update: function () {
-                            var that = this;
-                            abp.message.confirm('确认提交?', function () {
-                                func.runAsync(abp.services.app.user.updateUserInfo(that.userData).done(() => {
-                                    location.reload();
-                                }))
-                            })
+                        el: '#app',
+                        data: {
+                            editMode: false,
+                            userData: {},
+                            anYous:[]
+                        },
+                        methods: {
+                            update: function () {
+                                var that = this;
+                                abp.message.confirm('确认提交?', function () {
+                                    func.runAsync(abp.services.app.user.updateUserInfo(that.userData).done(() => {
+                                        location.reload();
+                                    }))
+                                })
                             
 
+                            },
+                            handleAvatarSuccess(res, file) {
+                                console.log(res);
+                                this.userData.avata=res.result.filePath;
+                              },
+                            beforeAvatarUpload(file) {
+                                const isJPG = file.type === 'image/jpeg';
+                                const isLt2M = file.size / 1024 / 1024 < 2;
+
+                                if (!isJPG) {
+                                  this.$message.error('上传头像图片只能是 JPG 格式!');
+                                }
+                                if (!isLt2M) {
+                                  this.$message.error('上传头像图片大小不能超过 2MB!');
+                                }
+                                return isJPG && isLt2M;
+                              }
+                        },
+                        mounted: function () {
+                            abp.services.app.user.getById(abp.session.userId).done(data => {
+                                this.userData = data;
+                            })
+                            abp.services.app.type.getAnYous().done(data => {
+                                this.anYous = data;
+                            });
                         }
-                    },
-                    mounted: function () {
-                        abp.services.app.user.getById(abp.session.userId).done(data => {
-                            this.userData = data;
-                        })
-                        abp.services.app.type.getAnYous().done(data => {
-                            this.anYous = data;
-                        });
-                    }
-                })
+                    })
+                
                                 ////请求用户信息的接口
                                 //abp.services.app.user.getById(abp.session.userId).done(function (data) {
                                 //    data.avata//头像

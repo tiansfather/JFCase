@@ -306,7 +306,7 @@
                                             </bf>
                                             <div class="fleft style-chaal-42">
                                                 <textarea name=""
-                                                          class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeContent" :class="{error:validatingInitial && !caseInitialUpdateDto.judgeInfo.reverseJudgeContent}" errmsg="请填写诉请及判决"></textarea>
+                                                          class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeContent" ></textarea>
                                             </div>
                                             <template>
                                                 <div class="block" style="float:left;" id="slider2Container">
@@ -317,7 +317,7 @@
                                             @*<i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>*@
                                             <!--调节h50 h60.....-->
                                             <div class="fleft style-chaal-42">
-                                                <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeResult" :class="{error:validatingInitial && !caseInitialUpdateDto.judgeInfo.reverseJudgeResult}" errmsg="请填写诉请及判决"></textarea>
+                                                <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeResult" ></textarea>
                                             </div>
                                         </div>
 
@@ -1064,9 +1064,10 @@
                     })
                 },
                 //保存初加工
-                updateInitial() {
+                updateInitial(isSilence) {
                     this.validatingInitial = false;
                     var that = this;
+                    if(isSilence){abp.services.app.workbench.updateInitial(this.caseInitialUpdateDto);return;}
                     func.runAsync(abp.services.app.workbench.updateInitial(this.caseInitialUpdateDto).done(function () {
                         that.$Message.success("保存成功");
                     }))
@@ -1118,9 +1119,10 @@
                     }
                 },
                 //保存案例卡
-                updateCaseCard() {
+                updateCaseCard(isSilence) {
                     var that = this;
                     that.validatingCard = false;
+                    if(isSilence){abp.services.app.workbench.updateCard(this.caseCardUpdateDto);return;}
                     func.runAsync(abp.services.app.workbench.updateCard(this.caseCardUpdateDto).done(function () {
                         that.$Message.success("保存成功");
                     }))
@@ -1160,8 +1162,9 @@
                     }
                 },
                 //保存精加工
-                updateCaseFine() {
+                updateCaseFine(isSilence) {
                     var that = this;
+                    if(isSilence){abp.services.app.workbench.updateFine(this.caseFineUpdateDto);return;}
                     func.runAsync(abp.services.app.workbench.updateFine(this.caseFineUpdateDto).done(function () {
                         that.$Message.success("保存成功");
                     }))
@@ -1207,8 +1210,9 @@
                 await this.loadData();
                 var that=this;
                 window.setInterval(function(){
-                    that.updateCaseCard();
-                    that.updateInitial();
+                    that.updateCaseCard(true);
+                    that.updateInitial(true);
+                    that.updateCaseFine(true);
                 },5*60*1000);
             }
         })

@@ -25,6 +25,15 @@ namespace Master.Authentication
         public string PhoneNumber { get; set; }
         [InterColumn(ColumnName = "邮箱")]
         public string Email { get; set; }
+        /// <summary>
+        /// 职业年限
+        /// </summary>
+        [InterColumn(ColumnName = "职业年限")]
+        public int WorkYear { get; set; }
+        /// <summary>
+        /// 个人介绍
+        /// </summary>
+        public string Introduction { get; set; }
         [InterColumn(ColumnName = "申请时间",ColumnType =Module.ColumnTypes.DateTime)]
         public override DateTime CreationTime { get; set; }
         [InterColumn(ColumnName = "留言")]

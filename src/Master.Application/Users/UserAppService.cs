@@ -347,6 +347,9 @@ namespace Master.Users
                 Avata = entity.GetPropertyValue<string>("Avata"),
                 AnYou = entity.GetPropertyValue<string>("AnYou"),//所属领域
                 AnYouId = entity.GetPropertyValue<int?>("AnYouId"),//所属领域Id
+                AnYouIds = entity.GetPropertyValue<int[]>("AnYouIds"),//所属领域Id
+                WorkYear= entity.GetPropertyValue<int>("WorkYear"),
+                Introduction = entity.GetPropertyValue<string>("Introduction"),
                 entity.Name,
                 caseCount,
                 entity.Id,
@@ -365,14 +368,18 @@ namespace Master.Users
         {
             var user = await Manager.GetByIdAsync(userUpdateDto.Id);
             user.WorkLocation = userUpdateDto.WorkLocation;
+            user.Name = userUpdateDto.Name;
             string anYou = "";
-            if (userUpdateDto.AnYouId != null)
+            if (userUpdateDto.AnYouIds.Length>0)
             {
-                var node = await Resolve<BaseTreeManager>().GetByIdAsync(userUpdateDto.AnYouId.Value);
-                anYou = node.DisplayName;                
+                var nodes = await Resolve<BaseTreeManager>().GetListByIdsAsync(userUpdateDto.AnYouIds);
+                anYou = string.Join(',', nodes.Select(o => o.DisplayName));             
             }
             user.SetPropertyValue("AnYou", anYou);
-            user.SetPropertyValue("AnYouId", userUpdateDto.AnYouId);
+            user.SetPropertyValue("AnYouIds", userUpdateDto.AnYouIds);
+            user.SetPropertyValue("Avata", userUpdateDto.Avata);
+            user.SetPropertyValue("Introduction", userUpdateDto.Introduction);
+            user.SetPropertyValue("WorkYear", userUpdateDto.WorkYear);
         }
         #endregion
         /// <summary>
