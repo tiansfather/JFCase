@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Master.Module;
+using Abp.Domain.Entities;
 
 namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
 {
@@ -70,6 +71,19 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             };
             moduleButtons.Add(RecommandButton);
             return moduleButtons;
+        }
+
+        public override void SetColumnInfosMoreData(ICollection<ColumnInfo> ColumnInfos)
+        {
+            ColumnInfos.Single(o => o.ColumnKey == "SourceSN").SetData("width", "200");
+            ColumnInfos.Single(o => o.ColumnKey == "City").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "AnYou").SetData("width", "180");
+            ColumnInfos.Single(o => o.ColumnKey == "Title").SetData("width", "400");
+            ColumnInfos.Single(o => o.ColumnKey == "Processor").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "PublishDate").SetData("width", "100");
+            ColumnInfos.Single(o => o.ColumnKey == "PraiseNumber").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "BeatNumber").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "CaseStatus").SetData("width", "80");
         }
     }
 }

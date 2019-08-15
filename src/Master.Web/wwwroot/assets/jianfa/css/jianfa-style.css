@@ -13,10 +13,10 @@ html{width:100%;height:100%;overflow-x:hidden;}
 /*二维码*/
 .Center-Container {position: relative;}
 
-.jianfa-ewm{width:375px; height:430px;position:absolute;top:0;left:-83px;bottom:35px;right:0;margin:auto;overflow:auto;}
+.jianfa-ewm{width:375px; height:530px;position:absolute;top:0;left:-83px;bottom:35px;right:0;margin:auto;overflow:auto;}
 .jianfa-ewm .left{position:absolute;width:72px;}
 .jianfa-ewm .left img{width:100%;max-width:209px;}
-.jianfa-ewm .right{right:0;width:290px;height:430px;position:absolute;background:rgba(255,255,255, 0.6); padding:30px;box-sizing: border-box;overflow: hidden;}
+.jianfa-ewm .right{right:0;width:290px;height:530px;position:absolute;background:rgba(255,255,255, 0.6); padding:30px;box-sizing: border-box;overflow: hidden;}
 .jianfa-ewm .right .neirong-top{float:left;}
 .jianfa-ewm .right .neirong-top ul{float:left;width:100%;}
 .jianfa-ewm .right .neirong-top li{float:left;width:100%;text-align:center;font-size:14px;color:#222;line-height:45px;}
