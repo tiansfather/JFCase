@@ -189,8 +189,8 @@
         <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>*@
                 <div class="bjli on style-chaal-45">
                     <div class="bjdl on">
-                        <div class="source-first" @@click="sourceDetailShow=!sourceDetailShow">
-                            <i class="el-icon-arrow-right source-first-show_btn" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>
+                        <div class="source-first" >
+                            <i class="el-icon-arrow-right source-first-show_btn" :style="{transform:sourceDetailShow?'rotate(270deg)':'rotate(90deg)'}" @@click="sourceDetailShow=!sourceDetailShow"></i>
                             <p class="sourcesn" style="color:#694d35;">{{source.sourceSN}}&nbsp;—&nbsp;{{source.anYou}}</p>
                             <transition name="fade">
                                 <div v-show="sourceDetailShow">
@@ -227,12 +227,12 @@
                             </transition>
                         </div>
                         <template>
-                            <Tabs size="small" type="card" v-model="tabsIndex">
+                            <Tabs size="small" type="card" v-model="tabsIndex" class="processTabs">
                                 @* :style="{'margin-top':sourceDetailShow?'238px':'46px'}" *@
                                 <Tab-Pane label="初加工" class="initialPanel" style="margin-top:46px;" :style="{height:tabsIndex=='0'?'':0}" name="0">
                                     <div class="bqian">
                                         <div class="bjdd on">
-                                            <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')" :class="{error:validatingInitial && !selectHasValue(selectValues['案由'][index])}" :errmsg="'请选择'+item.displayName" :style="{width:calcSelectWidth(item)}">
+                                            <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')" :class="{error:validatingInitial && !selectHasValue(selectValues['案由'][index])}" :errmsg="'请选择'+item.displayName" :style="{width:calcSelectWidth(item)}" v-if="item.name!='专题'">
                                                 <template>
                                                     <i-select :placeholder="item.displayName" v-model="selectValues['案由'][index]" @@on-change="changeInitialSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect">
                                                         <i-option v-for="opt in getOptions(item)" :value="opt.id"
@@ -271,8 +271,12 @@
                                         <div class="bjdd on">
                                             <div class="fleft xian-1 style-chaal-100">
                                                 <template>
-                                                    <i-select placeholder="请选择专题" clearable v-model="caseInitialUpdateDto.subjectId">
+                                                    @*<i-select placeholder="请选择专题" clearable v-model="caseInitialUpdateDto.subjectId">
                                                         <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                    </i-select>*@
+                                                    <i-select placeholder="请选择专题" v-model="caseInitialUpdateDto.subjectId" @@on-change="changeInitialSelect(getSelects('案由')[3],$event)" :clearable="true" >
+                                                        <i-option v-for="opt in getOptions(getSelects('案由')[3])" :value="opt.id"
+                                                                  :key="opt.id">{{ opt.displayName }}</i-option>
                                                     </i-select>
                                                 </template>
                                             </div>
@@ -461,7 +465,7 @@
                                                             <ul>
                                                                 <li>
                                                                     <dl>
-                                                                        <dd class="card-top" :class="{error:validatingCard && !item.title}">
+                                                                        <dd class="card-top" :class="{error:validatingCard && item.content && !item.title}">
                                                                             <textarea name=""
                                                                                       class="textarea-k" v-model="item.title"></textarea>
                                                                         </dd>
@@ -489,7 +493,7 @@
                                                             <ul>
                                                                 <li>
                                                                     <dl>
-                                                                        <dd class="oncard-top" :class="{error:validatingCard && !item.content}">
+                                                                        <dd class="oncard-top" :class="{error:validatingCard && item.title && !item.content}">
                                                                             <textarea name="" class="textarea-k" v-model="item.content"></textarea>
                                                                             <p>{{trialPeople}}<br>{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</p>
                                                                         </dd>
@@ -544,7 +548,7 @@
                                                     </i8>
                                                 </bt>
                                                 <div class="fleft style-chaal-100">
-                                                    <textarea name="" class="textarea" style="height:250px;" v-model="item.content"></textarea>
+                                                    <textarea name="" class="textarea" style="height:450px;" v-model="item.content"></textarea>
                                                 </div>
                                             </div>
                                         </template>
@@ -623,11 +627,11 @@
                                 </bt>
                                 <div style="display:flex;width:100%">
                                     <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                                        <p style="margin:auto;" v-html="caseInitialUpdateDto.judgeInfo.judgeContent"></p>
+                                        <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.judgeContent)"></p>
                                     </i6>
                                     <span class="support-rate">{{caseInitialUpdateDto.judgeInfo.supportRate}}%</span>
                                     <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                                        <p style="margin:auto;">{{caseInitialUpdateDto.judgeInfo.judgeResult}}</p>
+                                        <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.judgeResult)"></p>
                                     </i6>
                                 </div>
 
@@ -638,11 +642,11 @@
                                 </bt>
                                 <div style="display:flex;width:100%">
                                     <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                                        <p style="margin:auto;" v-html="caseInitialUpdateDto.judgeInfo.reverseJudgeContent"></p>
+                                        <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.reverseJudgeContent)"></p>
                                     </i6>
                                     <span class="support-rate">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span>
                                     <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                                        <p style="margin:auto;">{{caseInitialUpdateDto.judgeInfo.reverseJudgeResult}}</p>
+                                        <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.reverseJudgeResult)"></p>
                                     </i6>
                                 </div>
 
@@ -761,6 +765,12 @@
 </div>
 
 @section scripts{
+    <script>
+        function replaceHtml(html) {
+                        if (!html) { return ""; }
+                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                    }
+    </script>
     <script type="text/babel">
         var id =@ViewBag.Id;//此id为案源的id
         window.app=new Vue({
@@ -953,7 +963,7 @@
                 //获取级联知识树选择框
                 getSelects(knowledgeName) {
                     var rootNode = this.knowledgeTree.filter(o => o.name == knowledgeName)[0];//如对应案由节点知识树节点
-                    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code);//所有子节点，包含子级
+                    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code );//所有子节点，包含子级
                     var selects = subNodes.map(function (o) { return { id: o.id, name: o.name, displayName: o.displayName, enableMultiSelect: o.enableMultiSelect, parentId: o.parentId } });
 
                     return selects;
@@ -1047,7 +1057,7 @@
                     this.validatingCard = true;
                     this.validatingInitial = true;
                     this.$nextTick(function () {
-                        if ($(".initialPanel [errmsg].error").length > 0) {
+                        if ($(".processTabs [errmsg].error").length > 0) {
                             //数据验证
                             $(".initialPanel [errmsg].error").each(function () {
                                 abp.message.error($(this).attr("errmsg"));
@@ -1056,8 +1066,8 @@
                             return false;
                         }
 
-                        if (that.caseCardUpdateDto.caseCards.filter(o => !o.title || !o.content).length > 0) {
-                            abp.message.error("请将案例卡填写完整");
+                        if (that.caseCardUpdateDto.caseCards.filter(o => (o.title &&! o.content)||(!o.title && o.content)).length > 0) {
+                            abp.message.error("请将案例卡制作完整");
                             return false;
                         }
 

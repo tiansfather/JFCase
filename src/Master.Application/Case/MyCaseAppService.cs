@@ -57,6 +57,7 @@ namespace Master.Case
                 SourceId=entity.CaseSource.Id,
                 entity.CaseSource.SourceFile,
                 AnYou = entity.CaseSource.AnYou.DisplayName,
+                entity.CaseSource.AnYouId,
                 entity.Remarks,
                 entity.ReadNumber,
                 PublishDate = entity.PublishDate?.ToString("yyyy/MM/dd"),

@@ -23,11 +23,13 @@
             func.runAsync(abp.services.app.caseInitial.getPageResult({ page: 1, limit: 10, where: 'creatorUserId=' + userId }).done(function (data) {
                 //构建表头
                 var cols = [
-                    { field: 'sourceSN', title: '案号' },
-                    { field: 'city', title: '城市' },
-                    { field: 'anYou', title: '案由' },
+                    { field: 'sourceSN', title: '案号', width: 200 },
+                    { field: 'city', title: '城市',width:80 },
+                    { field: 'anYou', title: '案由',width:180 },
                     { field: 'title', title: '标题' },
-                    { field: 'publishDate', title: '发布日期' },
+                    { field: 'creationTime', title: '加入时间',width:100 },
+                    { field: 'publishDate', title: '发布日期', width: 100 },
+                    { field: 'caseStatus_display', title: '当前状态', width: 100 },
                 ]
 
                 layui.table.render({

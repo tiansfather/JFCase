@@ -74,10 +74,12 @@ namespace Master.Case
                 return CreatorUser.Name;
             }
         }
+        [InterColumn(ColumnName = "加入时间", ColumnType =Module.ColumnTypes.DateTime, Sort = 6)]
+        public override DateTime CreationTime { get => base.CreationTime; set => base.CreationTime = value; }
         /// <summary>
         /// 发布日期
         /// </summary>
-        [InterColumn(ColumnName = "发布日期",Sort =6)]
+        [InterColumn(ColumnName = "发布日期",Sort =7)]
         public DateTime? PublishDate { get; set; }
         /// <summary>
         /// 阅读量
@@ -86,16 +88,16 @@ namespace Master.Case
         /// <summary>
         /// 点赞数
         /// </summary>
-        [InterColumn(ColumnName = "点赞数",Sort =7)]
+        [InterColumn(ColumnName = "点赞数",Sort =8)]
         public int PraiseNumber { get; set; }
         /// <summary>
         /// 拍砖数
         /// </summary>
-        [InterColumn(ColumnName = "拍砖数",Sort =8)]
+        [InterColumn(ColumnName = "拍砖数",Sort =9)]
         public int BeatNumber { get; set; }
         
         public bool IsActive { get; set; }
-        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}",Sort =9)]
+        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}",Sort =10)]
         public CaseStatus CaseStatus { get; set; }
 
         public virtual ICollection<CaseNode> CaseNodes { get; set; } = new List<CaseNode>();
