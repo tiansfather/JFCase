@@ -600,6 +600,13 @@
                                     {{caseInitialUpdateDto.title}}
                                 </i4>
                             </dd>
+                            <dd class="on">
+                                <i7 class="fleft tleft style-chaal-33">审理法院：{{source.court2||source.court1}}</i7>
+                                <a>
+                                    <i5b class="fleft style-chaal-33">{{source.sourceSN}}</i5b>
+                                </a>
+                                <i7 class="fleft tright style-chaal-33">生效日期：{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</i7>
+                            </dd>
 
                             @*<dd class="on">
             <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
@@ -697,7 +704,7 @@
                                     </div>
                                 </div>
                             </dd>
-                      
+
 
                         </dl>
                     </li>
