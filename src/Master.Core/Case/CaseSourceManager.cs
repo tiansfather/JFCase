@@ -24,6 +24,11 @@ namespace Master.Case
             {
                 throw new UserFriendlyException(L("案号已存在,请调整后再试"));
             }
+
+            if(!entity.Court1Id.HasValue && !entity.Court2Id.HasValue)
+            {
+                throw new UserFriendlyException("请至少选择一审法院和二审法院中的一个");
+            }
         }
 
         /// <summary>

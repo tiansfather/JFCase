@@ -72,10 +72,10 @@ namespace Master.Case
                 entity.Introduction,
                 entity.ReadNumber,
                 PublishDate=entity.PublishDate?.ToString("yyyy-MM-dd"),
-                Avata= entity.CreatorUser.GetPropertyValue("Avata"),
-                AnYou = entity.CreatorUser.GetPropertyValue<string>("AnYou"),
-                CreatorName =entity.CreatorUser.Name,
-                entity.CreatorUser.WorkLocation,
+                Avata= entity.CreatorUser?.GetPropertyValue("Avata"),
+                AnYou = entity.CreatorUser?.GetPropertyValue<string>("AnYou"),
+                CreatorName =entity.CreatorUser?.Name,
+                entity.CreatorUser?.WorkLocation,
                 caseCount
             };
         }

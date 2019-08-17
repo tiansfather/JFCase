@@ -37,6 +37,8 @@ namespace Master.Case
                 AnYou=entity.CaseInitial.CaseSource.AnYou?.DisplayName,
                 PublishDate = entity.PublishDate?.ToString("yyyy/MM/dd"),
                 entity.Title,
+                entity.Content,
+                entity.MediaPath,
                 entity.Remarks,
                 UserModifyTime = entity.UserModifyTime.ToString("yyyy/MM/dd"),
             };

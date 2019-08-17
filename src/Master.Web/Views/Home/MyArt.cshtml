@@ -3,7 +3,16 @@
     Layout = "_LayoutJianFa";
     ViewData["Title"] = "我的精品";
 }
-
+@section styles{ 
+    <style>
+        .jianfa-chaanli .chaanli-content li dl dd i6 {
+            width: 100%;
+            min-height: 8em;
+            color: #505050;
+            border: none;
+        }
+    </style>
+}
 <div id="app" style="display:none">
     <!--顶部-->
     <com-header active-name="我的作品"></com-header>
@@ -20,26 +29,33 @@
                 </li>
                 <li>
                     <dl class="xian">
-                        <dd class="style-bf-40">
+                        <dd class="style-bf-20">
                             <template>
-                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" size="small" clearable >
-                                    <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                <i-select placeholder="请选择案由" v-model="wherePart.anYouId" clearable>
+                                    <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-20">
                             <template>
-                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" size="small" clearable >
+                                <i-select placeholder="请选择专题" v-model="wherePart.subjectId" clearable>
+                                    <i-option v-for="item in getSubjects(wherePart.anYouId)" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                </i-select>
+                            </template>
+                        </dd>
+                        <dd class="style-bf-20">
+                            <template>
+                                <i-select placeholder="请选择状态" v-model="wherePart.caseStatus" clearable>
                                     <i-option v-for="item in caseStatuses" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
                             </template>
                         </dd>
                         <dd class="style-bf-30">
                             <template>
-                                <i-input v-model="keyword" size="small" placeholder="请输入关键词等信息..." />
+                                <i-input v-model="keyword" placeholder="请输入关键词等信息..." />
                             </template>
                         </dd>
-                        <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
+                        <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource" style="height:30px">筛选</Button></dd>
                     </dl>
                 </li>
                 <li class="on">您已完成有 <span class="shuzi">{{summary.caseFineCount}}</span> 个精品<!--，其中包含案例卡 <span class="shuzi">49</span> 个--></li>
@@ -66,7 +82,7 @@
                                     </template>
                                 </td>
                                 <td class="on">{{item.anYou}}</td>
-                                <td class="on"><a>{{item.sourceSN}}</a></td>
+                                <td class="on"><a @@click="currentItem=item;modalViewCase = true">{{item.sourceSN}}</a></td>
                                 <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
                                 <td class="on"><a @@click.stop.prevent="currentItem=item;moda12 = true">{{item.title}}<i class="jianfa fa-eye"></i></a></td>
                                 <td class="on">{{item.publishDate}}</td>
@@ -100,6 +116,44 @@
     <!--footer-->
     <com-footer></com-footer>
     <!--end-->
+    <Modal width="900px" v-model="modalViewCase" class-name="center-modal" :mask-closable="false" title="精加工预览">
+        <div class="jianfa-chaanli" style="height:600px;overflow:auto">
+            <div class="chaanli-content">
+                <ul>
+                    <li style="width:100%">
+                        <dl>
+                            <dd class="on">
+                                <iframe :src="currentItem.mediaPath" frameborder="0" style="height:400px;width:100%"></iframe>
+                            </dd>
+
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20">文案标题</i8>
+                                </bt>
+                                <i6 class="fleft tjustify width100">
+                                    {{currentItem.title}}
+                                </i6>
+                            </dd>
+
+                            <dd class="on">
+                                <bt>
+                                    <i8 class="style-chaal-20 width100">文案内容</i8>
+                                </bt>
+                                <i6 class="fleft tjustify width100">
+                                    {{currentItem.content}}
+                                </i6>
+                            </dd>
+
+                        </dl>
+                    </li>
+                </ul>
+
+            </div>
+
+        </div>
+        <div slot="footer">
+        </div>
+    </Modal>
 </div>
 
 @section scripts{
@@ -107,8 +161,13 @@
         window.app=new Vue({
             el: '#app',
             data: {
+                currentItem:{},
+                typeTree:[],
+                anYous:[],
+                knowledgeTree:[],
                 wherePart: {
                     subjectId: null,
+                    anYouId:null,
                     caseStatus: null,
                 },
                 totalCount: 0,//判例总数
@@ -124,7 +183,8 @@
                     caseCount: 0,
                     caseCardCount: 0,
                     caseFineCount:0
-                }
+                },
+                modalViewCase:false
             },
             watch: {
                 currentPage: function () {
@@ -144,6 +204,9 @@
                     if (this.wherePart.caseStatus) {
                         where += ` and caseStatus=${this.wherePart.caseStatus}`;
                     } 
+                    if(this.wherePart.anYouId){
+                        where+=` and caseInitial.caseSource.anYouId=${this.wherePart.anYouId}`;
+                    }
                     //for (var i in this.wherePart) {
                     //    var data = this.wherePart[i];
                     //    if (!data) continue;
@@ -173,13 +236,25 @@
                         app.$Message.success("提交成功");
                     }))
                 },
+                //获取案由的专题
+                getSubjects(anyouId){
+                    var knowledgeNode=this.knowledgeTree.filter(o=>o.name=='专题')[0];
+                    var subjects=this.typeTree.filter(o=>o.parentId==anyouId && o.relativeNodeId==knowledgeNode.id);
+                    return subjects;
+                }
             },
             mounted: function () {
                 var that = this;
-                //加载专题数据
-                abp.services.app.type.getSubjects().done(function (data) {
-                    that.subjects = data;
-                })
+                //加载分类树数据
+                abp.services.app.baseTree.getTypeTreeJsonByParentId().done((res) => {
+                        this.typeTree = res;
+                    });
+                //加载知识树
+                abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
+                        this.knowledgeTree = res;
+                    })
+                //加载案由数据
+                 abp.services.app.type.getAnYous().done(res=>{this.anYous=res;})
                 //加载案例数据
                 this.loadSource();
                 //加载汇总数据

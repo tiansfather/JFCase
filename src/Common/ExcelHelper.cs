@@ -77,7 +77,7 @@ namespace Common
                             ICell cell = firstRow.GetCell(i);
                             if (cell != null)
                             {
-                                string cellValue = cell.StringCellValue;
+                                string cellValue = cell.StringCellValue.Trim();
                                 if (string.IsNullOrEmpty(cellValue))
                                 {
                                     cellValue = Guid.NewGuid().ToString();

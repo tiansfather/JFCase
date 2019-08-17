@@ -396,5 +396,16 @@ namespace Master.Users
             var user = await Manager.GetByIdAsync(AbpSession.UserId.Value);
             return user.GetData<string>("currentToken");
         }
+
+        public override async Task DeleteEntity(IEnumerable<long> ids)
+        {
+            //有数据的用户不能删除
+            var initialsCount = await Resolve<CaseSourceManager>().GetAll().Where(o => ids.ToList().Contains(o.OwerId.Value)).CountAsync();
+            if (initialsCount > 0)
+            {
+                throw new UserFriendlyException($"被删除用户名下有{initialsCount}个判例,请先进行清除后再删除用户");
+            }
+            await base.DeleteEntity(ids);
+        }
     }
 }

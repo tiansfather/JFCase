@@ -198,6 +198,7 @@
                             abp.services.app.baseTree.submit(app.currentItem).done(function (obj) {
                                 layer.msg("提交成功");
                                 if (!app.currentItem.id) {
+                                    setShowName(obj);
                                     zTreeObj.addNodes(currentNode, obj);
                                 }
                                 
@@ -229,59 +230,72 @@
                     $("#app").removeClass("layui-hide");
                     abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done(function (data) {
                         knowledgeNodes = data;
+                        window.ztree = function () {
+                            //var zTreeObj;
+                            var setting = {
+                                view: { selectedMulti: false },
+                                data: {
+                                    key: {
+                                        name: 'showName',
+                                        title: 'displayName'
+                                    },
+                                    simpleData: {
+                                        enable: true,
+                                        idKey: 'id',
+                                        pIdKey: 'parentId',
+                                        rootPId: null
+                                    }
+                                },
+                                callback: {
+                                    onClick: function (event, treeId, treeNode) {
+                                        app.currentItem = treeNode;
+                                        currentNode = treeNode;
+                                        refresh();
+                                        //searchKeys.parentId = treeNode.id;
+                                        //config.reloadTable();
+                                    }
+                                }
+                            };
+                            var load = function () {
+                                abp.services.app.baseTree.getTypeTreeJsonByParentId().done(function (json) {
+                                    nodes = json;
+                                    //that.currentItem = nodes[0];
+                                    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                                    debugger;
+                                    //var newNode = { briefName: "根节点", id: null, parentId: "" };
+                                    //json.push(newNode);
+                                    json.forEach(o => {
+                                        setShowName(o);
+                                        //o.showName = o.displayName;
+                                        //if (o.relativeNodeId) {
+                                        //    var relativeNode = knowledgeNodes.filter(n => n.id == o.relativeNodeId)[0];
+                                        //    if (knowledgeNodes.filter(n => n.parentId == relativeNode.parentId).length > 1) {
+                                        //        o.relativeNodeId && (o.showName = '[' + relativeNode.displayName + ']' + o.showName);
+                                        //    }
+                                        //}
+                                       
+                                    })
+                                    zTreeObj.addNodes(null, json);
+                                    //mainList({ orgId: "" });
+                                    //zTreeObj.expandAll(true);
+                                });
+                                //$.getJSON(url, function (json) {
+                                //    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                                //    var newNode = { Name: "根节点", Id: null, ParentId: "" };
+                                //    json.push(newNode);
+                                //    zTreeObj.addNodes(null, json);
+                                //    //mainList({ orgId: "" });
+                                //    zTreeObj.expandAll(true);
+                                //});
+                            };
+                            load();
+                            return {
+                                reload: load
+                            };
+                        }();
                     })
                     //this.doAdd();
-                    window.ztree = function () {
-                        //var zTreeObj;
-                        var setting = {
-                            view: { selectedMulti: false },
-                            data: {
-                                key: {
-                                    name: 'name',
-                                    title: 'name'
-                                },
-                                simpleData: {
-                                    enable: true,
-                                    idKey: 'id',
-                                    pIdKey: 'parentId',
-                                    rootPId: null
-                                }
-                            },
-                            callback: {
-                                onClick: function (event, treeId, treeNode) {
-                                    app.currentItem = treeNode;
-                                    currentNode = treeNode;
-                                    refresh();
-                                    //searchKeys.parentId = treeNode.id;
-                                    //config.reloadTable();
-                                }
-                            }
-                        };
-                        var load = function () {
-                            abp.services.app.baseTree.getTypeTreeJsonByParentId().done(function (json) {
-                                nodes = json;
-                                //that.currentItem = nodes[0];
-                                zTreeObj = $.fn.zTree.init($("#tree"), setting);
-                                //var newNode = { briefName: "根节点", id: null, parentId: "" };
-                                //json.push(newNode);
-                                zTreeObj.addNodes(null, json);
-                                //mainList({ orgId: "" });
-                                //zTreeObj.expandAll(true);
-                            });
-                            //$.getJSON(url, function (json) {
-                            //    zTreeObj = $.fn.zTree.init($("#tree"), setting);
-                            //    var newNode = { Name: "根节点", Id: null, ParentId: "" };
-                            //    json.push(newNode);
-                            //    zTreeObj.addNodes(null, json);
-                            //    //mainList({ orgId: "" });
-                            //    zTreeObj.expandAll(true);
-                            //});
-                        };
-                        load();
-                        return {
-                            reload: load
-                        };
-                    }();
+                    
                 }
 
             });
@@ -299,6 +313,15 @@
             Vue.nextTick(function () {
                 layui.form.render();
             })
+        }
+        function setShowName(o) {
+            o.showName = o.displayName;
+            if (o.relativeNodeId) {
+                var relativeNode = knowledgeNodes.filter(n => n.id == o.relativeNodeId)[0];
+                if (knowledgeNodes.filter(n => n.parentId == relativeNode.parentId).length > 1) {
+                    o.relativeNodeId && (o.showName = '[' + relativeNode.displayName + ']' + o.showName);
+                }
+            }
         }
     </script>
 }

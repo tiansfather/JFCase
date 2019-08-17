@@ -55,6 +55,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 ButtonType = ButtonType.ForSelectedRows,
                 ButtonActionType = ButtonActionType.Ajax,
                 ButtonActionUrl = $"abp.services.app.caseInitial.clearContent",
+                ButtonClass = "layui-btn-danger",
                 ConfirmMsg = "确认清除这些加工案例？判例将回归判例库",
                 Sort = 4
             };

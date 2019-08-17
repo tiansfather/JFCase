@@ -38,18 +38,19 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 Sort = 2
             };
             moduleButtons.Add(UnFreezeButton);
-            //var ClearButton = new ModuleButton()
-            //{
-            //    ButtonKey = "ClearContent",
-            //    ButtonName = "清除成品",
-            //    ButtonType = ButtonType.ForSingleRow | ButtonType.ForSelectedRows,
-            //    ButtonActionType = ButtonActionType.Ajax,
-            //    ConfirmMsg = "确认清除此判例成品加工内容？",
-            //    ButtonActionUrl = $"abp.services.app.caseSource.clearContent",
-            //    ButtonClass = "layui-btn-danger",
-            //    Sort = 3
-            //};
-            //moduleButtons.Add(ClearButton);
+            var ClearButton = new ModuleButton()
+            {
+                ButtonKey = "ClearContent",
+                ButtonName = "放回判例库",
+                ButtonType = ButtonType.ForSingleRow ,
+                ButtonActionType = ButtonActionType.Ajax,
+                ConfirmMsg = "确认将此判例放回判例库？",
+                ButtonActionUrl = $"abp.services.app.caseSource.clearContent",
+                ButtonClass = "layui-btn-danger",
+                ClientShowCondition= "d.caseSourceStatus==1",
+                Sort = 3
+            };
+            moduleButtons.Add(ClearButton);
             return moduleButtons;
         }
         public override void SetButtonsInfosMoreData(ICollection<ModuleButton> ButtonInfos)

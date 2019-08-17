@@ -278,13 +278,13 @@
                                               :key="opt.id">{{ opt.displayName }}</i-option>
                                 </i-select>
                             </dd>
-                            <dd class="style-bf-20-b" style="width:230px;padding-right: 0;">
+                            @*<dd class="style-bf-20-b" style="width:230px;padding-right: 0;">
                                 <i-select placeholder="专题" v-model="wherePart.subjectId" clearable :class="{isSelected:wherePart.subjectId}">
                                     <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
                                 </i-select>
-                            </dd>
+                            </dd>*@
                             <dd class="style-bf-20-b" style="width:20px;padding-right: 0;cursor:pointer;" @@click="labelCheckVisible=!labelCheckVisible">
-                                <img src="~/assets/jianfa/ima/upicon.png" :style="{transform:labelCheckVisible?'rotate(90deg)':''}"/>
+                                <img src="~/assets/jianfa/ima/upicon.png" :style="{transform:labelCheckVisible?'':'rotate(180deg)'}"/>
                             </dd>
                         </dl>
                     </li>
@@ -446,7 +446,7 @@
                                     @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.supportRate+'px'}">{{caseInfo.initial.judgeInfo.supportRate}}%</span></i5c>*@
                                     <!--调节h50 h60.....-->
                                     <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                                        <p style="margin:auto;">{{caseInfo.initial.judgeInfo.judgeResult}}</p>
+                                        <p style="margin:auto;" v-html="caseInfo.initial.judgeInfo.judgeResult"></p>
                                     </i6>
                                 </div>
 
@@ -456,13 +456,13 @@
                                 <bt><i8 class="style-chaal-20">反诉判决</i8></bt>
                                 <div style="display:flex;width:100%">
                                     <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                                        <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeContent}}</p>
+                                        <p style="margin:auto;" v-html="caseInfo.initial.judgeInfo.reverseJudgeContent"></p>
                                     </i6>
                                     <span class="support-rate">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span>
                                     @*<i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInfo.initial.judgeInfo.reverseSupportRate+'px'}">{{caseInfo.initial.judgeInfo.reverseSupportRate}}%</span></i5c>*@
                                     <!--调节h50 h60.....-->
                                     <i6 class="fleft tjustify style-chaal-42-h flex-center">
-                                        <p style="margin:auto;">{{caseInfo.initial.judgeInfo.reverseJudgeResult}}</p>
+                                        <p style="margin:auto;" v-html="caseInfo.initial.judgeInfo.reverseJudgeResult"></p>
                                     </i6>
                                 </div>
                             </dd>
@@ -699,7 +699,7 @@
                 //获取级联知识树选择框
                 getSelects(knowledgeName) {
                     var rootNode = this.knowledgeTree.filter(o => o.name == knowledgeName)[0];//如对应案由节点知识树节点
-                    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code);//所有子节点，包含子级
+                    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code );//所有子节点，包含子级
                     var selects = subNodes.map(function (o) { return { id: o.id, name: o.name, displayName: o.displayName, enableMultiSelect: o.enableMultiSelect, parentId: o.parentId } });
 
                     return selects;
@@ -836,6 +836,9 @@
                 },
                 //计算下拉选择的宽度
                 calcSelectWidth(item) {
+                    if(item.displayName=='专题'){
+                        return '230px';
+                    }
                     return item.displayName == "纠纷原因" ? "calc(100% - 770px)" : "150px";
                 }
             },
