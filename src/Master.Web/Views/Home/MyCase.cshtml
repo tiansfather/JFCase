@@ -76,16 +76,6 @@
         .jianfa-chaanli .chaanli-content li dl dd i6.style-chaal-42-h {
             box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
         }
-        .jianfa-chaanli .chaanli-content li dl dd .support-rate {
-            float: left;
-            width: 16%;
-            /*margin: 0 5%;*/
-            line-height: 83px;
-            color: #754C24;
-            font-weight: 700;
-            text-align:center;
-            font-size:16px;
-        }
         .jianfa-chaanli .chaanli-content li dl dd i6.width100{
             width:100%;
             min-height:8em;
@@ -129,14 +119,14 @@
             font-size: 14px;
         }
 
-            .jianfa-chaanli .chaanli-content li dl dd i5b {
+            /*.jianfa-chaanli .chaanli-content li dl dd i5b {
                 color:#754c24;
                 border:none;
                 background: #fff;
-            }
-                .jianfa-chaanli .chaanli-content li dl dd i5b:hover{
+            }*/
+                /*.jianfa-chaanli .chaanli-content li dl dd i5b:hover{
                     border:none;
-                }
+                }*/
         .flex-center{
             display: flex;
             justify-content: center;
@@ -146,13 +136,13 @@
             display: flex;
             justify-content: space-between;
         }
-        .jianfa-chaanli .chaanli-content li dl dd i5b:hover {
+        /*.jianfa-chaanli .chaanli-content li dl dd i5b:hover {
             background: #fff;
             color: #754c24;
             text-decoration: underline;
             border-radius: 0;
             box-sizing: border-box;
-        }
+        }*/
         .jianfa-content .ny-content li dl.xian {
             padding: 0 0 16px 0;
         }
@@ -172,6 +162,17 @@
             color: #fff;
             display: inline-block;
             border-radius: 5px;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl dd .support-rate {
+            float: left;
+            width: 8em;
+            /* margin: 0 5%; */
+            line-height: 83px;
+            color: #754C24;
+            font-weight: 700;
+            text-align: center;
+            font-size: 16px;
         }
     </style>
 }
@@ -310,7 +311,7 @@
     </Modal>
     <!--添加-->
 
-    <Modal width="708" v-model="modalViewCase" class-name="center-modal" :mask-closable="true">
+    <Modal width="600" v-model="modalViewCase" class-name="center-modal" :mask-closable="true">
         <div class="jianfa-chaanli">
             <div class="chaanli-content" style="float:none;margin:0">
                 <ul>
@@ -324,11 +325,11 @@
                                 </dd>
 
                                 <dd class="on">
-                                    <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court2||caseInfo.source.court1}}</i7>
+                                    <i7 class="fleft tleft style-chaal-33">审理法院：{{caseInfo.source.court2||caseInfo.source.court1}}</i7>
                                     <a @@click="currentItem=caseInfo.source;moda12 = true">
                                         <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
                                     </a>
-                                    <i7 class="fleft tright style-chaal-33">{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
+                                    <i7 class="fleft tright style-chaal-33">生效日期：{{new Date(caseInfo.source.validDate).pattern('yyyy-MM-dd')}}</i7>
                                 </dd>
 
 

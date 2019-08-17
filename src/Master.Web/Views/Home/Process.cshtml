@@ -604,14 +604,20 @@
                                         {{caseInitialUpdateDto.title}}
                                     </i4>
                                 </dd>
-
-                                @*<dd class="on">
-                                    <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
-                                    <a @@click="currentItem=caseInfo.source;moda12 = true">
-                                        <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+                                <dd class="on">
+                                    <i7 class="fleft tleft style-chaal-33">审理法院：{{source.court2||source.court1}}</i7>
+                                    <a>
+                                        <i5b class="fleft style-chaal-33">{{source.sourceSN}}</i5b>
                                     </a>
-                                    <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
-                                </dd>*@
+                                    <i7 class="fleft tright style-chaal-33">生效日期：{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</i7>
+                                </dd>
+                                @*<dd class="on">
+            <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
+            <a @@click="currentItem=caseInfo.source;moda12 = true">
+                <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+            </a>
+            <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
+        </dd>*@
 
 
                                 <dd class="on">
@@ -653,16 +659,16 @@
                                 </dd>
 
                                 <!--
-                                 <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
-                                  <bf>
-                                      <i9 class="fright">反诉判决</i9>
-                                  </bf>
-                                  <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeContent}}</i6>
-                                  <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInitialUpdateDto.judgeInfo.reverseSupportRate+'px'}">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span></i5c>
+         <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
+          <bf>
+              <i9 class="fright">反诉判决</i9>
+          </bf>
+          <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeContent}}</i6>
+          <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInitialUpdateDto.judgeInfo.reverseSupportRate+'px'}">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span></i5c>
 
-                                  <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeResult}}</i6>
-                              </dd>
-                            -->
+          <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeResult}}</i6>
+      </dd>
+    -->
 
                                 <dd class="on">
                                     <bt>
@@ -716,7 +722,7 @@
         <Modal width="800px" v-model="previewCardVisible" class-name="center-modal" :mask-closable="false" title="案例卡预览">
             <div class="jianfa-guandiancard style-pa-46" style="height:600px;overflow:auto;">
                 <div class="ny-guandiancard" v-for="(item,index) in caseCardUpdateDto.caseCards" style="width:350px;">
-                    <a @@click="isRotate= !isRotate" class="paiban" :class="{'rotate-card':isRotate}" style="width:100%">
+                    <a @@click="$set(item,'isRotate', !item.isRotate)" class="paiban" :class="{'rotate-card':item.isRotate}" style="width:100%">
                         <!--状态1-->
                         <div class="card-start">
                             <ul>
@@ -803,10 +809,6 @@
 
 @section scripts{
     <script>
-        function replaceHtml(html) {
-                        if (!html) { return ""; }
-                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
-                    }
     </script>
     <script type="text/babel">
         var id =@ViewBag.Id;//此id为案源的id
@@ -915,6 +917,11 @@
 
             },
             methods: {
+        
+       replaceHtml: function (html) {
+                        if (!html) { return ""; }
+                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                    },
                 //下拉选择是否有值
                 selectHasValue(value) {
                     if (func.typeof(value) === "array") {
