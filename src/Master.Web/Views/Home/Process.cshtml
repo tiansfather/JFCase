@@ -713,9 +713,9 @@
             <div slot="footer">
             </div>
         </Modal>
-        <Modal width="400px" v-model="previewCardVisible" class-name="center-modal" :mask-closable="false" title="案例卡预览">
+        <Modal width="800px" v-model="previewCardVisible" class-name="center-modal" :mask-closable="false" title="案例卡预览">
             <div class="jianfa-guandiancard style-pa-46" style="height:600px;overflow:auto;">
-                <div class="ny-guandiancard" v-for="(item,index) in caseCardUpdateDto.caseCards">
+                <div class="ny-guandiancard" v-for="(item,index) in caseCardUpdateDto.caseCards" style="width:350px;">
                     <a @@click="isRotate= !isRotate" class="paiban" :class="{'rotate-card':isRotate}" style="width:100%">
                         <!--状态1-->
                         <div class="card-start">
