@@ -49,10 +49,10 @@ namespace Master.Case
             {
                 await Resolve<IRepository<CaseNode,int>>().DeleteAsync(o => o.CaseInitialId == caseInitial.Id);
                 await Resolve<IRepository<CaseLabel, int>>().DeleteAsync(o => o.CaseInitialId == caseInitial.Id);
-                await Resolve<CaseCardManager>().Repository.HardDeleteAsync(o => o.CaseInitialId == caseInitial.Id);
-                await Resolve<CaseFineManager>().Repository.HardDeleteAsync(o => o.CaseInitialId == caseInitial.Id);
+                await Resolve<CaseCardManager>().Repository.DeleteAsync(o => o.CaseInitialId == caseInitial.Id);
+                await Resolve<CaseFineManager>().Repository.DeleteAsync(o => o.CaseInitialId == caseInitial.Id);
                 
-                await manager.Repository.HardDeleteAsync(caseInitial);
+                await manager.Repository.DeleteAsync(caseInitial);
 
                 if (fromAdmin)
                 {
