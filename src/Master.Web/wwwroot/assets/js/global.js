@@ -23,7 +23,7 @@ var config = {
     readyFuncs:[],
     //table加载完后调用
     onTableDone: function (res, curr, count) {
-        $(window).resize()
+        //$(window).resize()
         config.onTableDoneExport(res, curr, count);
         console.log("onTableDone not implemented");
     },
