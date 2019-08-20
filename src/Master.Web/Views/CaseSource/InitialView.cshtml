@@ -165,6 +165,10 @@
 
         .source-first .sourcesn {
         }
+        .jianfa-chaanli .chaanli-content li dl dd.on, .jianfa-chaanli .chaanli-content li dl dd {
+            line-height: 24px;
+            font-size: 14px;
+        }
     </style>
 }
 
@@ -210,7 +214,7 @@
                             </div>
 
                         </dd>
-                        <dd class="on">
+                        <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
                             <bt>
                                 <i8 class="style-chaal-20">反诉判决</i8>
                             </bt>
@@ -226,38 +230,36 @@
 
                         </dd>
 
-                        <dd class="on">
+                        <dd class="on" v-show="caseInitialUpdateDto.law">
                             <bt>
                                 <i8 class="style-chaal-20">法律法规</i8>
                             </bt>
-                            <i6 class="fleft tjustify width100">
-                                {{caseInitialUpdateDto.law}}
+                            <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.law)">
+
                             </i6>
                         </dd>
 
-                        <dd class="on">
+                        <dd class="on" v-show="caseInitialUpdateDto.experience">
                             <bt>
                                 <i8 class="style-chaal-20">经验分享</i8>
                             </bt>
-                            <i6 class="fleft tjustify width100">
-                                {{caseInitialUpdateDto.experience}}
+                            <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.experience)">
                             </i6>
                         </dd>
 
-                        <dd class="on">
+                        <dd class="on" v-show="caseInitialUpdateDto.lawyerOpinion">
                             <bt>
                                 <i8 class="style-chaal-20 width100">简法律师说</i8>
                             </bt>
-                            <i6 class="fleft tjustify width100">
-                                {{caseInitialUpdateDto.lawyerOpinion}}
+                            <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.lawyerOpinion)">
                             </i6>
                         </dd>
-                        <dd class="on">
+                        <dd class="on" v-show="caseCardUpdateDto.caseCards.filter(o=>o.title || o.content).length">
                             <bt>
                                 <i8 class="style-chaal-20">法院观点</i8>
                             </bt>
                             <div>
-                                <div v-for="(item,index) in caseCardUpdateDto.caseCards">
+                                <div v-for="(item,index) in caseCardUpdateDto.caseCards.filter(o=>o.title || o.content)">
                                     <i5 class="fleft tjustify">{{item.title}}</i5>
                                     <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
                                 </div>

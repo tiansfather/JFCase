@@ -609,8 +609,8 @@
                     if (this.wherePart.cityId) {
                         where += " and caseSource.CityId=" + this.wherePart.cityId;
                     }
-                    if (this.wherePart.subjectId) {
-                        where += " and subjectId=" + this.wherePart.subjectId;
+                    if (this.selectValues[4]) {
+                        where += " and subjectId=" + this.selectValues[4];
                     }
                     return where;
                 },
@@ -618,6 +618,7 @@
                     var typeIds = [];
                     var labelIds = this.selectLabels.concat(this.selectKeywords);
                     this.selectValues.forEach(o => {
+                        if(this.selectValues.indexOf(o)==4){return;}
                         if (func.typeof(o) != "array") {
                             typeIds.push(o);
                         } else {

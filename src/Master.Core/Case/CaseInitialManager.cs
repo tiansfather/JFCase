@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Z.EntityFramework.Plus;
 
 namespace Master.Case
@@ -17,5 +18,10 @@ namespace Master.Case
         //    Resolve<CaseCardManager>().GetAll().Where(o => o.CaseInitialId == eventData.Entity.Id).Delete();
         //    Resolve<CaseKeyManager>().GetAll().Where(o => o.CaseInitialId == eventData.Entity.Id).Delete();
         //}
+
+        public override async Task FillEntityDataAfter(IDictionary<string, object> data, ModuleInfo moduleInfo, object entity)
+        {
+            data.Add("CaseSourceId", (entity as CaseInitial).CaseSourceId);
+        }
     }
 }

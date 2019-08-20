@@ -14,7 +14,7 @@ namespace Master.Case
     [InterModule("成品案例", GenerateDefaultColumns=false,GenerateDefaultButtons =false)]
     public class CaseInitial : BaseFullEntityWithTenant, IHaveStatus,IPassivable
     {
-        [InterColumn(ColumnName ="案号",ValuePath="CaseSource.SourceSN",Sort =1,Templet = "<a dataid=\"{{d.id}}\" class=\"layui-btn layui-btn-xs layui-btn-normal\" buttonname=\"预览\" params=\"{&quot;area&quot;: [&quot;600px&quot;, &quot;700px&quot;],&quot;btn&quot;:[]}\"   buttonactiontype=\"Form\" buttonactionurl=\"/CaseSource/InitialView\" onclick=\"func.callModuleButtonEvent()\">{{d.sourceSN}}</a>")]
+        [InterColumn(ColumnName ="案号",ValuePath="CaseSource.SourceSN",Sort =1,Templet = "<a dataid=\"{{d.caseSourceId}}\" class=\"layui-btn layui-btn-xs layui-btn-normal\" buttonname=\"预览\" params=\"{&quot;area&quot;: [&quot;700px&quot;, &quot;700px&quot;],&quot;btn&quot;:[]}\"   buttonactiontype=\"Form\" buttonactionurl=\"/CaseSource/InitialView\" onclick=\"func.callModuleButtonEvent()\">{{d.sourceSN}}</a>")]
         [NotMapped]
         public string SourceSN {
             get

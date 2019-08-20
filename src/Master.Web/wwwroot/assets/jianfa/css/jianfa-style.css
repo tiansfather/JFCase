@@ -532,3 +532,6 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
     text-align: center;
     color: #c69c6c
 }
+.beian:hover{
+    text-decoration:underline;
+}

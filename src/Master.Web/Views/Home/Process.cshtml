@@ -148,6 +148,10 @@
         .source-first .sourcesn{
 
         }
+        .jianfa-chaanli .chaanli-content li dl dd.on, .jianfa-chaanli .chaanli-content li dl dd {
+            line-height: 24px;
+            font-size: 14px;
+        }
     </style>
 }
 
@@ -592,9 +596,9 @@
         <Modal title="初加工预览"
                v-model="previewInitialVisible"
                class-name="center-modal"
-               width="600px">
+               width="700px">
             <div class="jianfa-chaanli" style="height:600px;overflow:auto">
-                <div class="chaanli-content">
+                <div class="chaanli-content" style="margin-top:0">
                     <ul>
                         <li>
                             <dl>
@@ -642,7 +646,7 @@
                                     </div>
 
                                 </dd>
-                                <dd class="on">
+                                <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
                                     <bt>
                                         <i8 class="style-chaal-20">反诉判决</i8>
                                     </bt>
@@ -658,50 +662,36 @@
 
                                 </dd>
 
-                                <!--
-         <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
-          <bf>
-              <i9 class="fright">反诉判决</i9>
-          </bf>
-          <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeContent}}</i6>
-          <i5c class="style-chaal-16-h"><span :style="{bottom:1.18*caseInitialUpdateDto.judgeInfo.reverseSupportRate+'px'}">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span></i5c>
-
-          <i6 class="fleft tjustify style-chaal-42-h">{{caseInitialUpdateDto.judgeInfo.reverseJudgeResult}}</i6>
-      </dd>
-    -->
-
-                                <dd class="on">
+                                <dd class="on" v-show="caseInitialUpdateDto.law">
                                     <bt>
                                         <i8 class="style-chaal-20">法律法规</i8>
                                     </bt>
-                                    <i6 class="fleft tjustify width100">
-                                        {{caseInitialUpdateDto.law}}
+                                    <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.law)">
+                                        
                                     </i6>
                                 </dd>
 
-                                <dd class="on">
+                                <dd class="on" v-show="caseInitialUpdateDto.experience">
                                     <bt>
                                         <i8 class="style-chaal-20">经验分享</i8>
                                     </bt>
-                                    <i6 class="fleft tjustify width100">
-                                        {{caseInitialUpdateDto.experience}}
+                                    <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.experience)">
                                     </i6>
                                 </dd>
 
-                                <dd class="on">
+                                <dd class="on" v-show="caseInitialUpdateDto.lawyerOpinion">
                                     <bt>
                                         <i8 class="style-chaal-20 width100">简法律师说</i8>
                                     </bt>
-                                    <i6 class="fleft tjustify width100">
-                                        {{caseInitialUpdateDto.lawyerOpinion}}
+                                    <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.lawyerOpinion)">
                                     </i6>
                                 </dd>
-                                <dd class="on">
+                                <dd class="on" v-show="caseCardUpdateDto.caseCards.filter(o=>o.title || o.content).length">
                                     <bt>
                                         <i8 class="style-chaal-20">法院观点</i8>
                                     </bt>
                                     <div>
-                                        <div v-for="(item,index) in caseCardUpdateDto.caseCards">
+                                        <div v-for="(item,index) in caseCardUpdateDto.caseCards.filter(o=>o.title || o.content)">
                                             <i5 class="fleft tjustify">{{item.title}}</i5>
                                             <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
                                         </div>
@@ -1121,7 +1111,7 @@
                             abp.message.error("请将案例卡制作完整");
                             return false;
                         }
-
+                        that.caseCardUpdateDto.caseCards=that.caseCardUpdateDto.caseCards.filter(o=>o.title && o.content);
 
                         abp.message.confirm("您确定完成本案例了吗？发布后大家都能看到了哦。", function () {
                             func.runAsync(abp.services.app.workbench.publishInitial(that.caseInitialUpdateDto).done(function () {

@@ -82,9 +82,9 @@
                                     </template>
                                 </td>
                                 <td class="on">{{item.anYou}}</td>
-                                <td class="on"><a @@click="currentItem=item;modalViewCase = true">{{item.sourceSN}}</a></td>
+                                <td class="on"><a @@click.stop.prevent="currentItem=item;moda12 = true">{{item.sourceSN}}</a></td>
                                 <!--<td class="on"><a @@click="modal1 = true"><img src="ima/jia-icon-1.png"></a></td>-->
-                                <td class="on"><a @@click.stop.prevent="currentItem=item;moda12 = true">{{item.title}}<i class="jianfa fa-eye"></i></a></td>
+                                <td class="on"><a  @@click.stop.prevent="currentItem=item;modalViewCase = true">{{item.title}}<i class="jianfa fa-eye"></i></a></td>
                                 <td class="on">{{item.publishDate}}</td>
                                 @*<td class="on">{{item.remarks}}</td>*@
                                 <td class="on"><a :href="'/Home/Process?EncrypedId='+item.encrypedId"><img src="/assets/jianfa/ima/mywj-icon-1.png"></a></td>

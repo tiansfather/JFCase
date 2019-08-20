@@ -47,7 +47,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 ConfirmMsg = "确认将此判例放回判例库？",
                 ButtonActionUrl = $"abp.services.app.caseSource.clearContent",
                 ButtonClass = "layui-btn-danger",
-                ClientShowCondition= "d.caseSourceStatus==1",
+                ClientShowCondition= "d.caseSourceStatus==1 || d.caseSourceStatus==2",
                 Sort = 3
             };
             moduleButtons.Add(ClearButton);
