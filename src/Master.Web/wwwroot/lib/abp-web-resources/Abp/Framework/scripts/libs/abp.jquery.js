@@ -97,6 +97,7 @@
         },
 
         handleNonAbpErrorResponse: function (jqXHR, userOptions, $dfd) {
+            console.log(userOptions);
             if (userOptions.abpHandleError !== false) {
                 switch (jqXHR.status) {
                     case 401:
@@ -112,7 +113,7 @@
                         abp.ajax.showError(abp.ajax.defaultError404);
                         break;
                     default:
-                        abp.ajax.showError(abp.ajax.defaultError);
+                        //abp.ajax.showError(abp.ajax.defaultError);
                         break;
                 }
             }
