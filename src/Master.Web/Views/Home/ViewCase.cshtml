@@ -500,8 +500,8 @@
                                 </bt>
                                 <div>
                                     <div v-for="(item,index) in caseInfo.initial.caseCards">
-                                        <i5 class="fleft tjustify">{{item.title}}</i5>
-                                        <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                        <i5 class="fleft tjustify" v-html="replaceHtml(item.title)"></i5>
+                                        <i6 class="fleft tjustify width100" style="margin-bottom:20px;" v-html="replaceHtml(item.content)"></i6>
                                     </div>
                                 </div>
                                 @*<i5 class="fleft tjustify">
@@ -566,6 +566,12 @@
         @await Html.PartialAsync("PDFFrame")
     </div>
 @section scripts{
+    <script>
+        function replaceHtml(html) {
+                        if (!html) { return ""; }
+                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                    }
+    </script>
     <script type="text/babel">
         window.app = new Vue({
             el: '#app',
@@ -789,10 +795,7 @@
                             })
                         }));
                     })
-                    function replaceHtml(html) {
-                        if (!html) { return ""; }
-                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
-                    }
+                    
                 },
 
                 loadSource(bol) {

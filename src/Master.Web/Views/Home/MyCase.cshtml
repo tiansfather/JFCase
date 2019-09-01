@@ -406,8 +406,8 @@
                                     </bt>
                                     <div>
                                         <div v-for="(item,index) in caseInfo.initial.caseCards">
-                                            <i5 class="fleft tjustify" style="margin: 10px 0;min-height: 6em;">{{item.title}}</i5>
-                                            <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                            <i5 class="fleft tjustify" style="margin: 10px 0;min-height: 6em;" v-html="replaceHtml(item.title)"></i5>
+                                            <i6 class="fleft tjustify width100" style="margin-bottom:20px;" v-html="replaceHtml(item.content)"></i6>
                                         </div>
                                     </div>
                                 </dd>
@@ -440,6 +440,12 @@
 </div>
 
 @section scripts{
+    <script>
+        function replaceHtml(html) {
+                        if (!html) { return ""; }
+                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                    }
+    </script>
     <script type="text/babel">
         window.app= new Vue({
             el: '#app',
@@ -522,10 +528,7 @@
                             res.initial.lawyerOpinion = replaceHtml(res.initial.lawyerOpinion);
                             that.caseInfo = res;
                         }));
-                    function replaceHtml(html) {
-                        if (!html) { return ""; }
-                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
-                    }
+                    
                 },
                 loadSource() {
                     var that = this;
@@ -589,7 +592,6 @@
             //
 
         })
-
 
         ////请求当前用户所有案例
         //abp.services.app.myCase.getPageResult().done(function (data) {
