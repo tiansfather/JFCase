@@ -260,8 +260,8 @@
                             </bt>
                             <div>
                                 <div v-for="(item,index) in caseCardUpdateDto.caseCards.filter(o=>o.title || o.content)">
-                                    <i5 class="fleft tjustify">{{item.title}}</i5>
-                                    <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                    <i5 class="fleft tjustify" v-html="replaceHtml(item.title)"></i5>
+                                    <i6 class="fleft tjustify width100" style="margin-bottom:20px;" v-html="replaceHtml(item.content)"></i6>
                                 </div>
                             </div>
                         </dd>
