@@ -91,7 +91,7 @@ namespace Master.Case
         {
             var manager = Manager as CaseSourceManager;
             var caseSourceImportResults = await ReadExcel(excelFilePath);
-            if (caseSourceImportResults.Exists(o => !o.Valid))
+            if (caseSourceImportResults.Exists(o => !o.Valid && !(importType==0 && o.Exist)))
             {
                 throw new UserFriendlyException("数据验证失败,请检查后重新提交");
             }
