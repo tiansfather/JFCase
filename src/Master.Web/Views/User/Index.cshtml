@@ -94,7 +94,7 @@
             })
         }
         function getWhere(index) {
-            var where = { searchKeys: JSON.stringify(searchKeys) };
+            var where = { searchKeys: JSON.stringify(searchKeys),where:'1=1' };
             
             var value = $('#name-input').val();
             if (value) {
