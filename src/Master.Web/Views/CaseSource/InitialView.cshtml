@@ -169,6 +169,21 @@
             line-height: 24px;
             font-size: 14px;
         }
+            .jianfa-chaanli .chaanli-content li dl dd i5b:hover {
+                background: #fff;
+                color: #754c24;
+                text-decoration: underline;
+                border-radius: 0;
+                box-sizing: border-box;
+                border: none;
+            }
+
+            .jianfa-chaanli .chaanli-content li dl dd i5b {
+                color: #754c24;
+                border: none;
+                background: #fff;
+                cursor: initial;
+            }
     </style>
 }
 
@@ -187,6 +202,7 @@
                         </dd>
                         <dd class="on">
                             <i7 class="fleft tleft style-chaal-33">审理法院：{{source.court2||source.court1}}</i7>
+                            @*@@click="currentItem=source;moda12 = true"*@
                             <a>
                                 <i5b class="fleft style-chaal-33">{{source.sourceSN}}</i5b>
                             </a>
@@ -274,6 +290,7 @@
         </div>
 
     </div>
+        @await Html.PartialAsync("PDFFrame")
 </div>
 
 @section scripts{
@@ -281,6 +298,8 @@
         window.app = new Vue({
             el: "#app",
             data: {
+                currentItem: {},
+                moda12:false,
                 caseInitialUpdateDto: {
                     id: 0,
                     subjectId: null,
