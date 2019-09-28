@@ -2390,6 +2390,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'checkInformAnYouChange'
+    abp.services.app.caseSource.checkInformAnYouChange = function(caseSourceId, anYouId, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseSource/CheckInformAnYouChange' + abp.utils.buildQueryString([{ name: 'caseSourceId', value: caseSourceId }, { name: 'anYouId', value: anYouId }]) + '',
+        type: 'POST'
+      }, ajaxParams));;
+    };
+
     // action 'clearContent'
     abp.services.app.caseSource.clearContent = function(ids, ajaxParams) {
       return abp.ajax($.extend(true, {

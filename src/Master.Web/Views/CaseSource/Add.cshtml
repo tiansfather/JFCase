@@ -138,7 +138,7 @@
                 }
                 
             })
-            layui.form.on('submit', function () {
+            layui.form.on('submit', async function () {
                 if (!app.currentItem.cityId) {
                     abp.message.error("请选择城市");
                     return false;
@@ -147,22 +147,36 @@
                     abp.message.error("请选择案由");
                     return false;
                 }
-                func.runAsync(abp.services.app.caseSource.update(app.currentItem).done(function () {
-                    top.layer.msg('提交成功');
-                    if (app.submitType == 1) {                        
-                        window.setTimeout(function () {
-                            location.reload();
-                        }, 200);
 
-                    } else if (app.submitType == 2) {
-                        top.$("[data-name='Admin.Tenancy.CaseSource'] a").click();
-                        location.reload();
-                    } else {
-                        //编辑提交
-                        parent.layer.closeAll();
-                        parent.config.reloadTable();
-                    }
-                }))
+                var innerSubmit = function () {
+                    func.runAsync(abp.services.app.caseSource.update(app.currentItem).done(function () {
+                        top.layer.msg('提交成功');
+                        if (app.submitType == 1) {
+                            window.setTimeout(function () {
+                                location.reload();
+                            }, 200);
+
+                        } else if (app.submitType == 2) {
+                            top.$("[data-name='Admin.Tenancy.CaseSource'] a").click();
+                            location.reload();
+                        } else {
+                            //编辑提交
+                            parent.layer.closeAll();
+                            parent.config.reloadTable();
+                        }
+                    }))
+                }
+                //是否此判例已发布成案例
+                var needInformAnyouChange = await abp.services.app.caseSource.checkInformAnYouChange(app.currentItem.id, app.currentItem.anYouId);
+                if (needInformAnyouChange) {
+                    abp.message.confirm("此判例已发布成案例，如修改案由，系统将会自动将此案例置回对应用户的工作台，您确认继续吗？", function () {
+                        innerSubmit();
+                    })
+                } else {
+                    innerSubmit();
+                }
+
+                
             })
             app = new Vue({
                 el: '#app',

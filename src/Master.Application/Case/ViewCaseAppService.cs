@@ -32,6 +32,8 @@ namespace Master.Case
                 || o.CaseSource.City.DisplayName.Contains(keyword)
                 || o.CaseSource.Court1.DisplayName.Contains(keyword)
                 || o.CaseSource.Court2.DisplayName.Contains(keyword)
+                || o.CaseSource.TrialPeopleField.Contains(keyword)
+                || o.CaseSource.LawyerFirmsField.Contains(keyword)
                 );
         }
         protected override async Task<IQueryable<CaseInitial>> BuildSearchQueryAsync(IDictionary<string, string> searchKeys, IQueryable<CaseInitial> query)

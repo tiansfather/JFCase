@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Abp.AutoMapper;
+using Abp.Domain.Repositories;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,6 +23,9 @@ namespace Master.Case
         #region 添加修改
         public virtual async Task Update(CaseSourceUpdateDto caseSourceDto)
         {
+            //是否需要将对应的案例放回工作台
+            var needInitialBack = await CheckInformAnYouChange(caseSourceDto.Id, caseSourceDto.AnYouId.Value);
+
             caseSourceDto.Normalize();
             var manager = Manager as CaseSourceManager;
             CaseSource caseSource = null;
@@ -37,6 +41,17 @@ namespace Master.Case
             }
 
             await manager.SaveAsync(caseSource);
+
+            if (needInitialBack)
+            {
+                var caseInitial = await Resolve<CaseInitialManager>().GetAll().Where(o => o.CaseSourceId == caseSource.Id).FirstOrDefaultAsync();
+                //清除相关节点数据
+                caseInitial.SubjectId = null;
+                caseInitial.CaseNodes.Clear();
+                caseInitial.CaseLabels.Clear();
+                caseInitial.CaseStatus = CaseStatus.加工中;
+                caseSource.CaseSourceStatus = CaseSourceStatus.加工中;
+            }
         } 
         #endregion
 
@@ -201,6 +216,32 @@ namespace Master.Case
         }
         #endregion
 
+        /// <summary>
+        /// 是否是已生成案例的判例案由发生变化
+        /// </summary>
+        /// <param name="caseSourceId"></param>
+        /// <param name="anYouId"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> CheckInformAnYouChange(int? caseSourceId,int anYouId)
+        {
+            if (!caseSourceId.HasValue)
+            {
+                return false;
+            }
+            var caseSource = await Manager.GetByIdAsync(caseSourceId.Value);
+            //案由发生变化
+            if (caseSource.AnYouId!=anYouId)
+            {
+                //寻找对应案例
+                var caseInitial = await Resolve<CaseInitialManager>().GetAll().Where(o => o.CaseSourceId == caseSourceId.Value).FirstOrDefaultAsync();
+                //如果此案例已发布
+                if(caseInitial!=null && caseInitial.CaseStatus == CaseStatus.展示中)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         /// <summary>
         /// 管理方清空判例的加工内容
         /// </summary>
