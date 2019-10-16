@@ -52,7 +52,7 @@
 	{{#  }); }}
 </script>
 <script type="text/html" id="toolbar">
-	<button class="layui-btn layui-btn-xs" type="button" fornonerow="1" buttonname="加入成员" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;],&quot;btn&quot;:null}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Select/SelUser?key=User&where=@(System.Net.WebUtility.UrlEncode("IsActive=true"))&searchKeys=@(System.Net.WebUtility.UrlEncode(""))" onclick="window.currentRoleId = {{ d.id}};func.callModuleButtonEvent()">加入成员</button>
+	@*<button class="layui-btn layui-btn-xs" type="button" fornonerow="1" buttonname="加入成员" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;],&quot;btn&quot;:null}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Select/SelUser?key=User&where=@(System.Net.WebUtility.UrlEncode("IsActive=true"))&searchKeys=@(System.Net.WebUtility.UrlEncode(""))" onclick="window.currentRoleId = {{ d.id}};func.callModuleButtonEvent()">加入成员</button>*@
 	<a dataid="{{d.id}}" buttonname="@L("权限")" modulekey="Roles" class="layui-btn layui-btn-xs " params='{"btn":null}' buttonactiontype="Form" buttonactionurl="/Permission/Assign" onclick="func.callModuleButtonEvent()">@L("权限")</a>
 	@*{{#if(!d.isStatic){}}
 	<a dataid="{{d.id}}" buttonname="@L("编辑")" modulekey="" class="layui-btn layui-btn-xs " onclick="editRole({{d.id}},'{{d.displayName}}')">@L("编辑")</a>

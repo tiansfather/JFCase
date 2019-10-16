@@ -72,7 +72,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             ColumnInfos.Single(o => o.ColumnKey == "Court2Id").SetData("width", "200");
             ColumnInfos.Single(o => o.ColumnKey == "AnYouId").SetData("width", "200");
             ColumnInfos.Single(o => o.ColumnKey == "ValidDate").SetData("width", "100");
-            ColumnInfos.Single(o => o.ColumnKey == "SourceFile").SetData("width", "100");
+            //ColumnInfos.Single(o => o.ColumnKey == "SourceFile").SetData("width", "100");
             ColumnInfos.Single(o => o.ColumnKey == "CaseSourceStatus").SetData("width", "80");
             ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId").SetData("width", "100");
             ColumnInfos.Single(o => o.ColumnKey == "CreatorUserId").SetData("width", "100");

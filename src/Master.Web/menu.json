@@ -34,7 +34,7 @@
     "url": "",
     "items": [
       {
-        "name": "Admin.Tenancy.CaseList",
+        "name": "Admin.Tenancy.CaseInitial",
         "displayName": "成品案例管理",
         "icon": "layui-icon layui-icon-diamond",
         "url": "/Case/"

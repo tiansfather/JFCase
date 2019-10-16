@@ -80,6 +80,28 @@ namespace Master
             }
             return query;
         }
+        protected override async Task<IQueryable<TEntity>> BuildOrderQueryAsync(RequestPageDto request, IQueryable<TEntity> query)
+        {
+            if (request.OrderField.IsNullOrEmpty())
+            {
+                var moduleInfo = await ModuleInfo(request);
+                //使用模块排序
+                //默认排序
+                if (moduleInfo.SortField != "Id")
+                {
+                    query = DynamicOrderParser.Parse<TEntity>(moduleInfo.SortField, moduleInfo.SortType, moduleInfo, query) as IQueryable<TEntity>;
+                }
+                else
+                {
+                    query = query.OrderBy($"{moduleInfo.SortField} {moduleInfo.SortType.ToString()}");
+                }
+            }
+            else
+            {
+                query= await base.BuildOrderQueryAsync(request, query);
+            }
+            return query;
+        }
         /// <summary>
         /// 模块的高级查询
         /// </summary>

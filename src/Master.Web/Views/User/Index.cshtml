@@ -8,17 +8,17 @@
         <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("用户管理")</div>
         <div class="layui-card-body">
             <div class="layui-row layui-col-space10">
-                <div class="layui-col-xs3">
+                <div style="width:200px;float:left">
                     <ul id="tree" class="ztree"
                         style="padding: 2px; border: 1px solid #ddd; overflow: auto;min-height:500px"></ul>
                 </div>
-                <div class="layui-col-xs9 ">
+                <div style="margin-left:205px">
                     <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
                         <vc:module-button module-key="User"></vc:module-button>
                         <input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
                         <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
                     </div>
-                    <vc:module-table param="@(new ModuleTableViewParam() {ID="User",ModuleKey=nameof(Master.Authentication.User),Height="full-350",Where="" })"></vc:module-table>
+                    <vc:module-table param="@(new ModuleTableViewParam() {ID="User",ModuleKey=nameof(Master.Authentication.User),Height="full-150",Where="" })"></vc:module-table>
 
                 </div>
             </div>

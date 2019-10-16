@@ -28,6 +28,22 @@ namespace Master.Users
             return (await base.BuildKeywordQueryAsync(keyword, query))
                 .Where(o => o.Name.Contains(keyword));
         }
+        protected override async Task<IQueryable<User>> BuildOrderQueryAsync(RequestPageDto request, IQueryable<User> query)
+        {
+            if (request.OrderField == "caseNumber")
+            {
+                if (request.OrderType == "asc")
+                {
+                    return query.OrderBy(o => Resolve<CaseSourceManager>().GetAll().Count(c => c.OwerId == o.Id && c.CaseSourceStatus == CaseSourceStatus.已加工));
+                }
+                else
+                {
+                    return query.OrderByDescending(o => Resolve<CaseSourceManager>().GetAll().Count(c => c.OwerId == o.Id && c.CaseSourceStatus == CaseSourceStatus.已加工));
+                }
+                
+            }
+            return await base.BuildOrderQueryAsync(request, query);
+        }
         public virtual async Task<object> GetSummary()
         {
             var manager = Manager as UserManager;

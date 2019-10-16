@@ -15,7 +15,7 @@ namespace Master.Case
     [InterModule("判例库")]
     public class CaseSource : BaseFullEntityWithTenant, IHaveStatus, IPassivable
     {
-        [InterColumn(ColumnName ="案号",Sort =1)]
+        [InterColumn(ColumnName ="案号",Sort =1, Templet = "<a onclick=\"showPdf('{{d.sourceFile}}','{{d.sourceSN}}')\" href=\"#_\" style=\"color:blue\">{{d.sourceSN}}</a>")]
         public string SourceSN { get; set; }
         
         [InterColumn(ColumnName = "城市", DisplayPath = "City.DisplayName", Templet = "{{d.cityId_display||''}}",Sort =2)]
@@ -65,7 +65,7 @@ namespace Master.Case
         /// <summary>
         /// 判例文件
         /// </summary>
-        [InterColumn(ColumnName ="判例原件",Templet = "<button class=\"layui-btn layui-btn-xs\" onclick=\"showPdf('{{d.sourceFile}}','{{d.sourceSN}}')\">查看</button>",Sort =7)]        
+        //[InterColumn(ColumnName ="判例原件",Templet = "<button class=\"layui-btn layui-btn-xs\" onclick=\"showPdf('{{d.sourceFile}}','{{d.sourceSN}}')\">查看</button>",Sort =7)]        
         public string SourceFile { get; set; }
         public bool IsActive { get; set; } = true;
         public string Status { get; set; }
