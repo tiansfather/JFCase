@@ -40,9 +40,9 @@
 </div>
 <script type="text/html" id="staticTpl">
 	{{#if(d.isStatic){}}
-	<span class="layui-badge layui-bg-blue">@L("内置")</span>
+	<span class="layui-badge layui-bg-blue">@L("固化")</span>
 	{{#}else{}}
-	<span class="layui-badge layui-bg-cyan">@L("用户")</span>
+	<span class="layui-badge layui-bg-cyan">@L("可修改")</span>
 	{{#}}}
 </script>
 <script type="text/html" id="memberTpl">
@@ -72,6 +72,10 @@
                 if (!value.trim()) {
                     layer.msg("输入不能为空", { icon: 5, anim: 6 });
                     return false;
+                }
+                if (data.isStatic) {
+                    abp.message.error("系统角色不能修改");
+                    return;
                 }
                 abp.message.confirm(L('确认修改?'), function () {
                     func.runAsync(abp.services.app.role.updateField(data.id, field, value, {

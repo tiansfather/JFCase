@@ -67,16 +67,16 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
         public override void SetColumnInfosMoreData(ICollection<ColumnInfo> ColumnInfos)
         {
             ColumnInfos.Single(o => o.ColumnKey == "SourceSN").SetData("width", "200");
-            ColumnInfos.Single(o => o.ColumnKey == "CityId").SetData("width", "80");
-            ColumnInfos.Single(o => o.ColumnKey == "Court1Id").SetData("width", "200");
-            ColumnInfos.Single(o => o.ColumnKey == "Court2Id").SetData("width", "200");
+            ColumnInfos.Single(o => o.ColumnKey == "CityId").SetData("width", "100");
+            ColumnInfos.Single(o => o.ColumnKey == "Court1Id").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "Court2Id").SetData("width", "160");
             ColumnInfos.Single(o => o.ColumnKey == "AnYouId").SetData("width", "200");
             ColumnInfos.Single(o => o.ColumnKey == "ValidDate").SetData("width", "100");
             //ColumnInfos.Single(o => o.ColumnKey == "SourceFile").SetData("width", "100");
             ColumnInfos.Single(o => o.ColumnKey == "CaseSourceStatus").SetData("width", "80");
-            ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId").SetData("width", "100");
-            ColumnInfos.Single(o => o.ColumnKey == "CreatorUserId").SetData("width", "100");
-            ColumnInfos.Single(o => o.ColumnKey == "Operation").SetData("width", "300");
+            ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "CreatorUserId").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "Operation").SetData("width", "140");
         }
     }
 }
