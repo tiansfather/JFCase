@@ -608,6 +608,11 @@
                 typeTree: [],
                 labels:[],
                 activeChaId:null,
+                searchObj:{
+                    where: '',
+                    keyword: '' ,
+                    searchKeys:''
+                }
             },
             computed: {
                 where() {
@@ -799,10 +804,15 @@
                 },
 
                 loadSource(bol) {
+                    if(bol){
+                        this.searchObj.where=this.where;
+                        this.searchObj.keyword=this.keyword;
+                        this.searchObj.searchKeys=this.searchKeys;
+                    }
                     var that = this;
                     this.noMore=false;
                     this.loading=true;
-                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.keyword ,searchKeys:this.searchKeys}).done((res) => {
+                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where:  this.searchObj.where, keyword:  this.searchObj.keyword ,searchKeys: this.searchObj.searchKeys}).done((res) => {
                         this.loading = false;
                         if (res.data.length == 0) {
                             this.$Message.info('已经没有数据了');
