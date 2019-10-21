@@ -15,7 +15,7 @@ namespace Master.Case
     [InterModule("判例库")]
     public class CaseSource : BaseFullEntityWithTenant, IHaveStatus, IPassivable
     {
-        [InterColumn(ColumnName ="案号",Sort =1, Templet = "<a onclick=\"showPdf('{{d.sourceFile}}','{{d.sourceSN}}')\" href=\"#_\" style=\"color:blue\">{{d.sourceSN}}</a>")]
+        [InterColumn(ColumnName ="案号",Sort =1,DisplayPath ="SourceFile", Templet = "<a onclick=\"showPdf('{{d.sourceSN_display}}','{{d.sourceSN}}')\" href=\"#_\" style=\"color:blue\">{{d.sourceSN}}</a>")]
         public string SourceSN { get; set; }
         
         [InterColumn(ColumnName = "城市", DisplayPath = "City.DisplayName", Templet = "{{d.cityId_display||''}}",Sort =2)]
