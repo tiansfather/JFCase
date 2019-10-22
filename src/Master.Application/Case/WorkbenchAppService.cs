@@ -52,7 +52,7 @@ namespace Master.Case
                 {
                     o.Reason,
                     CreationTime=o.CreationTime.ToString("MM-dd HH:mm"),
-                    Creator=o.CreatorUser.Name
+                    Creator=o.CreatorUser?.Name
                 });
 
             return new
