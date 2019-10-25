@@ -99,7 +99,8 @@ namespace Master.Users
                         roles = request.Datas["roles"].Split(',').ToList().ConvertAll(o=>int.Parse(o)).ToArray();
                     }
                     user.UserName = username;
-
+                    user.IsStrongPwd = request.Datas["isStrongPwd"] == "1";
+                    user.MustChangePwd = request.Datas["mustChangePwd"] == "1";
                     //add 20181210  增加独立用户提交,此用户只能查看自己的信息
                     //removed 20190318
                     //user.IsSeparate= request.Datas["Separate"]=="1";
@@ -235,7 +236,20 @@ namespace Master.Users
             {
                 throw new UserFriendlyException("您输入的现有密码不正确，请重新输入");
             }
-
+            //进行强密码检测
+            if (user.IsStrongPwd)
+            {
+                if (newPassword.Length < 6)
+                {
+                    throw new UserFriendlyException("密码长度不能小于6位");
+                }
+                if(!new System.Text.RegularExpressions.Regex("(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])").IsMatch(newPassword))
+                {
+                    throw new UserFriendlyException("密码强度不符合要求,密码中请至少包含大小写字母和数字");
+                }
+            }
+            //修改密码后认为不是第一次登录
+            user.IsFirstLogin = false;
             await manager.SetPassword(user, newPassword);
         }
         #endregion

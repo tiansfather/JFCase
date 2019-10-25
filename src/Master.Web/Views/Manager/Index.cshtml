@@ -183,7 +183,7 @@
                         </a>
                         <dl class="layui-nav-child">
                             <dd><a lay-href="/Manager/UserInfo" tips="个人资料">个人资料</a></dd>
-                            <dd><a tips="@L("修改密码")" fornonerow="1" buttonname="@L("修改密码")" params="{&quot;area&quot;: [&quot;500px&quot;, &quot;400px&quot;]}" buttonactiontype="Form" buttonactionurl="/Account/ChangePassword" onclick="func.callModuleButtonEvent()" style="cursor:pointer">修改密码</a></dd>
+                            <dd><a tips="@L("修改密码")" fornonerow="1" buttonname="@L("修改密码")" params="{&quot;area&quot;: [&quot;500px&quot;, &quot;400px&quot;]}" buttonactiontype="Form" buttonactionurl="/Account/ChangePassword" onclick="func.callModuleButtonEvent()" style="cursor:pointer" id="changepwdBtn">修改密码</a></dd>
                             <hr />
                             <dd style="text-align: center;"><a asp-action="GMLogout" asp-controller="Account">退出</a></dd>
                         </dl>

@@ -10,6 +10,13 @@
     var statusDefinitions = ViewData["statusDefinitions"] as List<StatusDefinition>;
 
 }
+@section styles{ 
+    <style>
+        .layui-form-label{
+            width:100px;
+        }
+    </style>
+}
 <div>
 	<blockquote class="layui-elem-quote">
 		@L("账号设置")
@@ -40,6 +47,18 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">@L("强密码控制")</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="isStrongPwd" lay-skin="switch" lay-text="ON|OFF" @(Model.IsStrongPwd ? "checked" : "") value="1" lay-filter="isStrongPwd">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">@L("第一次登录必须修改密码")</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="mustChangePwd" lay-skin="switch" lay-text="ON|OFF" @(Model.MustChangePwd ? "checked" : "") value="1" lay-filter="mustChangePwd">
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">@L("角色")</label>
                 <div class="layui-input-block">
                     @foreach (var role in roles)
@@ -51,13 +70,13 @@
                 </div>
             </div>
             @*<div class="layui-form-item">
-                <label class="layui-form-label">@L("独立用户")</label>
-                <div class="layui-input-inline">
-                    <input type="checkbox" name="Separate" lay-skin="switch" title="开关" value="1" lay-text="ON|OFF" @(Model.GetPropertyValue<bool>("Separate") ? "checked" : "")>
+            <label class="layui-form-label">@L("独立用户")</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" name="Separate" lay-skin="switch" title="开关" value="1" lay-text="ON|OFF" @(Model.GetPropertyValue<bool>("Separate") ? "checked" : "")>
 
-                </div>
-                <div class="layui-form-mid layui-word-aux">独立用户只能查看自己录入的信息</div>
-            </div>*@
+            </div>
+            <div class="layui-form-mid layui-word-aux">独立用户只能查看自己录入的信息</div>
+        </div>*@
             @foreach (var statusDefinition in statusDefinitions)
             {
                 <div class="layui-form-item">

@@ -81,6 +81,50 @@ namespace Master.Authentication
         
         public string Status { get;set; }
 
+        [NotMapped]
+        public bool IsStrongPwd
+        {
+            get
+            {
+                return this.GetPropertyValue<bool>("IsStrongPwd");
+            }
+            set
+            {
+                this.SetPropertyValue("IsStrongPwd", value);
+            }
+        }
+        [NotMapped]
+        public bool MustChangePwd
+        {
+            get
+            {
+                return this.GetPropertyValue<bool>("MustChangePwd");
+            }
+            set
+            {
+                this.SetPropertyValue("MustChangePwd", value);
+            }
+        }
+        [NotMapped]
+        public bool IsFirstLogin
+        {
+            get
+            {
+                return this.GetPropertyValue<bool>("IsFirstLogin");
+            }
+            set
+            {
+                this.SetPropertyValue("IsFirstLogin", value);
+            }
+        }
+        [NotMapped]
+        public bool NeedChangePwd
+        {
+            get
+            {
+                return IsFirstLogin && MustChangePwd;
+            }
+        }
         /// <summary>
         /// 生成账套管理员用户
         /// </summary>

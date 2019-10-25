@@ -178,7 +178,15 @@ namespace Master.Authentication
             {
                 return new LoginResult(LoginResultType.UserIsNotActive, tenant);
             }
-            
+            //是否是第一次登录
+            if (user.LastLoginTime == null)
+            {
+                user.IsFirstLogin = true;
+            }
+            else
+            {
+                user.IsFirstLogin = false;
+            }
             user.LastLoginTime = Clock.Now;
             user.AccessFailedCount = 0;
             user.LockoutEndDate = null;
