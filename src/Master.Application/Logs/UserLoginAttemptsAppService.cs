@@ -61,7 +61,7 @@ namespace Master.Logs
             if (entity.UserId.HasValue)
             {
                 var user = Resolve<UserManager>().GetByIdAsync(entity.UserId.Value).Result;
-                nickName = user.GetPropertyValue<string>("NickName");
+                nickName = user?.GetPropertyValue<string>("NickName");
             }
             return new
             {
