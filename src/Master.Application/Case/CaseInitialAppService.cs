@@ -75,6 +75,34 @@ namespace Master.Case
 
         }
         /// <summary>
+        /// 推荐
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public virtual async Task Recommand(IEnumerable<int> ids)
+        {
+            var caseInitials = await Manager.GetAll().Include(o => o.CaseSource)
+                .Where(o => ids.Contains(o.Id)).ToListAsync();
+            foreach (var caseInitial in caseInitials)
+            {
+                caseInitial.IsActive = true;
+            }
+        }
+        /// <summary>
+        /// 取消推荐
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public virtual async Task UnRecommand(IEnumerable<int> ids)
+        {
+            var caseInitials = await Manager.GetAll().Include(o => o.CaseSource)
+                .Where(o => ids.Contains(o.Id)).ToListAsync();
+            foreach (var caseInitial in caseInitials)
+            {
+                caseInitial.IsActive = false;
+            }
+        }
+        /// <summary>
         /// 管理方清空判例的加工内容
         /// </summary>
         /// <param name="ids"></param>

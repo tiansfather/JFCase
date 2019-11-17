@@ -1,0 +1,109 @@
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+    Layout = "_LayoutJianFa";
+    ViewData["Title"] = "简法二手房";
+}
+@section styles{
+    <style>
+        header{
+            height:80px;
+            width:1200px;
+            margin:0 auto;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        header img#logo{
+            height:50px;
+            width:157px;
+        }
+        /*header .title{
+            color:#C59B6D;
+            font-size:20px;
+            line-height:20px;
+        }*/
+        #banner img {
+            width: 100%;
+        }
+
+        nav ul.nav-img-wrap {
+            display: flex;
+            width: 1200px;
+            justify-content: space-between;
+            margin: 0 auto;
+        }
+
+        nav .nav-img {
+            /*display: flex;*/
+        }
+
+        nav .icon_p {
+            background: #C59B6D;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius:50%;
+        }
+        nav .text_p{
+            color:#C59B6D;
+            text-align:center;
+            font-size:16px;
+        }
+    </style>
+}
+<!--顶部-->
+<div id="app">
+    <header>
+
+        <img id="logo" src="~/assets/images/home/LOGO.png" />
+        <img id="Slogan" src="~/assets/images/home/Slogan.png" />
+        @*<span class="title">专业律师搭配的判决书价值共享平台</span>*@
+    </header>
+    <div id="banner">
+        <img src="~/assets/images/home/banner.png" />
+    </div>
+    <nav>
+        <ul class="nav-img-wrap">
+            <li v-for="item in navImgs" :key="item.text" class="nav-img">
+                <p class="icon_p">
+                    <img :src="item.img" alt="Alternate Text" />
+                </p>
+                <p class="text_p">{{item.text}}</p>
+            </li>
+        </ul>
+    </nav>
+    <main>
+
+    </main>
+    <!--footer-->
+    <com-footer></com-footer>
+</div>
+
+
+@section scripts{
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                navImgs: [
+                    {img: '/assets/images/home/房屋买卖纠纷ICON.png',text:'房屋买卖纠纷'},
+                    {img: '/assets/images/home/建筑工程纠纷ICON.png',text:'建筑工程纠纷'},
+                    {img: '/assets/images/home/离婚财产分割ICON.png',text:'离婚财产分割'},
+                    {img: '/assets/images/home/分家析产与确权ICON.png',text:'分家析产与确权'},
+                    {img: '/assets/images/home/借贷及担保纠纷ICON.png',text:'借贷及担保纠纷'},
+                    {img: '/assets/images/home/继承纠纷ICON.png',text:'继承纠纷'},
+                ]
+            },
+            mounted: function () {
+                var that = this;
+                abp.services.app.user.getById(abp.session.userId).done(function (data) {
+                    that.avata = data.avata;
+                })
+            }
+        });
+    </script>
+
+}

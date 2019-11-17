@@ -95,7 +95,10 @@ namespace Master.Case
         /// </summary>
         [InterColumn(ColumnName = "拍砖数",Sort =9)]
         public int BeatNumber { get; set; }
-        
+        /// <summary>
+        /// 推荐状态
+        /// </summary>
+        [InterColumn(ColumnName ="推荐",Sort =10)]
         public bool IsActive { get; set; }
         [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}",Sort =10)]
         public CaseStatus CaseStatus { get; set; }

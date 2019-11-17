@@ -2233,6 +2233,24 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'recommand'
+    abp.services.app.caseInitial.recommand = function(ids, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseInitial/Recommand',
+        type: 'POST',
+        data: JSON.stringify(ids)
+      }, ajaxParams));;
+    };
+
+    // action 'unRecommand'
+    abp.services.app.caseInitial.unRecommand = function(ids, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseInitial/UnRecommand',
+        type: 'POST',
+        data: JSON.stringify(ids)
+      }, ajaxParams));;
+    };
+
     // action 'clearContent'
     abp.services.app.caseInitial.clearContent = function(ids, ajaxParams) {
       return abp.ajax($.extend(true, {
