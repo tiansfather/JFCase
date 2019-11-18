@@ -351,6 +351,7 @@ namespace Master.Users
             var user = await Manager.GetByIdAsync(id);
             return user.IsActive;
         }
+
         protected override object ResultConverter(User entity)
         {
             //获取用户已完成的案例
