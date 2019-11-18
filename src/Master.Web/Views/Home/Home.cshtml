@@ -5,54 +5,8 @@
     ViewData["Title"] = "简法二手房";
 }
 @section styles{
-    <style>
-        header{
-            height:80px;
-            width:1200px;
-            margin:0 auto;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-        }
-        header img#logo{
-            height:50px;
-            width:157px;
-        }
-        /*header .title{
-            color:#C59B6D;
-            font-size:20px;
-            line-height:20px;
-        }*/
-        #banner img {
-            width: 100%;
-        }
+    <link href="~/assets/css/home/home.css" rel="stylesheet" />
 
-        nav ul.nav-img-wrap {
-            display: flex;
-            width: 1200px;
-            justify-content: space-between;
-            margin: 0 auto;
-        }
-
-        nav .nav-img {
-            /*display: flex;*/
-        }
-
-        nav .icon_p {
-            background: #C59B6D;
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius:50%;
-        }
-        nav .text_p{
-            color:#C59B6D;
-            text-align:center;
-            font-size:16px;
-        }
-    </style>
 }
 <!--顶部-->
 <div id="app">
@@ -76,32 +30,190 @@
         </ul>
     </nav>
     <main>
-
+        <div class="main-wrap">
+            <div class="lawyer-wrap">
+                <ul class="lawyer-logo-wrap">
+                    <li class="lawyer-logo">
+                        <p class="lawyer-img_p">
+                            <span>查看全部</span>
+                        </p>
+                        <p class="lawyer-name_p">ALL</p>
+                    </li>
+                    <li class="lawyer-logo" v-for="i in 7">
+                        <p class="lawyer-img_p" :style="avataBg">
+                            <i class="only-watch">仅查看TA</i>
+                        </p>
+                        <p class="lawyer-name_p">陈律师</p>
+                    </li>
+                    <li class="lawyer-logo">
+                        <p class="lawyer-img_p lawyer-more">
+                            <span>更多律师</span>
+                        </p>
+                        <p class="lawyer-name_p">MORE</p>
+                    </li>
+                </ul>
+                <div class="viewcase-list-wrap">
+                    <dl class="viewcase-list" id="scrollWrapper">
+                        <dd class="view-case" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
+                            <i1>
+                                <el-dropdown placement="bottom-start">
+                                    <img :src="item.avata" v-err-img class="lawyer-avata">
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item>
+                                            <div style="width:415px">
+                                                {{item.creatorName}},{{item.workLocation}},所属领域:{{item.anYou}};<br />已完成案例：{{item.caseCount}}个
+                                            </div>
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
+                                <div class="viewcase-title-wrap">
+                                    <p>&nbsp;&nbsp;<a class="sourcesn" @@click="getCaseInfo(item.id)">{{item.sourceSN||'占位符'}}</a></p>
+                                    <p class="viewcase-title">{{item.title}}</p>
+                                </div>
+                            </i1>
+                            <div class="viewcase-detail">
+                                <div class="introduction">
+                                    {{item.introduction}}
+                                </div>
+                                <div class="bottom-msg">
+                                    <span>发布时间：&nbsp;{{item.publishDate}}</span>
+                                    <span>阅读量&nbsp;{{item.readNumber}}</span>
+                                </div>
+                            </div>
+                        </dd>
+                        <dd v-if="loading" style="text-align:center;line-height:2;">加载中...</dd>
+                        <dd v-if="noMore" style="text-align:center;line-height:2;">没有更多了</dd>
+                    </dl>
+                </div>
+            </div>
+            <aside>
+                <div class="qrcode-wrap">
+                    <img src="/assets/images/home/jianfa.png" class="jianfa-img">
+                    <h3>让案例说话</h3>
+                    <div class="h3-bg"></div>
+                    <p class="duanli">读案例&emsp;找律师</p>
+                    <img class="link" src="/assets/images/home/link.png" />
+                    <p class="jieduzhe">成为案例的解读者与分享者</p>
+                    <p class="slogan">SLOGAN假字假字，SLOGAN假字假字</p>
+                    <img class="qr-code" src="/assets/images/home/qrcode.png" />
+                </div>
+                <div class="recruit-wrap">
+                    <p class="recruit-wrap-title">招募共创律师</p>
+                    <div class="recruit-wrap-list">
+                        <p>1.执业5年以上，乐于分享成功经验</p>
+                        <p>2.认同专业化的执业理念</p>
+                        <p>3.在相关领域有10件以上经典案例</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </main>
     <!--footer-->
     <com-footer></com-footer>
+    @await Html.PartialAsync("PDFFrame")
 </div>
 
 
 @section scripts{
     <script>
-        new Vue({
+        (function () {
+            let imageIsExist = function (url) {
+                return new Promise((resolve) => {
+                    var img = new Image();
+                    img.onload = function () {
+                        if (this.complete == true) {
+                            resolve(true);
+                            img = null;
+                        }
+                    }
+                    img.onerror = function () {
+                        resolve(false);
+                        img = null;
+                    }
+                    img.src = url;
+                })
+            };
+            // 单独作用于应用模块的管理
+            // 传的是错误的图片
+            Vue.directive('err-img', async function (el, binding) {
+                let imgURL = binding.value || '/assets/images/home/jianfa.png?w=100';//获取图片地址
+                let realURL = el.src;
+                if (imgURL) {
+                    let exist = await imageIsExist(realURL);
+                    if (!exist) {
+                        el.setAttribute('src', imgURL);
+                    }
+                }
+            });
+        })();
+        window.app=new Vue({
             el: '#app',
             data: {
                 navImgs: [
-                    {img: '/assets/images/home/房屋买卖纠纷ICON.png',text:'房屋买卖纠纷'},
-                    {img: '/assets/images/home/建筑工程纠纷ICON.png',text:'建筑工程纠纷'},
-                    {img: '/assets/images/home/离婚财产分割ICON.png',text:'离婚财产分割'},
-                    {img: '/assets/images/home/分家析产与确权ICON.png',text:'分家析产与确权'},
-                    {img: '/assets/images/home/借贷及担保纠纷ICON.png',text:'借贷及担保纠纷'},
-                    {img: '/assets/images/home/继承纠纷ICON.png',text:'继承纠纷'},
-                ]
+                    { img: '/assets/images/home/房屋买卖纠纷ICON.png', text: '房屋买卖纠纷' },
+                    { img: '/assets/images/home/建筑工程纠纷ICON.png', text: '建筑工程纠纷' },
+                    { img: '/assets/images/home/离婚财产分割ICON.png', text: '离婚财产分割' },
+                    { img: '/assets/images/home/分家析产与确权ICON.png', text: '分家析产与确权' },
+                    { img: '/assets/images/home/借贷及担保纠纷ICON.png', text: '借贷及担保纠纷' },
+                    { img: '/assets/images/home/继承纠纷ICON.png', text: '继承纠纷' },
+                ],
+                noMore: false,
+                loading: true,
+                currentPage: 1,
+                pagesize: 10,
+                items: [],
+                totalCount: 0,
+                currentItem: {},
+                moda12: false,
+                avataBg:{'background-image':'url("/assets/images/home/组 19.png")'}
+            },
+            methods: {
+                getCaseInfo: function (caseSourceId) {
+                    var that = this;
+                    func.runAsync(abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
+                        that.currentItem = res.source;
+                        that.moda12 = true;
+                    }))
+                },
+                getViewMsg: function () { },
+                loadSource: function (fn) {
+                    var that = this;
+                    this.noMore = false;
+                    this.loading = true;
+                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize }).done(function (res) {
+                        that.loading = false;
+                        if (res.data.length == 0) {
+                            that.$Message.info('已经没有数据了');
+                            that.noMore = true;
+                        }
+                        that.totalCount = res.count;
+                        that.items = that.items.concat(res.data);
+                        $("#app").show();
+                    }));
+                },
+                load:function() {
+                    //debugger
+                    this.loading = true;
+                },
+                scrollSource: function () {
+                    document.getElementById("scrollWrapper").onscroll = function () {
+                        //var height = document.getElementById("divData").offsetHeight;//250
+                        //var height=$("#divData").height();//250
+                        var scrollHeight = document.getElementById("scrollWrapper").scrollHeight;//251
+                        var scrollTop = document.getElementById("scrollWrapper").scrollTop;//0-18
+                        var clientHeight = document.getElementById("scrollWrapper").clientHeight;//233
+
+                        if (scrollHeight - clientHeight == scrollTop && !app.loading && !app.noMore) {
+                            //滚动条滚到最底部
+                            app.currentPage++;
+                            app.loadSource();
+                        }
+                    };
+                }
             },
             mounted: function () {
-                var that = this;
-                abp.services.app.user.getById(abp.session.userId).done(function (data) {
-                    that.avata = data.avata;
-                })
+                this.loadSource();
+                this.scrollSource();
             }
         });
     </script>

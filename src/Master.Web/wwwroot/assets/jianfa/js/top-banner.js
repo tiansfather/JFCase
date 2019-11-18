@@ -7,7 +7,8 @@ var pos = null;
 var moveHeight = null;
 jianfa_top = document.getElementById("jianfa_top");
 window.onscroll=scroll_ad;
-function scroll_ad(){
+function scroll_ad() {
+    if (!jianfa_top)return
  scrollTop = document.documentElement.scrollTop+document.body.scrollTop;
  pos = scrollTop - jianfa_top.offsetTop;
  pos = pos
