@@ -12,16 +12,17 @@ using System.Threading.Tasks;
 
 namespace Master.Case
 {
-    [AbpAuthorize]
     public class ViewCaseAppService:MasterAppServiceBase<CaseInitial,int>
     {
         protected override async Task<IQueryable<CaseInitial>> GetQueryable(RequestPageDto request)
         {
             var query=await base.GetQueryable(request);
             return query
+                .Include(o=>o.CaseSource)
                 .Include(o=>o.CreatorUser)
                 .Where(o=>o.CaseStatus==CaseStatus.展示中)
-                .OrderByDescending(o=>o.PublishDate);
+                .OrderByDescending(o=>o.IsActive)
+                .ThenByDescending(o=>o.PublishDate);
         }
         protected override async Task<IQueryable<CaseInitial>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseInitial> query)
         {
@@ -78,7 +79,8 @@ namespace Master.Case
                 AnYou = entity.CreatorUser?.GetPropertyValue<string>("AnYou"),
                 CreatorName =entity.CreatorUser?.Name,
                 entity.CreatorUser?.WorkLocation,
-                caseCount
+                caseCount,
+                entity.CaseSource.SourceSN
             };
         }
 

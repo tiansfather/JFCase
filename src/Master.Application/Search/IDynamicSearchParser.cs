@@ -11,6 +11,14 @@ namespace Master.Search
     public interface IDynamicSearchParser:ITransientDependency
     {
         /// <summary>
+        /// 构建where查询
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="where"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        IQueryable ParseWhere<TEntity>(string where, IQueryable query);
+        /// <summary>
         /// 动态查询
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

@@ -170,7 +170,8 @@ namespace Master
             //1.where里的查询是直接lamda查询
             if (!request.Where.IsNullOrWhiteSpace())
             {
-                query = query.Where(request.Where);
+                //query = query.Where(request.Where);
+                query = await BuildWhereQueryAsync(request.Where, query);
             }
             //2.内置查询,写死在页面上的查询过滤
             if (!request.SearchKeys.IsNullOrWhiteSpace())
@@ -213,6 +214,16 @@ namespace Master
                 query = query.OrderBy($"{request.OrderField} {request.OrderType}");
             }
             return query;
+        }
+        /// <summary>
+        /// 直接where语句查询构建,where:"ProjectSN.Contains(\"a\") or Property[ProjectCharger]=\"张一\""
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        protected virtual async Task<IQueryable<TEntity>> BuildWhereQueryAsync(string where, IQueryable<TEntity> query)
+        {
+            return Resolve<IDynamicSearchParser>().ParseWhere<TEntity>(where, query) as IQueryable<TEntity>;
         }
         /// <summary>
         /// 关键字查询

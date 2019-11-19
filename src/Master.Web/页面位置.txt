@@ -34,3 +34,8 @@ parentId若不传则返回所有知识树节点，不然返回对应节点下的
 
 公众号密钥
 83020188a43c1745965d2a70e75d6b40
+
+
+首页获取案由对应律师接口
+abp.services.app.lawer.getPageResult({where:'Property[AnYou].Contains("房屋买卖纠纷")'})
+获取律师对应的案例查询条件：where:'creatorUserId={lawyerid}'

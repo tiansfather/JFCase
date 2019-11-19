@@ -69,7 +69,7 @@
         <!--end-->
         <!--看观点-->
         <div class="jianfa-guandiancard style-pa-46">
-            <div v-show="items.length===0">
+            <div v-show="items.length===0 && !loading">
                 <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例卡哦，请减少查询条件再试试看。</h1>
             </div>
             <div class="ny-guandiancard" v-if="items.length">
@@ -292,8 +292,9 @@
                 where: function () {
                     //return this.$refs.headFilter.where;
                     var where = '1=1';
+                    console.log(this.wherePart);
                     for (var i in this.wherePart) {
-                        if (i == 'keyword') { return; }
+                        if (i == 'keyword') { continue; }
                         console.log(i, this.wherePart[i])
                         var data = this.wherePart[i];
                         if (!data) continue;
@@ -331,7 +332,7 @@
                     //})
 
                     //请求案例卡分页
-                    abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where }).done((data) => {
+                    abp.services.app.viewPoint.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where,keyword:this.wherePart.keyword }).done((data) => {
                         this.loading = false;
                         this.totalCount=data.count;
                         if (data.data.length == 0) {
@@ -361,7 +362,7 @@
                 //保存案例卡
                 updateCaseCard() {
                     var that = this;
-                    func.runAsync(abp.services.app.workbench.updateSingleCard({ id: this.caseCardUpdateDto.id, title: this.caseCardUpdateDto.title, content: this.caseCardUpdateDto.content }).done(function () {
+                    func.runAsync(abp.services.app.workbench.updateSingleCard({ id: this.caseCardUpdateDto.id, title: this.caseCardUpdateDto.title, content: this.caseCardUpdateDto.content,caseStatus:1 }).done(function () {
                         app.modal1 = false;
                         that.$Message.success("保存成功");
                     }))
