@@ -40,7 +40,7 @@
                         <p class="lawyer-name_p">ALL</p>
                     </li>
                     <li class="lawyer-logo" v-for="i in 7">
-                        <p class="lawyer-img_p" :style="avataBg">
+                        <p class="lawyer-img_p" :style="avataBg" @@click="searchLawyer()">
                             <i class="only-watch">仅查看TA</i>
                         </p>
                         <p class="lawyer-name_p">陈律师</p>
@@ -92,10 +92,10 @@
                     <h3>让案例说话</h3>
                     <div class="h3-bg"></div>
                     <p class="duanli">读案例&emsp;找律师</p>
-                    <img class="link" src="/assets/images/home/link.png" />
+                    <img class="link" src="/assets/images/home/link.png" @@click="qrcodeVisible=true"/>
                     <p class="jieduzhe">成为案例的解读者与分享者</p>
                     <p class="slogan">SLOGAN假字假字，SLOGAN假字假字</p>
-                    <img class="qr-code" src="/assets/images/home/qrcode.png" />
+                    <img class="qr-code" :src="qrCode" />
                 </div>
                 <div class="recruit-wrap">
                     <p class="recruit-wrap-title">招募共创律师</p>
@@ -111,6 +111,9 @@
     <!--footer-->
     <com-footer></com-footer>
     @await Html.PartialAsync("PDFFrame")
+<el-dialog :visible.sync="qrcodeVisible" width="290px" style="text-align:center;">
+    <img class="qr-code" :src="qrCode" style="width:250px;height:250px"/>
+</el-dialog>
 </div>
 
 
@@ -165,9 +168,20 @@
                 totalCount: 0,
                 currentItem: {},
                 moda12: false,
-                avataBg:{'background-image':'url("/assets/images/home/组 19.png")'}
+                avataBg: { 'background-image': 'url("/assets/images/home/组 19.png")' },
+                qrcodeVisible:false,
+            },
+			computed: {
+                qrCode: function () {
+                    //todo
+                    let guid="todo"
+					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
+				}
             },
             methods: {
+                searchLawyer: function () {
+
+                },
                 getCaseInfo: function (caseSourceId) {
                     var that = this;
                     func.runAsync(abp.services.app.workbench.getCaseInfo(caseSourceId).done(function (res) {
@@ -176,7 +190,7 @@
                     }))
                 },
                 getViewMsg: function () { },
-                loadSource: function (fn) {
+                loadSource: function () {
                     var that = this;
                     this.noMore = false;
                     this.loading = true;

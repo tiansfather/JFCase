@@ -209,6 +209,7 @@ main aside .qrcode-wrap img.link {
   margin-top: 17px;
   height: 100px;
   width: 100px;
+  cursor: pointer;
 }
 
 main aside .qrcode-wrap .jieduzhe {
