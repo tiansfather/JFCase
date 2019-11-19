@@ -21,7 +21,7 @@
     </div>
     <nav>
         <ul class="nav-img-wrap">
-            <li v-for="item in navImgs" :key="item.text" class="nav-img">
+            <li v-for="item in navImgs" :key="item.text" class="nav-img" @@click="currentAnyou=item;loadLawyer();reloadData();">
                 <p class="icon_p">
                     <img :src="item.img" alt="Alternate Text" />
                 </p>
@@ -33,19 +33,19 @@
         <div class="main-wrap">
             <div class="lawyer-wrap">
                 <ul class="lawyer-logo-wrap">
-                    <li class="lawyer-logo">
+                    <li class="lawyer-logo" @@click="currentLawyer=null;reloadData();">
                         <p class="lawyer-img_p">
                             <span>查看全部</span>
                         </p>
                         <p class="lawyer-name_p">ALL</p>
                     </li>
-                    <li class="lawyer-logo" v-for="i in 7">
-                        <p class="lawyer-img_p" :style="avataBg" @@click="searchLawyer()">
+                    <li class="lawyer-logo" v-for="item in lawyers">
+                        <p class="lawyer-img_p" :style="{ 'background-image': 'url('+item.avata+')' }" @@click="currentLawyer=item;reloadData()">
                             <i class="only-watch">仅查看TA</i>
                         </p>
-                        <p class="lawyer-name_p">陈律师</p>
+                        <p class="lawyer-name_p">{{item.name}}</p>
                     </li>
-                    <li class="lawyer-logo">
+                    <li class="lawyer-logo" @@click="location.href='/Account/Login'">
                         <p class="lawyer-img_p lawyer-more">
                             <span>更多律师</span>
                         </p>
@@ -54,7 +54,7 @@
                 </ul>
                 <div class="viewcase-list-wrap">
                     <dl class="viewcase-list" id="scrollWrapper">
-                        <dd class="view-case" v-for="item in items" :key="item.id" @@click="getViewMsg(item.id)">
+                        <dd class="view-case" v-for="item in items" :key="item.id" >
                             <i1>
                                 <el-dropdown placement="bottom-start">
                                     <img :src="item.avata" v-err-img class="lawyer-avata">
@@ -67,12 +67,12 @@
                                     </el-dropdown-menu>
                                 </el-dropdown>
                                 <div class="viewcase-title-wrap">
-                                    <p>&nbsp;&nbsp;<a class="sourcesn" @@click="getCaseInfo(item.id)">{{item.sourceSN||'占位符'}}</a></p>
-                                    <p class="viewcase-title">{{item.title}}</p>
+                                    <p>&nbsp;&nbsp;<a class="sourcesn" @@click="getCaseInfo(item.caseSourceId)">{{item.sourceSN||'占位符'}}</a></p>
+                                    <p class="viewcase-title" @@click="preview(item);" style="cursor:pointer">{{item.title}}</p>
                                 </div>
                             </i1>
                             <div class="viewcase-detail">
-                                <div class="introduction">
+                                <div class="introduction" @@click="preview(item);" style="cursor:pointer">
                                     {{item.introduction}}
                                 </div>
                                 <div class="bottom-msg">
@@ -113,6 +113,9 @@
     @await Html.PartialAsync("PDFFrame")
 <el-dialog :visible.sync="qrcodeVisible" width="290px" style="text-align:center;">
     <img class="qr-code" :src="qrCode" style="width:250px;height:250px"/>
+</el-dialog>
+<el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;">
+    <iframe :src="'/CaseSource/InitialView?data='+currentItem.caseSourceId" frameborder="0" :style="{width:'100%',height:$(window).height()*0.8+'px'}"></iframe>
 </el-dialog>
 </div>
 
@@ -160,6 +163,7 @@
                     { img: '/assets/images/home/借贷及担保纠纷ICON.png', text: '借贷及担保纠纷' },
                     { img: '/assets/images/home/继承纠纷ICON.png', text: '继承纠纷' },
                 ],
+                lawyers:[],
                 noMore: false,
                 loading: true,
                 currentPage: 1,
@@ -167,20 +171,41 @@
                 items: [],
                 totalCount: 0,
                 currentItem: {},
+                currentLawyer: null,
+                currentAnyou:null,
                 moda12: false,
                 avataBg: { 'background-image': 'url("/assets/images/home/组 19.png")' },
-                qrcodeVisible:false,
+                qrcodeVisible: false,
+                previewVisible:false
             },
 			computed: {
                 qrCode: function () {
                     //todo
                     let guid="todo"
 					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
-				}
+                },
+                where: function () {
+                    var where = '1=1';
+                    if (this.currentAnyou) {
+                        where += ' and CaseSource.AnYou.DisplayName.Contains("' + this.currentAnyou.text + '")';
+                    }
+                    if (this.currentLawyer) {
+                        where += ' and creatorUserId=' + this.currentLawyer.id;
+                    }
+                    return where;
+                }
             },
             methods: {
-                searchLawyer: function () {
-
+                loadLawyer: function () {
+                    var that = this;
+                    var where = '1=1';
+                    if (this.currentAnyou) {
+                        where += ' and Property[AnYou].Contains("' + this.currentAnyou.text + '")';
+                    }
+                    func.runAsync(abp.services.app.lawer.getPageResult({ where: where, page: 1, limit: 7 }).done(function (res) {
+                        that.lawyers = res.data;
+                    }))
+                    
                 },
                 getCaseInfo: function (caseSourceId) {
                     var that = this;
@@ -189,12 +214,15 @@
                         that.moda12 = true;
                     }))
                 },
-                getViewMsg: function () { },
+                preview: function (item) {
+                    this.currentItem = item;
+                    this.previewVisible = true;
+                },
                 loadSource: function () {
                     var that = this;
                     this.noMore = false;
                     this.loading = true;
-                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize }).done(function (res) {
+                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize,where:this.where }).done(function (res) {
                         that.loading = false;
                         if (res.data.length == 0) {
                             that.$Message.info('已经没有数据了');
@@ -208,6 +236,12 @@
                 load:function() {
                     //debugger
                     this.loading = true;
+                },
+                reloadData: function () {
+                    //用于重新加载数据
+                    this.items = [];
+                    this.currentPage = 1;
+                    this.loadSource();
                 },
                 scrollSource: function () {
                     document.getElementById("scrollWrapper").onscroll = function () {
@@ -227,6 +261,7 @@
             },
             mounted: function () {
                 this.loadSource();
+                this.loadLawyer();
                 this.scrollSource();
             }
         });

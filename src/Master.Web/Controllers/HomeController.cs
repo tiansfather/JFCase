@@ -158,7 +158,6 @@ namespace Master.Web.Controllers
         /// Ê×Ò³
         /// </summary>
         /// <returns></returns>
-        [AbpMvcAuthorize]
         public IActionResult Home()
         {
             return View();

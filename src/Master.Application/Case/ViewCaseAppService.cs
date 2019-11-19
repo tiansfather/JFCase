@@ -80,6 +80,7 @@ namespace Master.Case
                 CreatorName =entity.CreatorUser?.Name,
                 entity.CreatorUser?.WorkLocation,
                 caseCount,
+                entity.CaseSourceId,
                 entity.CaseSource.SourceSN
             };
         }
