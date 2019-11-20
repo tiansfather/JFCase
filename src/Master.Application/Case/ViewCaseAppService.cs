@@ -78,6 +78,8 @@ namespace Master.Case
                 Avata= entity.CreatorUser?.GetPropertyValue("Avata"),
                 AnYou = entity.CreatorUser?.GetPropertyValue<string>("AnYou"),
                 CreatorName =entity.CreatorUser?.Name,
+                entity.CreatorUser?.PhoneNumber,
+                WorkYear=entity.CreatorUser?.GetPropertyValue<string>("WorkYear"),
                 entity.CreatorUser?.WorkLocation,
                 caseCount,
                 entity.CaseSourceId,

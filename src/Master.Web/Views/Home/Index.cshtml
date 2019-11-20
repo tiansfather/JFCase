@@ -6,9 +6,7 @@
 }
 @section styles{
     <link href="~/assets/css/home/home.css" rel="stylesheet" />
-    <style>
 
-    </style>
 }
 <!--顶部-->
 <div id="app">
@@ -63,7 +61,11 @@
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item>
                                             <div style="width:415px">
-                                                {{item.creatorName}},{{item.workLocation}},所属领域:{{item.anYou}};<br />已完成案例：{{item.caseCount}}个
+                                                {{item.creatorName}}<br/>
+                                                执业机构:{{item.workLocation}}<br/>
+                                                擅长领域:{{item.anYou}}<br />
+                                                执业年限：{{item.workYear}}<br/>
+                                                联系方式:{{item.phoneNumber}}
                                             </div>
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -116,7 +118,7 @@
 <el-dialog :visible.sync="qrcodeVisible" width="290px" style="text-align:center;">
     <img class="qr-code" :src="qrCode" style="width:250px;height:250px"/>
 </el-dialog>
-<el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;" append-to-body modal-append-to-body top="10px" lock-scroll>
+<el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;" lock-scroll="true">
     <iframe :src="'/CaseSource/InitialView?data='+currentItem.caseSourceId" frameborder="0" :style="{width:'100%',height:$(window).height()*0.8+'px'}"></iframe>
 </el-dialog>
 </div>
