@@ -6,7 +6,13 @@
 }
 @section styles{
     <link href="~/assets/css/home/home.css" rel="stylesheet" />
-
+    <style>
+        html {
+    width: auto;
+    height: auto;
+    overflow: initial;
+}
+    </style>
 }
 <!--顶部-->
 <div id="app">
@@ -114,7 +120,7 @@
 <el-dialog :visible.sync="qrcodeVisible" width="290px" style="text-align:center;">
     <img class="qr-code" :src="qrCode" style="width:250px;height:250px"/>
 </el-dialog>
-<el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;">
+<el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;" append-to-body modal-append-to-body top="10px" lock-scroll>
     <iframe :src="'/CaseSource/InitialView?data='+currentItem.caseSourceId" frameborder="0" :style="{width:'100%',height:$(window).height()*0.8+'px'}"></iframe>
 </el-dialog>
 </div>
