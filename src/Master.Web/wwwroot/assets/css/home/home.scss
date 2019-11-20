@@ -69,6 +69,7 @@ main {
             flex: 1;
             height: 985px;
             margin-right: 10px;
+
             .lawyer-logo-wrap {
                 display: flex;
                 border-bottom: 4px solid #C59B6D;
@@ -89,7 +90,8 @@ main {
                         margin-bottom: 7px;
                         position: relative;
                         cursor: pointer;
-                        background-size:cover;
+                        background-size: cover;
+
                         &.lawyer-more {
                             background: transparent;
                             border: 1px solid #c59b6d;
@@ -292,6 +294,26 @@ main {
             }
         }
     }
+}
+.drop-wrap{
+    color:#787878;
+    font-size: 14px;
+    line-height: 2;
+}
 
+.drop-title {
+    font-size: 16px;
+    color: #000;
+    line-height: 20px;
+    font-weight: bold;
+}
 
+.drop-dsc {
+    color: #C59B6D;
+    font-size: 14px;
+    line-height: 2;
+    margin-right: 12px;
+}
+.el-dropdown-menu__item:focus, .el-dropdown-menu__item:not(.is-disabled):hover{
+    background:#fff;
 }

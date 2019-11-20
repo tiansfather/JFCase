@@ -52,11 +52,12 @@
                             </p>
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item>
-                                    <div style="width:415px">
-                                        执业机构:{{item.workLocation}}<br />
-                                        擅长领域:{{item.anYou}}<br />
-                                        执业年限：{{item.workYear}}<br />
-                                        联系方式:{{item.phoneNumber}}
+                                    <div style="width:415px" class="drop-wrap">
+                                        <p class="drop-title">{{item.name}}<br /></p>
+                                        <span class="drop-dsc">执业机构:</span>{{item.workLocation}}<br />
+                                        <span class="drop-dsc">擅长领域:</span>{{item.anYou}}<br />
+                                        <span class="drop-dsc">执业年限：</span>{{item.workYear}}<br />
+                                        <span class="drop-dsc">联系方式:</span>{{item.phoneNumber}}
                                     </div>
                                 </el-dropdown-item>
                             </el-dropdown-menu>
@@ -78,12 +79,12 @@
                                     <img :src="item.avata" v-err-img class="lawyer-avata">
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item>
-                                            <div style="width:415px">
-                                                {{item.creatorName}}<br />
-                                                执业机构:{{item.workLocation}}<br />
-                                                擅长领域:{{item.anYou}}<br />
-                                                执业年限：{{item.workYear}}<br />
-                                                联系方式:{{item.phoneNumber}}
+                                            <div style="width:415px" class="drop-wrap">
+                                                <p class="drop-title">{{item.creatorName}}<br /></p>
+                                                <span class="drop-dsc">执业机构:</span>{{item.workLocation}}<br />
+                                                <span class="drop-dsc">擅长领域:</span>{{item.anYou}}<br />
+                                                <span class="drop-dsc">执业年限：</span>{{item.workYear}}<br />
+                                                <span class="drop-dsc">联系方式:</span>{{item.phoneNumber}}
                                             </div>
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
