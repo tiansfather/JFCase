@@ -6,7 +6,13 @@
 }
 @section styles{
     <link href="~/assets/css/home/home.css" rel="stylesheet" />
-
+    <style>
+        html {
+            width: auto;
+            height: auto;
+            overflow: initial;
+        }
+    </style>
 }
 <!--顶部-->
 <div id="app">
@@ -40,9 +46,21 @@
                         <p class="lawyer-name_p">ALL</p>
                     </li>
                     <li class="lawyer-logo" v-for="item in lawyers">
-                        <p class="lawyer-img_p" :style="{ 'background-image': 'url('+item.avata+')' }" @@click="currentLawyer=item;reloadData()">
-                            <i class="only-watch">仅查看TA</i>
-                        </p>
+                        <el-dropdown placement="bottom-start">
+                            <p class="lawyer-img_p" :style="{ 'background-image': 'url('+item.avata+')' }" @@click="currentLawyer=item;reloadData()">
+                                <i class="only-watch">仅查看TA</i>
+                            </p>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item>
+                                    <div style="width:415px">
+                                        执业机构:{{item.workLocation}}<br />
+                                        擅长领域:{{item.anYou}}<br />
+                                        执业年限：{{item.workYear}}<br />
+                                        联系方式:{{item.phoneNumber}}
+                                    </div>
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
                         <p class="lawyer-name_p">{{item.name}}</p>
                     </li>
                     <li class="lawyer-logo" @@click="location.href='/Account/Login'">
@@ -54,17 +72,17 @@
                 </ul>
                 <div class="viewcase-list-wrap">
                     <dl class="viewcase-list" id="scrollWrapper">
-                        <dd class="view-case" v-for="item in items" :key="item.id" >
+                        <dd class="view-case" v-for="item in items" :key="item.id">
                             <i1>
                                 <el-dropdown placement="bottom-start">
                                     <img :src="item.avata" v-err-img class="lawyer-avata">
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item>
                                             <div style="width:415px">
-                                                {{item.creatorName}}<br/>
-                                                执业机构:{{item.workLocation}}<br/>
+                                                {{item.creatorName}}<br />
+                                                执业机构:{{item.workLocation}}<br />
                                                 擅长领域:{{item.anYou}}<br />
-                                                执业年限：{{item.workYear}}<br/>
+                                                执业年限：{{item.workYear}}<br />
                                                 联系方式:{{item.phoneNumber}}
                                             </div>
                                         </el-dropdown-item>
@@ -96,7 +114,7 @@
                     <h3>让案例说话</h3>
                     <div class="h3-bg"></div>
                     <p class="duanli">读案例&emsp;找律师</p>
-                    <img class="link" src="/assets/images/home/link.png" @@click="qrcodeVisible=true"/>
+                    <img class="link" src="/assets/images/home/link.png" @@click="qrcodeVisible=true" />
                     <p class="jieduzhe">成为案例的解读者与分享者</p>
                     <p class="slogan">SLOGAN假字假字，SLOGAN假字假字</p>
                     <img class="qr-code" :src="qrCode" />
@@ -115,12 +133,12 @@
     <!--footer-->
     <com-footer></com-footer>
     @await Html.PartialAsync("PDFFrame")
-<el-dialog :visible.sync="qrcodeVisible" width="290px" style="text-align:center;">
-    <img class="qr-code" :src="qrCode" style="width:250px;height:250px"/>
-</el-dialog>
-<el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;" lock-scroll="true">
-    <iframe :src="'/CaseSource/InitialView?data='+currentItem.caseSourceId" frameborder="0" :style="{width:'100%',height:$(window).height()*0.8+'px'}"></iframe>
-</el-dialog>
+    <el-dialog :visible.sync="qrcodeVisible" width="290px" style="text-align:center;">
+        <img class="qr-code" :src="qrCode" style="width:250px;height:250px" />
+    </el-dialog>
+    <el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;" lock-scroll="true" append-to-body top="10px">
+        <iframe :src="'/CaseSource/InitialView?data='+currentItem.caseSourceId" frameborder="0" :style="{width:'100%',height:$(window).height()*0.8+'px'}"></iframe>
+    </el-dialog>
 </div>
 
 
@@ -156,7 +174,7 @@
                 }
             });
         })();
-        window.app=new Vue({
+        window.app = new Vue({
             el: '#app',
             data: {
                 navImgs: [
@@ -167,7 +185,7 @@
                     { img: '/assets/images/home/借贷及担保纠纷ICON.png', text: '借贷及担保纠纷' },
                     { img: '/assets/images/home/继承纠纷ICON.png', text: '继承纠纷' },
                 ],
-                lawyers:[],
+                lawyers: [],
                 noMore: false,
                 loading: true,
                 currentPage: 1,
@@ -176,17 +194,17 @@
                 totalCount: 0,
                 currentItem: {},
                 currentLawyer: null,
-                currentAnyou:null,
+                currentAnyou: null,
                 moda12: false,
                 avataBg: { 'background-image': 'url("/assets/images/home/组 19.png")' },
                 qrcodeVisible: false,
-                previewVisible:false
+                previewVisible: false
             },
-			computed: {
+            computed: {
                 qrCode: function () {
                     //todo
-                    let guid="todo"
-					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
+                    let guid = "todo"
+                    return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
                 },
                 where: function () {
                     var where = '1=1';
@@ -209,7 +227,7 @@
                     func.runAsync(abp.services.app.lawer.getPageResult({ where: where, page: 1, limit: 7 }).done(function (res) {
                         that.lawyers = res.data;
                     }))
-                    
+
                 },
                 getCaseInfo: function (caseSourceId) {
                     var that = this;
@@ -226,7 +244,7 @@
                     var that = this;
                     this.noMore = false;
                     this.loading = true;
-                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize,where:this.where }).done(function (res) {
+                    func.runAsync(abp.services.app.viewCase.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where }).done(function (res) {
                         that.loading = false;
                         if (res.data.length == 0) {
                             that.$Message.info('已经没有数据了');
@@ -237,7 +255,7 @@
                         $("#app").show();
                     }));
                 },
-                load:function() {
+                load: function () {
                     //debugger
                     this.loading = true;
                 },
