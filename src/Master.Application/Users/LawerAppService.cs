@@ -1,4 +1,6 @@
-﻿using Master.Authentication;
+﻿using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
+using Master.Authentication;
 using Master.Dto;
 using Master.Entity;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,19 @@ namespace Master.Users
     {
         protected override async Task<IQueryable<User>> GetQueryable(RequestPageDto request)
         {
-            return (await base.GetQueryable(request)).IgnoreQueryFilters().Where(o=>!o.IsDeleted && o.TenantId!=null);
+            var minerRole = await Resolve<RoleManager>().FindByNameAsync(StaticRoleNames.Tenants.Miner);
+            return (await base.GetQueryable(request))
+                .Where(o => o.Roles.Count(r => r.RoleId == minerRole.Id) > 0);
+
+        }
+
+        public override async Task<ResultPageDto> GetPageResult(RequestPageDto request)
+        {
+            using (CurrentUnitOfWork.DisableFilter(AbpDataFilters.MayHaveTenant,AbpDataFilters.MustHaveTenant))
+            {
+                return await base.GetPageResult(request);
+            }
+            
         }
         protected override object PageResultConverter(User entity)
         {

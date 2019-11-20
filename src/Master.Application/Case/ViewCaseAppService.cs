@@ -18,6 +18,8 @@ namespace Master.Case
         {
             var query=await base.GetQueryable(request);
             return query
+                .IgnoreQueryFilters()
+                .Where(o=>!o.IsDeleted)
                 .Include(o=>o.CaseSource)
                 .Include(o=>o.CreatorUser)
                 .Where(o=>o.CaseStatus==CaseStatus.展示中)

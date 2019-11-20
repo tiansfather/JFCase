@@ -56,7 +56,7 @@
                                         <p class="drop-title">{{item.name}}</p>
                                         <p><span class="drop-dsc">执业机构:</span>{{item.workLocation}} </p>
                                         <p> <span class="drop-dsc">擅长领域:</span>{{item.anYou}} </p>
-                                        <p><span class="drop-dsc">执业年限：</span>{{item.workYear}} </p>
+                                        <p><span class="drop-dsc">执业年限：</span>{{item.workYear}}年 </p>
                                         <p><span class="drop-dsc">联系方式:</span>{{item.phoneNumber}} </p>
                                     </div>
                                 </el-dropdown-item>
@@ -64,7 +64,7 @@
                         </el-dropdown>
                         <p class="lawyer-name_p">{{item.name}}</p>
                     </li>
-                    <li class="lawyer-logo" @@click="location.href='/Account/Login'">
+                    <li class="lawyer-logo" @@click="location.href='/Home/Main'">
                         <p class="lawyer-img_p lawyer-more">
                             <span>更多律师</span>
                         </p>
@@ -84,7 +84,7 @@
                                                 <p><span class="drop-dsc">执业机构:</span>{{item.workLocation}} </p>
                                                 <p> <span class="drop-dsc">擅长领域:</span>{{item.anYou}} </p>
                                                 <p><span class="drop-dsc">执业年限：</span>{{item.workYear}} </p>
-                                                <p><span class="drop-dsc">联系方式:</span>{{item.phoneNumber}} </p>
+                                                <p><span class="drop-dsc">联系方式:</span>{{item.phoneNumber}}年 </p>
                                             </div>
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -175,11 +175,12 @@
                 }
             });
         })();
+        var guid = "@ViewBag.Guid";
         window.app = new Vue({
             el: '#app',
             data: {
                 navImgs: [
-                    { img: '/assets/images/home/房屋买卖纠纷ICON.png', text: '房屋买卖纠纷' },
+                    { img: '/assets/images/home/房屋买卖纠纷ICON.png', text: '商品房买卖纠纷' },
                     { img: '/assets/images/home/建筑工程纠纷ICON.png', text: '建筑工程纠纷' },
                     { img: '/assets/images/home/离婚财产分割ICON.png', text: '离婚财产分割' },
                     { img: '/assets/images/home/分家析产与确权ICON.png', text: '分家析产与确权' },
@@ -204,13 +205,13 @@
             computed: {
                 qrCode: function () {
                     //todo
-                    let guid = "todo"
+                    
                     return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
                 },
                 where: function () {
                     var where = '1=1';
                     if (this.currentAnyou) {
-                        where += ' and CaseSource.AnYou.DisplayName.Contains("' + this.currentAnyou.text + '")';
+                        where += ' and (CaseSource.AnYou.DisplayName="' + this.currentAnyou.text + '" or CaseSource.AnYou.Name="' + this.currentAnyou.text + '")';
                     }
                     if (this.currentLawyer) {
                         where += ' and creatorUserId=' + this.currentLawyer.id;
@@ -288,6 +289,68 @@
                 this.scrollSource();
             }
         });
+         //轮询请求
+        var loopFunc = function () {
+                //获取用户信息
+            abp.services.app.weiXin.getLoginInfo(guid).done(function (data) {                    
+                if (data) {
+                    console.log(data);
+                        app.currentItem.openid = data.openid;
+                        app.currentItem.nickName = data.nickname;//用户昵称
+                        app.currentItem.avata = data.headimgurl;//头像
+                        //根据openid去寻找用户的账号信息
+                        abp.services.app.user.getUserStatusByWeOpenId(data.openid).done(function (status) {
+                            //status的四种值：1:正常登录，-1:被注销，2：未注册,3:审核中
+                            //todo:根据不同状态进行不同操作
+                            if (status == 1) {
+                                var authModel = {
+                                    authProvider: "Wechat",
+                                    providerKey: data.openid,
+                                    providerAccessCode: "",
+                                    clientInfo: 'Browser'
+                                };
+                                //window.clearInterval(loop);
+                                doExternalAuthentication(authModel);
+                            } else if (status == 2) {
+                                app.step = 2;
+                            } else if (status == -1) {
+                                var toemail = abp.setting.get("receiveMailAddress");
+                                abp.message.info("您的账号已被冻结（注销），请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>");
+                            } else if (status == 3) {
+                                abp.message.info("您的账号还在审核中，请耐心等待");
+                            }
+                        })
+						
+                    } else {
+                        doLoop();
+					}
+
+
+				});
+			}
+			loopFunc();
+    function doLoop() {
+        window.setTimeout(loopFunc, 1000);
+    }
+        //第三方登录接口
+        function doExternalAuthentication(authModel) {
+            console.log(authModel);
+            abp.ui.setBusy(
+               null,
+
+                abp.ajax({
+                    contentType: "application/x-www-form-urlencoded",
+                    url: "/api/tokenauth/externalAuthenticate",
+                    data: authModel,
+                    success: function (data) {
+                        console.log(data);
+                        $.cookie("token", data.encryptedAccessToken, { path: '/' });
+                        location.href = '/Home/Main';
+
+                    }
+                })
+            );
+        }
     </script>
 
 }
