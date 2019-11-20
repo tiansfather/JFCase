@@ -258,7 +258,7 @@
                     success: function (data) {
                         console.log(data);
                         $.cookie("token", data.encryptedAccessToken, { path: '/' });
-                        location.href = '/';
+                        location.href = '/Home/Main';
 
                     }
                 })

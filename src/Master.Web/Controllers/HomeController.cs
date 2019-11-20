@@ -67,7 +67,7 @@ namespace Master.Web.Controllers
         }
         
         [AbpMvcAuthorize]
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Main()
         {
             var user = AbpSession.ToUserIdentifier();
             Session.Dto.LoginInformationDto loginInfo;
@@ -158,7 +158,7 @@ namespace Master.Web.Controllers
         /// Ê×Ò³
         /// </summary>
         /// <returns></returns>
-        public IActionResult Home()
+        public IActionResult Index()
         {
             return View();
         }

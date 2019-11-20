@@ -18,7 +18,7 @@ namespace Master.Case
     /// <summary>
     /// 工作台及加工接口
     /// </summary>
-    [AbpAuthorize]
+    //[AbpAuthorize]
     public class WorkbenchAppService : MasterAppServiceBase<CaseSource, int>
     {
         #region 分页
