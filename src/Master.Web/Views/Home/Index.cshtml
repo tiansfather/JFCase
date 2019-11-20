@@ -15,7 +15,7 @@
     </style>
 }
 <!--顶部-->
-<div id="app">
+<div id="app" v-cloak>
     <header>
 
         <img id="logo" src="~/assets/images/home/LOGO.png" />
@@ -53,11 +53,11 @@
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item>
                                     <div style="width:415px" class="drop-wrap">
-                                        <p class="drop-title">{{item.name}}<br /></p>
-                                        <span class="drop-dsc">执业机构:</span>{{item.workLocation}}<br />
-                                        <span class="drop-dsc">擅长领域:</span>{{item.anYou}}<br />
-                                        <span class="drop-dsc">执业年限：</span>{{item.workYear}}<br />
-                                        <span class="drop-dsc">联系方式:</span>{{item.phoneNumber}}
+                                        <p class="drop-title">{{item.name}}</p>
+                                        <p><span class="drop-dsc">执业机构:</span>{{item.workLocation}} </p>
+                                        <p> <span class="drop-dsc">擅长领域:</span>{{item.anYou}} </p>
+                                        <p><span class="drop-dsc">执业年限：</span>{{item.workYear}} </p>
+                                        <p><span class="drop-dsc">联系方式:</span>{{item.phoneNumber}} </p>
                                     </div>
                                 </el-dropdown-item>
                             </el-dropdown-menu>
@@ -80,11 +80,11 @@
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item>
                                             <div style="width:415px" class="drop-wrap">
-                                                <p class="drop-title">{{item.creatorName}}<br /></p>
-                                                <span class="drop-dsc">执业机构:</span>{{item.workLocation}}<br />
-                                                <span class="drop-dsc">擅长领域:</span>{{item.anYou}}<br />
-                                                <span class="drop-dsc">执业年限：</span>{{item.workYear}}<br />
-                                                <span class="drop-dsc">联系方式:</span>{{item.phoneNumber}}
+                                                <p class="drop-title">{{item.creatorName}}</p>
+                                                <p><span class="drop-dsc">执业机构:</span>{{item.workLocation}} </p>
+                                                <p> <span class="drop-dsc">擅长领域:</span>{{item.anYou}} </p>
+                                                <p><span class="drop-dsc">执业年限：</span>{{item.workYear}} </p>
+                                                <p><span class="drop-dsc">联系方式:</span>{{item.phoneNumber}} </p>
                                             </div>
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -144,7 +144,7 @@
 
 
 @section scripts{
-    <script>
+    <script type="text/babel">
         (function () {
             let imageIsExist = function (url) {
                 return new Promise((resolve) => {
