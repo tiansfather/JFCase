@@ -123,6 +123,7 @@ main .main-wrap .lawyer-wrap .lawyer-logo-wrap .lawyer-logo .lawyer-img_p {
   margin-bottom: 7px;
   position: relative;
   cursor: pointer;
+  background-size: cover;
 }
 
 main .main-wrap .lawyer-wrap .lawyer-logo-wrap .lawyer-logo .lawyer-img_p.lawyer-more {
@@ -327,5 +328,29 @@ main aside .recruit-wrap .recruit-wrap-list {
           justify-content: space-between;
   padding-top: 10px;
   color: #a9a9a9;
+}
+
+.drop-wrap {
+  color: #787878;
+  font-size: 14px;
+  line-height: 2;
+}
+
+.drop-title {
+  font-size: 16px;
+  color: #000;
+  line-height: 20px;
+  font-weight: bold;
+}
+
+.drop-dsc {
+  color: #C59B6D;
+  font-size: 14px;
+  line-height: 2;
+  margin-right: 12px;
+}
+
+.el-dropdown-menu__item:focus, .el-dropdown-menu__item:not(.is-disabled):hover {
+  background: #fff;
 }
 /*# sourceMappingURL=home.css.map */
