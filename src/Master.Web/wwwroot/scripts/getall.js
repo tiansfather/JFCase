@@ -1162,6 +1162,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'refreshWechatLoginId'
+    abp.services.app.session.refreshWechatLoginId = function(ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Session/RefreshWechatLoginId',
+        type: 'POST'
+      }, ajaxParams));;
+    };
+
   })();
 
   // controller 'role'

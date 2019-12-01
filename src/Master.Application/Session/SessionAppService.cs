@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Abp.Runtime.Security;
 using Master.Entity;
+using Microsoft.AspNetCore.Http;
 
 namespace Master.Session
 {
@@ -17,7 +18,7 @@ namespace Master.Session
         private IRepository<User, long> _userRepository;
         private IRepository<UserRole> _userRoleRepository;
         private IRepository<Role> _roleRepository;
-
+        public IHttpContextAccessor HttpContextAccessor { get; set; }
         public SessionAppService(
             IRepository<User, long> userRepository,
             IRepository<UserRole> userRoleRepository,
@@ -79,5 +80,12 @@ namespace Master.Session
             }
         }
 
+        public virtual string RefreshWechatLoginId()
+        {
+            //生成一个标识存入Ｓｅｓｓｉｏｎ
+            var guid = Guid.NewGuid();
+            HttpContextAccessor.HttpContext.Session.Set("WeChatLoginId", guid);
+            return guid.ToString();
+        }
     }
 }

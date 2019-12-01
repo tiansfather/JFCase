@@ -114,16 +114,24 @@
 <footer><div class="ziti-a">2017-2020 | Copyright | 版权声明 | 简法二手房  ( <a href="http://www.miibeian.gov.cn/" target="_blank" style="color:white"  class="beian">沪ICP备17021923号-2</a> )</div></footer>
 
 @section scripts{
+    <script>
+        function refreshLogin(){
+            abp.services.app.session.refreshWechatLoginId().done(function(guid){
+                app.guid = guid;
+                window.setTimeout(refreshLogin, 5*1000*60);
+            })
+        }
+    </script>
 <script type="text/babel">
     if (self != top) {
         top.location.href = '/Account/Login';
     }
     $("body").addClass("index-bj");
 
-    var guid = "@ViewBag.Guid";
 		window.app = new Vue({
             el: '#app',
             data: {
+                guid:'',
                 step:1,//第一步
                 status: 0,
                 isCheck: false,
@@ -143,8 +151,11 @@
             },
 			computed: {
 				qrCode: function () {
-					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
+					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + this.guid);
 				}
+            },
+            mounted:function(){
+                refreshLogin();
             },
             methods: {
                 test() {
@@ -205,7 +216,8 @@
             //轮询请求
         var loopFunc = function () {
                 //获取用户信息
-            abp.services.app.weiXin.getLoginInfo(guid).done(function (data) {                    
+            if(!app.guid){doLoop();return;}
+            abp.services.app.weiXin.getLoginInfo(app.guid).done(function (data) {                    
                 if (data) {
                     console.log(data);
                         app.currentItem.openid = data.openid;

@@ -144,6 +144,14 @@
 
 
 @section scripts{
+    <script>
+        function refreshLogin(){
+            abp.services.app.session.refreshWechatLoginId().done(function(guid){
+                app.guid = guid;
+                window.setTimeout(refreshLogin, 5*1000*60);
+            })
+        }
+    </script>
     <script type="text/babel">
         (function () {
             let imageIsExist = function (url) {
@@ -175,7 +183,6 @@
                 }
             });
         })();
-        var guid = "@ViewBag.Guid";
         window.app = new Vue({
             el: '#app',
             data: {
@@ -187,6 +194,7 @@
                     { img: '/assets/images/home/借贷及担保纠纷ICON.png', text: '借贷及担保纠纷' },
                     { img: '/assets/images/home/继承纠纷ICON.png', text: '继承纠纷' },
                 ],
+                guid:"",
                 lawyers: [],
                 noMore: false,
                 loading: true,
@@ -206,7 +214,7 @@
                 qrCode: function () {
                     //todo
                     
-                    return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + guid);
+                    return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + this.guid);
                 },
                 where: function () {
                     var where = '1=1';
@@ -287,12 +295,14 @@
                 this.loadSource();
                 this.loadLawyer();
                 this.scrollSource();
+                refreshLogin();
             }
         });
          //轮询请求
         var loopFunc = function () {
                 //获取用户信息
-            abp.services.app.weiXin.getLoginInfo(guid).done(function (data) {                    
+            if(!app.guid){doLoop();return;}
+            abp.services.app.weiXin.getLoginInfo(app.guid).done(function (data) {                    
                 if (data) {
                     console.log(data);
                         app.currentItem.openid = data.openid;
