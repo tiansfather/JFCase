@@ -34,6 +34,8 @@ namespace Master.Case
                 || o.CaseInitial.CaseSource.City.DisplayName.Contains(keyword)
                 || o.CaseInitial.CaseSource.Court1.DisplayName.Contains(keyword)
                 || o.CaseInitial.CaseSource.Court2.DisplayName.Contains(keyword)
+                || o.CaseInitial.CaseSource.TrialPeopleField.Contains(keyword)
+                || o.CaseInitial.CaseSource.LawyerFirmsField.Contains(keyword)
                 );
         }
         protected override object PageResultConverter(CaseCard entity)

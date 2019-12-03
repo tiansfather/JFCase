@@ -88,19 +88,21 @@ namespace Master.Case
         /// <summary>
         /// 点赞数
         /// </summary>
-        [InterColumn(ColumnName = "点赞数",Sort =8)]
+        [InterColumn(ColumnName = "点赞数",Sort =9)]
         public int PraiseNumber { get; set; }
         /// <summary>
         /// 拍砖数
         /// </summary>
-        [InterColumn(ColumnName = "拍砖数",Sort =9)]
+        [InterColumn(ColumnName = "拍砖数",Sort =10)]
         public int BeatNumber { get; set; }
+        [InterColumn(ColumnName = "推荐排序", Sort = 8,Templet = "<input type=\"text\" value=\"{{(d.sort || 999999) == 999999 ? '' : d.sort}}\" size=5 onblur=\"setSort({{ d.id}},this)\"/>")]
+        public int Sort { get; set; } = 999999;
         /// <summary>
         /// 推荐状态
         /// </summary>
-        [InterColumn(ColumnName ="推荐",Sort =10)]
+        
         public bool IsActive { get; set; }
-        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}",Sort =10)]
+        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}",Sort =11)]
         public CaseStatus CaseStatus { get; set; }
 
         public virtual ICollection<CaseNode> CaseNodes { get; set; } = new List<CaseNode>();

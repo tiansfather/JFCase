@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using Abp.UI;
 using Master.Authentication;
 using Master.Case;
 using Master.Domain;
@@ -30,6 +31,11 @@ namespace Master.Users
         }
         protected override async Task<IQueryable<User>> BuildOrderQueryAsync(RequestPageDto request, IQueryable<User> query)
         {
+            if (request.OrderField == "Id")
+            {
+                return query.OrderBy(o => o.Sort).ThenByDescending(o => o.Id);
+                //return query.OrderBy(o => o.Sort).ThenByDescending(o => o.Id);
+            }
             if (request.OrderField == "caseNumber")
             {
                 if (request.OrderType == "asc")
@@ -71,6 +77,24 @@ namespace Master.Users
                 await Resolve<CaseSourceManager>().ClearCaseContentByUserId(userId);
             }
             
+        }
+
+        public virtual async Task SetSort(int id, string sortStr)
+        {
+            int sort = 999999;
+            if (int.TryParse(sortStr, out sort))
+            {
+                if (sort <= 0)
+                {
+                    throw new UserFriendlyException("排序值必须大于0");
+                }
+            }
+            else
+            {
+                sort = 999999;
+            }
+            var caseInitial = await Manager.GetByIdAsync(id);
+            caseInitial.Sort = sort;
         }
     }
 }

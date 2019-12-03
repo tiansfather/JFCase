@@ -104,6 +104,12 @@
             return where;
 
         }
+
+        function setSort(id, obj) {
+            abp.services.app.miner.setSort(id, obj.value).done(function () {
+                //top.layer.msg('提交成功');
+            })
+        }
     </script>
 }
 

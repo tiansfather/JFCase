@@ -1,5 +1,7 @@
 ﻿using Abp.Authorization;
+using Abp.Extensions;
 using Abp.UI;
+using Master.Dto;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,21 @@ namespace Master.Case
         protected override string ModuleKey()
         {
             return nameof(CaseInitial);
+        }
+
+        protected override async Task<IQueryable<CaseInitial>> BuildOrderQueryAsync(RequestPageDto request, IQueryable<CaseInitial> query)
+        {
+            //默认按推荐排序
+            if (request.OrderField == "Id")
+            {
+                return query.OrderBy(o => o.Sort).ThenByDescending(o => o.Id);
+                //return query.OrderBy(o => o.Sort).ThenByDescending(o => o.Id);
+            }
+            else
+            {
+                
+            }
+            return await base.BuildOrderQueryAsync(request, query);
         }
 
         /// <summary>
@@ -101,6 +118,23 @@ namespace Master.Case
             {
                 caseInitial.IsActive = false;
             }
+        }
+        public virtual async Task SetSort(int id,string sortStr)
+        {
+            int sort = 999999;
+            if(int.TryParse(sortStr, out sort))
+            {
+                if (sort <= 0)
+                {
+                    throw new UserFriendlyException("排序值必须大于0");
+                }
+            }
+            else
+            {
+                sort = 999999;
+            }
+            var caseInitial = await Manager.GetByIdAsync(id);
+            caseInitial.Sort = sort;
         }
         /// <summary>
         /// 管理方清空判例的加工内容

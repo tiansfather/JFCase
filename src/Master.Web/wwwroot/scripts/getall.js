@@ -498,6 +498,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'setSort'
+    abp.services.app.miner.setSort = function(id, sortStr, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Miner/SetSort' + abp.utils.buildQueryString([{ name: 'id', value: id }, { name: 'sortStr', value: sortStr }]) + '',
+        type: 'POST'
+      }, ajaxParams));;
+    };
+
     // action 'getPageResult'
     abp.services.app.miner.getPageResult = function(request, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -2337,6 +2345,14 @@ abp.services = abp.services || {};
         url: abp.appPath + 'api/services/app/CaseInitial/UnRecommand',
         type: 'POST',
         data: JSON.stringify(ids)
+      }, ajaxParams));;
+    };
+
+    // action 'setSort'
+    abp.services.app.caseInitial.setSort = function(id, sortStr, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseInitial/SetSort' + abp.utils.buildQueryString([{ name: 'id', value: id }, { name: 'sortStr', value: sortStr }]) + '',
+        type: 'POST'
       }, ajaxParams));;
     };
 

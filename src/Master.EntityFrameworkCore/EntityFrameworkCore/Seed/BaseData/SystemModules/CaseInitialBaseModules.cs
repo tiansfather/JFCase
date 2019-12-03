@@ -60,29 +60,29 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 Sort = 4
             };
             moduleButtons.Add(ClearButton);
-            var RecommandButton = new ModuleButton()
-            {
-                ButtonKey = "Recommand",
-                ButtonName = "推荐",
-                ButtonType = ButtonType.ForSelectedRows,
-                ButtonActionType = ButtonActionType.Ajax,
-                ButtonActionUrl = $"abp.services.app.caseInitial.recommand",
-                ConfirmMsg = "确认推荐这些案例？",
-                Sort = 5
-            };
-            moduleButtons.Add(RecommandButton);
-            var UnRecommandButton = new ModuleButton()
-            {
-                ButtonKey = "UnRecommand",
-                ButtonName = "取消推荐",
-                ButtonClass = "layui-btn-danger",
-                ButtonType = ButtonType.ForSelectedRows,
-                ButtonActionType = ButtonActionType.Ajax,
-                ButtonActionUrl = $"abp.services.app.caseInitial.unRecommand",
-                ConfirmMsg = "确认取消推荐这些案例？",
-                Sort = 6
-            };
-            moduleButtons.Add(UnRecommandButton);
+            //var RecommandButton = new ModuleButton()
+            //{
+            //    ButtonKey = "Recommand",
+            //    ButtonName = "推荐",
+            //    ButtonType = ButtonType.ForSelectedRows,
+            //    ButtonActionType = ButtonActionType.Ajax,
+            //    ButtonActionUrl = $"abp.services.app.caseInitial.recommand",
+            //    ConfirmMsg = "确认推荐这些案例？",
+            //    Sort = 5
+            //};
+            //moduleButtons.Add(RecommandButton);
+            //var UnRecommandButton = new ModuleButton()
+            //{
+            //    ButtonKey = "UnRecommand",
+            //    ButtonName = "取消推荐",
+            //    ButtonClass = "layui-btn-danger",
+            //    ButtonType = ButtonType.ForSelectedRows,
+            //    ButtonActionType = ButtonActionType.Ajax,
+            //    ButtonActionUrl = $"abp.services.app.caseInitial.unRecommand",
+            //    ConfirmMsg = "确认取消推荐这些案例？",
+            //    Sort = 6
+            //};
+            //moduleButtons.Add(UnRecommandButton);
             return moduleButtons;
         }
 
@@ -97,7 +97,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             ColumnInfos.Single(o => o.ColumnKey == "PraiseNumber").SetData("width", "80");
             ColumnInfos.Single(o => o.ColumnKey == "BeatNumber").SetData("width", "80");
             ColumnInfos.Single(o => o.ColumnKey == "CaseStatus").SetData("width", "80");
-            ColumnInfos.Single(o => o.ColumnKey == "IsActive").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "Sort").SetData("width", "80");
         }
     }
 }

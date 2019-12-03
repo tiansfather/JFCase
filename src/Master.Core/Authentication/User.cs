@@ -78,7 +78,7 @@ namespace Master.Authentication
         [Column(TypeName ="json")]
         public JsonObject<IDictionary<string, object>> Property { get; set; }
 
-        
+        public int Sort { get; set; } = 999999;
         public string Status { get;set; }
 
         [NotMapped]

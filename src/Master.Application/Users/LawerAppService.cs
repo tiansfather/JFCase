@@ -18,7 +18,9 @@ namespace Master.Users
         {
             var minerRole = await Resolve<RoleManager>().FindByNameAsync(StaticRoleNames.Tenants.Miner);
             return (await base.GetQueryable(request))
-                .Where(o => o.Roles.Count(r => r.RoleId == minerRole.Id) > 0);
+                .Where(o=>o.Sort<999999)
+                .Where(o => o.Roles.Count(r => r.RoleId == minerRole.Id) > 0)
+                .OrderBy(o=>o.Sort);
 
         }
 
