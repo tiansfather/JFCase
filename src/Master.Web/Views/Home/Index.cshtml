@@ -2,7 +2,7 @@
 @inject WebCoreConfiguration WebCoreConfiguration
 @{
     Layout = "_LayoutJianFa";
-    ViewData["Title"] = "简法二手房";
+    ViewData["Title"] = "简法案例解读网";
 }
 @section styles{
     <link href="~/assets/css/home/home.css" rel="stylesheet" />
@@ -18,7 +18,7 @@
 <div id="app" v-cloak>
     <header>
 
-        <img id="logo" src="~/assets/images/home/LOGO.png" />
+        <img id="logo" src="~/assets/jianfa/ima/new-logo3.png" />
         <img id="Slogan" src="~/assets/images/home/Slogan.png" />
         @*<span class="title">专业律师搭配的判决书价值共享平台</span>*@
     </header>
@@ -27,7 +27,7 @@
     </div>
     <nav>
         <ul class="nav-img-wrap">
-            <li v-for="item in navImgs" :key="item.text" class="nav-img" @@click="currentAnyou=item;loadLawyer();reloadData();">
+            <li v-for="item in navImgs" :key="item.text" class="nav-img" @@click="currentAnyou=item;reloadData();">
                 <p class="icon_p">
                     <img :src="item.img" alt="Alternate Text" />
                 </p>
