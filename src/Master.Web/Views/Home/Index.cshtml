@@ -12,6 +12,10 @@
             height: auto;
             overflow: initial;
         }
+        .anyou.current p {
+            font-weight: bold;
+            color: #754c24;
+        }
     </style>
 }
 <!--顶部-->
@@ -27,10 +31,10 @@
     </div>
     <nav>
         <ul class="nav-img-wrap">
-            <li v-for="item in navImgs" :key="item.text" class="nav-img" @@click="currentAnyou=item;reloadData();">
-                <p class="icon_p">
+            <li v-for="item in navImgs" :key="item.text" class="nav-img anyou" :class="{current:currentAnyou==item}" @@click="currentAnyou=currentAnyou!=item?item:null;reloadData();">
+                @*<p class="icon_p">
                     <img :src="item.img" alt="Alternate Text" />
-                </p>
+                </p>*@
                 <p class="text_p">{{item.text}}</p>
             </li>
         </ul>
@@ -62,9 +66,9 @@
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
-                        <p class="lawyer-name_p">{{item.name}}</p>
+                        @*<p class="lawyer-name_p">{{item.name}}</p>*@
                     </li>
-                    <li class="lawyer-logo" @@click="location.href='/Home/Main'">
+                    <li class="lawyer-logo"  @@click="qrcodeVisible=true">
                         <p class="lawyer-img_p lawyer-more">
                             <span>更多律师</span>
                         </p>
