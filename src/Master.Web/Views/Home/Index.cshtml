@@ -86,7 +86,7 @@
                                             <div style="width:415px" class="drop-wrap">
                                                 <p class="drop-title">{{item.creatorName}}</p>
                                                 <p><span class="drop-dsc">执业机构:</span>{{item.workLocation}} </p>
-                                                <p> <span class="drop-dsc">擅长领域:</span>{{item.anYou}} </p>
+                                                <p> <span class="drop-dsc">擅长领域:</span>{{item.creatorAnYou}} </p>
                                                 <p><span class="drop-dsc">执业年限：</span>{{item.workYear}} </p>
                                                 <p><span class="drop-dsc">联系方式:</span>{{item.phoneNumber}}年 </p>
                                             </div>
@@ -94,7 +94,9 @@
                                     </el-dropdown-menu>
                                 </el-dropdown>
                                 <div class="viewcase-title-wrap">
-                                    <p>&nbsp;&nbsp;<a class="sourcesn" @@click="getCaseInfo(item.caseSourceId)">{{item.sourceSN||'占位符'}}</a></p>
+                                    <p style="text-align:right">&nbsp;&nbsp;
+                                        <a class="caseanyou" style="float:left">{{item.anYou||''}}</a>
+                                    <a class="sourcesn" @@click="getCaseInfo(item.caseSourceId)">{{item.sourceSN||''}}</a></p>
                                     <p class="viewcase-title" @@click="preview(item);" style="cursor:pointer">{{item.title}}</p>
                                 </div>
                             </i1>
@@ -109,7 +111,7 @@
                             </div>
                         </dd>
                         <dd v-if="loading" style="text-align:center;line-height:2;">加载中...</dd>
-                        <dd v-if="noMore" style="text-align:center;line-height:2;">没有更多了</dd>
+                        <dd v-if="noMore" style="text-align:center;line-height:2;">今天推荐的案例都被您看光啦，棒棒哒！推荐案例每周更新，记得常来哦</dd>
                     </dl>
                 </div>
             </div>
@@ -221,7 +223,7 @@
                     return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + this.guid);
                 },
                 where: function () {
-                    var where = '1=1';
+                    var where = 'sort < 999999';
                     if (this.currentAnyou) {
                         where += ' and (CaseSource.AnYou.DisplayName="' + this.currentAnyou.text + '" or CaseSource.AnYou.Name="' + this.currentAnyou.text + '")';
                     }

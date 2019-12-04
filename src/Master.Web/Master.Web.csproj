@@ -51,6 +51,9 @@
     <Content Remove="menu.json" />
   </ItemGroup>
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\assets\css\home\home.min.css" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="app.config" />
     <None Include="Views\Dictionary\Edit.cshtml" />
     <None Include="Views\Dictionary\Index.cshtml" />
