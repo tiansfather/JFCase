@@ -20,7 +20,7 @@ namespace Master.Case
             return query
                 .IgnoreQueryFilters()
                 .Where(o=>!o.IsDeleted)
-                .Include(o=>o.CaseSource)
+                .Include(o=>o.CaseSource).ThenInclude(o=>o.AnYou)
                 .Include(o=>o.CreatorUser)
                 .Where(o=>o.CaseStatus==CaseStatus.展示中)
                 .OrderByDescending(o=>o.IsActive)
@@ -86,7 +86,7 @@ namespace Master.Case
                 caseCount,
                 entity.CaseSourceId,
                 entity.CaseSource.SourceSN,
-                AnYou=entity.CaseSource.AnYou.DisplayName
+                AnYou=entity.CaseSource.AnYou?.DisplayName
             };
         }
 
