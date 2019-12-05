@@ -254,6 +254,14 @@ main aside .zhaomu-msg {
   font-size: 14px;
 }
 
+.viewcase-list .view-case:hover .viewcase-title {
+  background: #764c24 !important;
+}
+
+.viewcase-list .view-case:hover .viewcase-detail {
+  background: #f7f0e8 !important;
+}
+
 .viewcase-list .view-case i1 {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -295,18 +303,10 @@ main aside .zhaomu-msg {
   background: #C59B6D;
 }
 
-.viewcase-list .view-case i1 .viewcase-title-wrap .viewcase-title:hover {
-  background: #764c24;
-}
-
 .viewcase-list .view-case .viewcase-detail {
   padding: 10px;
   background: #fff;
   border-radius: 5px;
-}
-
-.viewcase-list .view-case .viewcase-detail:hover {
-  background: #f7f0e8;
 }
 
 .viewcase-list .view-case .viewcase-detail .introduction {
@@ -349,7 +349,8 @@ main aside .zhaomu-msg {
   margin-right: 12px;
 }
 
-.el-dropdown-menu__item:focus, .el-dropdown-menu__item:not(.is-disabled):hover {
+.el-dropdown-menu__item:focus,
+.el-dropdown-menu__item:not(.is-disabled):hover {
   background: #fff;
 }
 /*# sourceMappingURL=home.css.map */
