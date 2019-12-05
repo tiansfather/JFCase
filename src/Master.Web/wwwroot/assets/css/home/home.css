@@ -97,7 +97,6 @@ main .main-wrap .lawyer-wrap {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  height: 985px;
   margin-right: 10px;
 }
 
@@ -185,6 +184,12 @@ main aside {
   text-align: center;
   position: relative;
   color: #646464;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 101px;
+  z-index: 0;
+  height: 800px;
+  margin-top: 20px;
 }
 
 main aside h3 {
@@ -245,7 +250,6 @@ main aside .zhaomu-msg {
 }
 
 .viewcase-list {
-  height: 900px;
   overflow: auto;
 }
 

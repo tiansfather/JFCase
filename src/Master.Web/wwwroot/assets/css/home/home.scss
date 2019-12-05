@@ -75,7 +75,7 @@ main {
         .lawyer-wrap {
             color: #C59B6D;
             flex: 1;
-            height: 985px;
+            // height: 985px;
             margin-right: 10px;
 
             .lawyer-logo-wrap {
@@ -156,7 +156,11 @@ main {
         text-align: center;
         position: relative;
         color: #646464;
-
+        position: sticky;
+        top: 101px;
+        z-index: 0;
+        height: 800px;
+        margin-top: 20px;
         h3 {
             color: #fff;
             background: #C59B6D;
@@ -300,7 +304,7 @@ main {
 }
 
 .viewcase-list {
-    height: 900px;
+    // height: 900px;
     overflow: auto;
 
     .view-case {
