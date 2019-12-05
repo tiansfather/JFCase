@@ -24,7 +24,13 @@ header {
 #banner img {
     width: 100%;
 }
-
+nav{
+    position: sticky;
+    top: 0;
+    padding: 20px 0;
+    background: #fff;
+    z-index: 1;
+}
 nav ul.nav-img-wrap {
     display: flex;
     width: 1200px;
@@ -60,7 +66,7 @@ main {
     .main-wrap {
         width: 1200px;
         margin: 0 auto;
-        padding: 20px 0;
+        // padding: 20px 0;
         padding-bottom: 0;
         display: flex;
 
@@ -74,6 +80,11 @@ main {
                 display: flex;
                 border-bottom: 4px solid #C59B6D;
                 margin-bottom: 10px;
+                padding-top: 20px;
+                position: sticky;
+                top: 101px;
+                z-index: 2;
+                background: #f4f4f4;
 
                 .lawyer-logo {
                     margin-right: 20px;
@@ -136,95 +147,144 @@ main {
             }
         }
     }
-
-    aside {
+    aside{
+        background:#fff;
         width: 370px;
         text-align: center;
         position: relative;
         color: #646464;
-
-        .qrcode-wrap {
-            background: #fff;
-            height: 830px;
-
-            .jianfa-img {
-                margin-top: 104px;
-                width: 75px;
-                height: 70px;
+        h3 {
+            color: #fff;
+            background:#C59B6D ;
+            font-size: 23px;
+            line-height: 106px;
+            font-weight: bold;
+            letter-spacing: 16px;
+        }
+        .zhuce-wrap{
+            margin-top:148px;
+            line-height: 1;
+            .zhuce-p1{
+                font-size:18px;
+                letter-spacing: 6px;
             }
-
-            h3 {
-                margin-top: 41px;
-                color: #C59B6D;
-                font-size: 21px;
-                line-height: 21px;
-                font-weight: bold;
-                letter-spacing: 16px;
-            }
-
-            .h3-bg {
-                height: 13px;
-                width: 290px;
-                background: #f4f4f4;
-                margin: 0 auto;
-                margin-top: -8px;
-            }
-
-            .duanli {
-                margin-top: 88px;
-                font-size: 17px;
-                line-height: 17px;
-            }
-
-            img.link {
-                margin-top: 17px;
-                height: 100px;
-                width: 100px;
-                cursor: pointer;
-            }
-
-            .jieduzhe {
-                margin-top: 50px;
-                font-size: 20px;
-                line-height: 20px;
-            }
-
-            .slogan {
-                margin-top: 14px;
-                font-size: 14px;
-                line-height: 14px;
-            }
-
-            .qr-code {
-                margin-top: 20px;
-                height: 150px;
-                width: 150px;
-
+            .zhuce-p2{
+                margin-top:10px;
+                font-size:14px;
             }
         }
-
-        .recruit-wrap {
-            margin-top: 20px;
-
-            .recruit-wrap-title {
-                color: #fff;
-                background: #C59B6D;
-                font-size: 23px;
-                line-height: 40px;
-                font-weight: bold;
-                letter-spacing: 11px;
-            }
-
-            .recruit-wrap-list {
-                background: #fff;
-                line-height: 1.8;
-                padding: 30px 70px;
-                box-sizing: border-box;
-                text-align: left;
+        .qr-code{
+            margin-top:31px;
+            height: 180px;
+            width: 180px;
+        }
+        .zhaomu-wrap{
+            margin-top:120px;
+            font-size: 16px;
+            line-height: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .dashed{
+                width: 80px;
+                display: inline-block;
+                border-bottom: 1px dashed #C59B6D;
+                margin: 0 10px;
             }
         }
-
+        .zhaomu-msg{
+            margin-top:26px;
+            font-size:14px;
+        }
     }
+    // aside {
+    //     width: 370px;
+    //     text-align: center;
+    //     position: relative;
+    //     color: #646464;
+
+    //     .qrcode-wrap {
+    //         background: #fff;
+    //         height: 830px;
+
+    //         .jianfa-img {
+    //             margin-top: 104px;
+    //             width: 75px;
+    //             height: 70px;
+    //         }
+
+    //         h3 {
+    //             margin-top: 41px;
+    //             color: #C59B6D;
+    //             font-size: 21px;
+    //             line-height: 21px;
+    //             font-weight: bold;
+    //             letter-spacing: 16px;
+    //         }
+
+    //         .h3-bg {
+    //             height: 13px;
+    //             width: 290px;
+    //             background: #f4f4f4;
+    //             margin: 0 auto;
+    //             margin-top: -8px;
+    //         }
+
+    //         .duanli {
+    //             margin-top: 88px;
+    //             font-size: 17px;
+    //             line-height: 17px;
+    //         }
+
+    //         img.link {
+    //             margin-top: 17px;
+    //             height: 100px;
+    //             width: 100px;
+    //             cursor: pointer;
+    //         }
+
+    //         .jieduzhe {
+    //             margin-top: 50px;
+    //             font-size: 20px;
+    //             line-height: 20px;
+    //         }
+
+    //         .slogan {
+    //             margin-top: 14px;
+    //             font-size: 14px;
+    //             line-height: 14px;
+    //         }
+
+    //         .qr-code {
+    //             margin-top: 20px;
+    //             height: 150px;
+    //             width: 150px;
+
+    //         }
+    //     }
+
+    //     .recruit-wrap {
+    //         margin-top: 20px;
+
+    //         .recruit-wrap-title {
+    //             color: #fff;
+    //             background: #C59B6D;
+    //             font-size: 23px;
+    //             line-height: 40px;
+    //             font-weight: bold;
+    //             letter-spacing: 11px;
+    //         }
+
+    //         .recruit-wrap-list {
+    //             background: #fff;
+    //             line-height: 1.8;
+    //             padding: 30px 70px;
+    //             box-sizing: border-box;
+    //             text-align: left;
+    //         }
+    //     }
+
+    // }
 }
 
 .viewcase-list {
@@ -268,6 +328,9 @@ main {
                     line-height: 25px;
                     height: 50px;
                     background: #C59B6D;
+                    &:hover{
+                        background: #764c24;
+                    }
                 }
             }
         }
@@ -276,6 +339,9 @@ main {
             padding: 10px;
             background: #fff;
             border-radius: 5px;
+            &:hover{
+                background: #f7f0e8;
+            }
 
             .introduction {
                 color: #787878;
