@@ -47,7 +47,7 @@
                         <p class="lawyer-img_p">
                             <span>查看全部</span>
                         </p>
-                        <p class="lawyer-name_p">ALL</p>
+                        @*<p class="lawyer-name_p">ALL</p>*@
                     </li>
                     <li class="lawyer-logo" v-for="item in lawyers">
                         <el-dropdown placement="bottom-start">
@@ -72,7 +72,7 @@
                         <p class="lawyer-img_p lawyer-more">
                             <span>更多律师</span>
                         </p>
-                        <p class="lawyer-name_p">MORE</p>
+                        @*<p class="lawyer-name_p">MORE</p>*@
                     </li>
                 </ul>
                 <div class="viewcase-list-wrap">
@@ -211,11 +211,11 @@
             el: '#app',
             data: {
                 navImgs: [
-                    { img: '/assets/images/home/房屋买卖纠纷ICON.png', text: '商品房买卖纠纷' },
-                    { img: '/assets/images/home/建筑工程纠纷ICON.png', text: '建筑工程纠纷' },
-                    { img: '/assets/images/home/离婚财产分割ICON.png', text: '离婚财产分割' },
-                    { img: '/assets/images/home/分家析产与确权ICON.png', text: '分家析产与确权' },
-                    { img: '/assets/images/home/借贷及担保纠纷ICON.png', text: '借贷及担保纠纷' },
+                    { img: '/assets/images/home/房屋买卖纠纷ICON.png', text: '指导案例' },
+                    { img: '/assets/images/home/建筑工程纠纷ICON.png', text: '存量房买卖' },
+                    { img: '/assets/images/home/离婚财产分割ICON.png', text: '商品房买卖' },
+                    { img: '/assets/images/home/分家析产与确权ICON.png', text: '所有权确认' },
+                    { img: '/assets/images/home/借贷及担保纠纷ICON.png', text: '离婚纠纷' },
                     { img: '/assets/images/home/继承纠纷ICON.png', text: '继承纠纷' },
                 ],
                 guid:"",
@@ -332,6 +332,9 @@
                         app.currentItem.openid = data.openid;
                         app.currentItem.nickName = data.nickname;//用户昵称
                         app.currentItem.avata = data.headimgurl;//头像
+                        $.cookie("openid",data.openid);
+                        $.cookie("nickName",data.nickname);
+                        $.cookie("avata",data.headimgurl);
                         //根据openid去寻找用户的账号信息
                         abp.services.app.user.getUserStatusByWeOpenId(data.openid).done(function (status) {
                             //status的四种值：1:正常登录，-1:被注销，2：未注册,3:审核中
@@ -347,6 +350,7 @@
                                 doExternalAuthentication(authModel);
                             } else if (status == 2) {
                                 app.step = 2;
+                                location.href='/Account/Login?step=2';
                             } else if (status == -1) {
                                 var toemail = abp.setting.get("receiveMailAddress");
                                 abp.message.info("您的账号已被冻结（注销），请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>");

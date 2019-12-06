@@ -236,12 +236,17 @@ namespace Master.Case
                 .Where(o => o.Id == id)
                 .SingleOrDefaultAsync();
 
+            if (caseSource.OwerId != AbpSession.UserId)
+            {
+                throw new UserFriendlyException("无权查看此判例加工信息");
+            }
+
             var caseInitial = await caseInitialManager.GetAll()
                 .Include(o => o.CaseNodes)
                 .Include(o => o.CaseLabels)
                 .Include(o => o.CaseFines)
                 .Include(o => o.CaseCards)
-                .Where(o => o.CaseSourceId == id && o.CreatorUserId == caseSource.OwerId)
+                .Where(o => o.CaseSourceId == id /*&& o.CreatorUserId == caseSource.OwerId*/)
                 .FirstOrDefaultAsync();
 
             #region 初加工数据

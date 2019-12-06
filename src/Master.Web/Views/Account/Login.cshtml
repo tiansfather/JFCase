@@ -156,6 +156,13 @@
             },
             mounted:function(){
                 refreshLogin();
+                var step=$.getUrlParam("step");
+                if(step==2){
+                    this.currentItem.openid=$.cookie("openid");
+                    this.currentItem.nickName=$.cookie("nickName");
+                    this.currentItem.avata=$.cookie("avata");
+                    this.step=2;
+                }
             },
             methods: {
                 test() {
