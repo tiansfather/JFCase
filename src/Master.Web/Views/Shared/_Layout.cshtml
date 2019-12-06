@@ -4,14 +4,19 @@
 @using Abp.Web.Security.AntiForgery
 @using Master
 @using Master.Configuration
+@using Microsoft.AspNetCore.Http
 @inject Master.Timing.AppTimes AppTimes
 @inject IAbpAntiForgeryManager AbpAntiForgeryManager
 @inject IMultiTenancyConfig MultiTenancyConfig
 @inject WebCoreConfiguration WebCoreConfiguration
+@inject IHttpContextAccessor ContextAccessor
 @{
     Layout = null;
     AbpAntiForgeryManager.SetCookie(Context);
-    
+    if (ContextAccessor.HttpContext.Session.Get<int?>("LoginInfo") == null)
+    {
+        ContextAccessor.HttpContext.Response.Redirect("/Account/Login");
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +24,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
     <meta name="renderer" content="webkit">
     <title>@ViewData["Title"]</title>
     <!--[if lt IE 9]>
@@ -29,6 +35,7 @@
     <link rel="stylesheet" href="/assets/layuiadmin/layui/css/layui.css" media="all" asp-append-version="true">
     <link rel="stylesheet" href="/assets/layuiadmin/style/admin.css" media="all" asp-append-version="true">
     <link href="~/assets/css/default.css" rel="stylesheet" asp-append-version="true" />
+
     <!-- View specific styles -->
     @RenderSection("styles", required: false)
     <script type="text/javascript">
@@ -45,6 +52,7 @@
     </environment>
 
     <script src="~/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
+    <script src="/assets/js/abp.layer.js" asp-append-version="true"></script>
     <script src="~/assets/js/global.js" asp-append-version="true"></script>
     <!-- 全局js -->
     <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
@@ -55,42 +63,38 @@
     <script>
         layui.config({
             base: config.layuiBase //静态资源所在路径
-            , version: 181224
+            , version: 190618
         }).extend($.extend({
             index: config.layuiIndex //主入口模块
         }, config.layuiExtends));
 
 
     </script>
+    <style>
+        .layui-form-pane .layui-form-label {
+            padding: 8px 5px !important;
+        }
+    </style>
 </head>
 <body class="gray-bg" @*style="overflow-y:scroll" *@>
-	@RenderSection("MainBody", required: false)
-	<div class="layui-anim layui-anim-upbit" data-anim="layui-anim-upbit">
-		@RenderBody()
-	</div>
+    @RenderSection("MainBody", required: false)
+    @*<div class="layui-anim layui-anim-upbit" data-anim="layui-anim-upbit">
+
+        </div>*@
+    @RenderBody()
 
 
-	<!-- View specific scripts -->
-	@RenderSection("scripts", required: false)
-	<script type="text/html" id="activeTpl">
-		{{#if(d.isActive){}}
-		<span class="layui-badge layui-bg-blue">@L("有效")</span>
-		{{#}else{}}
-		<span class="layui-badge layui-bg-gray">@L("无效")</span>
-		{{#}}}
-	</script>
+    @foreach (var commonView in WebCoreConfiguration.CommonViews)
+    {
+        await Html.RenderPartialAsync(commonView);
+    }
 
 
-	@foreach (var commonView in WebCoreConfiguration.CommonViews)
-	{
-		await Html.RenderPartialAsync(commonView);
-	}
-
-
-	<script>
+    @RenderSection("scripts", required: false)
+    <script>
         layui.use(config.layuiModules, function () {
-			//表单初始化
-			func.initForm();
+            //表单初始化
+            func.initForm();
             //调用layui加载完事件
             for (fnIndex in config.readyFuncs) {
                 var fn = config.readyFuncs[fnIndex];
@@ -98,19 +102,19 @@
             }
             config.readyFuncs.hadRun = true;
             config.ready();
-			if (!parent.$("#LAY_app_tabs").is(":visible")) {
-				if (top.$("#LAY_app_tabsheader li").size() > 1) {
-					parent.$("#LAY_app_tabsheader li").eq(0).remove();
-					parent.$("#LAY_app_body .layadmin-tabsbody-item").eq(0).remove();
-					//var id = parent.$("#LAY_app_tabsheader li").eq(0).attr("lay-id");
-					//console.log(id);
-					//top.layui.element.tabDelete("layadmin-layout-tabs", id);//删除
-				}
+            if (!parent.$("#LAY_app_tabs").is(":visible")) {
+                if (top.$("#LAY_app_tabsheader li").size() > 1) {
+                    parent.$("#LAY_app_tabsheader li").eq(0).remove();
+                    parent.$("#LAY_app_body .layadmin-tabsbody-item").eq(0).remove();
+                    //var id = parent.$("#LAY_app_tabsheader li").eq(0).attr("lay-id");
+                    //console.log(id);
+                    //top.layui.element.tabDelete("layadmin-layout-tabs", id);//删除
+                }
 
 
-			}
-		})
-	</script>
+            }
+        })
+    </script>
 </body>
 </html>
 

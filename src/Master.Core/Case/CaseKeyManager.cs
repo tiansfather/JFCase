@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Master.Case
 {
-    public class CaseKeyManager:DomainServiceBase<CaseKey,int>
+    public class CaseNodeManager:DomainServiceBase<CaseNode,int>
     {
     }
 }

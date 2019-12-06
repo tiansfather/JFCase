@@ -1,21 +1,4 @@
-﻿@* ------------------------------------layui的模板固定列-------------------------------- *@
-<script type="text/html" id="colsThGuding">
-    <div class="my-colsth-div {{ d.lockDone||'' }} my-colsth-guding" style="">
-        <i class="iconfont icon-lock my-colsth-i" onclick="layuiExt.guDingLie(this)" title="固定列"></i>
-    </div>
-</script>
-<script type="text/html" id="colsThShaixuan">
-    <div class="my-colsth-div {{ d.lockDone||'' }} my-colsth-shaixuan" onclick="layuiExt.shaiXuanLie(this)" style="">
-        <i class="iconfont icon-shaixuan my-colsth-i" title="筛选"></i>
-    </div>
-</script>
-<script type="text/html" id="shaixuanSelect">
-    <div id="domSelect" style="position: absolute;top: 0px;left: 0px;width: 100%;">
-        <div id="filterSelectOffset{{d.id}}" style="width:250px;z-index:999;position:absolute;top:0;left:0;">
-            <select name="filterSelect" xm-select="filterSelect{{d.id}}" xm-select-search="" xm-select-height="36px" xm-select-show-count="1"></select>
-        </div>
-    </div>
-</script>
+﻿
 @* -------------------------------------------------------------------------- *@
 <script type="text/x-template" id="VueSearchInput">
     @* 渲染出一个input和一个查询按钮，当按回车和点击按钮都会把input的值传出来 *@
@@ -596,7 +579,7 @@
     .r-input-number {
         position: relative;
         display: inline-block;
-        width: 180px;
+        width: 80px;
         line-height: 38px;
     }
 
@@ -738,7 +721,7 @@
                 <i title="添加" class="layui-icon-add-1 layui-icon"></i>
             </span>
             <div class="r-input">
-                <input type="text" autocomplete="off" class="r-input__inner" v-model="nAddNum" @@keyup.enter="addPart">
+                <input type="text" autocomplete="off" class="r-input__inner" v-model="nAddNum" @@keyup.enter="addPart" >
             </div>
         </div>
     </div>
@@ -844,6 +827,10 @@
                 Vue.nextTick(layui.form.render)
             },
             addPart: function () {
+                if (isNaN(this.nAddNum)) {
+                    layer.msg("请输入数字", { icon: 5, anim: 6 })
+                    return;
+                }
                 var addData = {};
                 $.extend(addData, this.setDefaultData)
                 for (var i = 0; i < this.nAddNum; i++) {

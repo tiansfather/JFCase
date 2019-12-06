@@ -37,9 +37,18 @@ namespace Master.Users
         /// </summary>
         [Required]
         public string Email { get; set; }
+        public string PhoneNumber { get; set; }
         /// <summary>
         /// 备注
         /// </summary>
         public string Remarks { get; set; }
+        /// <summary>
+        /// 职业年限
+        /// </summary>
+        public int WorkYear { get; set; }
+        /// <summary>
+        /// 个人介绍
+        /// </summary>
+        public string Introduction { get; set; }
     }
 }

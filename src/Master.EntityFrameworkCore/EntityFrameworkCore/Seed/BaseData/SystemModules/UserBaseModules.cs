@@ -60,6 +60,10 @@ namespace Master.EntityFrameworkCore.Seed.BaseData
             {
                 column_operation.SetData("width", "240");
             }
+
+            ColumnInfos.Single(o => o.ColumnKey == "Name").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "CreatorUserId").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId").SetData("width", "80");
         }
         /// <summary>
         /// 得到对应的基础附加按钮
@@ -82,18 +86,18 @@ namespace Master.EntityFrameworkCore.Seed.BaseData
             //};
             //moduleButtons.Add(VerifyModuleButton);
             //增加权限按钮(有账号的显示)
-            var PermissionModuleButton = new ModuleButton()
-            {
-                ButtonKey = "Permission",
-                ButtonName = "权限",
-                ButtonType = ButtonType.ForSingleRow ,
-                ButtonActionParam= "{\"btn\": []}",
-                ButtonActionType = ButtonActionType.Form,
-                ButtonActionUrl = $"/Permission/Assign",
-                ButtonClass = "",
-                Sort = 4
-            };
-            moduleButtons.Add(PermissionModuleButton);
+            //var PermissionModuleButton = new ModuleButton()
+            //{
+            //    ButtonKey = "Permission",
+            //    ButtonName = "权限",
+            //    ButtonType = ButtonType.ForSingleRow ,
+            //    ButtonActionParam= "{\"btn\": []}",
+            //    ButtonActionType = ButtonActionType.Form,
+            //    ButtonActionUrl = $"/Permission/Assign",
+            //    ButtonClass = "",
+            //    Sort = 4
+            //};
+            //moduleButtons.Add(PermissionModuleButton);
 
             //增加账号按钮
             var AccountNumberModuleButton = new ModuleButton()

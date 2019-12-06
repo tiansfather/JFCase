@@ -83,7 +83,7 @@ namespace Master.Module
         /// <summary>
         /// 资源标记,一般用于代表权限
         /// </summary>
-        Resource=0,
+        Resource = 0,
         /// <summary>
         /// 异步提交
         /// </summary>
@@ -95,6 +95,10 @@ namespace Master.Module
         /// <summary>
         /// 打开标签页
         /// </summary>
-        Tab = 3
+        Tab = 3,
+        /// <summary>
+        /// 直接执行函数
+        /// </summary>
+        Func = 4,
     }
 }

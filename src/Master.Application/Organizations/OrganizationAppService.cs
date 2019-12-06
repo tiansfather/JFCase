@@ -72,7 +72,10 @@ namespace Master.Organizations
             return ous.Select(o =>
             {
                 var dto = o.MapTo<OrganizationDto>();
-
+                if (dto.Name.IsNullOrEmpty())
+                {
+                    dto.Name = dto.DisplayName;
+                }
                 return dto;
             }
             );

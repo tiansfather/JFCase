@@ -1,0 +1,291 @@
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+    Layout = "_LayoutJianFa";
+    ViewData["Title"] = "案源库";
+}
+@*<div id="app">
+        <com-headr active-index="4-3"></com-headr>
+        <div class="r-main-wrap" v-cloak>
+            {{part}}
+        </div>
+        <com-footer></com-footer>
+    </div>*@
+<div id="app">
+    <!--顶部-->
+    <div id="jianfa_top">
+            <div class="top-logo">
+                <div class="logo-pic"><img src="ima/logo-ny.png" border="0"><span>案例工厂</span></div>
+                <div class="daohang-top">
+                    <!--导航-->
+                    <i-Menu mode="horizontal" :theme="theme1" active-name="4-2">
+                        <Menu-Item name="1"><a href="首页.html">首　页</a></Menu-Item>
+                        <Menu-Item name="2"><a href="查案例.html">查案例</a></Menu-Item>
+                        <Menu-Item name="3"><a href="看观点.html">看观点</a></Menu-Item>
+                        <!--<Menu-Item name="4"><Icon type="ios-contact"></Icon>工作台</Menu-Item>-->
+                        <Submenu name="4">
+                            <template slot="title">
+                                <Icon type="ios-stats"></Icon>工作台
+                            </template>
+                            <MenuGroup>
+                                <Menu-Item name="4-1">加 工 页<!--<a href="index-4.html">加 工 页</a>--></Menu-Item>
+                                <Menu-Item name="4-2"><a href="案源库.html">案 源 库</a></Menu-Item>
+                                <Menu-Item name="4-3"><a href="我的文件.html">我的文件</a></Menu-Item>
+                                <Menu-Item name="4-4"><a href="我的案例.html">我的案例</a></Menu-Item>
+                                <Menu-Item name="4-5"><a href="我的精品.html">我的精品</a></Menu-Item>
+                            </MenuGroup>
+                        </Submenu>
+                    </i-Menu>
+                    <!--end-->
+                </div>
+                <div class="portrait-pic"><img src="ima/index-2.png" border="0"></div>
+            </div>
+        </div>
+        <!--案源库-01-->
+        <div class="jianfa-content">
+            <div class="ny-content">
+                <ul>
+                    <li>
+                        <dl>
+                            <dd>当前位置：案例工厂 > 查案例 > 筛选 ：</dd>
+                            <dd class="xchu">上海<span><!--<i class="jianfa fa-close"></i>-->×</span></dd>
+                            <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl class="xian">
+                            <dd class="style-bf-20">
+                                <template>
+                                    <i-select placeholder="请选择案由" v-model="model2" size="small">
+                                        <i-option v-for="item in anyou" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+                                    </i-select>
+                                </template>
+                            </dd>
+                            <!--<dd class="style-bf-20">
+                            <select>
+                            <option value="" style="display:none">请选择</option>
+                            <option value ="案由一">案由一</option>
+                            <option value ="案由二">案由二</option>
+                            </select>
+                            </dd>-->
+                            <dd class="style-bf-20">
+                                <template>
+                                    <i-select placeholder="请选择城市" v-model="model3" size="small">
+                                        <i-option v-for="item in chengshi" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+                                    </i-select>
+                                </template>
+                            </dd>
+                            <dd class="style-bf-20">
+                                <template>
+                                    <i-select placeholder="请选择法院" v-model="model4" size="small">
+                                        <i-option v-for="item in fayuan" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+                                    </i-select>
+                                </template>
+                            </dd>
+                            <dd class="style-bf-30">
+                                <template>
+                                    <i-input v-model="value" size="small" placeholder="请输入关键词等信息..." />
+                                </template>
+                            </dd>
+                            <dd class="style-bf-10"><Button class="btn-search">筛选</Button></dd>
+                        </dl>
+                    </li>
+                    <li class="on">您的工作台已有 <span class="shuzi">5</span> 个案例，还可以选择 <span class="shuzi">3</span> 个案例:</li>
+                    <li>
+                        <div class="li-table table-stripe">
+                            <table width="100%">
+                                <th>城市</th>
+                                <th>一审法院</th>
+                                <th>二审法院</th>
+                                <th width="220">案号</th>
+                                <th width="120">案由	</th>
+                                <th width="180">代理律师</th>
+                                <th width="120">生效日期</th>
+                                <th>处理记录</th>
+                                <th width="50">操作</th>
+                                <tr>
+                                    <td>上海</td>
+                                    <td>浦东新区</td>
+                                    <td>最高法院</td>
+                                    <td><a @@click="moda12 = true">(2016)沪 0115 民初 67704 号</a></td>
+                                    <td>房屋买卖纠纷</td>
+                                    <td>郑卫青、吴 丹、杨斯空</td>
+                                    <td>2016/04/10</td>
+                                    <td>无</td>
+                                    <td><a @@click="modal1 = true"><img src="ima/jia-icon.png"></a><!--<Button @@click="modal1 = true" class="btn-img"></Button>--></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--end-->
+        <!--添加1-->
+        <Modal width="428px" v-model="modal1" class-name="center-modal" :mask-closable="false">
+            <div class="neirong-eject">
+                <ul>
+                    <li class="bot-on-b"><p>是否确认加入工作台</p></li>
+                </ul>
+            </div>
+        </Modal>
+        <!--添加-->
+        <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" title="(2016)沪 0115 民初 67704 号">
+            <div class="neirong-eject">
+                <ul>
+                    <li><img src="ima/anhao-1.jpg"></li>
+                </ul>
+            </div>
+            <div slot="footer">&nbsp;</div>
+        </Modal>
+    <!--
+    <div slot="footer">
+    <Button class="btn-footer" @@click="submit">确认</Button><Button class="btn-footer" @@click="submit">取消</Button>
+    </div>
+    </Modal>-->
+    <!--end-->
+    <!--footer-->
+    <com-footer></com-footer>
+    <!--end-->
+</div>
+@section scripts{
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                theme1: 'light',
+                //spanLeft: 3,
+                //spanRight: 21,
+                theme1: 'primary',
+                value: '',
+                modal1: false,
+                moda12: false,
+                // moda3: false,
+                // password1:false,
+                //value1: [],
+
+                //表格数据//
+                //end//
+                //选择案由//
+                anyou: [
+                    {
+                        value: 'anyou1',
+                        label: '案由一'
+                    },
+                    {
+                        value: 'anyou2',
+                        label: '案由二'
+                    },
+                ],
+                model2: '',
+                //end//
+                //选择城市//
+                chengshi: [
+                    {
+                        value: 'chengshi1',
+                        label: '上海'
+                    },
+                    {
+                        value: 'chengshi2',
+                        label: '北京'
+                    },
+                ],
+                model3: '',
+                //end//
+                //选择法院//
+                fayuan: [
+                    {
+                        value: 'fayuan1',
+                        label: '最高人民法院'
+                    },
+                    {
+                        value: 'fayuan2',
+                        label: '第二人民法院'
+                    },
+                ],
+                model4: '',
+                //end//
+            },
+            //弹出1//
+            //methods: {
+            //submit () {
+            //this.modal1 = false;
+            // }
+            //},
+            //
+
+        })
+    </script>
+
+    <script>
+        //window.app = new Vue({
+        //    el: '#app',
+        //    data: {
+        //        part: [],
+        //        wherePart: {
+        //            anyouid: '',
+        //            cityId: '',
+        //            courtId: '',
+        //            courtId: ''
+        //        },
+        //        keyword: ''
+        //    },
+        //    computed: {
+        //        where: function () {
+        //            var where = '1=1';
+        //            for (var i in this.wherePart) {
+        //                var data = this.wherePart[i];
+        //                if (!data) continue;
+        //                if (i == 'courtId') {
+        //                    where += ` and (court1Id=${courtId} or court2id=${courtId})`;
+        //                } else {
+        //                    where += ` and ${i}=${anyouid}`;
+        //                }
+
+        //            }
+        //            return where;
+        //            //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+
+        //        }
+        //    },
+        //    methods: {
+        //        loadSource: function () {
+        //            //数据获取接口
+        //            abp.services.app.workbench.getPageResult({ where: this.where, keyword: this.keyword }).done((res) => {
+        //                this.part = res.data;
+        //                console.log(this.part);
+        //            })
+        //        }
+        //    },
+        //    mounted: function () {
+        //        this.loadSource();
+        //    }
+        //})
+                    ////数据获取接口
+                    //var where = `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+                    //abp.services.app.workbench.getPageResult({ where: where, keyword: keyword }).done(function (data) {
+                    //    console.log(data);
+                    //})
+                    ////获取所有案由
+                    //abp.services.app.type.getAnYous().done(function (data) {
+                    //    //data:[{id:1,displayName:'房屋纠纷'}]
+                    //})
+                    ////获取所有城市
+                    //abp.services.app.type.getCities().done(function (data) {
+                    //    //data:[{id:1,displayName:'上海'}]
+                    //})
+                    ////获取城市下所有法院
+                    //abp.services.app.type.getCityCourts(cityId).done(function (data) {
+                    //    //data:[{id:1,displayName:'上海第一人民法院'}]
+                    //})
+                    ////获取用户工作台中最大案例数量
+                    //abp.setting.getInt("maxWorkbenchCaseCount")
+                    ////获取用户工作台案例数量
+                    //abp.servcies.app.workbench.getMyProcessingCount().done(function (data) {
+                    //    //data:工作台案例数量:8
+                    //})
+                    ////将案源选入工作台
+                    //abp.servcies.app.workbench.choose(id)
+    </script>
+}

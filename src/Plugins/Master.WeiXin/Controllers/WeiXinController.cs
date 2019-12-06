@@ -208,7 +208,7 @@ namespace Master.Controllers
         #region OAuth
         public ActionResult OAuth(string returnUrl)
         {
-
+            Logger.Info("Begin OAuth:"+returnUrl);
             var state = "TiansFather-" + DateTime.Now.Millisecond;//随机数，用于识别请求可靠性
             HttpContext.Session.SetString("State", state);//储存随机数到Session
 
@@ -222,7 +222,7 @@ namespace Master.Controllers
                 oauthUrl = $"{WeiXinConfiguration.OAuthBaseUrl}?appid={appId}&scope=snsapi_userinfo&state={state}&redirect_uri={redirectUrl}";
             }
 
-
+            Logger.Info("After OAuth:" + returnUrl);
             return Redirect(oauthUrl);
         }
 
@@ -235,6 +235,7 @@ namespace Master.Controllers
         /// <returns></returns>
         public ActionResult UserInfoCallback(string code, string state, string returnUrl)
         {
+            Logger.Info("UserInfoCallback:" + code);
             if (string.IsNullOrEmpty(code))
             {
                 return Content("您拒绝了授权！");
@@ -257,6 +258,7 @@ namespace Master.Controllers
             }
             catch (Exception ex)
             {
+                Logger.Info("Code换Token失败:" + ex.Message);
                 return Content(ex.Message);
             }
             if (result.errcode != ReturnCode.请求成功)
@@ -276,17 +278,17 @@ namespace Master.Controllers
                 HttpContext.Session.Set("weuser", userInfo);
 
                 //获取用户信息
-                var user = UserManager.FindAsync(new Microsoft.AspNetCore.Identity.UserLoginInfo(WeChatAuthProviderApi.Name, userInfo.openid, "")).Result;
-                if (user != null)
-                {
-                    //生成token返回给客户端
-                    var authenticateResult = TokenAuthController.ExternalAuthenticate(new Models.TokenAuth.ExternalAuthenticateModel() { AuthProvider = WeChatAuthProviderApi.Name, ProviderKey = userInfo.openid }).Result;
-                    HttpContext.Response.Cookies.Append("token", authenticateResult.EncryptedAccessToken, new Microsoft.AspNetCore.Http.CookieOptions());
-                }
-                else
-                {
-                    HttpContext.Response.Cookies.Delete("token");
-                }
+                //var user = UserManager.FindAsync(new Microsoft.AspNetCore.Identity.UserLoginInfo(WeChatAuthProviderApi.Name, userInfo.openid, "")).Result;
+                //if (user != null)
+                //{
+                //    //生成token返回给客户端
+                //    var authenticateResult = TokenAuthController.ExternalAuthenticate(new Models.TokenAuth.ExternalAuthenticateModel() { AuthProvider = WeChatAuthProviderApi.Name, ProviderKey = userInfo.openid }).Result;
+                //    HttpContext.Response.Cookies.Append("token", authenticateResult.EncryptedAccessToken, new Microsoft.AspNetCore.Http.CookieOptions());
+                //}
+                //else
+                //{
+                //    HttpContext.Response.Cookies.Delete("token");
+                //}
 
                 if (!string.IsNullOrEmpty(returnUrl))
                 {
@@ -461,13 +463,12 @@ namespace Master.Controllers
         /// 扫码登录页
         /// </summary>
         /// <returns></returns>
-        public ActionResult Login()
+        [WeUserFilter]
+        public ActionResult Login(string guid)
         {
-            //生成一个标识存入Ｓｅｓｓｉｏｎ
-            var guid = Guid.NewGuid();
-            HttpContext.Session.Set("WeChatLoginId", guid);
-
-            ViewBag.Guid = guid.ToString();
+            Logger.Info("Login1:" + guid + Newtonsoft.Json.JsonConvert.SerializeObject(WeUser));
+            //ViewBag.Guid = guid.ToString();
+            CacheManager.GetCache<string, OAuthUserInfo>("ExternalLoginCache").Get(guid, () => WeUser);
             return View();
         }
         [WeUserFilter]
@@ -478,11 +479,11 @@ namespace Master.Controllers
                 .Where(o => o.LoginProvider == WeChatAuthProviderApi.Name && o.ProviderKey == WeUser.openid)
                 .FirstOrDefaultAsync();
 
-            if (userLogin == null)
-            {
-                return Redirect("/MES/BindError");
-                return Redirect("/WeiXin/Error?msg=" + "当前微信尚未绑定账号".UrlEncode());
-            }
+            //if (userLogin == null)
+            //{
+            //    return Redirect("/MES/BindError");
+            //    return Redirect("/WeiXin/Error?msg=" + "当前微信尚未绑定账号".UrlEncode());
+            //}
             ViewBag.Guid = guid;
             return View();
         }

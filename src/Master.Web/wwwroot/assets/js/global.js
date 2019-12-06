@@ -23,7 +23,7 @@ var config = {
     readyFuncs:[],
     //table加载完后调用
     onTableDone: function (res, curr, count) {
-        $(window).resize()
+        //$(window).resize()
         config.onTableDoneExport(res, curr, count);
         console.log("onTableDone not implemented");
     },
@@ -180,7 +180,7 @@ $(function () {
 		});
 	});
     //布局初始化,如div自适应
-    func.initUI();
+    //func.initUI();
 
     //图片缩略放大事件 2018/5/24 13:55 lijianbo
     $("body").on('click', "img.thumb", function () {
@@ -219,66 +219,6 @@ var func = {
                 return new_array; //最终返回的是 prev value 也就是recorder
             }, []);
         }
-    },
-    splitDrag: function (_ul, _table, options = {}) {
-        //左侧tree，右侧table的布局，
-        $.extend(options, {
-            left: 10,
-            right: 500,
-        })
-        var tParent = _table.parent();
-        tParent = !options.wrap ? tParent : typeof options.wrap == 'string' ? $(options.wrap) : options.wrap;
-        tParent.append('<div id="r-treedrag"><div id="r-treedrag-ul">\n </div>\n <div id="r-treedrag-width"></div>\n <div id="r-treedrag-table">\n <div class="r-treedrag-table_wrap">\n </div>\n  </div>\n </div>')
-        $('#r-treedrag-ul').append(_ul);
-        $(".r-treedrag-table_wrap").append(_table);
-        //tParent.remove();
-        //宽度读取改变应在加载前完成
-        var costTWidth = layui.data('manyChangeWidth')[options.key];
-        if (costTWidth) {//如果之前写入过了，就读取这个值
-            $('#r-treedrag-ul').width(costTWidth);
-        } else {//如果没写入过，则设置初始值
-            layui.data('manyChangeWidth', {
-                key: options.key
-                , value: '250'
-            });
-        }
-
-        (function () {
-            var oDiv = document.getElementById('r-treedrag-width');
-            var disX = 0;
-
-            oDiv.onmousedown = function (ev) {
-                var oEvent = ev || event;
-                disX = oEvent.clientX - oDiv.offsetLeft;
-                var rowWrapPadding = $('.r-treedrag').outerWidth(true) - $('.r-treedrag').width() / 2;//border+padding+margin合宽
-                console.log(rowWrapPadding)
-                document.onmousemove = function (ev) {
-                    var oEvent = ev || event;
-                    var l = oEvent.clientX - disX - rowWrapPadding;//当前鼠标位置-padding宽度
-                    //console.log(l)
-                    if (l < options.left) {
-                        l = options.left;
-                    }
-                    else if (l > options.right) {
-                        l = options.right;
-                    }
-                    $('#r-treedrag-ul').width(l);
-
-                    layui.data('manyChangeWidth', {
-                        key: options.key
-                        , value: l
-                    });
-                };
-
-                document.onmouseup = function () {
-                    document.onmousemove = null;
-                    document.onmouseup = null;
-                };
-
-                return false;
-            };
-
-        })()
     },
     
     formatDate : function (now, op) {
@@ -368,7 +308,7 @@ var func = {
             acceptMime: options.acceptMime||null,
             multiple: false,
             number: 10,
-            size: 204800,
+            size: 512000,
             url:!options.temp? '/file/upload/':'/file/upload?temp=true'
             , choose: function (obj) {
                 if (window.isReUpload) { window.isReUpload = false; return; }
@@ -413,6 +353,7 @@ var func = {
                 });
             }, xhr: function (index, e) {
                 var percent = e.loaded / e.total;//计算百分比
+                console.log(percent);
                 percent = Math.round(parseFloat(percent.toFixed(2)) * 100);//解决小数点问题
                 layui.element.progress('progress_' + index + '', percent + '%');
                 //console.log(index+"-----" + percent);
@@ -620,6 +561,7 @@ var func = {
     //表格重载
     reload: function (tableid, option) {
         layui.table.reload(tableid, option);
+        config.refresh();
     },
     //异步执行
     runAsync: function (fun) {
@@ -906,46 +848,6 @@ Date.prototype.pattern = function (fmt) {
     }
     return fmt;
 }
-Date.prototype.addDay = function (number = 1,interval='d',pattern) {
-    switch (interval.toLowerCase()) {
-        case "y": this.setFullYear(this.getFullYear() + number);break;
-        case "m": this.setMonth(this.getMonth() + number); break;
-        case "d": this.setDate(this.getDate() + number); break;
-        case "w": this.setDate(this.getDate() + 7 * number); break;
-        case "h": this.setHours(this.getHours() + number); break;
-        case "n": this.setMinutes(this.getMinutes() + number); break;
-        case "s": this.setSeconds(this.getSeconds() + number); break;
-        case "l": this.setMilliseconds(this.getMilliseconds() + number); break;
-    }
-    return pattern ? this.pattern(pattern) : this;
-}
-//动态改变disabled状态
-Vue.directive('disabled', function (el, binding) {
-    if (binding.value) {
-        $(el).addClass('layui-disabled')
-        $(el).attr("disabled", true);
-    } else {
-        $(el).removeClass('layui-disabled')
-        $(el).attr("disabled", false);
-    }
-})
-//动态改变formSelects的disabled状态
-Vue.directive('fs-disabled', function (el, binding) {
-    var formSelets = layui.formSelects;
-    var name = $(el).attr('xm-select');
-    if (formSelets) {
-        if (binding.value) {
-            formSelets.disabled(name);
-        } else {
-            formSelets.undisabled(name);
-        }
-    }
-
-})
-Vue.filter('objEmptyStr', function (value,str) {
-    if (!value) return '';
-    return value[str]
-})
 
 function showPdf(filePath,fileName) {
     layer.open({
@@ -954,6 +856,6 @@ function showPdf(filePath,fileName) {
         shadeClose: false,
         shade: 0.8,
         area: ['100%', '100%'],
-        content: '/pdfviewer/web/viewer.html?file=' + filePath
+        content: '/pdfviewer/web/viewer.html?file=' + encodeURIComponent(filePath)
     });
 }

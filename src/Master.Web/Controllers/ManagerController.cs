@@ -29,11 +29,12 @@ using Master.Models.TokenAuth;
 using Master.EntityFrameworkCore;
 using Master.Domain;
 using Abp.Configuration.Startup;
+using Microsoft.AspNetCore.Http;
 
 namespace Master.Web.Controllers
 {    
     
-    [AbpMvcAuthorize]
+    //[AbpMvcAuthorize]
     public class ManagerController : MasterControllerBase
     {
         private ISessionAppService _sessionAppService;
@@ -43,6 +44,7 @@ namespace Master.Web.Controllers
         private readonly IExternalAuthConfiguration _externalAuthConfiguration;
 
 
+        public IHttpContextAccessor HttpContextAccessor { get; set; }
         public IRepository<BaseTree,int> BaseTreeRepository { get; set; }
         public IRepository<Tenant,int> TenantRepository { get; set; }
         public ITypeFinder TypeFinder { get; set; }
@@ -63,9 +65,16 @@ namespace Master.Web.Controllers
             _externalAuthConfiguration = externalAuthConfiguration;
         }
         
-        [AbpMvcAuthorize]
+        //[AbpMvcAuthorize]
         public async Task<ActionResult> Index()
         {
+
+            if (HttpContext.Session.Get<int?>("LoginInfo") == null)
+            {
+                Response.Cookies.Delete("token");
+                return Redirect("/Account/gmLogin");
+            }
+
             var user = AbpSession.ToUserIdentifier();
             Session.Dto.LoginInformationDto loginInfo;
             try
@@ -75,17 +84,22 @@ namespace Master.Web.Controllers
             catch
             {
                 Response.Cookies.Delete("token");
-                return Redirect("/Account/Login");
+                return Redirect("/Account/gmLogin");
             }
             //Ä¬ÈÏÊ×Ò³
             if (loginInfo.User.HomeUrl.IsNullOrEmpty())
             {
                 loginInfo.User.HomeUrl = "Manager/Default";
             }
+            
             return View(loginInfo);
         }
         public IActionResult Default()
         {
+            if (AbpSession.UserId == null)
+            {
+                return Redirect("/Account/gmLogin");
+            }
             var viewName= AbpSession.MultiTenancySide == Abp.MultiTenancy.MultiTenancySides.Tenant ? "Default" : "HostDefault";
             return View(viewName);
         }
@@ -96,6 +110,10 @@ namespace Master.Web.Controllers
         /// <returns></returns>
         public IActionResult Show(string name)
         {
+            if (AbpSession.UserId == null)
+            {
+                return Redirect("/Account/gmLogin");
+            }
             return View(name);
         }
 

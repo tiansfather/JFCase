@@ -4,13 +4,19 @@
 @using Abp.Web.Security.AntiForgery
 @using Master
 @using Master.Configuration
+@using Microsoft.AspNetCore.Http
 @inject Master.Timing.AppTimes AppTimes
 @inject IAbpAntiForgeryManager AbpAntiForgeryManager
 @inject IMultiTenancyConfig MultiTenancyConfig
 @inject WebCoreConfiguration WebCoreConfiguration
+@inject IHttpContextAccessor ContextAccessor
 @{
-	Layout = null;
-	AbpAntiForgeryManager.SetCookie(Context);
+    Layout = null;
+    AbpAntiForgeryManager.SetCookie(Context);
+    if (ContextAccessor.HttpContext.Session.Get<int?>("LoginInfo") == null)
+    {
+        ContextAccessor.HttpContext.Response.Redirect("/Account/Login");
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -43,11 +49,12 @@
     </environment>
     <script src="/assets/layuiadmin/layui/layui.js" asp-append-version="true"></script>
     <script src="~/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
+    <script src="/assets/js/abp.layer.js" asp-append-version="true"></script>
     <script src="~/assets/js/global.js" asp-append-version="true"></script>
     <script>
         layui.config({
             base: config.layuiBase //静态资源所在路径
-            , version: 181224
+            , version: 190618
         }).extend($.extend({
             index: config.layuiIndex //主入口模块
         }, config.layuiExtends));
@@ -65,9 +72,9 @@
     <script src="~/scripts/GetAll.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
     @*<script src="~/scripts/GetScripts.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
     @*<script src="~/AbpServiceProxies/GetAll?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
-    <script src="~/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    @*<script src="~/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>*@
 
-    @RenderSection("scripts", required: false)
+
     <script type="text/html" id="activeTpl">
         {{#if(d.isActive){}}
         <span class="layui-badge layui-bg-blue">@L("有效")</span>
@@ -76,24 +83,34 @@
         {{#}}}
     </script>
     @*<script type="text/html" id="colsThGuding">
-        <div class="my-colsth-div {{ d.lockDone||'' }}" style="">
-            <i class="iconfont icon-lock my-colsth-i" onclick="layuiExt.guDingLie(this)" title="固定列"></i>
-        </div>
-    </script>
-    <script type="text/html" id="colsThShaixuan">
-        <div class="my-colsth-div {{ d.lockDone||'' }}" style="">
-            <i class="iconfont icon-shaixuan my-colsth-i" onclick="layuiExt.shuaiXuanLie(this)" title="筛选"></i>
-        </div>
-    </script>*@
+            <div class="my-colsth-div {{ d.lockDone||'' }}" style="">
+                <i class="iconfont icon-lock my-colsth-i" onclick="layuiExt.guDingLie(this)" title="固定列"></i>
+            </div>
+        </script>
+        <script type="text/html" id="colsThShaixuan">
+            <div class="my-colsth-div {{ d.lockDone||'' }}" style="">
+                <i class="iconfont icon-shaixuan my-colsth-i" onclick="layuiExt.shuaiXuanLie(this)" title="筛选"></i>
+            </div>
+        </script>*@
     @foreach (var commonView in WebCoreConfiguration.CommonViews)
     {
-        Html.RenderPartial(commonView);
+        await Html.RenderPartialAsync(commonView);
     }
+
+    <script src="~/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+
+    @RenderSection("scripts", required: false)
+
     <script>
         layui.use(config.layuiModules, function () {
             //表单初始化
             func.initForm();
             //调用layui加载完事件
+            for (fnIndex in config.readyFuncs) {
+                var fn = config.readyFuncs[fnIndex];
+                func.typeof(fn) == 'function' && fn();
+            }
+            config.readyFuncs.hadRun = true;
             config.ready();
 
         })

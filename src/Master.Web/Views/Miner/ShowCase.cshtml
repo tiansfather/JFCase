@@ -1,0 +1,76 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+            <a dataid="" class="layui-btn layui-btn-xs layui-btn-danger" title="清空此人所有成品" type="button" buttonname="清空此人所有成品" modulekey="dataTable" params="" lay-event="Freeze" confirmmsg="确认清空此人所有成品?此操作无法撤消，确定继续吗？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.miner.clearUserContent" onclick="func.callModuleButtonEvent()" id="clearBtn" callback="clearCallback">清空此人所有成品</a>
+        </div>
+        
+        <table id="dataTable" lay-filter="dataTable"></table>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var userId = $.getUrlParam("data");
+        config.ready = function () {
+            $("#clearBtn").attr("dataid", userId);
+            //构建表头
+            var cols = [
+                { field: 'sourceSN', title: '案号', width: 200 },
+                { field: 'city', title: '城市', width: 80 },
+                { field: 'anYou', title: '案由', width: 180 },
+                { field: 'title', title: '标题' },
+                { field: 'creationTime', title: '加入时间', width: 100 },
+                { field: 'publishDate', title: '发布日期', width: 100 },
+                { field: 'caseStatus_display', title: '当前状态', width: 100 },
+            ]
+
+            layui.table.render({
+                cellMinWidth: 120,
+                limit: 10,
+                url: '/api/services/app/CaseInitial/GetPageResult',
+                where: { where: 'creatorUserId=' + userId },
+                page: true,
+                height:'full-80',
+                elem: '#dataTable'
+                , cols: [cols]
+            });
+            //func.runAsync(abp.services.app.caseInitial.getPageResult({ page: 1, limit: 10, where: 'creatorUserId=' + userId }).done(function (data) {
+            //    //构建表头
+            //    var cols = [
+            //        { field: 'sourceSN', title: '案号', width: 200 },
+            //        { field: 'city', title: '城市',width:80 },
+            //        { field: 'anYou', title: '案由',width:180 },
+            //        { field: 'title', title: '标题' },
+            //        { field: 'creationTime', title: '加入时间',width:100 },
+            //        { field: 'publishDate', title: '发布日期', width: 100 },
+            //        { field: 'caseStatus_display', title: '当前状态', width: 100 },
+            //    ]
+
+            //    layui.table.render({
+            //        cellMinWidth: 120,
+            //        limit: 10,
+            //        page:true,
+            //        elem: '#dataTable'
+            //        , cols: [cols]
+            //        , data: data.data
+            //    });
+            //}))
+            
+        }
+
+        function clearCallback() {
+            parent.layer.msg("提交成功");
+            parent.layer.closeAll('iframe');
+            parent.config.reloadTable();
+            return false;
+        }
+    </script>
+}
+

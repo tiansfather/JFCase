@@ -19,7 +19,7 @@ namespace Master.Configuration
         /// <summary>
         /// 系统名称
         /// </summary>
-        public string SoftName { get; set; } = "简法案例系统";
+        public string SoftName { get; set; } = "简法案例";
         public string BaseUrl { get; set; }
     }
 

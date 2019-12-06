@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Abp.Configuration.Startup;
+using Abp.Web.Authorization;
 
 namespace Master.Web.Startup
 {
@@ -40,11 +42,13 @@ namespace Master.Web.Startup
 
             //Setting提供者
             Configuration.Settings.Providers.Add<WebSettingProvider>();
-
+            Configuration.ReplaceService<IAuthorizationScriptManager, MyAuthorizationScriptManager>(DependencyLifeStyle.Singleton);
             //加入通用模板视图
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueFormComponent");
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueSheetComponent");
+            Configuration.Modules.WebCore().CommonViews.Add("../Home/VueComponentJianFa");
             Configuration.Modules.WebCore().CommonViews.Add("../Home/VueFormComponentExtend");
+
         }
 
         public override void Initialize()

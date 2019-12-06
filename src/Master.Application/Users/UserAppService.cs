@@ -86,7 +86,7 @@ namespace Master.Users
                     var username = request.Datas["userName"];
                     if (string.IsNullOrEmpty(username))
                     {
-                        throw new UserFriendlyException(L("用户名不能为空"));
+                        //throw new UserFriendlyException(L("用户名不能为空"));
                     }
                     var password = request.Datas["password"];
                     if (!string.IsNullOrEmpty(password))
@@ -99,7 +99,8 @@ namespace Master.Users
                         roles = request.Datas["roles"].Split(',').ToList().ConvertAll(o=>int.Parse(o)).ToArray();
                     }
                     user.UserName = username;
-
+                    user.IsStrongPwd = request.Datas["isStrongPwd"] == "1";
+                    user.MustChangePwd = request.Datas["mustChangePwd"] == "1";
                     //add 20181210  增加独立用户提交,此用户只能查看自己的信息
                     //removed 20190318
                     //user.IsSeparate= request.Datas["Separate"]=="1";
@@ -193,7 +194,7 @@ namespace Master.Users
 
         //    return result;
         //}
-        #region 冻结
+        #region 冻结及恢复
         public virtual async Task Freeze(IEnumerable<long> userIds)
         {
             var users = await Manager.GetListByIdsAsync(userIds);
@@ -208,6 +209,14 @@ namespace Master.Users
             foreach (var user in users)
             {
                 user.IsActive = true;
+            }
+        }
+        public virtual async Task Revert(IEnumerable<long> userIds)
+        {
+            var users = await Manager.GetAll().IgnoreQueryFilters().Where(o => userIds.Contains(o.Id)).ToListAsync();
+            foreach(var user in users)
+            {
+                user.IsDeleted = false;
             }
         }
         #endregion
@@ -227,7 +236,20 @@ namespace Master.Users
             {
                 throw new UserFriendlyException("您输入的现有密码不正确，请重新输入");
             }
-
+            //进行强密码检测
+            if (user.IsStrongPwd)
+            {
+                if (newPassword.Length < 6)
+                {
+                    throw new UserFriendlyException("密码长度不能小于6位");
+                }
+                if(!new System.Text.RegularExpressions.Regex("(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])").IsMatch(newPassword))
+                {
+                    throw new UserFriendlyException("密码强度不符合要求,密码中请至少包含大小写字母和数字");
+                }
+            }
+            //修改密码后认为不是第一次登录
+            user.IsFirstLogin = false;
             await manager.SetPassword(user, newPassword);
         }
         #endregion
@@ -295,18 +317,19 @@ namespace Master.Users
         {
             return nameof(User);
         }
-        
+
         /// <summary>
-        /// 通过openid返回用户状态1:正常登录，-1:被冻结，2：未注册,3:审核中
+        /// 通过openid返回用户状态1:正常登录，-1:被注销，2：未注册,3:审核中
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
+        [AbpAllowAnonymous]
         public virtual async Task<int> GetUserStatusByWeOpenId(string openId)
         {
             var user = await (Manager as UserManager).FindAsync(new Microsoft.AspNetCore.Identity.UserLoginInfo("Wechat", openId, ""));
             if (user != null)
             {
-                return user.IsActive ? 1 : -1;
+                return !user.IsDeleted ? 1 : -1;
             }
             else
             {
@@ -318,16 +341,30 @@ namespace Master.Users
 
 
         #region 用户信息
+        /// <summary>
+        /// 用户是否激活状态
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> GetUserIsActive(long id)
+        {
+            var user = await Manager.GetByIdAsync(id);
+            return user.IsActive;
+        }
+
         protected override object ResultConverter(User entity)
         {
             //获取用户已完成的案例
             var caseCount = Resolve<CaseInitialManager>().GetAll()
-                .Count(o => o.CreatorUserId == entity.Id && (o.CaseStatus == CaseStatus.展示中 || o.CaseStatus == CaseStatus.推荐));
+                .Count(o => o.CreatorUserId == entity.Id && (o.CaseStatus == CaseStatus.展示中 ));
             return new
             {
-                Avata = entity.GetPropertyValue("Avata"),
-                AnYou = entity.GetPropertyValue("AnYou"),//所属领域
-                AnYouId = entity.GetPropertyValue("AnYouId"),//所属领域Id
+                Avata = entity.GetPropertyValue<string>("Avata"),
+                AnYou = entity.GetPropertyValue<string>("AnYou"),//所属领域
+                AnYouId = entity.GetPropertyValue<int?>("AnYouId"),//所属领域Id
+                AnYouIds = entity.GetPropertyValue<int[]>("AnYouIds"),//所属领域Id
+                WorkYear= entity.GetPropertyValue<int>("WorkYear"),
+                Introduction = entity.GetPropertyValue<string>("Introduction"),
                 entity.Name,
                 caseCount,
                 entity.Id,
@@ -346,14 +383,18 @@ namespace Master.Users
         {
             var user = await Manager.GetByIdAsync(userUpdateDto.Id);
             user.WorkLocation = userUpdateDto.WorkLocation;
+            user.Name = userUpdateDto.Name;
             string anYou = "";
-            if (userUpdateDto.AnYouId != null)
+            if (userUpdateDto.AnYouIds.Length>0)
             {
-                var node = await Resolve<BaseTreeManager>().GetByIdAsync(userUpdateDto.AnYouId.Value);
-                anYou = node.DisplayName;                
+                var nodes = await Resolve<BaseTreeManager>().GetListByIdsAsync(userUpdateDto.AnYouIds);
+                anYou = string.Join(',', nodes.Select(o => o.DisplayName));             
             }
             user.SetPropertyValue("AnYou", anYou);
-            user.SetPropertyValue("AnYouId", userUpdateDto.AnYouId);
+            user.SetPropertyValue("AnYouIds", userUpdateDto.AnYouIds);
+            user.SetPropertyValue("Avata", userUpdateDto.Avata);
+            user.SetPropertyValue("Introduction", userUpdateDto.Introduction);
+            user.SetPropertyValue("WorkYear", userUpdateDto.WorkYear);
         }
         #endregion
         /// <summary>
@@ -369,6 +410,17 @@ namespace Master.Users
             }
             var user = await Manager.GetByIdAsync(AbpSession.UserId.Value);
             return user.GetData<string>("currentToken");
+        }
+
+        public override async Task DeleteEntity(IEnumerable<long> ids)
+        {
+            //有数据的用户不能删除
+            var initialsCount = await Resolve<CaseSourceManager>().GetAll().Where(o => ids.ToList().Contains(o.OwerId.Value)).CountAsync();
+            if (initialsCount > 0)
+            {
+                throw new UserFriendlyException($"被删除用户名下有{initialsCount}个判例,请先进行清除后再删除用户");
+            }
+            await base.DeleteEntity(ids);
         }
     }
 }

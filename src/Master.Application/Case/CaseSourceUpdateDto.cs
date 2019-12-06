@@ -1,6 +1,7 @@
 ﻿using Abp.AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Master.Case
@@ -15,6 +16,8 @@ namespace Master.Case
         public int? Court1Id { get; set; }
         public int? Court2Id { get; set; }
         public DateTime ValidDate { get; set; }
+        public string TrialPeopleField { get; set; }
+        public string LawyerFirmsField { get; set; }
         public List<TrialPerson> TrialPeople
         {
             get;set;
@@ -27,5 +30,12 @@ namespace Master.Case
         /// 判例文件
         /// </summary>
         public string SourceFile { get; set; }
+        public CaseSourceStatus CaseSourceStatus { get; set; }
+
+        public void Normalize()
+        {
+            TrialPeopleField = string.Join(',', TrialPeople.Select(o => o.Name));
+            LawyerFirmsField = string.Join(',', LawyerFirms.Select(o => o.FirmName + ":" + o.lawyer));
+        }
     }
 }

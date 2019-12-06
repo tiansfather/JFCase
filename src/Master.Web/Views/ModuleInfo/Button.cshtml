@@ -6,7 +6,9 @@
 
 }
 @section styles{
-    
+    <link href="/lib/codemirror-minified/lib/codemirror.css" rel="stylesheet" />
+    <link href="~/lib/codemirror-minified/theme/dracula.css" rel="stylesheet" />
+    <link href="~/lib/codemirror-minified/addon/fold/foldgutter.css" rel="stylesheet" />
     <style>
         tr.active {
             background-color: #c2deda !important;
@@ -50,6 +52,7 @@
                     <li class="layui-this">@L("基础信息")</li>
                     <li>@L("行为")</li>
                     <li>@L("展示")</li>
+                    <li>@L("自定义函数")</li>
                 </ul>
                 <div class="layui-tab-content">
                     <div class="layui-tab-item layui-show">
@@ -87,12 +90,13 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">@L("按钮行为")</label>
                             <div class="layui-input-block">
-								<select v-model="currentBtn.buttonActionType" name="buttonActionType">
-									<option value="0">@L("资源标记")</option>
-									<option value="1">@L("异步提交")</option>
-									<option value="2">@L("表单提交")</option>
-									<option value="3">@L("标签页")</option>
-								</select>
+                                <select v-model="currentBtn.buttonActionType" name="buttonActionType">
+                                    <option value="0">@L("资源标记")</option>
+                                    <option value="1">@L("异步提交")</option>
+                                    <option value="4">@L("直接函数")</option>
+                                    <option value="2">@L("表单提交")</option>
+                                    <option value="3">@L("标签页")</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -152,6 +156,14 @@
                         </div>
 
                     </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">@L("JS函数")</label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="" class="layui-textarea" id="buttonScript" name="buttonScript" v-model="currentBtn.buttonScript"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -161,10 +173,38 @@
 </form>
 
 @section scripts{
-    
+    <script src="/lib/codemirror-minified/lib/codemirror.js"></script>
+    <script src="/lib/codemirror-minified/mode/javascript/javascript.js"></script>
+    <script src="~/lib/codemirror-minified/addon/fold/foldcode.js"></script>
+    <script src="~/lib/codemirror-minified/addon/fold/foldgutter.js"></script>
+    <script src="~/lib/codemirror-minified/addon/fold/brace-fold.js"></script>
+    <script src="~/lib/codemirror-minified/addon/fold/comment-fold.js"></script>
     <script>
-        var app;
+        var editor,app;
         config.ready = function () {
+            var editorLoaded = false;
+            layui.element.on('tab(tab)', function (data) {
+                if (!editorLoaded && data.index == 3) {
+                    //编辑器
+                    editor = CodeMirror.fromTextArea(document.getElementById("buttonScript"), {
+                        lineNumbers: true,	//显示行号
+                        theme: "dracula",	//设置主题
+                        lineWrapping: true,	//代码折叠
+                        foldGutter: true,
+                        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                        matchBrackets: true,	//括号匹配
+                    });
+                    editor.on("change", function (obj, data) {
+                        var value = obj.getValue()
+                        app.currentBtn.buttonScript = value;
+                        console.log(obj.getValue());
+
+                    })
+
+                    editorLoaded = true;
+                }
+
+            })
             app = new Vue({
             el: "#app",
             data: {
@@ -187,6 +227,10 @@
             methods: {
                 setCurrent: function (item) {
                     this.currentBtn = item;
+                    //对于代码编辑器重新设置值
+                    if (editor) {
+                        editor.setValue(this.currentBtn.buttonScript||'');
+                    }
                     refresh();
                 },
                 upItem: function (index) {
@@ -222,8 +266,8 @@
                         layer.close(index);
                         var key = pinyinUtil.getPinyin(text, '').toUpperCase();
                         var btn = {
-                            buttonKey: key, buttonName: text, buttonActionType: 1, 
-                            isEnabled: true, 
+                            buttonKey: key, buttonName: text, buttonActionType: 1,
+                            isEnabled: true,
                         };
                         app.btns.push(btn);
                         app.setCurrent(btn);
@@ -244,7 +288,7 @@
             form.on('checkbox', function (data) {
                 var name = $(data.elem).attr("name");
                 app.currentBtn[name] = data.elem.checked;
-            });        
+            });
             form.on('switch', function (data) {
                 var name = $(data.elem).attr("name");
                 app.currentBtn[name] = data.elem.checked;

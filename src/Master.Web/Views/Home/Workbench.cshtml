@@ -1,29 +1,226 @@
 ﻿
 @{
+    Layout = "_LayoutJianFa";
     ViewData["Title"] = "工作台";
 }
+<style>
+    .jianfa-wenjiancard .ny-wenjiancard li dd.card-top p{
+        border:none;
+    }
+    .icon-button{
+        display: inline-block;
+        width: auto;
+        height: 24px;
+        line-height: 24px;
+        border: 0;
+        text-align: center;
+        font-size: 12px;
+        color: #fff;
+        background: #c69c6c;
+        border-radius: 4px;
+        transition: all 0.5s ease 0s;
+        cursor: pointer;
+        padding: 0 8px;
+        margin: 0 5px;
+    }
+    .card-bottom{
+        display:flex;
+        justify-content:space-between;
+    }
+</style>
+<div id="app" style="display:none">
+    <!--顶部-->
+    <com-header active-name="加工案例"></com-header>
+    
+    <!---01-->
+    <div class="jianfa-content">
+        <div class="ny-content on">
+            <ul>
+                <li>
+                    <dl class="xian">
+                        <dd>我的工作台中待加工案例共{{waitNumber}}个</dd>
+                        @*<dd>当前位置：案例工厂 > 工作台：</dd>*@
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--end-->
+    <!--看观点-->
+    <div class="jianfa-wenjiancard">
+        <div class="ny-wenjiancard">
+            <h1 style="font-size:24px;text-align:center;margin:30px" v-if="sources.length==0 && !loading">您的工作台空空如也，快去判例库添加工作文件哦</h1>
+            <ul>
 
-<h2>Host</h2>
+                <li v-for="(item,index) in sources" :class="{'on':(index+1)%3==2}">
+                    <dl>
+                        <dd class="card-top">
+                            <p class="wzys1">{{item.anYou}}</p>
+                            <p><a @@click.prevent="currentItem=item;moda12 = true">{{item.sourceSN}}</a></p>
+                            <p>{{item.court2||item.court1}}</p>
+                            <p class="wzys1">{{new Date(item.validDate).pattern('yyyy年MM月dd日')}}</p>
+                        </dd>
+                        <dd class="card-bottom">
+                            <p class="fleft">{{item.caseSourceStatus==1?'待加工':'加工中'}}...</p>
+                            <p>
+                                <a class="icon-button" :href="'/Home/Process?encrypedId='+encodeURIComponent(item.encrypedId)">马上加工</a>
+                                <a class="icon-button"  @@click.prevent="currentItem=item;modal1 = true">放回</a>
+                            </p>
+                        </dd>
+                    </dl>
+                </li>
+
+                <li :class="{'on':(sources.length+1)%3==2}">
+                    <dl>
+                        <dd class="card-zhongjian">
+
+                            <span><a href="/Home/Source" @@click.prevent="gotoSource"><i class="mywj-icon-3"></i></a>去案源库，添加工作文件</span>
+                        </dd>
+                    </dl>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <!--end-->
+    <!--添加1-->
+    <Modal width="428px" v-model="modal1" class-name="center-modal" :mask-closable="false">
+        <div class="neirong-eject-ny">
+            <ul>
+                <li class="bot-on-b"><p>请选择（填写）放回原由：</p></li>
+                <li>
+                    @*<CheckboxGroup v-model="choosedReasons">
+                        <Checkbox v-for="(item,index) in reasons" :label="index">
+                            {{item}}
+                        </Checkbox>
+                        <Checkbox label="other">其他（填写）</Checkbox>
+                    </CheckboxGroup>*@
+                    <el-checkbox-group v-model="choosedReasons">
+                        <el-checkbox v-for="(item,index) in reasons" :label="item">{{item}}</el-checkbox>
+                        <el-checkbox label="other" >其他（填写）</el-checkbox>
+                    </el-checkbox-group>
+                </li>
+                <li><i-Input v-model="otherReason" type="textarea" :autosize="{minRows: 5,maxRows: 5}" placeholder="这里请输入放回原因…" /></li>
+            </ul>
+        </div>
+        <div slot="footer">
+            <div class="but-foot">
+                <div class="but-left-foot"><Button class="btn-footer" @@click="giveBack">放回</Button></div>
+                <div class="but-right-foot"><Button class="btn-footer-qx" @@click="modal1=false">取消</Button></div>
+            </div>
+        </div>
+    </Modal>
+    <!--pdf-->
+    @await Html.PartialAsync("PDFFrame")
+    @*<Modal width="630px" v-model="moda12" class-name="pdfmodal vertical-center-modal" :mask-closable="false" :title="currentItem.sourceSN" >
+        <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" :style="{width:'100%',height:$(window).height()*0.8+'px'}"></iframe>
+        <div slot="footer" ></div>
+    </Modal>*@
+
+    <!--footer-->
+    <com-footer></com-footer>
+    <!--end-->
+</div>
 
 @section scripts{
-    <script>
-        //请求当前用户工作台所有加工案例
-        abp.services.app.workbench.getMyProcessingCaseSource().done(function (data) {
-            //data:[{encrypedId:'加密后的id',id:1,anYou:'案由',court1:'一审法院',court2:'二审法院',validDate:'判决日期',caseSourceStatus:1}]
-            //caseSourceStatus为案例状态：1待加工，2加工中
-            //对应的加工页地址为/Home/Process?encrypedId=加密后的id
-        })
-        //获取所有退还理由
-        abp.services.app.dictionary.getDictionary('退还理由').done(function (data) {
-            //data:[{"a":"a","b":"b"}]
-        })
-        //退还判例接口:id为案例id,reason为退回理由
-        abp.services.app.workbench.giveBack(id, reason)
-        //获取用户工作台中最大案例数量，如果当前工作台的数量已等于最大案例数量，则添加案源入口不可用
-        abp.setting.getInt("maxWorkbenchCaseCount")
-        //获取用户工作台案例数量
-        abp.servcies.app.workbench.getMyProcessingCount().done(function (data) {
-            //data:工作台案例数量:8
+    <script type="text/babel">
+        window.app=new Vue({
+            el: '#app',
+            data: {
+                value: '',
+                modal1: false,
+                moda12: false,
+                toemail: abp.setting.get("receiveMailAddress"),
+                // moda3: false,
+                // password1:false,
+                //value1: [],
+                single1: false,
+                single2: false,
+                single3: false,
+                loading:true,
+                sources: [],//工作台中的判例
+                currentItem: {},//当前选中的判例
+                userIsAcitve: true,//用户是否被冻结
+                reasons:[],//供选择退回原因
+                choosedReasons: [],//选中的退回原因
+                otherReason: '',//其它退回原因
+                social:[]
+            },
+            computed: {
+                //用户是否还可以添加判例
+                canAdd: function () {
+                    return this.userIsAcitve && this.sources.length < abp.setting.getInt("maxWorkbenchCaseCount");
+                },
+                waitNumber:function(){
+                    //return this.sources?this.sources.filter(el=>el.caseSourceStatus==1).length:0
+                    return this.sources?this.sources.length:0
+                }
+            },
+            //
+            methods: {
+                //去案源库
+                gotoSource() {
+                    if (this.canAdd) {
+                        location.href = '/Home/Source';
+                    } else {
+                        if (!this.userIsAcitve) {
+                            abp.message.info("您的账号被冻结，目前不能加工案例，请联系<a style='color:blue' href='mailto:" + this.toemail + "'>管理员</a>")
+                        } else {
+                            abp.message.info("您的工作台中已经有多个案例待加工，请完成后并发布，然后再添加新的判例。")
+                        }
+                    }
+                },
+                //退还
+                giveBack() {
+                    var that = this;
+                    //验证退回原因是否填写
+                    if (this.choosedReasons.length == 0) {
+                        abp.message.error("请选择至少一条退还原因");
+                    } else if (this.choosedReasons.indexOf("other") >= 0 && !this.otherReason) {
+                        abp.message.error("您选择了其它原因,请在文本框中填写具体原因");
+                    } else {
+                        var reason = this.choosedReasons.join(',');
+                        reason=reason.replace("other",this.otherReason);
+                        abp.message.confirm("您确定要将此案例放回判例库吗？您所做的加工内容将不再保留，确定要继续吗？").done(function () {
+                            func.runAsync(abp.services.app.workbench.giveBack(that.currentItem.id, reason).done(function () {
+                                that.loadSource();
+                                that.modal1 = false;
+                                that.$Message.success("放回成功");
+                            }))
+                        })
+                        
+                    }
+                },
+                loadSource: function () {
+                    var that = this;
+                    this.loading=true;
+                    abp.services.app.workbench.getMyProcessingCaseSource().done(function (data) {
+                        //data:[{encrypedId:'加密后的id',id:1,anYou:'案由',court1:'一审法院',court2:'二审法院',validDate:'判决日期',caseSourceStatus:1，SourceSN:案号}]
+                        //caseSourceStatus为案例状态：1待加工，2加工中
+                        //对应的加工页地址为/Home/Process?encrypedId=加密后的id
+                        that.sources = data;
+                        that.loading=false;
+                        $("#app").show();
+                    })
+                }
+            },
+            //
+            mounted: function () {
+                var that = this;
+                //获取工作台案例
+                this.loadSource();
+                //用户是否被冻结
+                abp.services.app.user.getUserIsActive(abp.session.userId).done(function (data) {
+                    that.userIsAcitve = data;
+                })
+                //退回原因
+                abp.services.app.dictionary.getDictionary('退回原因').done(function (data) {
+                    //data:[{"a":"a","b":"b"}]
+                    for (var item in data) {
+                        that.reasons.push(item);
+                    }
+                })
+            }
         })
     </script>
-    }
+}

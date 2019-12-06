@@ -202,6 +202,24 @@ function initIndex() {
     //当前用户信息
     abp.services.app.session.getCurrentLoginInformations().done(function (data) {
         console.log(data);
+        if (data.user.needChangePwd) {
+            layer.open({
+                type: 2,
+                title: "首次登录必须修改密码",
+                scrollbar: false,
+                shadeClose: false,
+                closeBtn:false,
+                shade: 0.8,
+                area: ['500px', '400px'],
+                content: "/Account/ChangePassword",
+                btn: ['提交'],
+                btnAlign: 'l',
+                yes: function (index, layero) {
+                    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                    if (iframeWin.submit) { iframeWin.submit(); return false; }
+                }
+            });
+        }
         layui.data('session', { key: 'loginInfo', value: JSON.stringify(data) });
     });
     //帮助文档
@@ -365,9 +383,9 @@ function initIndex() {
     }
 
 
-    setInterval("app.toReadNotices()", 60000);
-    app.toReadNotices();
-    app.scrollBulletin();
+    //setInterval("app.toReadNotices()", 60000);
+    //app.toReadNotices();
+    //app.scrollBulletin();
 }
 
 function checkToken() {

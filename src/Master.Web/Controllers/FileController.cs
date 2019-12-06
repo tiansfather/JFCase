@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Master.Web.Controllers
 {
-    
+
     public class FileController : MasterControllerBase
     {
         public IAbpStartupConfiguration Configuration { get; set; }
@@ -27,7 +27,7 @@ namespace Master.Web.Controllers
         public IHostingEnvironment HostingEnvironment { get; set; }
 
         #region 私有
-        private async Task<UploadResult> UploadFile(IFormFile file,bool temp)
+        private async Task<UploadResult> UploadFile(IFormFile file, bool temp)
         {
             //string ext = Path.GetExtension(file.FileName);
 
@@ -50,13 +50,13 @@ namespace Master.Web.Controllers
             //}
             ////虚拟路径
             //var virtualPath = $"/files/{now.Year}/{now.ToString("MM")}/{now.ToString("dd")}/{filenameWithOutPath}";
-            var uploadFile = await FileManager.UploadFile(file,temp);
+            var uploadFile = await FileManager.UploadFile(file, temp);
 
-            var result = new UploadResult { Success = true, FilePath = uploadFile.FilePath, FileName = file.FileName ,FileId=uploadFile.Id};
+            var result = new UploadResult { Success = true, FilePath = uploadFile.FilePath, FileName = file.FileName, FileId = uploadFile.Id };
             return result;
         }
 
-        private async Task<UploadResult> UploadFile(string base64Content,string oriVirtualPath="")
+        private async Task<UploadResult> UploadFile(string base64Content, string oriVirtualPath = "")
         {
             //string ext = ".png";
 
@@ -83,7 +83,7 @@ namespace Master.Web.Controllers
 
             var uploadFile = await FileManager.UploadFile(base64Content, oriVirtualPath);
 
-            var result = new UploadResult { Success = true, FilePath = uploadFile.FilePath, FileName = uploadFile.FileName ,FileId=uploadFile.Id};
+            var result = new UploadResult { Success = true, FilePath = uploadFile.FilePath, FileName = uploadFile.FileName, FileId = uploadFile.Id };
             return result;
         }
         #endregion
@@ -104,7 +104,7 @@ namespace Master.Web.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> UploadByBase64(string data,string oriVirtualPath)
+        public async Task<JsonResult> UploadByBase64(string data, string oriVirtualPath)
         {
             var base64Content = data.Replace("data:image/png;base64,", "");
             var result = await UploadFile(base64Content, oriVirtualPath);
@@ -141,7 +141,7 @@ namespace Master.Web.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message+ex.StackTrace);
+                Logger.Error(ex.Message + ex.StackTrace);
                 return Json(new UploadResult { Success = false, Msg = "系统繁忙,请稍候重试" });
             }
 
@@ -162,7 +162,7 @@ namespace Master.Web.Controllers
             var absPath = Common.PathHelper.VirtualPathToAbsolutePath(filePath);
             var directory = System.IO.Path.GetDirectoryName(absPath);
             System.IO.Directory.CreateDirectory(directory);
-            await System.IO.File.WriteAllTextAsync(absPath, html,Encoding.Default);
+            await System.IO.File.WriteAllTextAsync(absPath, html, Encoding.Default);
             return Json(new { });
         }
 
@@ -224,7 +224,7 @@ namespace Master.Web.Controllers
             var fullpath = Common.PathHelper.VirtualPathToAbsolutePath(file.FilePath);
 
 
-            using (var filenow = Common.ImageHelper.ThumbImageToStream(fullpath, w, h==0?w:h))
+            using (var filenow = Common.ImageHelper.ThumbImageToStream(fullpath, w, h == 0 ? w : h))
             {
 
                 return File(filenow.ToArray(), GetFileContentType(file.FileName), file.FileName);

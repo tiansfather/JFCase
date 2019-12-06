@@ -1,0 +1,328 @@
+﻿@using Master.Web.Components
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="layui-fluid" id="LAY-app-message">
+
+    <div class="layui-card">
+        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("分类管理")</div>
+        <div class="layui-card-body">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-xs3">
+                    <ul id="tree" class="ztree"
+                        style="padding: 2px; border: 1px solid #ddd; overflow: auto;height:600px"></ul>
+                </div>
+                <div class="layui-col-xs9 ">
+                    <div id="app" class="layui-hide" >
+                        <div v-show="currentItem.id>0 || currentItem.parentId">
+                            <blockquote class="layui-elem-quote" >{{title}}</blockquote>
+                            <form class="layui-form layui-form-pane">
+                                <input type="hidden" name="Id" v-model="currentItem.id" />
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">{{nameStr}}</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" v-model="currentItem.name" name="name" lay-verify="required" autocomplete="off" class="layui-input" :readonly="!currentItem.parentId">
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">排序</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="Sort" v-model="currentItem.sort" lay-verify="number" autocomplete="off" class="layui-input" :readonly="!currentItem.parentId">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="layui-form-item" v-if="currentItem.parentId">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">前端显示名称</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" v-model="currentItem.displayName" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">上级节点</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" :value="parentNodeName" autocomplete="off" class="layui-input" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item" v-if="currentItem.parentId">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">对应知识树级</label>
+                                        <template v-for="(item,index) in casadeNodes">
+                                            <div class="layui-input-inline" style="width: 100px;">
+                                                <input type="text" :value="item.name" autocomplete="off" class="layui-input" readonly>
+                                            </div>
+                                            <div class="layui-form-mid">--</div>
+                                        </template>
+
+                                        <div class="layui-input-inline" style="width: 100px;">
+                                            <select v-model="currentItem.relativeNodeId">
+                                                <option v-for="(item,index) in relativeNodes" :value="item.id" v-text="item.name"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-form-text" v-if="!currentItem.parentId">
+                                    <label class="layui-form-label">说明</label>
+                                    <div class="layui-input-block">
+                                        <textarea placeholder="" class="layui-textarea" name="remarks" v-model="currentItem.remarks" readonly></textarea>
+                                    </div>
+                                </div>
+
+
+                                <div class="layui-form-item">
+                                    <button v-if="currentItem.id" class="layui-btn layui-btn-normal" type="button" @@click="addNode(currentItem.id)">新增子节点数据</button>
+                                    <button class="layui-btn" type="button" @@click="doSave" v-if="currentItem.parentId">@L("保存")</button>
+                                    <button v-if="!isAdd && currentItem.parentId" class="layui-btn layui-btn-danger" @@click="doDelete" type="button">@L("删除")</button>
+                                    <button  class="layui-btn layui-btn-primary" type="button" onclick="config.refresh()">刷新树</button>
+                                </div>
+                                @*<vc:form-submit param="@(new FormSubmitViewParam() { ModuleKey="Organization",ButtonKey="Submit",Callback="submitCallback"})"></vc:form-submit>*@
+                                @*<div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" type="button" lay-submit="" lay-filter="submit">提交</button>
+                </div>
+            </div>*@
+                            </form>
+                        </div>
+                        
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var app, nodes,knowledgeNodes,currentNode,ztreeObj;
+        var searchKeys = {};
+        
+        config.ready = function () {
+            layui.form.on("select", function (data) {
+                app.currentItem.relativeNodeId = data.value;
+            })
+            //$("#tree").height($("div.layui-table-view").height());
+            app = new Vue({
+                el: '#app',
+                data: {
+                    currentItem: {
+                        id: 0,
+                        parentId: null
+                    }
+                },
+                computed: {
+                    isAdd: function () {
+                        return this.currentItem.id == 0;
+                    },
+                    title: function () {
+                        if (this.isAdd) { return "添加节点"; }
+                        else { return "修改节点 " + this.currentItem.displayName; }
+                    },
+                    nameStr: function () {
+                        return this.currentItem.parentId == null ? "体系名称" : "名称";
+                    },
+                    parentNode: function () {
+                        var that = this;
+                        return nodes.filter(function (o) { return o.id == that.currentItem.parentId })[0];
+                    },
+                    //当前父节点对应知识树的节点
+                    parentNodeInKnowledge: function () {
+                        var parentNode = this.parentNode;
+                        if (parentNode.parentId == null) {
+                            return parentNode;
+                        } else {
+                            var relativeNodeId = this.parentNode.relativeNodeId;
+                            return knowledgeNodes.filter(function (o) { return o.id == relativeNodeId })[0];
+                        }
+                    },
+                    //当前父节点对应的知识树层级节点
+                    casadeNodes: function () {
+                        var nodes = [];
+                        var code = this.parentNodeInKnowledge.code;//"0001.0001.0002"
+                        var codeArr = code.split('.');
+                        for (var i = 0; i < codeArr.length; i++) {
+                            var nowcode = codeArr.slice(0, i + 1).join('.');
+                            nodes.push(knowledgeNodes.filter(function (o) { return o.code == nowcode })[0]);
+                        }
+                        return nodes;
+                    },
+                    //当前节点可供选择对应的知识树节点
+                    relativeNodes: function () {
+                        var lastCasadeNode = this.casadeNodes[this.casadeNodes.length-1];
+                        if (lastCasadeNode) {
+                            return knowledgeNodes.filter(function (o) { return o.parentId == lastCasadeNode.id });
+                        } else {
+                            return [];
+                        }
+                    },
+                    parentNodeName: function () {
+                        return this.parentNode.parentId == null ? "根" : this.parentNode.name;
+                    },
+                    rootNodeName: function () {
+                        var that = this;
+                        return nodes.filter(function (o) { return o.code == that.parentNode.code.split('.')[0] })[0].name;
+                    }
+
+                },
+                methods: {
+                    addNode: function (parentId) {
+                        console.log(parentId);
+                        this.currentItem = { id: 0, parentId: parentId, treeNodeType: 1 };
+                        if (this.relativeNodes.length > 0) {
+                            this.currentItem.relativeNodeId = this.relativeNodes[0].id;
+                        }
+                        refresh();
+                    },
+                    doSave: function () {
+                        if (!this.currentItem.name) {
+                            abp.message.error("请输入名称");
+                            return false;
+                        }
+                        if (!this.currentItem.displayName) {
+                            abp.message.error("请输入前端名称");
+                            return false;
+                        }
+                        if (!this.currentItem.relativeNodeId) {
+                            abp.message.error("请选择知识树级");
+                            return false;
+                        }
+                        abp.message.confirm("确认提交?", function () {
+                            abp.services.app.baseTree.submit(app.currentItem).done(function (obj) {
+                                layer.msg("提交成功");
+                                if (!app.currentItem.id) {
+                                    setShowName(obj);
+                                    zTreeObj.addNodes(currentNode, obj);
+                                }
+                                
+                                //config.refresh();
+                            })
+                        })
+
+                    },
+                    doAdd: function () {
+                        this.currentItem = { id: 0, parentId: null };
+                        $("#userDiv").hide();
+                    },
+                    doDelete: function () {
+                        var that = this;
+                        abp.message.confirm('确认删除节点[' + this.currentItem.name + "]?子节点也将被删除", function () {
+                            func.runAsync(abp.services.app.baseTree.deleteEntity([that.currentItem.id])
+                                .done(function (data) {
+                                    layer.msg("提交成功");
+                                    config.refresh();
+                                }));
+
+                        })
+
+                    }
+
+                },
+                mounted: function () {
+                    var that = this;
+                    $("#app").removeClass("layui-hide");
+                    abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done(function (data) {
+                        knowledgeNodes = data;
+                        window.ztree = function () {
+                            //var zTreeObj;
+                            var setting = {
+                                view: { selectedMulti: false },
+                                data: {
+                                    key: {
+                                        name: 'showName',
+                                        title: 'displayName'
+                                    },
+                                    simpleData: {
+                                        enable: true,
+                                        idKey: 'id',
+                                        pIdKey: 'parentId',
+                                        rootPId: null
+                                    }
+                                },
+                                callback: {
+                                    onClick: function (event, treeId, treeNode) {
+                                        app.currentItem = treeNode;
+                                        currentNode = treeNode;
+                                        refresh();
+                                        //searchKeys.parentId = treeNode.id;
+                                        //config.reloadTable();
+                                    }
+                                }
+                            };
+                            var load = function () {
+                                abp.services.app.baseTree.getTypeTreeJsonByParentId().done(function (json) {
+                                    nodes = json;
+                                    //that.currentItem = nodes[0];
+                                    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                                    debugger;
+                                    //var newNode = { briefName: "根节点", id: null, parentId: "" };
+                                    //json.push(newNode);
+                                    json.forEach(o => {
+                                        setShowName(o);
+                                        //o.showName = o.displayName;
+                                        //if (o.relativeNodeId) {
+                                        //    var relativeNode = knowledgeNodes.filter(n => n.id == o.relativeNodeId)[0];
+                                        //    if (knowledgeNodes.filter(n => n.parentId == relativeNode.parentId).length > 1) {
+                                        //        o.relativeNodeId && (o.showName = '[' + relativeNode.displayName + ']' + o.showName);
+                                        //    }
+                                        //}
+                                       
+                                    })
+                                    zTreeObj.addNodes(null, json);
+                                    //mainList({ orgId: "" });
+                                    //zTreeObj.expandAll(true);
+                                });
+                                //$.getJSON(url, function (json) {
+                                //    zTreeObj = $.fn.zTree.init($("#tree"), setting);
+                                //    var newNode = { Name: "根节点", Id: null, ParentId: "" };
+                                //    json.push(newNode);
+                                //    zTreeObj.addNodes(null, json);
+                                //    //mainList({ orgId: "" });
+                                //    zTreeObj.expandAll(true);
+                                //});
+                            };
+                            load();
+                            return {
+                                reload: load
+                            };
+                        }();
+                    })
+                    //this.doAdd();
+                    
+                }
+
+            });
+
+        };
+        config.refresh = function () {
+            ztree.reload();
+            app.addNode(app.currentItem.parentId);
+        };
+        config.reloadTable = function () {
+
+
+        }
+        function refresh() {
+            Vue.nextTick(function () {
+                layui.form.render();
+            })
+        }
+        function setShowName(o) {
+            o.showName = o.displayName;
+            if (o.relativeNodeId) {
+                var relativeNode = knowledgeNodes.filter(n => n.id == o.relativeNodeId)[0];
+                if (knowledgeNodes.filter(n => n.parentId == relativeNode.parentId).length > 1) {
+                    o.relativeNodeId && (o.showName = '[' + relativeNode.displayName + ']' + o.showName);
+                }
+            }
+        }
+    </script>
+}
+

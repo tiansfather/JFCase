@@ -14,8 +14,14 @@
     <EmbeddedResource Include="Localization\SourceFiles\*.json" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="BackgroudJobs\**" />
+    <Compile Remove="Events\**" />
     <Compile Remove="Projects\**" />
+    <EmbeddedResource Remove="BackgroudJobs\**" />
+    <EmbeddedResource Remove="Events\**" />
     <EmbeddedResource Remove="Projects\**" />
+    <None Remove="BackgroudJobs\**" />
+    <None Remove="Events\**" />
     <None Remove="Projects\**" />
   </ItemGroup>
   <ItemGroup>
@@ -34,9 +40,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BackgroudJobs\" />
-    <Folder Include="Events\" />
   </ItemGroup>
 </Project>

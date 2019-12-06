@@ -1,0 +1,110 @@
+﻿.ax_default {
+  font-family:'微软雅黑';
+  font-weight:400;
+  font-style:normal;
+  font-size:14px;
+  color:#969696;
+  text-align:center;
+  line-height:normal;
+}
+._图片 {
+}
+.placeholder {
+}
+._一级标题 {
+  font-family:'微软雅黑 Bold', '微软雅黑 Regular', '微软雅黑';
+  font-weight:700;
+  font-style:normal;
+  font-size:18px;
+  color:#754C24;
+  text-align:left;
+  line-height:27px;
+}
+._二级标题 {
+  font-family:'微软雅黑 Bold', '微软雅黑 Regular', '微软雅黑';
+  font-weight:700;
+  font-style:normal;
+  font-size:16px;
+  color:#754C24;
+  text-align:left;
+  line-height:24px;
+}
+._三级标题 {
+  font-family:'微软雅黑';
+  font-weight:400;
+  font-style:normal;
+  font-size:14px;
+  text-align:left;
+  line-height:normal;
+}
+._文本段落1 {
+  font-family:'微软雅黑';
+  font-weight:400;
+  font-style:normal;
+  font-size:16px;
+  color:#C69C6D;
+  text-align:left;
+  line-height:24px;
+}
+._文本段落2 {
+  font-family:'微软雅黑';
+  font-weight:400;
+  font-style:normal;
+  font-size:14px;
+  color:#969696;
+  line-height:21px;
+}
+.box_1 {
+}
+.ellipse {
+}
+.image {
+}
+.line {
+}
+.label {
+  font-size:14px;
+  text-align:left;
+}
+.icon {
+}
+.text_field {
+  color:#000000;
+  text-align:left;
+}
+.text_area {
+  color:#000000;
+  text-align:left;
+}
+.checkbox {
+  text-align:left;
+}
+._流程形状 {
+  color:#333333;
+}
+.html_button {
+  text-align:center;
+}
+.shape {
+}
+.image1 {
+  color:#000000;
+}
+.text_field1 {
+  color:#000000;
+  text-align:left;
+}
+._形状 {
+}
+._文本段落 {
+  text-align:left;
+}
+._一级标题1 {
+  font-family:'Arial Negreta', 'Arial';
+  font-weight:700;
+  font-size:32px;
+  text-align:left;
+}
+._图片1 {
+  color:#000000;
+}

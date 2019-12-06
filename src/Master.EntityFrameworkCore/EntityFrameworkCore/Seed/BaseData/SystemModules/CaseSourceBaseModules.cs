@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Abp.Domain.Entities;
 using Master.Module;
 
 namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
@@ -37,6 +38,19 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 Sort = 2
             };
             moduleButtons.Add(UnFreezeButton);
+            var ClearButton = new ModuleButton()
+            {
+                ButtonKey = "ClearContent",
+                ButtonName = "放回判例库",
+                ButtonType = ButtonType.ForSingleRow ,
+                ButtonActionType = ButtonActionType.Ajax,
+                ConfirmMsg = "确认将此判例放回判例库？",
+                ButtonActionUrl = $"abp.services.app.caseSource.clearContent",
+                ButtonClass = "layui-btn-danger",
+                ClientShowCondition= "d.caseSourceStatus==1 || d.caseSourceStatus==2",
+                Sort = 3
+            };
+            moduleButtons.Add(ClearButton);
             return moduleButtons;
         }
         public override void SetButtonsInfosMoreData(ICollection<ModuleButton> ButtonInfos)
@@ -45,10 +59,24 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             ButtonInfos.Remove(createBtn);
             var editBtn= ButtonInfos.Single(o => o.ButtonKey == "Edit");
             editBtn.ButtonActionParam = "{\"area\": [\"100%\",\"100%\"]}";
-            editBtn.ClientShowCondition = "d.caseSourceStatus==-1";
+            //editBtn.ClientShowCondition = "d.caseSourceStatus==-1";//不下架也能进行修改
             editBtn.ButtonActionUrl = "/CaseSource/Add";
             var delBtn = ButtonInfos.Single(o => o.ButtonKey == "Delete");
             delBtn.ClientShowCondition = "d.caseSourceStatus==-1";
+        }
+        public override void SetColumnInfosMoreData(ICollection<ColumnInfo> ColumnInfos)
+        {
+            ColumnInfos.Single(o => o.ColumnKey == "SourceSN").SetData("width", "200");
+            ColumnInfos.Single(o => o.ColumnKey == "CityId").SetData("width", "100");
+            ColumnInfos.Single(o => o.ColumnKey == "Court1Id").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "Court2Id").SetData("width", "160");
+            ColumnInfos.Single(o => o.ColumnKey == "AnYouId").SetData("width", "200");
+            ColumnInfos.Single(o => o.ColumnKey == "ValidDate").SetData("width", "100");
+            //ColumnInfos.Single(o => o.ColumnKey == "SourceFile").SetData("width", "100");
+            ColumnInfos.Single(o => o.ColumnKey == "CaseSourceStatus").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "CreatorUserId").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "Operation").SetData("width", "140");
         }
     }
 }

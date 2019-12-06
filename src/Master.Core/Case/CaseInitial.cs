@@ -14,7 +14,7 @@ namespace Master.Case
     [InterModule("成品案例", GenerateDefaultColumns=false,GenerateDefaultButtons =false)]
     public class CaseInitial : BaseFullEntityWithTenant, IHaveStatus,IPassivable
     {
-        [InterColumn(ColumnName ="案号",ValuePath="CaseSource.SourceSN")]
+        [InterColumn(ColumnName ="案号",ValuePath="CaseSource.SourceSN",Sort =1,Templet = "<a dataid=\"{{d.caseSourceId}}\" class=\"layui-btn layui-btn-xs layui-btn-normal\" buttonname=\"预览\" params=\"{&quot;area&quot;: [&quot;700px&quot;, &quot;700px&quot;],&quot;btn&quot;:[]}\"   buttonactiontype=\"Form\" buttonactionurl=\"/CaseSource/InitialView\" onclick=\"func.callModuleButtonEvent()\">{{d.sourceSN}}</a>")]
         [NotMapped]
         public string SourceSN {
             get
@@ -22,7 +22,7 @@ namespace Master.Case
                 return CaseSource.SourceSN;
             }
         }
-        [InterColumn(ColumnName = "城市", ValuePath = "CaseSource.City.DisplayName")]
+        [InterColumn(ColumnName = "城市", ValuePath = "CaseSource.City.DisplayName",Sort =2)]
         [NotMapped]
         public string City
         {
@@ -31,7 +31,7 @@ namespace Master.Case
                 return CaseSource.City.DisplayName;
             }
         }
-        [InterColumn(ColumnName = "案由", ValuePath = "CaseSource.AnYou.DisplayName")]
+        [InterColumn(ColumnName = "案由", ValuePath = "CaseSource.AnYou.DisplayName",Sort =3)]
         [NotMapped]
         public string AnYou
         {
@@ -45,7 +45,7 @@ namespace Master.Case
         public virtual CaseSource CaseSource { get; set; }
         public int? SubjectId { get; set; }
         public virtual BaseTree Subject { get; set; }
-        [InterColumn(ColumnName ="标题")]
+        [InterColumn(ColumnName ="标题",Sort =4)]
         public string Title { get; set; }
         
         /// <summary>
@@ -66,7 +66,7 @@ namespace Master.Case
         public string LawyerOpinion { get; set; }
         public string Status { get; set; }
         [NotMapped]
-        [InterColumn(ColumnName = "加工人",ValuePath = "CreatorUser.Name")]
+        [InterColumn(ColumnName = "加工人",ValuePath = "CreatorUser.Name",Sort =5)]
         public string Processor
         {
             get
@@ -74,11 +74,13 @@ namespace Master.Case
                 return CreatorUser.Name;
             }
         }
+        [InterColumn(ColumnName = "加入时间", ColumnType =Module.ColumnTypes.DateTime, Sort = 6)]
+        public override DateTime CreationTime { get => base.CreationTime; set => base.CreationTime = value; }
         /// <summary>
         /// 发布日期
         /// </summary>
-        [InterColumn(ColumnName = "发布日期")]
-        public DateTime? PublisDate { get; set; }
+        [InterColumn(ColumnName = "发布日期",Sort =7)]
+        public DateTime? PublishDate { get; set; }
         /// <summary>
         /// 阅读量
         /// </summary>
@@ -86,21 +88,27 @@ namespace Master.Case
         /// <summary>
         /// 点赞数
         /// </summary>
-        [InterColumn(ColumnName = "点赞数")]
+        [InterColumn(ColumnName = "点赞数",Sort =9)]
         public int PraiseNumber { get; set; }
         /// <summary>
         /// 拍砖数
         /// </summary>
-        [InterColumn(ColumnName = "拍砖数")]
+        [InterColumn(ColumnName = "拍砖数",Sort =10)]
         public int BeatNumber { get; set; }
+        [InterColumn(ColumnName = "推荐排序", Sort = 8,Templet = "<input type=\"text\" value=\"{{(d.sort || 999999) == 999999 ? '' : d.sort}}\" size=5 onblur=\"setSort({{ d.id}},this)\"/>")]
+        public int Sort { get; set; } = 999999;
+        /// <summary>
+        /// 推荐状态
+        /// </summary>
         
         public bool IsActive { get; set; }
-        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus")]
+        [InterColumn(ColumnName = "状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseStatus",Templet ="{{d.caseStatus_display}}",Sort =11)]
         public CaseStatus CaseStatus { get; set; }
 
-        public virtual ICollection<CaseKey> CaseKeys { get; set; }
-        public virtual ICollection<CaseFine> CaseFines { get; set; }
-        public virtual ICollection<CaseCard> CaseCards { get; set; }
+        public virtual ICollection<CaseNode> CaseNodes { get; set; } = new List<CaseNode>();
+        public virtual ICollection<CaseLabel> CaseLabels { get; set; } = new List<CaseLabel>();
+        public virtual ICollection<CaseFine> CaseFines { get; set; } = new List<CaseFine>();
+        public virtual ICollection<CaseCard> CaseCards { get; set; } = new List<CaseCard>();
 
         /// <summary>
         /// 诉情及判决
@@ -110,7 +118,8 @@ namespace Master.Case
         {
             get
             {
-                return this.GetPropertyValue<JudgeInfo>("JudgeInfo");
+                var judgeInfo= this.GetPropertyValue<JudgeInfo>("JudgeInfo");
+                return judgeInfo ?? new JudgeInfo();
             }
             set
             {
@@ -124,9 +133,7 @@ namespace Master.Case
         加工中,
         展示中,
         退回,
-        下架,
-        推荐,
-        须修整
+        下架
     }
 
     public class JudgeInfo

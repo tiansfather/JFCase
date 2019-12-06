@@ -6,19 +6,109 @@
 <div class="layui-fluid" id="LAY-app-message">
     <div class="layui-card">
         <div class="layui-tab layui-tab-brief">
-
+            <div id="app" v-cloak>
+                <el-form :inline="true" :model="formInline" class="demo-form-inline">
+                    <el-form-item label="关键字">
+                        <el-input v-model="formInline.keyword" placeholder="用户名/昵称"></el-input>
+                    </el-form-item>
+                    <el-form-item label="角色">
+                        <el-select v-model="formInline.roles" placeholder="选择角色" multiple style="width:400px">
+                            <el-option v-for="(item) in roles" :label="item.displayName" :value="item.id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-date-picker v-model="formInline.dateRange"
+                                    type="daterange"
+                                    align="right"
+                                    unlink-panels
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    :picker-options="pickerOptions">
+                    </el-date-picker>
+                    <el-form-item>
+                        <el-button type="primary" @@click="search">查询</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
             <table id="demo_E" lay-filter="demo_E"></table>
         </div>
     </div>
 </div>
 @section scripts{
     <script>
+        var app;
         config.ready = function () {
-
+            app = new Vue({
+                el: '#app',
+                data: {
+                    roles: [],
+                    formInline: {},
+                    pickerOptions: {
+                        shortcuts: [{
+                            text: '最近一周',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '最近一个月',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '最近三个月',
+                            onClick(picker) {
+                                const end = new Date();
+                                const start = new Date();
+                                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }]
+                    },
+                },
+                methods: {
+                    search: function () {
+                        layui.table.reload('demo_E', {
+                            where: app.getWhere()
+                        })
+                    },
+                    getWhere: function () {
+                        var where = "1=1";
+                        var searchKeys = {};
+                        if (this.formInline.keyword) {
+                            searchKeys.keyword = this.formInline.keyword;
+                        };
+                        if (this.formInline.roles.length) {
+                            searchKeys.roles = this.formInline.roles.join(',');
+                        }
+                        if (this.formInline.dateRange) {
+                            where = where + ' and creationtime>= "' + app.formInline.dateRange[0].pattern('yyyy-MM-dd HH:mm:ss') + '"';
+                        }
+                        if (this.formInline.dateRange) {
+                            where = where + ' and creationtime<= "' + app.formInline.dateRange[1].pattern('yyyy-MM-dd HH:mm:ss') + '"';
+                        }
+                        return { where: where, searchKeys: JSON.stringify(searchKeys) };
+                    }
+                },
+                mounted: function () {
+                    var that = this;
+                    abp.services.app.role.getPageResult({ page: 1, limit: 100 }).done(function (res) {
+                        that.roles = res.data;
+                    })
+                }
+            })
 
         }
         config.onTableDone = function () {
 
+        }
+        config.reloadTable = function () {
+            
         }
     </script>
 
@@ -34,7 +124,12 @@
                 elem: '#demo_E' //指定原始表格元素选择器（推荐id选择器）
                 , url: '/api/services/app/UserLoginAttempts/GetPageResult'
                 , height: 'full-100' //容器高度
-                , cols: [[{ field: 'userNameOrPhoneNumber', width: "25%", title: '用户名' }, { field: 'clientIpAddress', width: "25%", title: 'IP' }, { field: 'tenancyName', width: "25%", title: '账套名称' }, { field: 'creationTime', width: "25%", title: '登录时间' }]] //设置表头
+                ,limit:20
+                , cols: [[
+                    { field: 'userNameOrPhoneNumber', width: "25%", title: '用户名' },
+                    { field: 'clientIpAddress', width: "25%", title: 'IP' },
+                    { field: 'nickName', width: "25%", title: '昵称' },
+                    { field: 'creationTime', width: "25%", title: '登录时间' }]] //设置表头
                 //,…… //更多参数参考右侧目录：基本参数选项
                 , page: true
             });

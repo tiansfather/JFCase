@@ -5,123 +5,132 @@
 @addTagHelper *, Master.Web.Core
 @model ModuleFormItemViewModel
 @{
-	var column = Model.ColumnInfo;
-	var value = Model.Value?.ToString();
+    var column = Model.ColumnInfo;
+    var value = Model.Value?.ToString();
 
-	//编辑界面文件默认值的显示 20180607 lijianbo
-}
-@if (column.MaxFileNumber == 1)
-{
-	//单个上传
-	<div class="layui-form-item">
-		<input type="hidden" name="@column.ColumnKey" value="@value" />
-		<label class="layui-form-label">@column.ColumnName</label>
-		<div class="layui-input-block">
-			<div class="layui-upload">
-				<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" id="@column.ColumnKey"><i class="layui-icon layui-icon-zzcloud-upload"></i>上传文件</button>
-				<button type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete file">@L("删除")</button>
-				<div class="layui-upload-list">
-					<p id="@(column.ColumnKey)_text"></p>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script>
-        $('.demo-delete.file').on('click', function () {
-            $("#@(column.ColumnKey)_text").html();
-            $('input[name=@(column.ColumnKey)]').val("");
-        });
-    layui.use('upload', function () {
-        var $ = layui.jquery
-            , upload = layui.upload;
-        var loadLayerIndex;
-        //普通上传
-        var uploadInst = upload.render({
-            elem: '#@column.ColumnKey',
-            accept:'file',
-            field:'file'
-            , url: '/file/upload/'
-            , before: function (obj) {
-                //预读本地文件示例，不支持ie8
-                obj.preview(function (index, file, result) {
-                    $('#@(column.ColumnKey)_text').html(file.name); //图片链接（base64）
-                });
-                loadLayerIndex = top.layer.msg('@L("正在上传")...', {
-                    icon: 16
-                    , shade: 0.01, time: 0
-                });
+    //编辑界面文件默认值的显示 20180607 lijianbo
 
-            }
-            , done: function (res) {
-                top.layer.close(loadLayerIndex);
-                //如果上传失败
-                if (!res.success) {
-                    return layer.msg('@L("上传失败")');
-                }
-                //上传成功
-                else {
-                    $('input[name=@(column.ColumnKey)]').val(res.result.fileid);
-
-                }
-            }
-            , error: function () {
-                //演示失败状态，并实现重传
-                var demoText = $('#@(column.ColumnKey)_text');
-                demoText.html('<span style="color: #FF5722;">@L("上传失败")</span> <a class="layui-btn layui-btn-mini demo-reload">@L("重试")</a>');
-                demoText.find('.demo-reload').on('click', function () {
-                    uploadInst.upload();
-                });
-            }
-        });
-
-    })
-	</script>
+    var renderer = !string.IsNullOrEmpty(column.Renderer) ? column.Renderer : "lay-file";
 
 }
-else
+
+<div is="@renderer" value="@(Model.Value?.ToString())" :column-Info="{ColumnKey:'@column.ColumnKey',ColumnName:'@column.ColumnName',Tips:'@column.Tips',MaxFileNumber:@column.MaxFileNumber}"></div>
+@if (column.MaxFileNumber == 1 && false)
 {
-	//多文件上传
-	<div class="layui-form-item">
-		<input type="hidden" name="@column.ColumnKey" value="@value" />
-		<label class="layui-form-label">@column.ColumnName</label>
-		<div class="layui-input-block">
-			<div class="layui-upload">
-				<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" id="@(column.ColumnKey)Select"><i class="layui-icon layui-icon-search"></i>@L("选择多文件")</button>
-				<div class="layui-upload-list">
-					<table class="layui-table">
-						<thead>
-							<tr>
-								<th>@L("文件名")</th>
-								<th>@L("大小")</th>
-								<th>@L("状态")</th>
-								<th>@L("操作")</th>
-							</tr>
-						</thead>
-						<tbody id="@(column.ColumnKey)List">
-							@if (!string.IsNullOrEmpty(value))
-							{
-								var fileids = value.Split(',').ToList().ConvertAll(o => int.Parse(o));
-								var files = await FileManager.GetListByIdsAsync(fileids);
-								foreach (var file in files)
-								{
-									<tr class="pending">
-										<td><a href="/File/GetFile?fileid=@file.Id" target="_blank">@file.FileName</a></td>
-										<td>@(file.FileSize)kb</td>
-										<td></td>
-										<td><button fileID="@file.Id" type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete filelist">@L("删除")</button></td>
-									</tr>
+    //单个上传
+    <div class="layui-form-item">
+        <input type="hidden" name="@column.ColumnKey" value="@value" />
+        <label class="layui-form-label">@column.ColumnName</label>
+        <div class="layui-input-block">
+            <div class="layui-upload">
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" id="@column.ColumnKey"><i class="layui-icon layui-icon-zzcloud-upload"></i>上传文件</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete file">@L("删除")</button>
+                <div class="layui-upload-list">
+                    <p id="@(column.ColumnKey)_text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        config.readyFuncs.push(function () {
+            $('.demo-delete.file').on('click', function () {
+                    $("#@(column.ColumnKey)_text").html();
+                    $('input[name=@(column.ColumnKey)]').val("");
+            });
+            layui.upload.render({ elem: '#@column.ColumnKey' });
+            layui.use('upload', function () {
+                var $ = layui.jquery
+                    , upload = layui.upload;
+                var loadLayerIndex;
+                //普通上传
+                var uploadInst = upload.render({
+                    elem: '#@column.ColumnKey',
+                    accept:'file',
+                    field:'file'
+                    , url: '/file/upload/'
+                    , before: function (obj) {
+                        //预读本地文件示例，不支持ie8
+                        obj.preview(function (index, file, result) {
+                            $('#@(column.ColumnKey)_text').html(file.name); //图片链接（base64）
+                        });
+                        loadLayerIndex = top.layer.msg('@L("正在上传")...', {
+                            icon: 16
+                            , shade: 0.01, time: 0
+                        });
 
-								}
+                    }
+                    , done: function (res) {
+                        top.layer.close(loadLayerIndex);
+                        //如果上传失败
+                        if (!res.success) {
+                            return layer.msg('@L("上传失败")');
+                        }
+                        //上传成功
+                        else {
+                            $('input[name=@(column.ColumnKey)]').val(res.result.fileid);
 
-							}
-						</tbody>
-					</table>
-				</div>
-				<button type="button" class="layui-btn layui-btn-sm layui-btn-warm" id="@(column.ColumnKey)Action"><i class="layui-icon layui-icon-zzcloud-upload"></i>@L("开始上传")</button>
-			</div>
-		</div>
-	</div>
-	<script>
+                        }
+                    }
+                    , error: function () {
+                        //演示失败状态，并实现重传
+                        var demoText = $('#@(column.ColumnKey)_text');
+                        demoText.html('<span style="color: #FF5722;">@L("上传失败")</span> <a class="layui-btn layui-btn-mini demo-reload">@L("重试")</a>');
+                        demoText.find('.demo-reload').on('click', function () {
+                            uploadInst.upload();
+                        });
+                    }
+                });
+
+            })
+        })
+
+    </script>
+
+}
+else if (false)
+{
+    //多文件上传
+    <div class="layui-form-item">
+        <input type="hidden" name="@column.ColumnKey" value="@value" />
+        <label class="layui-form-label">@column.ColumnName</label>
+        <div class="layui-input-block">
+            <div class="layui-upload">
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" id="@(column.ColumnKey)Select"><i class="layui-icon layui-icon-search"></i>@L("选择多文件")</button>
+                <div class="layui-upload-list">
+                    <table class="layui-table">
+                        <thead>
+                            <tr>
+                                <th>@L("文件名")</th>
+                                <th>@L("大小")</th>
+                                <th>@L("状态")</th>
+                                <th>@L("操作")</th>
+                            </tr>
+                        </thead>
+                        <tbody id="@(column.ColumnKey)List">
+                            @if (!string.IsNullOrEmpty(value))
+                            {
+                                var fileids = value.Split(',').ToList().ConvertAll(o => int.Parse(o));
+                                var files = await FileManager.GetListByIdsAsync(fileids);
+                                foreach (var file in files)
+                                {
+                                    <tr class="pending">
+                                        <td><a href="/File/GetFile?fileid=@file.Id" target="_blank">@file.FileName</a></td>
+                                        <td>@(file.FileSize)kb</td>
+                                        <td></td>
+                                        <td><button fileID="@file.Id" type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete filelist">@L("删除")</button></td>
+                                    </tr>
+
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" id="@(column.ColumnKey)Action"><i class="layui-icon layui-icon-zzcloud-upload"></i>@L("开始上传")</button>
+            </div>
+        </div>
+    </div>
+    <script>
         $('.demo-delete.filelist').on('click', function () {
             var tempfileid= $(this).attr("fileID");
             var fileids = $('input[name=@(column.ColumnKey)]').val();
@@ -135,8 +144,8 @@ else
             $('input[name=@(column.ColumnKey)]').val(orifiles.join(','));
             $(this).parent().parent().remove();
         });
-	</script>
-	<script>
+    </script>
+    <script>
     layui.use('upload', function () {
         var $ = layui.jquery
             , upload = layui.upload;
@@ -249,6 +258,6 @@ else
         });
 
         })
-	</script>
+    </script>
 
 }

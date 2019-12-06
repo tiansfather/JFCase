@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Abp.Runtime.Security;
 using Master.Entity;
+using Microsoft.AspNetCore.Http;
 
 namespace Master.Session
 {
@@ -17,7 +18,7 @@ namespace Master.Session
         private IRepository<User, long> _userRepository;
         private IRepository<UserRole> _userRoleRepository;
         private IRepository<Role> _roleRepository;
-
+        public IHttpContextAccessor HttpContextAccessor { get; set; }
         public SessionAppService(
             IRepository<User, long> userRepository,
             IRepository<UserRole> userRoleRepository,
@@ -53,11 +54,12 @@ namespace Master.Session
                 var user = await GetCurrentUserAsync();
                 output.User = ObjectMapper.Map<UserLoginInfoDto>(user);
                 //获取用户的角色
-                var roleNameList = (from userrole in _userRoleRepository.GetAll()
-                                    join u in _userRoleRepository.GetAll() on userrole.UserId equals u.Id
-                                    join role in _roleRepository.GetAll() on userrole.RoleId equals role.Id
-                                    where u.Id == user.Id
-                                    select new { role.DisplayName ,role.Name}).ToList();
+                var roleNameList = await Resolve<UserManager>().GetRolesAsync(user);
+                //var roleNameList = (from userrole in _userRoleRepository.GetAll()
+                //                    join u in _userRoleRepository.GetAll() on userrole.UserId equals u.Id
+                //                    join role in _roleRepository.GetAll() on userrole.RoleId equals role.Id
+                //                    where u.Id == user.Id
+                //                    select new { role.DisplayName ,role.Name}).ToList();
                 output.User.RoleNames = roleNameList.Select(o=>o.Name).ToList();
                 output.User.RoleDisplayNames = roleNameList.Select(o => o.DisplayName).ToList();
             }
@@ -78,5 +80,12 @@ namespace Master.Session
             }
         }
 
+        public virtual string RefreshWechatLoginId()
+        {
+            //生成一个标识存入Ｓｅｓｓｉｏｎ
+            var guid = Guid.NewGuid();
+            HttpContextAccessor.HttpContext.Session.Set("WeChatLoginId", guid);
+            return guid.ToString();
+        }
     }
 }

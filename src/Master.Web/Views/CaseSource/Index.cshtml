@@ -10,8 +10,10 @@
         <div class="layui-card-body">
             <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
                 <vc:module-button module-key="CaseSource"></vc:module-button>
+                <input type="text" id="keyword" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="案号检索" />
+                <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
             </div>
-            <vc:module-table param="@(new ModuleTableViewParam() {ID="CaseSource",ModuleKey="CaseSource",Height="full-150",Where="" })"></vc:module-table>
+            <vc:module-table param="@(new ModuleTableViewParam() {ID="CaseSource",ModuleKey="CaseSource",Height="full-250",Where="" })"></vc:module-table>
 
         </div>
 
@@ -35,8 +37,11 @@
             })
         }
         function getWhere(index) {
-            var where = { searchKeys: JSON.stringify(searchKeys) };
-            
+            var where = { searchKeys: JSON.stringify(searchKeys) ,where:'1=1'};
+            var value = $('#keyword').val();
+            if (value) {
+                where.where += " and SourceSN.Contains(\"" + value + "\")"
+            }
             
             where.searchCondition = func.buildSearchCondition('CaseSource');
 

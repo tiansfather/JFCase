@@ -1,28 +1,1385 @@
-﻿
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
 @{
+    Layout = "_LayoutJianFa";
     ViewData["Title"] = "加工页";
 }
+@section styles{
+    <style>
+        .jianfa-guandiancard .ny-guandiancard li dl {
+            width: 325px;
+        }
 
-<h2>Host</h2>
+        .xuanzeStyle .el-checkbox-button:last-child .el-checkbox-button__inner {
+            vertical-align: top;
+            line-height: 26px;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl dd i4, .jianfa-chaanli .chaanli-content li dl dd i5 {
+            width: 100%;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl {
+            height: auto;
+        }
+
+        .jianfa-jiagong, .jianfa-content {
+            max-width: 1400px;
+        }
+
+        .style-chaal-42 {
+            width: calc(50% - 19px);
+        }
+
+        .error input, .error textarea, .error .ivu-select-selection {
+            border: 1px solid red;
+        }
+
+        .ivu-tabs-nav {
+            width: 100%;
+        }
+
+        .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+            width: 33.3%;
+        }
+
+        .jianfa-jiagong .jiagong-content .bjli .bjdl .bjdd i5 {
+            /*border-radius: 5px 0 0 5px;*/
+            text-align: center;
+        }
+
+        .jianfa-jiagong .jiagong-content .bjli .bjdl .bjdd i7 {
+            /*border-radius: 0 5px 5px 0;*/
+            border: 1px solid #f2f2f2;
+            padding: 5px 10px 5px 10px;
+            background: #f7f0e8;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s;
+        }
+
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+
+        .style-chaal-50 .el-icon-arrow-right {
+            float: left;
+            line-height: 24px;
+            transition: all .5s ease 0s;
+        }
+
+        .title-bz {
+            text-align: center;
+        }
+
+        .style-chaal-33-b {
+            width: auto;
+        }
+        .jianfa-jiagong{padding:0;}
+        .ivu-tabs-nav-wrap, .source-first {
+            position: fixed;
+            width: calc(45vw - 18px);
+            max-width: 612px;
+            z-index: 9;
+        }
+        .source-first {
+            background: #f7f0e8;
+            color: #c69c6c;
+            text-align: center;
+            line-height: 2.5;
+            margin-top: 31px;
+            padding-left: 10px;
+            /*width: calc(45vw - 44px);
+            margin-left: 10px;
+            max-width: 586px;*/
+        }
+        .ivu-tabs .ivu-tabs-tabpane {
+            transition: all 0.5s ease 0s;
+        }
+        .jianfa-jiagong .jiagong-content .bjli .bjdl .bjdd.source-btns {
+            position: sticky;
+            bottom: 0;
+            margin: 0;
+            padding: 10px;
+            background: #fff;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i5 {
+            margin: 10px 0px;
+            min-height: 58px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6.flex-center {
+            box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
+            height: auto;
+        }
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+       .support-rate {
+            float: left;
+            width: 8em;
+            /* margin: 0 5%; */
+            line-height: 83px;
+            color: #754C24;
+            font-weight: 700;
+            text-align: center;
+            font-size: 16px;
+        }
+        .jianfa-chaanli .chaanli-content li dl dd i6 {
+            width: 100%;
+            min-height: 8em;
+            color: #505050;
+            border: none;
+        }
+        .source-first-show_btn{
+            position:absolute;
+            right:5px;
+            bottom:5px;
+            font-size:16px;
+            cursor:pointer;
+        }
+        .source-first .sourcesn{
+
+        }
+        .jianfa-chaanli .chaanli-content li dl dd.on, .jianfa-chaanli .chaanli-content li dl dd {
+            line-height: 24px;
+            font-size: 14px;
+        }
+            .jianfa-chaanli .chaanli-content li dl dd i5b:hover {
+                background: #fff;
+                color: #754c24;
+                text-decoration: underline;
+                border-radius: 0;
+                box-sizing: border-box;
+                border: none;
+            }
+            .jianfa-chaanli .chaanli-content li dl dd i5b {
+                color: #754c24;
+                border: none;
+                background: #fff;
+                cursor: initial;
+            }
+    </style>
+}
+
+    <div id="app" v-cloak>
+        <!--顶部-->
+        <com-header></com-header>
+        <!--案源库-01-->
+        <div class="jianfa-content">
+            <div class="ny-content">
+                <ul>
+                    <li>
+                        <dl class="xian">
+                            <!--
+                                            <dd>当前位置：案例工厂 > 工作台 > 加工页：</dd>
+
+                        -->
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--end-->
+        <!--加工页-->
+        <div class="jianfa-jiagong">
+            <div class="jiagong-content">
+                <div class="bjul">
+                    <div class="bjli style-chaal-55">
+                        <div class="bjdl" style="overflow:hidden;">
+                            <div class="bjdd" style="height:100%">
+                                <iframe :src="'/pdfviewer/web/viewer.html?file='+encodeURIComponent(source.sourceFile)" frameborder="0" style="width:100%;height:100%"></iframe>
+                                @*<img src="~/assets/jianfa/ima/anhao-1.jpg" />*@
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<i5 class="fleft style-chaal-50">
+                        <i class="el-icon-arrow-right" :style="{transform:sourceDetailShow?'rotate(90deg)':''}"></i>{{source.sourceSN}}
+                    </i5> class="bjdd on"
+                    <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>*@
+                    <div class="bjli on style-chaal-45">
+                        <div class="bjdl on">
+                            <div class="source-first">
+                                <i class="el-icon-arrow-right source-first-show_btn" :style="{transform:sourceDetailShow?'rotate(270deg)':'rotate(90deg)'}" @@click="sourceDetailShow=!sourceDetailShow"></i>
+                                <p class="sourcesn" style="color:#694d35;">{{source.sourceSN}}&nbsp;—&nbsp;{{source.anYou}}</p>
+                                <transition name="fade">
+                                    <div v-show="sourceDetailShow">
+                                        <p>
+                                            <span v-show="source.court1">一审法院：{{source.court1}};</span>
+                                            <span v-show="source.court2">二审法院：{{source.court2}};</span>
+                                        </p>
+                                        <p>审判组织：{{trialPeople}};</p>
+                                        <p style="margin-bottom:0.5em;">代理律师：{{lawyerFirms}};</p>
+                                        @*<div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">一审法院：</div>
+                                            <div class="fleft style-chaal-80-w">{{source.court1}}</div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">二审法院：</div>
+                                            <div class="fleft style-chaal-80-w">{{source.court2}}</div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">审判组织：</div>
+                                            <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
+                                        </div>
+
+                                        <div class="bjdd on">
+                                            <div class="fleft style-chaal-20-w">代理律师：</div>
+                                            <div class="fleft style-chaal-80-w">
+                                                {{lawyerFirms}}
+                                            </div>
+                                            <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
+                                        </div>*@
+                                    </div>
+
+                                </transition>
+                            </div>
+                            <template>
+                                <Tabs size="small" type="card" v-model="tabsIndex" class="processTabs">
+                                    @* :style="{'margin-top':sourceDetailShow?'238px':'46px'}" *@
+                                    <Tab-Pane label="初加工" class="initialPanel" style="margin-top:46px;" :style="{height:tabsIndex=='0'?'':0}" name="0">
+                                        <div class="bqian">
+                                            <div class="bjdd on">
+                                                <div class="fleft style-chaal-33-b" v-for="(item,index) in getSelects('案由')" :class="{error:validatingInitial && !selectHasValue(selectValues['案由'][index])}" :errmsg="'请选择'+item.displayName" :style="{width:calcSelectWidth(item)}" v-if="item.name!='专题'">
+                                                    <template>
+                                                        <i-select :placeholder="item.displayName" v-model="selectValues['案由'][index]" @@on-change="changeInitialSelect(item,$event)" :clearable="true" :multiple="item.enableMultiSelect">
+                                                            <i-option v-for="opt in getOptions(item)" :value="opt.id"
+                                                                      :key="opt.id">{{ opt.displayName }}</i-option>
+                                                        </i-select>
+                                                    </template>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on xian-2">
+                                                <div class="xuanzeStyle ">
+                                                    <div class="title-bz">关键词：</div>
+                                                    <el-checkbox-group v-model="selectKeywords['初加工']" @@change="changeLabelCheck('初加工','关键词')">
+                                                        <el-checkbox-button v-for="(item,index) in getLabels('初加工','关键词')" :label="item.id">{{item.labelName}}</el-checkbox-button>
+                                                    </el-checkbox-group>
+                                                </div>
+                                            </div>
+                                            <div class="bjdd on">
+                                                <div class="xuanzeStyle ">
+                                                    <div class="title-bz">标签：</div>
+                                                    <el-checkbox-group v-model="selectLabels['初加工']" @@change="changeLabelCheck('初加工','标签')">
+                                                        <el-checkbox-button v-for="(item,index) in getLabels('初加工','标签')" :label="item.id">{{item.labelName}}</el-checkbox-button>
+                                                    </el-checkbox-group>
+
+                                                    @*<input type="checkbox" id="bq2" /><label for="bq2">标签</label>
+                                                    <input type="checkbox" id="bq3" checked /><label for="bq3">标签</label>
+                                                    <input type="checkbox" id="bq4" /><label for="bq4">标签</label>
+                                                    <input type="checkbox" id="bq5" /><label for="bq5">标签</label>
+                                                    <input type="checkbox" id="bq6" checked /><label for="bq6">标签</label>
+                                                    <input type="checkbox" id="bq7" /><label for="bq7">标签</label>
+                                                    <input type="checkbox" id="bq8" /><label for="bq8">标签</label>
+                                                    <input type="checkbox" id="bq9" /><label for="bq9">标签</label>*@
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <div class="fleft xian-1 style-chaal-100">
+                                                    <template>
+                                                        @*<i-select placeholder="请选择专题" clearable v-model="caseInitialUpdateDto.subjectId">
+                                                            <i-option v-for="item in subjects" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                        </i-select>*@
+                                                        <i-select placeholder="请选择专题" v-model="caseInitialUpdateDto.subjectId" @@on-change="changeInitialSelect(getSelects('案由')[3],$event)" :clearable="true">
+                                                            <i-option v-for="opt in getOptions(getSelects('案由')[3])" :value="opt.id"
+                                                                      :key="opt.id">{{ opt.displayName }}</i-option>
+                                                        </i-select>
+                                                    </template>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">案例聚焦</i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name=""
+                                                              class="textarea" v-model="caseInitialUpdateDto.title"></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">案例概述</i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name=""
+                                                              class="textarea-sp" v-model="caseInitialUpdateDto.introduction"></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <bt style="margin-bottom:15px;">
+                                                    <i8 class="style-chaal-20">诉请及判决</i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-42">
+                                                    <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.judgeContent" :class="{error:validatingInitial && !caseInitialUpdateDto.judgeInfo.judgeContent}" errmsg="请填写诉请及判决"></textarea>
+                                                </div>
+                                                <template>
+                                                    <div class="block" style="float:left;" id="slider1Container">
+                                                        <el-slider v-model="caseInitialUpdateDto.judgeInfo.supportRate" step="5" vertical height="145px" @@change="setSliderValue">
+                                                        </el-slider>
+                                                    </div>
+                                                </template>
+                                                <!--调节h50 h60.....-->
+                                                <div class="fleft style-chaal-42">
+                                                    <textarea name=""
+                                                              class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.judgeResult" placeholder="判决结果：" :class="{error:validatingInitial && !caseInitialUpdateDto.judgeInfo.judgeResult}" errmsg="请填写诉请及判决"></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <bf style="text-align:center;margin-bottom: 1em;color: #764c24;">
+                                                    反诉判决
+                                                    @*<i9 class="fright">反诉判决</i9>*@
+                                                </bf>
+                                                <div class="fleft style-chaal-42">
+                                                    <textarea name=""
+                                                              class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeContent"></textarea>
+                                                </div>
+                                                <template>
+                                                    <div class="block" style="float:left;" id="slider2Container">
+                                                        <el-slider v-model="caseInitialUpdateDto.judgeInfo.reverseSupportRate" step="5" vertical height="145px" @@change="setSliderValue">
+                                                        </el-slider>
+                                                    </div>
+                                                </template>
+                                                @*<i5c class="style-chaal-16-h-b"><span class="h50">50%</span></i5c>*@
+                                                <!--调节h50 h60.....-->
+                                                <div class="fleft style-chaal-42">
+                                                    <textarea name="" class="textarea-sp" v-model="caseInitialUpdateDto.judgeInfo.reverseJudgeResult"></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">法律法规</i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name=""
+                                                              class="textarea" v-model="caseInitialUpdateDto.law"></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">经验分享</i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name="" class="textarea" v-model="caseInitialUpdateDto.experience"></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">简法律师说</i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name="" class="textarea" v-model="caseInitialUpdateDto.lawyerOpinion"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="bjdd on">
+                                                <bt>
+                                                    <i8 class="style-chaal-20">添加备注</i8>
+                                                </bt>
+                                                <div class="fleft style-chaal-100">
+                                                    <textarea name="" class="textarea" placeholder="这里添加备注，备注内容仅仅自己可见…" v-model="caseInitialUpdateDto.remarks"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </Tab-Pane>
+                                    <Tab-Pane label="案例卡" style="margin-top:46px;" name="2" :style="{height:tabsIndex=='2'?'':0}">
+                                        <div class="bqian">
+                                            @*<div class="bjdd on">
+                                                <i5 class="fleft style-chaal-50">{{source.sourceSN}}</i5>
+                                                <i7 class="fright tright style-chaal-50">{{source.anYou}}</i7>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <div class="fleft style-chaal-20-w">一审法院：</div>
+                                                <div class="fleft style-chaal-80-w">{{source.court1}}</div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <div class="fleft style-chaal-20-w">二审法院：</div>
+                                                <div class="fleft style-chaal-80-w">{{source.court2}}</div>
+                                            </div>
+
+                                            <div class="bjdd on">
+                                                <div class="fleft style-chaal-20-w">审判组织：</div>
+                                                <div class="fleft style-chaal-80-w">{{trialPeople}}</div>
+                                            </div>
+
+                                            <div class="bjdd on xian-1">
+                                                <div class="fleft style-chaal-20-w">代理律师：</div>
+                                                <div class="fleft style-chaal-80-w">
+                                                    {{lawyerFirms}}
+                                                </div>
+                                                <div class="fleft style-chaal-100-w"><a href="">报告错误</a></div>
+                                            </div>*@
+
+                                            @*<div class="bjdd on">
+                                                <div class="fleft style-chaal-33-b">
+                                                    <template>
+                                                        <i-select placeholder="请选择案由" v-model="part.anyou">
+                                                            <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                        </i-select>
+                                                    </template>
+                                                </div>
+                                                <div class="fleft style-chaal-33-b">
+                                                    <template>
+                                                        <i-select placeholder="请选择城市" v-model="part.city">
+                                                            <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                                                        </i-select>
+                                                    </template>
+                                                </div>
+                                                <div class="fleft style-chaal-33">
+                                                    <template>
+                                                        <i-select placeholder="请选择法院" v-model="part.court">
+                                                            <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                                                            <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                                                        </i-select>
+                                                    </template>
+                                                </div>
+                                            </div>
+
+                                            <div class="bjdd on xian-1">
+                                                <div class="xuanzeStyle ">
+                                                    <div class="title-bz">添加关键词：</div>
+                                                    <input type="checkbox" id="bq1" /><label for="bq1">关键词</label>
+                                                    <input type="checkbox" id="bq2" checked /><label for="bq2">关键词</label>
+                                                    <input type="checkbox" id="bq3" /><label for="bq3">关键词</label>
+                                                    <input type="checkbox" id="bq4" /><label for="bq4">关键词</label>
+                                                    <input type="checkbox" id="bq5" /><label for="bq5">关键词</label>
+                                                    <input type="checkbox" id="bq6" /><label for="bq6">关键词</label>
+                                                    <input type="checkbox" id="bq7" /><label for="bq7">关键词</label>
+                                                    <input type="checkbox" id="bq8" /><label for="bq8">关键词</label>
+                                                    <input type="checkbox" id="bq9" /><label for="bq9">关键词</label>
+                                                </div>
+                                            </div>*@
+                                            <template v-for="(item,index) in caseCardUpdateDto.caseCards">
+
+                                                <div class="bjdd on">
+                                                    <bm class="style-pa-20">
+                                                        <i8 class="style-chaal-20">案例卡正面</i8>
+                                                        @*<el-button type="text" @@click="previewCardVisible = true;currentItem=item;">预览案例卡</el-button>*@
+                                                    </bm>
+                                                    <div class="style-pa-1">
+                                                        <div class="jianfa-guandiancard">
+                                                            <div class="ny-guandiancard">
+                                                                <!--状态2-->
+                                                                <ul>
+                                                                    <li>
+                                                                        <dl>
+                                                                            <dd class="card-top" :class="{error:validatingCard && item.content && !item.title}">
+                                                                                <textarea name=""
+                                                                                          class="textarea-k" v-model="item.title"></textarea>
+                                                                            </dd>
+                                                                            <dd class="card-zhong">
+                                                                                {{source.sourceSN}}
+                                                                            </dd>
+                                                                            <dd class="card-bottom">{{source.court2||source.court1}}</dd>
+                                                                        </dl>
+                                                                    </li>
+                                                                </ul>
+                                                                <!--end-->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="bjdd on">
+                                                    <bm class="style-pa-20">
+                                                        <i8 class="style-chaal-20">案例卡背面</i8>
+                                                    </bm>
+                                                    <div class="style-pa-1">
+                                                        <div class="jianfa-guandiancard">
+                                                            <div class="ny-guandiancard">
+                                                                <!--状态2-->
+                                                                <ul>
+                                                                    <li>
+                                                                        <dl>
+                                                                            <dd class="oncard-top" :class="{error:validatingCard && item.title && !item.content}">
+                                                                                <textarea name="" class="textarea-k" v-model="item.content"></textarea>
+                                                                                <p>{{trialPeople}}<br>{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</p>
+                                                                            </dd>
+                                                                        </dl>
+                                                                    </li>
+                                                                </ul>
+                                                                <!--end-->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+
+
+
+                                            <div class="bjdd">
+                                                <div class="imghov">
+                                                    <i11><a href="" @@click.prevent="addCaseCard"><img src="/assets/jianfa/ima/jia-icon-2c.png"></a></i11>
+                                                    <i11><a href="" @@click.prevent="removeCaseCard"><img src="/assets/jianfa/ima/jia-icon-2d.png"></a></i11>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </Tab-Pane>
+                                    <Tab-Pane label="精加工" style="margin-top:46px;" name="1" :style="{height:tabsIndex=='1'?'':0}">
+                                        <div class="bqian">
+                                            <template v-for="(item,index) in caseFineUpdateDto.caseFines">
+                                                <div class="bjdd on">
+                                                    <bt>
+                                                        <i8 class="style-chaal-20">
+                                                            音频视频解读
+                                                        </i8>
+                                                    </bt>
+                                                    <div class="fleft style-chaal-100">
+                                                        <textarea name="" class="textarea" style="height:50px;" v-model="item.mediaPath"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="bjdd on">
+                                                    <bt>
+                                                        <i8 class="style-chaal-20">
+                                                            文案标题
+                                                        </i8>
+                                                    </bt>
+                                                    <div class="fleft style-chaal-100">
+                                                        <textarea name="" class="textarea" style="height:50px;" v-model="item.title"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="bjdd on">
+                                                    <bt>
+                                                        <i8 class="style-chaal-20">
+                                                            文案内容
+                                                        </i8>
+                                                    </bt>
+                                                    <div class="fleft style-chaal-100">
+                                                        <textarea name="" class="textarea" style="height:450px;" v-model="item.content"></textarea>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <div class="bjdd">
+                                                <div class="imghov">
+                                                    <i11><a href="" @@click.prevent="addCaseFine"><img src="/assets/jianfa/ima/jia-icon-2c.png"></a></i11>
+                                                    <i11><a href="" @@click.prevent="removeCaseFine"><img src="/assets/jianfa/ima/jia-icon-2d.png"></a></i11>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </Tab-Pane>
+                                </Tabs>
+                            </template>
+                            @*<div class="bjdd">
+                                <a href="" class="btn-submit-jgy" @@click.prevent="publishCaseFine">发布</a><a href="" @@click.prevent="updateCaseFine" class="btn-submit-jgy">保存</a>
+                            </div>
+                            <div class="bjdd">
+                                <a href="" class="btn-submit-jgy" @@click.prevent="publishCaseCard">发布</a><a href="" @@click.prevent="updateCaseCard" class="btn-submit-jgy">保存</a>
+                            </div>*@
+                            <div class="bjdd source-btns">
+                                <a href="" class="btn-submit-jgy" @@click.prevent="publishInitialCases">发布</a><a href="" class="btn-submit-jgy" @@click.prevent="updateInitialCases">保存</a><a href="" class="btn-submit-jgy" @@click.prevent="doPreview">预览</a>
+                            </div>
+
+
+                            <div class="bqian">
+
+                                @*<div class="bjdd">
+                                    <a href="" class="btn-submit-jgy">发布</a><a href="" class="btn-submit-jgy">保存</a><a href="" class="btn-submit-jgy">预览</a>
+                                </div>*@
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                </div>
+            </div>
+        </div>
+
+        <com-footer></com-footer>
+        <!--end-->
+        <Modal title="初加工预览"
+               v-model="previewInitialVisible"
+               class-name="center-modal"
+               width="700px">
+            <div class="jianfa-chaanli" style="height:600px;overflow:auto">
+                <div class="chaanli-content" style="margin-top:0">
+                    <ul>
+                        <li>
+                            <dl>
+
+                                <dd class="on">
+                                    <i4 class="fleft tjustify initial-title">
+                                        {{caseInitialUpdateDto.title}}
+                                    </i4>
+                                </dd>
+                                <dd class="on">
+                                    <i7 class="fleft tleft style-chaal-33">审理法院：{{source.court2||source.court1}}</i7>
+                                    <a>
+                                        <i5b class="fleft style-chaal-33">{{source.sourceSN}}</i5b>
+                                    </a>
+                                    <i7 class="fleft tright style-chaal-33">生效日期：{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</i7>
+                                </dd>
+                                @*<dd class="on">
+            <i7 class="fleft tleft style-chaal-33">{{caseInfo.source.court1}}</i7>
+            <a @@click="currentItem=caseInfo.source;moda12 = true">
+                <i5b class="fleft style-chaal-33">{{caseInfo.source.sourceSN}}</i5b>
+            </a>
+            <i7 class="fleft tright style-chaal-33">{{caseInfo.initial.publishdate}}</i7>
+        </dd>*@
+
+
+                                <dd class="on">
+                                    <i5 class="fleft tjustify initial-introduction">
+                                        <!-- 概述 -->
+                                        {{caseInitialUpdateDto.introduction}}
+                                    </i5>
+                                </dd>
+
+                                <dd class="on">
+                                    <bt>
+                                        <i8 class="style-chaal-20">诉请及判决</i8>
+                                    </bt>
+                                    <div style="display:flex;width:100%">
+                                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                            <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.judgeContent)"></p>
+                                        </i6>
+                                        <span class="support-rate">{{caseInitialUpdateDto.judgeInfo.supportRate}}%</span>
+                                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                            <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.judgeResult)"></p>
+                                        </i6>
+                                    </div>
+
+                                </dd>
+                                <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
+                                    <bt>
+                                        <i8 class="style-chaal-20">反诉判决</i8>
+                                    </bt>
+                                    <div style="display:flex;width:100%">
+                                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                            <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.reverseJudgeContent)"></p>
+                                        </i6>
+                                        <span class="support-rate">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span>
+                                        <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                            <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.reverseJudgeResult)"></p>
+                                        </i6>
+                                    </div>
+
+                                </dd>
+
+                                <dd class="on" v-show="caseInitialUpdateDto.law">
+                                    <bt>
+                                        <i8 class="style-chaal-20">法律法规</i8>
+                                    </bt>
+                                    <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.law)">
+                                        
+                                    </i6>
+                                </dd>
+
+                                <dd class="on" v-show="caseInitialUpdateDto.experience">
+                                    <bt>
+                                        <i8 class="style-chaal-20">经验分享</i8>
+                                    </bt>
+                                    <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.experience)">
+                                    </i6>
+                                </dd>
+
+                                <dd class="on" v-show="caseInitialUpdateDto.lawyerOpinion">
+                                    <bt>
+                                        <i8 class="style-chaal-20 width100">简法律师说</i8>
+                                    </bt>
+                                    <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.lawyerOpinion)">
+                                    </i6>
+                                </dd>
+                                <dd class="on" v-show="caseCardUpdateDto.caseCards.filter(o=>o.title || o.content).length">
+                                    <bt>
+                                        <i8 class="style-chaal-20">法院观点</i8>
+                                    </bt>
+                                    <div>
+                                        <div v-for="(item,index) in caseCardUpdateDto.caseCards.filter(o=>o.title || o.content)">
+                                            <i5 class="fleft tjustify">{{item.title}}</i5>
+                                            <i6 class="fleft tjustify width100" style="margin-bottom:20px;">{{item.content}}</i6>
+                                        </div>
+                                    </div>
+                                </dd>
+
+
+                            </dl>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+            <div slot="footer">
+            </div>
+        </Modal>
+        <Modal width="800px" v-model="previewCardVisible" class-name="center-modal" :mask-closable="false" title="案例卡预览">
+            <div class="jianfa-guandiancard style-pa-46" style="height:600px;overflow:auto;">
+                <div class="ny-guandiancard" v-for="(item,index) in caseCardUpdateDto.caseCards" style="width:350px;">
+                    <a @@click="$set(item,'isRotate', !item.isRotate)" class="paiban" :class="{'rotate-card':item.isRotate}" style="width:100%">
+                        <!--状态1-->
+                        <div class="card-start">
+                            <ul>
+                                <li>
+                                    <dl>
+                                        <dd class="card-top">
+                                            <span>{{item.title}}</span>
+                                        </dd>
+                                        <dd class="card-zhong" @@click.stop.prevent="moda12 = true;previewCardVisible=false;">
+                                            <span>  {{source.sourceSN}}</span>
+                                        </dd>
+                                        <dd class="card-bottom">
+                                            {{source.court2||source.court1}}
+                                        </dd>
+                                    </dl>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--end-->
+                        <!--状态2-->
+                        <div class="card-end">
+                            <ul>
+                                <li>
+                                    <dl>
+                                        <dd class="oncard-top">
+                                            <span>{{item.content}} </span>
+                                            <p>{{trialPeople}}<br>{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</p>
+                                        </dd>
+                                    </dl>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--end-->
+                    </a>
+                </div>
+            </div>
+            <div slot="footer">
+            </div>
+        </Modal>
+        <Modal width="900px" v-model="previewFineVisible" class-name="center-modal" :mask-closable="false" title="精加工预览">
+            <div class="jianfa-chaanli" style="height:600px;overflow:auto">
+                <div class="chaanli-content">
+                    <ul>
+                        <li v-for="(item,index) in caseFineUpdateDto.caseFines" style="width:100%">
+                            <dl>
+                                <dd class="on">
+                                    <iframe :src="item.mediaPath" frameborder="0" style="height:400px;width:100%"></iframe>
+                                </dd>
+
+                                <dd class="on">
+                                    <bt>
+                                        <i8 class="style-chaal-20">文案标题</i8>
+                                    </bt>
+                                    <i6 class="fleft tjustify width100">
+                                        {{item.title}}
+                                    </i6>
+                                </dd>
+
+                                <dd class="on">
+                                    <bt>
+                                        <i8 class="style-chaal-20 width100">文案内容</i8>
+                                    </bt>
+                                    <i6 class="fleft tjustify width100">
+                                        {{item.content}}
+                                    </i6>
+                                </dd>
+
+                            </dl>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+            <div slot="footer">
+            </div>
+        </Modal>
+
+        <Modal width="630px" v-model="moda12" class-name="top-modal" :mask-closable="false" :title="source.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+source.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>
+    </div>
 
 @section scripts{
     <script>
-        var id=@ViewBag.Id;//此id为案源的id
-        //获取判例对应的数据
-        abp.services.app.workbench.getCaseInfo(id).done(function (data) {
-
-        })
-        //提交初加工
-        abp.servcies.app.workbench.updateInitial(updateInitialDto)
-        //发布初加工
-        abp.servcies.app.workbench.publishInitial(caseInitialId)
-        //提交精加工
-        abp.services.app.workbench.updateFine(caseInitialId, updateFineDto)
-        //发布精加工
-        abp.servcies.app.workbench.publishFine(caseInitialId)
-        //提交案例卡
-        abp.services.app.workbench.updateCard(caseInitialId, updateCardDto)
-        //发布案例卡
-        abp.servcies.app.workbench.publishCard(caseInitialId)
     </script>
-    }
+    <script type="text/babel">
+        var id =@ViewBag.Id;//此id为案源的id
+        window.app=new Vue({
+            el: '#app',
+            data: {
+                sourceDetailShow:false,//一审法院等，默认不显示，移上去显示
+                value1:50,
+                theme1: 'primary',
+                value: '',
+                checked: false,
+                model3: '',
+                model4: '',
+                model5: [],
+                model6: '',
+                model7: '',
+                model8: '',
+
+                //end//
+                moda12: false,
+                currentItem: {},
+                isRotate:false,
+                previewCardVisible: false,//案例卡预览
+                previewFineVisible:false,//精加工预览
+                previewInitialVisible:false,//初加工预览
+                part: {
+                    city: '',
+                    court: '',
+                    anyou:''
+                },
+                subjects: [],
+
+                //anYous: [],
+                //courts: [],
+                //cities: [],
+                //filterCourtByCity: [],
+
+                initial: {
+                    CaseLabels: [],
+                },
+                //初加工数据
+                caseInitialUpdateDto: {
+                    id: 0,
+                    subjectId:null,
+                    title: '',
+                    introduction: '',
+                    law: '',
+                    experience: '',
+                    lawyerOpinion:'',
+                    caseNodes: [],
+                    caseLabels: [],
+                    judgeInfo: {
+                        judgeContent: '',
+                        judgeResult: '',
+                        supportRate: 50,
+                        hasReverseJudge: true,
+                        reverseJudgeContent: '',
+                        reverseJudgeResult: '',
+                        reverseSupportRate:50
+                    },
+                    remarks:''
+                },
+                //精加工数据
+                caseFineUpdateDto: {},
+                //案例卡数据
+                caseCardUpdateDto: {},
+                source: {},
+                knowledgeTree: [],
+                typeTree: [],
+                labels: [],
+                selectValues: {
+                    "案由":[]
+                },
+                selectLabels: {
+                    "初加工":[]
+                },
+                selectKeywords: {
+                    "初加工":[]
+                },
+                checkboxGroup1: ['上海'],
+                validatingInitial: false,//初加工验证状态
+                validatingCard:false,//案例卡验证状态
+                tabsIndex:'0',
+            },
+            computed: {
+                //审判组织
+                trialPeople() {
+                    if (!this.source.trialPeople) return '';
+                    return this.source.trialPeople.map(el => el.name).join('、')
+                    //if (!this.source.trialPeople) return '';
+                    //var str=''
+                    //this.source.trialPeople.forEach(el => {
+                    //    str += `${el.trialRole}：${el.name}\n`
+                    //})
+                    //return str
+                },
+                //代理律师
+                lawyerFirms() {
+                    if (!this.source.lawyerFirms) return '';
+                    var str = ''
+                    this.source.lawyerFirms.forEach(el => {
+                        str += `${el.firmName}： ${el.lawyer}\n`
+                    })
+                    return str
+                },
+
+            },
+            methods: {
+        
+       replaceHtml: function (html) {
+                        if (!html) { return ""; }
+                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                    },
+                //下拉选择是否有值
+                selectHasValue(value) {
+                    if (func.typeof(value) === "array") {
+                        return value.length > 0;
+                    } else {
+                        return value;
+                    }
+                },
+                async loadData() {
+                    var that = this;
+                    //获取判例对应的数据
+                    var loadCase= abp.services.app.workbench.getCaseProcessInfo(id).done( (res)=> {
+                        this.source = res.source;
+                        this.caseInitialUpdateDto = res.caseInitialUpdateDto;
+                        this.caseFineUpdateDto = res.caseFineUpdateDto;
+                        this.caseCardUpdateDto = res.caseCardUpdateDto;
+                        //如果是新的加工，则将案由存至CaseNode，用于级联选择中设置option
+                        if (this.caseInitialUpdateDto.caseNodes.length == 0) {
+                            this.caseInitialUpdateDto.caseNodes.push({ relName: '案由', relValue: this.source.anYou, baseTreeId: this.source.anYouId })
+                        }
+                        //如果没有精加工，默认建立一个精加工
+                        if (this.caseFineUpdateDto.caseFines.length == 0) {
+                            this.caseFineUpdateDto.caseFines.push({ title: '', content: '', mediaPath: '' });
+                        }
+                        //如果没有案例卡，默认建立一个案例卡
+                        if (this.caseCardUpdateDto.caseCards.length == 0) {
+                            this.caseCardUpdateDto.caseCards.push({ title: '', content: '' });
+                        }
+                        //设置slider内部文字
+                        this.setSliderValue();
+                    })
+                    var loadKnowledge= abp.services.app.baseTree.getKnowledgeTreeJsonByParentId().done((res) => {
+                        this.knowledgeTree = res;
+                    })
+                    var loadType= abp.services.app.baseTree.getTypeTreeJsonByParentId().done((res) => {
+                        this.typeTree = res;
+                    })
+                    //获取所有标签数据
+                    var loadLabel= abp.services.app.type.getAllLabels().done(res => {
+                        this.labels = res;
+                    })
+                    //加载专题数据
+                    var loadSubject= abp.services.app.type.getSubjects().done( (res)=> {
+                        this.subjects = res;
+                    })
+                    Promise.all([loadCase, loadKnowledge, loadType, loadLabel, loadSubject]).then(obj => {
+                        //初始化下拉选择
+                        this.initSelects();
+                        //初始化标签选择
+                        this.initLabels();
+                    })
+
+                    //abp.services.app.type.getAnYous().done(function (data) {
+                    //    that.anYous = data;
+                    //});
+                    //abp.services.app.type.getCities().done(function (data) {
+                    //    that.cities = data;
+                    //});
+                    //abp.services.app.type.getCourts().done(function (data) {
+                    //    that.courts = data;
+                    //});
+                },
+                //初始化下拉选择，目的是为了构建数据对象存放动态select的v-model
+                initSelects() {
+                    var selects = this.getSelects("案由");
+                    for (var i = 0; i < selects.length; i++) {
+                        var select = selects[i];
+                        //从casenodes中获取初始值
+                        var value;
+                        var nodes = this.caseInitialUpdateDto.caseNodes.filter(o => o.relName == select.name);
+                        if (select.enableMultiSelect) {
+                            value = nodes.map(o => o.baseTreeId);
+                        } else {
+                            value = nodes[0] ? nodes[0].baseTreeId : null;
+                        }
+                        this.selectValues["案由"].push(value);
+                    }
+                },
+                //初始化标签选择，目的是构建存放标签及关键词v-model的两个数组
+                initLabels() {
+                    this.selectLabels["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "标签" && o.relType=="初加工").map(o => o.labelId);
+                    this.selectKeywords["初加工"] = this.caseInitialUpdateDto.caseLabels.filter(o => o.relName == "关键词" && o.relType == "初加工").map(o => o.labelId);
+                },
+                //获取级联知识树选择框
+                getSelects(knowledgeName) {
+                    var rootNode = this.knowledgeTree.filter(o => o.name == knowledgeName)[0];//如对应案由节点知识树节点
+                    var subNodes = this.knowledgeTree.filter(o => o.code.indexOf(rootNode.code) == 0 && o.code != rootNode.code );//所有子节点，包含子级
+                    var selects = subNodes.map(function (o) { return { id: o.id, name: o.name, displayName: o.displayName, enableMultiSelect: o.enableMultiSelect, parentId: o.parentId } });
+
+                    return selects;
+                },
+                //获取级联选择框的option
+                getOptions(item) {
+                    //所有可能的options
+                    var allOptions = this.typeTree.filter(o => o.relativeNodeId == item.id);
+                    //父知识节点
+                    var parentKnowledgeNode = this.knowledgeTree.filter(o => o.id == item.parentId)[0];
+                    var parentNode = this.caseInitialUpdateDto.caseNodes.filter(o => o.relName == parentKnowledgeNode.name)[0];
+                    //必须已选中父节点才显示
+                    if (parentNode) {
+                        return allOptions.filter(o => o.parentId == parentNode.baseTreeId);
+                    }
+
+                    return [];
+                },
+                //初加工级联选择改变
+                changeInitialSelect(item, value) {
+                    console.log(value);
+                    if (!item.enableMultiSelect) {value=[value]}
+                    //选中的分类树节点
+                    var selectedNodes = this.typeTree.filter(o => value.indexOf(o.id)>=0);
+                    //
+                    var nodes = this.caseInitialUpdateDto.caseNodes.filter(o => o.relName == item.name);
+                    //先移除旧节点
+                    for (var i = 0; i < nodes.length; i++) {
+                        this.caseInitialUpdateDto.caseNodes.splice(this.caseInitialUpdateDto.caseNodes.indexOf(nodes[i]), 1);
+                    }
+                    for (var i = 0; i < selectedNodes.length; i++) {
+                        this.caseInitialUpdateDto.caseNodes.push({ relName: item.name, relValue: selectedNodes[i].displayName, baseTreeId: selectedNodes[i].id });
+                    }
+                    //if (node) {
+                    //    if (value) {
+                    //        node.baseTreeId = value;
+                    //        node.relValue = selectedNode.displayName;
+                    //    } else {
+                    //        //如果是取消选中的，清除casenode里的值
+                    //        this.caseInitialUpdateDto.caseNodes.splice(this.caseInitialUpdateDto.caseNodes.indexOf(node), 1);
+                    //    }
+
+                    //} else {
+                    //    this.caseInitialUpdateDto.caseNodes.push({ relName: item.name, relValue: selectedNode.displayName, baseTreeId: value });
+                    //}
+                },
+                //获取可供选择的标签或关键词
+                getLabels(name,labelType) {
+                    var nodeTreeIds;//被选中的分类树Id
+                    if (name == "初加工") {
+                        nodeTreeIds = this.caseInitialUpdateDto.caseNodes.map(o=>o.baseTreeId);
+                    }
+                    return this.labels.filter(function (o) {
+                        return o.labelType==labelType && o.treeIds.filter(treeId => nodeTreeIds.indexOf(treeId) >= 0).length > 0;
+                    })
+                },
+                changeLabelCheck(name) {
+                    var that = this;
+                    //当标签及关键词选中改变时更新对应的数据
+                    //filter的目的是当选中了一个标签，但后续由于分类的改变导致这个标签不存在时，但v-model绑定的数据还存在对应的值 ，所以需要根据当前存在的标签进行筛选
+                    var selectLabels = this.selectLabels[name].filter(o => this.getLabels(name,'标签').map(l=>l.id).indexOf(o)>=0);
+                    var selectKeywords = this.selectKeywords[name].filter(o => this.getLabels(name, '关键词').map(l => l.id).indexOf(o) >= 0);
+                    var labels = selectLabels.map(function (o) {
+                        var relValue = that.labels.filter(l => l.id == o)[0].labelName;
+                        return { labelId: o, relType: name, relValue: relValue,relName:'标签' };
+                    })
+                    var keywords = selectKeywords.map(function (o) {
+                        var relValue = that.labels.filter(l => l.id == o)[0].labelName;
+                        return { labelId: o, relType: name, relValue: relValue, relName: '关键词' };
+                    })
+                    if (name == "初加工") {
+                        this.caseInitialUpdateDto.caseLabels = labels.concat(keywords);
+                    }
+                },
+        //预览
+                doPreview(){
+                    if(this.tabsIndex==0){this.previewInitialVisible=true;}
+                    else if(this.tabsIndex==1){this.previewFineVisible=true;}
+                    else if(this.tabsIndex==2){this.previewCardVisible=true;}
+                },
+        //保存全部
+                updateInitialCases(){
+                    this.validatingInitial = false;
+                    var that=this;
+                   func.runAsync(abp.services.app.workbench.updateInitial(this.caseInitialUpdateDto).done(function () {
+                        abp.services.app.workbench.updateCard(that.caseCardUpdateDto).done(function () {
+                            abp.services.app.workbench.updateFine(that.caseFineUpdateDto).done(function () {
+                                that.$Message.success("保存成功");
+                            })
+                        })
+                    }))
+                    
+                },
+        //发布全部
+                publishInitialCases(){
+                    var that = this;
+                    this.validatingCard = true;
+                    this.validatingInitial = true;
+                    this.$nextTick(function () {
+                        if ($(".processTabs [errmsg].error").length > 0) {
+                            //数据验证
+                            $(".initialPanel [errmsg].error").each(function () {
+                                abp.message.error($(this).attr("errmsg"));
+                                return false;
+                            })
+                            return false;
+                        }
+
+                        if (that.caseCardUpdateDto.caseCards.filter(o => (o.title &&! o.content)||(!o.title && o.content)).length > 0) {
+                            abp.message.error("请将案例卡制作完整");
+                            return false;
+                        }
+                        that.caseCardUpdateDto.caseCards=that.caseCardUpdateDto.caseCards.filter(o=>o.title && o.content);
+
+                        abp.message.confirm("您确定完成本案例了吗？发布后大家都能看到了哦。", function () {
+                            func.runAsync(abp.services.app.workbench.publishInitial(that.caseInitialUpdateDto).done(function () {
+                                abp.services.app.workbench.publishFine(that.caseFineUpdateDto).done(function(){
+                                    abp.services.app.workbench.publishCard(that.caseCardUpdateDto).done(function(){
+                                        that.$Modal.confirm({
+                                            title: '成功',
+                                            content: '案例初加工内容发布成功！您可至“我的案例”中查看并继续对案例做精加工或创建案例卡',
+                                            okText: '去“我的案例”',
+                                            cancelText: '回工作台',
+                                            onOk: () => {
+                                                location.href = '/Home/MyCase';
+                                            },
+                                            onCancel:()=>{location.href='/Home/WorkBench'}
+                                        });
+                                    })
+                                })
+                            }))
+                        })
+                    })
+                },
+                //保存初加工
+                updateInitial(isSilence) {
+                    this.validatingInitial = false;
+                    var that = this;
+                    if(isSilence){abp.services.app.workbench.updateInitial(this.caseInitialUpdateDto,{abpHandleError:false});return;}
+                    func.runAsync(abp.services.app.workbench.updateInitial(this.caseInitialUpdateDto).done(function () {
+                        that.$Message.success("保存成功");
+                    }))
+                },
+                //发布初加工
+                publishInitial() {
+                    var that = this;
+                    this.validatingInitial = true;
+                    this.$nextTick(function () {
+                        if ($(".initialPanel [errmsg].error").length > 0) {
+                            //数据验证
+                            $(".initialPanel [errmsg].error").each(function () {
+                                abp.message.error($(this).attr("errmsg"));
+                                return false;
+                            })
+                            return false;
+                        }
+
+
+                        abp.message.confirm("您确定完成本案例的初加工了吗？发布后大家都能看到了哦。", function () {
+                            func.runAsync(abp.services.app.workbench.publishInitial(that.caseInitialUpdateDto).done(function () {
+                                that.$Modal.confirm({
+                                    title: '成功',
+                                    content: '案例初加工内容发布成功！您可至“我的案例”中查看并继续对案例做精加工或创建案例卡',
+                                    okText: '去“我的案例”',
+                                    cancelText: '回工作台',
+                                    onOk: () => {
+                                        location.href = '/Home/MyCase';
+                                    },
+                                    onCancel:()=>{location.href='/Home/WorkBench'}
+                                });
+                            }))
+                        })
+                    })
+
+                },
+                //添加案例卡
+                addCaseCard() {
+                    this.caseCardUpdateDto.caseCards.push({ title: '', content: '' });
+                },
+                //移除最后一个案例卡
+                removeCaseCard() {
+                    //不能删除最后一个，如果是最后一个，则清除内容
+                    if (this.caseCardUpdateDto.caseCards.length > 1) {
+                        this.caseCardUpdateDto.caseCards.splice(-1, 1);
+                    } else {
+                        this.caseCardUpdateDto.caseCards[0].title = '';
+                        this.caseCardUpdateDto.caseCards[0].content = '';
+                    }
+                },
+                //保存案例卡
+                updateCaseCard(isSilence) {
+                    var that = this;
+                    that.validatingCard = false;
+                    if(isSilence){abp.services.app.workbench.updateCard(this.caseCardUpdateDto,{abpHandleError:false});return;}
+                    func.runAsync(abp.services.app.workbench.updateCard(this.caseCardUpdateDto).done(function () {
+                        that.$Message.success("保存成功");
+                    }))
+                },
+                publishCaseCard() {
+                    var that = this;
+                    that.validatingCard = true;
+                    if (this.caseCardUpdateDto.caseCards.filter(o => !o.title || !o.content).length > 0) {
+                        abp.message.error("请填写完整");
+                        return false;
+                    }
+                    abp.message.confirm("您确定完成案例卡制作了吗？发布后大家都能看到了哦。", function () {
+                        func.runAsync(abp.services.app.workbench.publishCard(that.caseCardUpdateDto).done(function () {
+                            that.$Modal.confirm({
+                                title: '成功',
+                                content: '案例卡发布成功！您可至“我的案例”中查看，并继续对案例做进一步加工',
+                                okText: '去“我的案例”',
+                                cancelText: '继续加工本案例',
+                                onOk: () => {
+                                    location.href = '/Home/MyCase';
+                                },
+                            });
+                        }))
+                    })
+                },
+                //添加精加工
+                addCaseFine() {
+                    this.caseFineUpdateDto.caseFines.push({ title: '', content: '', mediaPath: '' });
+                },
+                //移除最后一个精加工
+                removeCaseFine() {
+                    //不能删除最后一个，如果是最后一个，则清除内容
+                    if (this.caseFineUpdateDto.caseFines.length > 1) {
+                        this.caseFineUpdateDto.caseFines.splice(-1, 1);
+                    } else {
+                        this.caseFineUpdateDto.caseFines[0] = { title: '', content: '', mediaPath: '' };
+                    }
+                },
+                //保存精加工
+                updateCaseFine(isSilence) {
+                    var that = this;
+                    if(isSilence){abp.services.app.workbench.updateFine(this.caseFineUpdateDto);return;}
+                    func.runAsync(abp.services.app.workbench.updateFine(this.caseFineUpdateDto).done(function () {
+                        that.$Message.success("保存成功");
+                    }))
+                },
+                //发布精加工
+                publishCaseFine() {
+                    var that = this;
+                    abp.message.confirm("您确定完成本案例的精加工了吗？发布后大家都能看到了哦。", function () {
+                        func.runAsync(abp.services.app.workbench.publishFine(that.caseFineUpdateDto).done(function () {
+                            that.$Modal.confirm({
+                                title: '成功',
+                                content: '案例精加工内容发布成功！您可至“我的精品”中查看并继续对案例做进一步加工',
+                                okText: '去“我的精品”',
+                                cancelText: '继续加工本案例',
+                                onOk: () => {
+                                    location.href = '/Home/MyArt';
+                                },
+                            });
+                        }))
+                    })
+                },
+                //设置滑动条的值
+                setSliderValue() {
+                    $("#slider1Container .el-slider__button").html(this.caseInitialUpdateDto.judgeInfo.supportRate);
+                    $("#slider2Container .el-slider__button").html(this.caseInitialUpdateDto.judgeInfo.reverseSupportRate);
+                },
+                //计算下拉选择的宽度
+                calcSelectWidth(item) {
+                    return item.displayName == "纠纷原因" ? "calc(100% - 280px)" : "140px";
+                }
+            },
+            watch: {
+                //'part.city': function (val, old) {
+                //    if (!val) {
+                //        this.filterCourtByCity = [];
+                //    } else {
+                //        var that = this;
+                //        this.filterCourtByCity = this.courts.filter(o => o.parentId == val);
+                //    }
+                //},
+            },
+            async created() {
+                await this.loadData();
+                var that=this;
+                window.setInterval(function(){
+                    that.updateCaseCard(true);
+                    that.updateInitial(true);
+                    that.updateCaseFine(true);
+                },5*60*1000);
+            }
+        })
+        //获取初加工、精加工级联层级的方式
+        //简述：目的是给定一个知识树节点名称，如“案由”，产生对应节点下所有子节点的下拉选择框
+        //1.首先获取知识树及分类树
+        //abp.services.app.baseTree.getKnowledgeTreeJsonByParentId()
+        //abp.services.app.baseTree.getTypeTreeJsonByParentId()
+        //返回数据如下
+        var data=[
+            {
+                "id": 1,
+                "parentId": null,
+                "name": "案例属性体系",
+                "displayName": "案例属性体系",//前台展示名称
+                "sort": 0,
+                "remarks": null,
+                "treeNodeType": 0,//节点类型，知识树为0，分类树为1
+                "enableMultiSelect": false,//是否多选
+                "relativeNodeId": null,//关联节点Id，只对分类树有效，表示对应知识树的哪个节点
+                "code": "00001"//节点编码，用于表述节点层级关系
+            }, { "id": 2, "parentId": 1, "name": "案由", "displayName": "案由", "sort": 0, "remarks": null, "treeNodeType": 0, "enableMultiSelect": false, "relativeNodeId": null, "code": "00001.00001" },]
+        //2.根据节点的code属性获取对应节点下面的所有子节点
+        //例，在初加工的时候我们需要获取案由下面的所有子节点来产生下拉选择框，首先，先找到名称为“案由”的知识树节点，发现其Code为"00001.00001",那么找案由下的所有子节点，只需要寻找知识树中所有code以"00001.00001"开头的节点，然后将其渲染为下拉框，单选多选由属性值enableMultiSelect确定
+        //3.填充对应的一级下拉框的数据
+        //上一步中“案由”的直接子节点只有“纠纷类型”一个，假设其id为15，那么我们从分类树节点中寻找所有relativeNodeId值为15的节点，将其displayName作为option渲染到上一步的选择框中
+        //4.填充级联下拉框的数据
+        //级联下拉框的数据由上一级下拉框的数据决定，例如当纠纷类型选定后，我们能够得到了一个选中的分类树节点Id,此时根据此Id去分类树节点寻找对应的直接子节点，注意此时这些子节点有可能对应知识树的“纠纷原因”，也可能对应“判决结果”，根据这些子节点的relativeNodeId，把他们对应到对应的选择框中
+        //5.选中节点后获取对应的标签并显示
+        //abp.services.app.baseTree.getRelativeLabels(nodeId)
+        var data = [{ id: 1, labelName: '无权', labelType: '标签' }, { id: 2, labelName: '天才', labelType: '关键词' }]
+        //注意标签有两种类型“关键词”和“标签”，分开显示，当下拉框选择后同步更新关键词区域和标签区域的内容
+        //6.至此，我们可以获取两组数据了，一为用户选中的所有分类树节点，二为用户选中的所有标签，
+        //初加工提交时的数据
+        var updateInitialDto= {
+            id: 1,//初加工Id
+                title: '案例焦点',
+            Introduction: '案例概述',
+            Law: '法律法规',
+            Experience: '经验分享',
+            LawyerOpinion: '律师说',
+            CaseNodes: [
+                {
+                    BaseTreeId: 15 //对应分类树节点Id
+                },
+                {
+                    BaseTreeId: 20 //对应分类树节点Id
+                }
+            ],
+            CaseLabels: [
+                {
+                    LabelId: 15 //对应标签Id
+                },
+                {
+                    LabelId: 20 //对应标签Id
+                }
+            ],
+            JudgeInfo: {
+                JudgeContent: '诉情',
+                JudgeResult: '判决',
+                SupportRate: 100,//支持率0-100
+                HasReverseJudge: true,//是否有反诉
+                ReverseJudgeContent: '反诉内容',
+                ReverseJudgeResult: '反诉判决',
+                ReverseSupportRate: 100//反诉支持率0-100
+            },
+            remarks:'备注'
+        }
+        //获取判例对应的数据
+        //abp.services.app.workbench.getCaseInfo(id).done(function (data) {
+
+        //})
+        ////提交初加工，数据格式见上文
+        //abp.services.app.workbench.updateInitial(updateInitialDto)
+        ////发布初加工
+        //abp.services.app.workbench.publishInitial(caseInitialId)
+        ////提交精加工
+        //abp.services.app.workbench.updateFine(caseInitialId, updateFineDto)
+        ////发布精加工
+        //abp.services.app.workbench.publishFine(caseInitialId)
+        ////提交案例卡
+        //abp.services.app.workbench.updateCard(caseInitialId, updateCardDto)
+        ////发布案例卡
+        //abp.services.app.workbench.publishCard(caseInitialId)
+    </script>
+}

@@ -68,7 +68,7 @@ namespace Master
                     "Master.Web.Views"
                 )
             );
-
+            Configuration.Auditing.IsEnabled = false;
             IocManager.Register<WebCoreConfiguration>();
 
             Configuration.Modules.WebCore().BaseUrl = _appConfiguration["base:url"];

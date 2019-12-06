@@ -1,8 +1,41 @@
 ﻿登录页：Account/Login
-个人中心：Home/Me
-工作台:Home/workbench
+首页：Home/Index
 案源库:Home/Source
-加工页:Home/Process
-我的案例：Home/MyCase
-我的精品：Home/MyArt
 看观点:Home/ViewPoint
+我的案例：Home/MyCase
+工作台:Home/workbench
+我的精品：Home/MyArt
+
+
+个人中心：Home/Me
+加工页:Home/Process
+查案例:home/viewcase
+
+树相关接口
+1.节点数据
+displayName: "审判组织"//前台显示名称,若和后台显示名称一致则不用传
+enableMultiSelect: false//是否启用多选,只有知识树节点需要此数据
+id: 1
+name: "审判组织"//后台显示名称
+parentId: null//父节点Id,null代表根级
+relativeNodeId: null//关联节点Id,只有分类树节点需要此数据
+remarks: null//备注
+sort: 1//排序
+treeNodeType: 0//节点类型：0为知识树节点，1为分类树节点
+2.获取树数据
+知识树：abp.servcies.app.baseTree.getKnowledgeTreeJsonByParentId(parentId)
+分类树：abp.servcies.app.baseTree.getTypeTreeJsonByParentId(parentId)
+parentId若不传则返回所有知识树节点，不然返回对应节点下的所有子节点
+3.提交树节点
+新增：abp.services.app.baseTree.submit({name:'b',parentId:16,remarks:'test',treeNodeType:0})
+修改：abp.services.app.baseTree.submit({id:16,name:'b',parentId:null,remarks:'test',treeNodeType:0})
+
+
+
+公众号密钥
+83020188a43c1745965d2a70e75d6b40
+
+
+首页获取案由对应律师接口
+abp.services.app.lawer.getPageResult({where:'Property[AnYou].Contains("房屋买卖纠纷")'})
+获取律师对应的案例查询条件：where:'creatorUserId={lawyerid}'

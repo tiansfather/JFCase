@@ -31,6 +31,7 @@ namespace Master.Case
         {
             using (var baseTreeManagerWrapper=IocManager.Instance.ResolveAsDisposable<BaseTreeManager>())
             {
+                var baseTreeManager = baseTreeManagerWrapper.Object;
                 this.CaseSourceUpdateDto = new CaseSourceUpdateDto()
                 {
                     SourceSN = this.SourceSN
@@ -44,17 +45,21 @@ namespace Master.Case
                         CaseSourceUpdateDto.Id = caseSource.Id;
                     }
                 }
-                var allBaseTrees=await baseTreeManagerWrapper.Object.GetAllList();
+                var allBaseTrees=await baseTreeManager.GetAllList();
+
+                var allAnYous = await baseTreeManager.GetTypeNodesByKnowledgeName("案由");
+                var allCities= await baseTreeManager.GetTypeNodesByKnowledgeName("城市");
+                var allCourts=await baseTreeManager.GetTypeNodesByParentKnowledgeName("城市");
                 
 
                 #region 城市案由法院的关联验证
-                var node_city = allBaseTrees.FirstOrDefault(o => o.DisplayName == City);
+                var node_city = allCities.FirstOrDefault(o => o.Name == City);
                 if (node_city == null)
                 {
                     throw new Exception("城市不在分类中存在");
                 }
                 this.CaseSourceUpdateDto.CityId = node_city.Id;
-                var node_anyou = allBaseTrees.FirstOrDefault(o => o.DisplayName == AnYou);
+                var node_anyou = allAnYous.FirstOrDefault(o => o.Name == AnYou);
                 if (node_anyou == null)
                 {
                     throw new Exception("案由不在分类中存在");
@@ -62,7 +67,7 @@ namespace Master.Case
                 this.CaseSourceUpdateDto.AnYouId = node_anyou.Id;
                 if (!string.IsNullOrEmpty(Court1))
                 {
-                    var node_court1 = allBaseTrees.FirstOrDefault(o => o.DisplayName == Court1);
+                    var node_court1 = allCourts.FirstOrDefault(o => o.Name == Court1);
                     if (node_court1 == null)
                     {
                         throw new Exception("一审法院不在分类中存在");
@@ -71,7 +76,7 @@ namespace Master.Case
                 }
                 if (!string.IsNullOrEmpty(Court2))
                 {
-                    var node_court2 = allBaseTrees.FirstOrDefault(o => o.DisplayName == Court2);
+                    var node_court2 = allCourts.FirstOrDefault(o => o.Name == Court2);
                     if (node_court2 == null)
                     {
                         throw new Exception("二审法院不在分类中存在");
@@ -127,10 +132,17 @@ namespace Master.Case
                         person.TrialRole = TrialRole.书记员;
                         person.Name = o.Replace("书记员", "");
                     }
+                    if (o.IndexOf("法官助理") >= 0)
+                    {
+                        person.TrialRole = TrialRole.法官助理;
+                        person.Name = o.Replace("法官助理", "");
+                    }
                     return person;
                 });
                 this.CaseSourceUpdateDto.TrialPeople = trialPeople.ToList();
                 #endregion
+
+                this.CaseSourceUpdateDto.Normalize();
 
                 this.Valid = true;
             }

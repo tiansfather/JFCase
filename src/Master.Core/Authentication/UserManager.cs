@@ -59,15 +59,19 @@ namespace Master.Authentication
         #region 数据验证
         public override async Task ValidateEntity(User entity)
         {
-            if (entity.Id > 0 && await Repository.GetAll().CountAsync(o => o.UserName == entity.UserName && o.TenantId==entity.TenantId && o.Id != entity.Id) > 0)
+            if (!string.IsNullOrEmpty(entity.UserName))
             {
-                throw new UserFriendlyException(L("用户名已被占用,请调整后再试"));
-            }
+                if (entity.Id > 0 && await Repository.GetAll().CountAsync(o => o.UserName == entity.UserName && o.TenantId == entity.TenantId && o.Id != entity.Id) > 0)
+                {
+                    throw new UserFriendlyException(L("用户名已被占用,请调整后再试"));
+                }
 
-            if (entity.Id == 0 && await Repository.GetAll().CountAsync(o => o.UserName == entity.UserName) > 0)
-            {
-                throw new UserFriendlyException(L("用户名已被占用，无法创建，请调整后再试"));
+                if (entity.Id == 0 && await Repository.GetAll().CountAsync(o => o.UserName == entity.UserName) > 0)
+                {
+                    throw new UserFriendlyException(L("用户名已被占用，无法创建，请调整后再试"));
+                }
             }
+            
 
             if (!string.IsNullOrEmpty(entity.Email))
             {
@@ -175,7 +179,7 @@ namespace Master.Authentication
         {
             var query = from userLogin in _userLoginRepository.GetAll()
                         join user in GetAll().IgnoreQueryFilters() on userLogin.UserId equals user.Id
-                        where userLogin.LoginProvider == login.LoginProvider && userLogin.ProviderKey == login.ProviderKey && !user.IsDeleted
+                        where userLogin.LoginProvider == login.LoginProvider && userLogin.ProviderKey == login.ProviderKey 
                         select user;
 
             return Task.FromResult(query.FirstOrDefault());
@@ -247,17 +251,30 @@ namespace Master.Authentication
         /// <returns></returns>
         public virtual async Task<IReadOnlyList<Permission>> GetGrantedPermissionsAsync(User user)
         {
-            var permissionList = new List<Permission>();
-
-            foreach (var permission in _permissionManager.GetAllPermissions())
+            return await GetGrantedPermissionsAsync(user.Id);
+        }
+        /// <summary>
+        /// 获取用户拥有所有权限
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<IReadOnlyList<Permission>> GetGrantedPermissionsAsync(long userId)
+        {
+            var cacheKey = userId + "@" + (GetCurrentTenantId() ?? 0);
+            return await CacheManager.GetCache<string, IReadOnlyList<Permission>>("UserGrantedPermissions").GetAsync(cacheKey, async o =>
             {
-                if (await IsGrantedAsync(user.Id, permission))
+                var permissionList = new List<Permission>();
+                var permissionManager = Resolve<IPermissionManager>();
+                foreach (var permission in permissionManager.GetAllPermissions())
                 {
-                    permissionList.Add(permission);
+                    if (await IsGrantedAsync(userId, permission))
+                    {
+                        permissionList.Add(permission);
+                    }
                 }
-            }
 
-            return permissionList;
+                return permissionList;
+            });
         }
         /// <summary>
         /// 判断某用户是否有某权限
@@ -599,7 +616,8 @@ namespace Master.Authentication
             else if (moduleKey == nameof(Miner))
             {
                 var minerRole = roleManager.FindByNameAsync(StaticRoleNames.Tenants.Miner).Result;
-                query = query.Where(o => o.Roles.Count(r => r.RoleId == minerRole.Id) > 0);
+                //矿工需要显示已注销的
+                query = query.IgnoreQueryFilters().Where(o => o.Roles.Count(r => r.RoleId == minerRole.Id) > 0);
             }
             return query;
         }
@@ -611,9 +629,14 @@ namespace Master.Authentication
             await base.FillEntityDataAfter(data, moduleInfo, entity);
             data["RoleNames"] = string.Join(',', roles.Select(o => o.DisplayName));
             data["IsActive"] = user.IsActive;
+            data["IsDelete"] = user.IsDeleted;
             if (moduleInfo.ModuleKey == nameof(Assistant))
             {
                 data["InputCaseNumber"] =await Resolve<CaseSourceManager>().GetAll().CountAsync(o => o.CreatorUserId == user.Id);
+            }
+            if (moduleInfo.ModuleKey == nameof(Miner))
+            {
+                data["CaseNumber"] = await Resolve<CaseSourceManager>().GetAll().CountAsync(o => o.OwerId == user.Id && o.CaseSourceStatus == CaseSourceStatus.已加工);
             }
         }
         #endregion

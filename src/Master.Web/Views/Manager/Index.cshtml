@@ -144,7 +144,7 @@
             <div class="layui-header">
                 <!-- 头部区域 -->
                 @await Component.InvokeAsync(typeof(TopBarNavViewComponent))
-                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right" style="right:20px;">
                     <li class="layui-nav-item layui-hide-xs" lay-unselect v-show="text" v-cloak :tips="tipsText">
                         <a href="javascript:;" class="gonggao" style="padding:0 10px;">
                             <i class="iconfont icon-gonggao"></i>
@@ -162,36 +162,36 @@
                     </li>
                     <!-- 如果有新消息，则显示小圆点 -->
                     @*<li class="layui-nav-item" lay-unselect>
-                        <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
-                            <i class="layui-icon layui-icon-notice"></i>
-                            <span class="layui-badge-dot"></span>
-                        </a>
-                    </li>*@
+            <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
+                <i class="layui-icon layui-icon-notice"></i>
+                <span class="layui-badge-dot"></span>
+            </a>
+        </li>*@
                     <li class="layui-nav-item layui-hide-xs" lay-unselect>
                         <a href="javascript:;" layadmin-event="theme">
                             <i class="layui-icon layui-icon-theme"></i>
                         </a>
                     </li>
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                        <a href="javascript:;" custom-event="lock" title="@L("锁屏")">
-                            <i class="layui-icon layui-icon-zlock-l"></i>
+                    <li class="layui-nav-item " lay-unselect>
+                        <a href="/Home/Main" >
+                            简法前台
                         </a>
                     </li>
                     <li class="layui-nav-item" lay-unselect>
                         <a href="javascript:;">
                             <cite>@Model.User.Name</cite>
                         </a>
-                        <dl class="layui-nav-child">                            
+                        <dl class="layui-nav-child">
                             <dd><a lay-href="/Manager/UserInfo" tips="个人资料">个人资料</a></dd>
-                            <dd><a tips="@L("修改密码")" fornonerow="1" buttonname="@L("修改密码")" params="{&quot;area&quot;: [&quot;500px&quot;, &quot;400px&quot;]}" buttonactiontype="Form" buttonactionurl="/Account/ChangePassword" onclick="func.callModuleButtonEvent()" style="cursor:pointer">修改密码</a></dd>
+                            <dd><a tips="@L("修改密码")" fornonerow="1" buttonname="@L("修改密码")" params="{&quot;area&quot;: [&quot;500px&quot;, &quot;400px&quot;]}" buttonactiontype="Form" buttonactionurl="/Account/ChangePassword" onclick="func.callModuleButtonEvent()" style="cursor:pointer" id="changepwdBtn">修改密码</a></dd>
                             <hr />
                             <dd style="text-align: center;"><a asp-action="GMLogout" asp-controller="Account">退出</a></dd>
                         </dl>
                     </li>
 
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                        <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
-                    </li>
+                    @*<li class="layui-nav-item layui-hide-xs" lay-unselect>
+            <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
+        </li>*@
                     <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
                         <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
                     </li>
@@ -238,7 +238,7 @@
             <!-- 主体内容 -->
             <div class="layui-body" id="LAY_app_body">
                 <div class="layadmin-tabsbody-item layui-show">
-                    <iframe src="@Model.User.HomeUrl" frameborder="0" class="layadmin-iframe" name="default"></iframe>
+                    <iframe src="/Manager/Default" frameborder="0" class="layadmin-iframe" name="default"></iframe>
                 </div>
             </div>
 

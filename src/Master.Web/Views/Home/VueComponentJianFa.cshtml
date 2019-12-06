@@ -1,0 +1,219 @@
+﻿@*<style>
+    #jianHeader {
+        height: 80px;
+        background-color: rgba(198, 156, 109, 1);
+        width: 1200px;
+        margin: 0 auto;
+    }
+</style>
+<script type="text/x-template" id="comHeadr">
+    <header id="jianHeader">
+
+    </header>
+</script>*@
+<style>
+/*重置样式*/
+    .ivu-menu-item-selected a {
+        color: #754c24;
+    }
+    /*#jianfa_top .top-logo .logo-pic img {
+        width: 40px;
+        max-width: 40px;
+        max-height: 40px;
+    }*/
+    #jianfa_top .top-logo .logo-pic span{line-height:40px;float:none;display:inline}
+    .daohang-top .ivu-menu-item > a, .daohang-top .ivu-menu-submenu-title {
+        line-height: 30px;
+    }
+    .daohang-top .ivu-menu-item {
+        margin: 0 8px;
+    }
+    #jianfa_top .top-logo .portrait-pic{
+        font-size:0;
+    }
+    .jianfa-intop .intop-logo .inportrait-pic {
+        width: auto;
+        padding: 0;
+        font-size: 0;
+        margin: 5px 0;
+    }
+        .jianfa-intop .intop-logo .inportrait-pic .el-dropdown {
+            font-size: 0;
+        }
+        .jianfa-intop .intop-logo .inportrait-pic img {
+            /*width: 50px;
+            height:50px;
+            max-width: 50px;
+            max-height: 50px;*/
+            width: 125px;
+            max-width: inherit;
+            max-height: 40px;
+        }
+    .daohang-top .ivu-menu-item > a, #jianfa_top .top-logo .logo-pic span {
+        color: #754c24;
+    }
+</style>
+    <script type="text/x-template" id="comHeader">
+        <div id="jianfa_top">
+            <div class="top-logo">
+
+                @*<div class="logo-pic"><img src="/assets/jianfa/ima/logo-ny.png" border="0"><span>案例工厂</span></div>*@
+                <div class="logo-pic"><img src="/assets/jianfa/ima/new-logo3.png" border="0" style="height:40px"></div>
+                <div class="daohang-top">
+                    <!--导航-->
+                    <i-Menu mode="horizontal" theme="primary" :active-name="activeName">
+                        <Menu-Item name="1"><a href="/Home/Main">首　页</a></Menu-Item>
+                        <Menu-Item name="2"><a href="/Home/ViewCase">查案例</a></Menu-Item>
+                        <Menu-Item name="3"><a href="/Home/ViewPoint">看观点</a></Menu-Item>
+                        <!--<Menu-Item name="4"><Icon type="ios-contact"></Icon>工作台</Menu-Item>-->
+                        <Submenu name="4">
+                            <template slot="title">
+                                <Icon type="ios-stats"></Icon>我的
+                            </template>
+                            <Menu-Item name="挑选判例"><a href="/Home/Source">挑选判例</a></Menu-Item>
+                                <Menu-Item name="加工案例"><a href="/Home/WorkBench">加工案例</a></Menu-Item>
+                                <Menu-Item name="我的案例"><a href="/Home/MyCase">我的案例</a></Menu-Item>
+                                <Menu-Item name="我的作品"><a href="/Home/MyArt">我的作品</a></Menu-Item>
+                                @*<Menu-Item name="4-1"><a href="加工页.html">加 工 页</a></Menu-Item>
+                                <Menu-Item name="4-2"><a href="案源库.html">案 源 库</a></Menu-Item>*@
+                            @*<MenuGroup>
+                            </MenuGroup>*@
+                        </Submenu>
+                    </i-Menu>
+                    <!--end-->
+                </div>
+                <div class="portrait-pic">
+                    <el-dropdown>
+                        <img :src="avata" border="0" width="36" height="36" style="cursor:pointer">
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item><a href="/Home/Me">个人信息</a></el-dropdown-item>                            
+                            <el-dropdown-item divided><a href="/Account/Logout">退出登录</a></el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    @*<a href="/Home/Me"><img :src="avata" border="0" width="36" height="36"></a>*@
+                </div>
+            </div>
+        </div>
+    </script>
+    <script id="headSelectFilter" type="text/x-template">
+
+        <dl class="xian">
+            <dd class="style-bf-20">
+                <template>
+                    <i-select placeholder="请选择案由" v-model="wherePart.anYouId"  clearable >
+                        <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                    </i-select>
+                </template>
+            </dd>
+            <dd class="style-bf-20">
+                <template>
+                    <i-select placeholder="请选择城市" v-model="wherePart.cityId"  clearable >
+                        <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                    </i-select>
+                </template>
+            </dd>
+            <dd class="style-bf-20">
+                <template>
+                    <i-select placeholder="请选择法院" v-model="wherePart.courtId"  clearable >
+                        <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                        <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                    </i-select>
+                </template>
+            </dd>
+            <dd class="style-bf-30">
+                <template>
+                    <i-input v-model="wherePart.keyword"  placeholder="请输入关键词等信息..." />
+                </template>
+            </dd>
+            <dd class="style-bf-10"><button class="btn-search" @@click="$emit('click')" style="height:30px">筛选</button></dd>
+        </dl>
+    </script>
+<script>
+    Vue.component('com-header', {//前台页面头
+        template: '#comHeader',
+        props: ['activeName'],
+        data: function () {
+            return {
+                avata:''
+            }
+        },
+        mounted: function () {
+            var that = this;
+                abp.services.app.user.getById(abp.session.userId).done(function (data) {
+                    that.avata = data.avata;
+                })
+        }
+    })
+    Vue.component('com-footer', {
+        //不设font-size12，就变大了，没看出原因
+        template:'<div class="footer-ny"><div class="ziti-b" style="font-size:12px;">2017-2020 | Copyright | 版权声明 | 简法案例解读网 ( <a href="http://www.miibeian.gov.cn/" target="_blank" style="color:white;" class="beian">沪ICP备17021923号-2</a> )</div></div>'
+    })
+    Vue.component('head-select-filter', {
+        data: function () {
+            var w = this.wherePart || {
+                anyouId: '',
+                cityId: '',
+                courtId: '',
+            };
+            return {
+                anYous: [],
+                cities: [],
+                courts: [],
+                filterCourtByCity:[],
+                whereParts: w
+            }
+        },
+        template:'#headSelectFilter',
+        props: ['wherePart'],
+        computed: {
+            where: function () {
+                var where = '1=1';
+                for (var i in this.whereParts) {
+                    var data = this.whereParts[i];
+                    if (!data) continue;
+                    if (i == 'courtId') {
+                        //where += ` and (court1Id=${data} or court2id=${data})`;
+                        where += " and (court1Id="+data+" or court2id="+data+")";
+                    } else {
+                        //where += ` and ${i}=${data}`;
+                        where += ' and '+i+'='+data;
+                    }
+
+                }
+                return where;
+                //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+
+            },
+        },
+        methods: {
+            //获取分类信息
+            loadTypes: function () {
+                var that = this;
+                abp.services.app.type.getAnYous().done(function (data) {
+                    that.anYous = data;
+                });
+                abp.services.app.type.getCities().done(function (data) {
+                    that.cities = data;
+                });
+                abp.services.app.type.getCourts().done(function (data) {
+                    that.courts = data;
+                });
+            },
+        },
+        watch: {
+            'wherePart.cityId': function (val,old) {
+                this.wherePart.courtId = null;
+                if (!val) {
+                    this.filterCourtByCity= [];
+                } else {
+                    var that = this;
+                    this.filterCourtByCity = this.courts.filter(function (o) { return o.parentId == val;});
+                }
+            }
+        },
+        created: function () {
+            this.loadTypes();
+        }
+    })
+
+</script>

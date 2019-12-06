@@ -29,6 +29,7 @@ namespace Master.Module
         /// <param name="permissionName"></param>
         /// <returns></returns>
         Task<ModuleButton> FindButtonByPermissionName(string permissionName);
+        void RemoveModuleInfoCache(string moduleKey, int tenantId);
         Task<IEnumerable<IDictionary<string, object>>> GetModuleDataListAsync(ModuleInfo moduleInfo, IQueryable query);
         Task<IEnumerable<IDictionary<string, object>>> GetModuleDataListAsync(ModuleInfo moduleInfo, string whereCondition = "", string orderBy = "");
         /// <summary>

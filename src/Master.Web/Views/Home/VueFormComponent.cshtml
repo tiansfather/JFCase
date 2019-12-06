@@ -15,9 +15,9 @@
                         type: 'sug', //设置输入框提示类型：sug-下拉框，sugTable-下拉表格
                         url: url //设置异步数据接口,url为必填项
                     });
-                })            
+                })
             }
-            
+
         },
         computed: {
             inputId: function () {
@@ -193,7 +193,7 @@
                 <option value="">@L("未选择")</option>
                 <option v-for="(item,key) in dictionary" :value="key" :selected="item==value||key==value">{{item}}</option>
             </select>
-            <div v-else >
+            <div v-else>
                 <input type="radio" :name="columnInfo.ColumnKey" v-for="(item,key) in dictionary" :value="key" :title="item" :checked="value==key||value==item">
             </div>
 
@@ -346,7 +346,7 @@
                     //    where: where,
                     //    cols: [cols]
                     //},
-                    table:tableParm,
+                    table: tableParm,
                     done: function (elem, data) {
                         //选择完后的回调，包含2个返回值 elem:返回之前input对象；data:表格返回的选中的数据 []
                         //拿到data[]后 就按照业务需求做想做的事情啦~比如加个隐藏域放ID...
@@ -429,7 +429,14 @@
         props: ['columnInfo', 'value'],
         data: function () {
             return {
-                fileId: this.value
+                fileIds: this.value,
+                files: []
+            }
+        },
+        watch: {
+            files: function (newObj, old) {
+                this.fileIds = newObj.map(function (o) { return o.id || o.fileId }).join(',');
+                this.$emit("input", this.fileIds);
             }
         },
         created: function () {
@@ -437,22 +444,41 @@
             var that = this;
         },
         computed: {
-            imgSrc: function () {
-                return "/File/Thumb/" + this.fileId;
+            multiple: function () {
+                return this.columnInfo.MaxFileNumber > 1;
+            },
+            disabled: function () {
+                return this.files.length >= this.columnInfo.MaxFileNumber;
             }
         },
         methods: {
-            removeFile: function () {
-                this.fileId = "";
+            removeFile: function (index) {
+                var that = this;
+                abp.message.confirm("确认移除此图片?", function () {
+                    that.files.splice(index, 1);
+                })
             }
         },
         mounted: function () {
             var that = this;
+            if (this.fileIds) {
+                var fileIds_arr = this.fileIds.split(',');
+                abp.services.app.file.getListByIds(fileIds_arr).done(function (data) {
+                    that.files = data;
+                })
+            }
             this.$nextTick(function () {
                 //配置上传
                 func.renderUpload('#' + that.columnInfo.ColumnKey + '_trigger', {
-                    trigger: 'click', callback: function (data) {
-                        that.fileId = data.fileId;
+                    trigger: 'click',
+                    multiple: that.multiple,
+                    callback: function (data) {
+                        if (!that.multiple) {
+                            that.files.push(data);
+                        } else {
+                            that.files = that.files.concat(data);
+                        }
+
                         console.log(data);
                     }
                 })
@@ -460,17 +486,49 @@
         }
     });
 </script>
+<style>
+    [layImage] .my-li-delete {
+        display: none;
+    }
+
+    [layImage] .layui-upload-list div {
+        position: relative;
+    }
+
+    [layImage] .layui-upload-list div {
+        display: inline-block;
+    }
+
+        [layImage] .layui-upload-list div:hover .my-li-delete {
+            display: block;
+            line-height: 25px;
+            background: rgba(76, 72, 72, 0.5);
+            top: 0px;
+            position: absolute;
+            font-size: 20px;
+            right: 10px;
+            height: 25px;
+            width: 25px;
+            cursor: Pointer;
+            color: #0c0d29;
+            text-align: center;
+            border-radius: 3px;
+        }
+</style>
 <script type="text/x-template" id="layImage">
-    <div class="layui-form-item">
-        <input type="hidden" :name="columnInfo.ColumnKey" :value="fileId" />
+    <div class="layui-form-item" layImage>
+        <input type="hidden" :name="columnInfo.ColumnKey" :value="fileIds" />
         <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
         <div class="layui-input-block">
             <div class="layui-upload">
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-warn" :id="columnInfo.ColumnKey+'_trigger'"><i class="layui-icon layui-icon-zzcloud-upload"></i>@L("上传图片")</button>
-                <button type="button" class="layui-btn layui-btn-sm layui-btn-danger img" @@click="removeFile">@L("删除")</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-warn" :class="{'layui-btn-disabled':disabled}" :id="columnInfo.ColumnKey+'_trigger'" :disabled="disabled"><i class="layui-icon layui-icon-zzcloud-upload"></i>@L("上传图片")</button>
+                @*<button type="button" class="layui-btn layui-btn-sm layui-btn-danger img" @@click="removeFile">@L("删除")</button>*@
                 <div class="layui-upload-list">
+                    <div v-for="(item,index) in files">
+                        <i class="iconfont icon-qingkong1 my-li-delete" @@click="removeFile(index)"></i>
+                        <img class="layui-upload-img thumb" style="max-width:120px;max-height:120px;" :src="item.filePath" onerror="this.src='/assets/images/noloaded.png'">
+                    </div>
 
-                    <img class="layui-upload-img thumb" style="max-width:120px;max-height:120px;" :src="imgSrc" onerror="this.src='/assets/images/noloaded.png'">
 
                     <p></p>
                 </div>
@@ -478,4 +536,102 @@
         </div>
     </div>
 
+</script>
+@*文件*@
+<script>
+    Vue.component('lay-file', {
+        template: '#layFile',
+        props: ['columnInfo', 'value'],
+        data: function () {
+            return {
+                fileIds: this.value,
+                files: []
+            }
+        },
+        watch: {
+            files: function (newObj, old) {
+                this.fileIds = newObj.map(function (o) { return o.id || o.fileId }).join(',');
+                this.$emit("input", this.fileIds);
+            }
+        },
+        computed: {
+            multiple: function () {
+                return this.columnInfo.MaxFileNumber > 1;
+            },
+            disabled: function () {
+                return this.files.length >= this.columnInfo.MaxFileNumber;
+            }
+        },
+        mounted: function () {
+            var that = this;
+            if (this.fileIds) {
+                var fileIds_arr = this.fileIds.split(',');
+                abp.services.app.file.getListByIds(fileIds_arr).done(function (data) {
+                    that.files = data;
+                })
+            }
+            this.$nextTick(function () {
+                //配置上传
+                func.renderUpload('#' + that.columnInfo.ColumnKey + '_trigger', {
+                    trigger: 'click',
+                    multiple: that.multiple,
+                    callback: function (data) {
+                        if (!that.multiple) {
+                            that.files.push(data);
+                        } else {
+                            that.files = that.files.concat(data);
+                        }
+
+                        console.log(data);
+                    }
+                })
+            })
+        }
+    });
+</script>
+<script type="text/x-template" id="layFile">
+    <div class="layui-form-item">
+        <input type="hidden" :name="columnInfo.ColumnKey" :value="fileIds" />
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            <div class="layui-upload">
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" :class="{'layui-btn-disabled':disabled}" :id="columnInfo.ColumnKey+'_trigger'" :disabled="disabled"><i class="layui-icon layui-icon-search"></i>@L("选择文件")</button>
+                <div class="layui-upload-list">
+                    <table class="layui-table">
+                        <thead>
+                            <tr>
+                                <th>@L("文件名")</th>
+                                <th>@L("大小")</th>
+                                <th>@L("操作")</th>
+                            </tr>
+                        </thead>
+                        <tbody :id="columnInfo.ColumnKey+'_list'">
+                            <tr class="pending" v-for="(item,index) in files">
+                                <td><a :href="'/File/GetFile?fileid='+item.fileId" target="_blank">{{item.fileName}}</a></td>
+                                <td>{{item.fileSize}}kb</td>
+                                <td><button type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete filelist" @@click="files.splice(index,1)">@L("删除")</button></td>
+                            </tr>
+                            @*@if (!string.IsNullOrEmpty(value))
+                                {
+                                    var fileids = value.Split(',').ToList().ConvertAll(o => int.Parse(o));
+                                    var files = await FileManager.GetListByIdsAsync(fileids);
+                                    foreach (var file in files)
+                                    {
+                                        <tr class="pending">
+                                            <td><a href="/File/GetFile?fileid=@file.Id" target="_blank">@file.FileName</a></td>
+                                            <td>@(file.FileSize)kb</td>
+                                            <td></td>
+                                            <td><button fileID="@file.Id" type="button" class="layui-btn layui-btn-sm layui-btn-danger demo-delete filelist">@L("删除")</button></td>
+                                        </tr>
+
+                                    }
+
+                                }*@
+                        </tbody>
+                    </table>
+                </div>
+                @*<button type="button" class="layui-btn layui-btn-sm layui-btn-warm" id="@(column.ColumnKey)Action"><i class="layui-icon layui-icon-zzcloud-upload"></i>@L("开始上传")</button>*@
+            </div>
+        </div>
+    </div>
 </script>

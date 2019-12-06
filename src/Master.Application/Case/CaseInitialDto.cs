@@ -34,7 +34,7 @@ namespace Master.Case
         /// </summary>
         public string LawyerOpinion { get; set; }
         public string Status { get; set; }
-        public DateTime? PublisDate { get; set; }
+        public DateTime? PublishDate { get; set; }
         /// <summary>
         /// 阅读量
         /// </summary>
@@ -50,14 +50,15 @@ namespace Master.Case
 
         public CaseStatus CaseStatus { get; set; }
 
-        public virtual ICollection<CaseKeyDto> CaseKeys { get; set; }
-        public virtual ICollection<CaseFineDto> CaseFines { get; set; }
-        public virtual ICollection<CaseCardDto> CaseCards { get; set; }
+        public virtual List<CaseNodeDto> CaseNodes { get; set; } = new List<CaseNodeDto>();
+        public virtual List<CaseLabelDto> CaseLabels { get; set; } = new List<CaseLabelDto>();
+        public virtual List<CaseFineDto> CaseFines { get; set; } = new List<CaseFineDto>();
+        public virtual List<CaseCardDto> CaseCards { get; set; } = new List<CaseCardDto>();
 
         /// <summary>
         /// 诉情及判决
         /// </summary>
-        public JudgeInfo JudgeInfo { get; set; }
+        public JudgeInfo JudgeInfo { get; set; } = new JudgeInfo();
         public string Remarks { get; set; }
     }
 }

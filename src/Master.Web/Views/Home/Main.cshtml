@@ -1,0 +1,76 @@
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+    Layout = "_LayoutJianFa";
+    ViewData["Title"] = "简法案例解读网";
+}
+@section styles{
+    <style>
+        body {
+            height: 100%;
+        }
+        .jianfa-intop{
+            background:none;
+        }
+        /*.index-daohang .dh-middle    {
+            height: 32vh;
+        }
+        .index-daohang .dh-left, .index-daohang .dh-right{height:32vh;}
+        .index-daohang .dh-left, .index-daohang .dh-right {
+            background-size: 25vh 32vh !important;
+        }*/
+        .inlogo-pic > img {
+            width: 125px;
+            height: 40px;
+        }
+    </style>
+}
+<!--顶部-->
+<div id="app">
+    <div class="jianfa-intop">
+        <div class="intop-logo">
+            @*<div class="inlogo-pic"><img src="/assets/jianfa/ima/logo-ny.png" border="0"><span>案例工厂</span></div>*@
+            <div class="inlogo-pic"><img  src="/assets/jianfa/ima/new-logo3.png"  border="0"></div>
+            @*<div class="inportrait-pic"><img :src="avata" border="0"></div>*@
+            <div class="inportrait-pic">
+                <el-dropdown>
+                    <img :src="avata" border="0" width="36" height="36" style="cursor:pointer;width:36px;height:36px;" >
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item><a href="/Home/Me">个人信息</a></el-dropdown-item>
+                        <el-dropdown-item divided><a href="/Account/Logout">退出登录</a></el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+                @*<a href="/Home/Me"><img :src="avata" border="0" width="36" height="36"></a>*@
+            </div>
+        </div>
+    </div>
+    <div class="index-daohang">
+        <a href="/Home/ViewCase"><div class="dh-left"></div></a>
+        <a href="/Home/ViewPoint"><div class="dh-middle"></div></a>
+        <a href="/Home/WorkBench"><div class="dh-right"></div></a>
+    </div>
+    <!--end-->
+    <div class="footer-top"><img src="/assets/jianfa/ima/index-b-1.png"></div>
+    <!--footer-->
+    <com-footer></com-footer>
+</div>
+
+
+@section scripts{
+    <script>
+        $("body").addClass("index-bj-b");
+        new Vue({
+            el: '#app',
+            data: {
+                avata:'/assets/jianfa/ima/index-2.png'
+            },
+            mounted: function () {
+                var that = this;
+                abp.services.app.user.getById(abp.session.userId).done(function (data) {
+                    that.avata = data.avata;
+                })
+            }
+        });
+    </script>
+
+}

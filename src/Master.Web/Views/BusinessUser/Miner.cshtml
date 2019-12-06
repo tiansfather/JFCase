@@ -6,7 +6,22 @@
 <div class="layui-fluid" id="LAY-app-message">
 
     <div class="layui-card">
-        <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("矿工日常管理")</div>
+        <div class="layui-tab layui-tab-brief" lay-filter="userTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this normal">@L("正常")<span class="layui-badge">0</span></li>
+                <li class="freeze">@L("冻结")<span class="layui-badge">0</span></li>
+                <li class="delete">@L("注销")<span class="layui-badge">0</span></li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                    <vc:module-button module-key="Miner"></vc:module-button>
+                    <input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
+                    <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
+                </div>
+                <vc:module-table param="@(new ModuleTableViewParam() {ID="Miner",ModuleKey="Miner",Height="full-150",Where="isdeleted=false and isactive=true" })"></vc:module-table>
+            </div>
+        </div>
+        @*<div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("矿工日常管理")</div>
         <div class="layui-card-body">
             <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
                 <vc:module-button module-key="Miner"></vc:module-button>
@@ -15,7 +30,7 @@
             </div>
             <vc:module-table param="@(new ModuleTableViewParam() {ID="Miner",ModuleKey="Miner",Height="full-150",Where="" })"></vc:module-table>
 
-        </div>
+        </div>*@
 
     </div>
 </div>
@@ -26,27 +41,74 @@
         var searchKeys = {};
         
         config.ready = function () {
-            
+            function setBtn(index) {
+                var hideArr = [];
+                switch (index) {
+                    case 0:
+                        hideArr = ['UnFreeze','Revert'];
+                        break;
+                    case 1:
+                        hideArr = ['Freeze','Revert','Delete'];
+                        break;
+                    default:
+                        hideArr = ['Freeze','UnFreeze','Delete'];
+                }
+                $("button[lay-event]").show();
+                hideArr.forEach(function (n, i) {
+                    $("button[lay-event='" + n + "']").hide();
+                })
+            }
+            setBtn(0);
+            var element = layui.element;
+            var table = layui.table;
+            //一些事件监听
+            element.on('tab(userTab)', function (data) {
+                setBtn(data.index)
+                config.reloadTable();
+            });
+            config.refresh();
         };
         config.refresh = function () {
-           
+           //重新加载汇总数据
+            abp.services.app.miner.getSummary()
+                .done(function (result) {
+                    $("li.normal span").html(result.normalCount);
+                    $("li.freeze span").html(result.freezeCount);
+                    $("li.delete span").html(result.deleteCount);
+                });
         };
         config.reloadTable = function () {
             layui.table.reload('Miner', {
-                where: getWhere()
+                where: getWhere($(".layui-tab-title .layui-this").index())
             })
         }
         function getWhere(index) {
             var where = { searchKeys: JSON.stringify(searchKeys) };
-            
+            switch (index) {
+                case 0:
+                    where.where= 'isdeleted=false and isactive=true';
+                    break;
+                case 1:
+                    where.where= 'isdeleted=false and isactive=false';
+                    break;
+                case 2:
+                    where.where= 'isdeleted=true';
+                    break;
+            }
             var value = $('#name-input').val();
             if (value) {
-                where.where += " and Name.Contains(\"" + value + "\")"
+                where.keyword = value;
             }
             where.searchCondition = func.buildSearchCondition('Miner');
 
             return where;
 
+        }
+
+        function setSort(id, obj) {
+            abp.services.app.miner.setSort(id, obj.value).done(function () {
+                //top.layer.msg('提交成功');
+            })
         }
     </script>
 }

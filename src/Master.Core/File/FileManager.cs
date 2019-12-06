@@ -20,16 +20,16 @@ namespace Master
         }
 
 
-        public string GetFileUrl(int fileId,int w=0,int h=0)
+        public string GetFileUrl(int fileId, int w = 0, int h = 0)
         {
             return $"/File/Thumb?fileid={fileId}&w={w}&h={h}";
-        }                
+        }
         /// <summary>
         /// todo:文件上传方法封装，将上传路径做为参数传递
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public async Task<File> UploadFile(IFormFile file,bool temp)
+        public async Task<File> UploadFile(IFormFile file, bool temp)
         {
             DateTime now = DateTime.Now;
             string upload_path = $"{Directory.GetCurrentDirectory()}\\wwwroot\\files\\{now.Year}\\{now.ToString("MM")}\\{now.ToString("dd")}";
@@ -70,7 +70,7 @@ namespace Master
             return fileModel;
         }
 
-        public async Task<File> UploadFile(string base64Content,string oriVirtualPath="")
+        public async Task<File> UploadFile(string base64Content, string oriVirtualPath = "")
         {
             string filenameWithOutPath, filename, virtualPath;
 
@@ -97,7 +97,7 @@ namespace Master
             //size += file.Length;
             using (FileStream fs = System.IO.File.Create(filename))
             {
-                
+
                 await fs.WriteAsync(data, 0, data.Length);
                 fs.Flush();
 
@@ -118,7 +118,7 @@ namespace Master
             {
                 await InsertAndGetIdAsync(fileModel);
             }
-            
+
 
             return fileModel;
         }
@@ -136,7 +136,7 @@ namespace Master
                 {
 
                 }
-                
+
             }
             await DeleteAsync(file);
         }
@@ -153,9 +153,9 @@ namespace Master
                 var filenameWithOutPath = Guid.NewGuid().ToString() + ".png";
                 var filename = upload_path + "\\" + filenameWithOutPath;
 
-                var downloadresult=await Senparc.CO2NET.HttpUtility.Get.DownloadAsync(url, upload_path);
+                var downloadresult = await Senparc.CO2NET.HttpUtility.Get.DownloadAsync(url, upload_path);
                 System.IO.File.Move(downloadresult, filename);
-                
+
 
                 string ext = Path.GetExtension(filename);
                 //虚拟路径
@@ -175,7 +175,7 @@ namespace Master
             {
                 return null;
             }
-            
+
         }
     }
 }

@@ -37,7 +37,7 @@
             })
         }
         function getWhere(index) {
-            var where = { searchKeys: JSON.stringify(searchKeys) };
+            var where = { searchKeys: JSON.stringify(searchKeys),where:'1=1' };
             
             var value = $('#name-input').val();
             if (value) {
@@ -47,6 +47,12 @@
 
             return where;
 
+        }
+
+        function setSort(id, obj) {
+            abp.services.app.caseInitial.setSort(id, obj.value).done(function () {
+                //top.layer.msg('提交成功');
+            })
         }
     </script>
 }

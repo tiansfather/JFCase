@@ -19,6 +19,8 @@
     <Compile Remove="EntityFrameworkCore\Seed\BaseData\SystemModules\ProjectBaseModules.cs" />
     <Compile Remove="EntityFrameworkCore\Seed\BaseData\SystemModules\ResourceBaseModules.cs" />
     <Compile Remove="EntityFrameworkCore\Seed\BaseData\SystemModules\StaffBaseModules.cs" />
+    <Compile Remove="Migrations\20190603094535_NewMinerPhoneNumber.cs" />
+    <Compile Remove="Migrations\20190603094535_NewMinerPhoneNumber.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Master.Core\Master.Core.csproj" />

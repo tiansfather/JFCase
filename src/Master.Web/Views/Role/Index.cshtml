@@ -27,7 +27,7 @@
                         <th lay-data="{field:'displayName',sort:true,edit:'text'}">@L("角色名称")</th>
                         <th lay-data="{field:'remarks',edit:'text'}">@L("描述")</th>
                         <th lay-data="{field:'isStatic',sort:true,templet:'#staticTpl'}">@L("类型")</th>
-                        <th lay-data="{field:'',templet:'#memberTpl'}">@L("成员")</th>
+                        @*<th lay-data="{field:'',templet:'#memberTpl'}">@L("成员")</th>*@
                         <th lay-data="{field:'creator'}">@L("创建人")</th>
                         <th lay-data="{field:'creationTime',sort:true}">@L("创建时间")</th>
                         <th lay-data="{align:'center', toolbar: '#toolbar'}">@L("操作")</th>
@@ -40,9 +40,9 @@
 </div>
 <script type="text/html" id="staticTpl">
 	{{#if(d.isStatic){}}
-	<span class="layui-badge layui-bg-blue">@L("内置")</span>
+	<span class="layui-badge layui-bg-blue">@L("固化")</span>
 	{{#}else{}}
-	<span class="layui-badge layui-bg-cyan">@L("用户")</span>
+	<span class="layui-badge layui-bg-cyan">@L("可修改")</span>
 	{{#}}}
 </script>
 <script type="text/html" id="memberTpl">
@@ -52,7 +52,7 @@
 	{{#  }); }}
 </script>
 <script type="text/html" id="toolbar">
-	<button class="layui-btn layui-btn-xs" type="button" fornonerow="1" buttonname="加入成员" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;],&quot;btn&quot;:null}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Select/SelUser?key=User&where=@(System.Net.WebUtility.UrlEncode("IsActive=true"))&searchKeys=@(System.Net.WebUtility.UrlEncode(""))" onclick="window.currentRoleId = {{ d.id}};func.callModuleButtonEvent()">加入成员</button>
+	@*<button class="layui-btn layui-btn-xs" type="button" fornonerow="1" buttonname="加入成员" params="{&quot;area&quot;: [&quot;80%&quot;, &quot;80%&quot;],&quot;btn&quot;:null}" lay-event="Add" confirmmsg="" buttonactiontype="Form" buttonactionurl="/Select/SelUser?key=User&where=@(System.Net.WebUtility.UrlEncode("IsActive=true"))&searchKeys=@(System.Net.WebUtility.UrlEncode(""))" onclick="window.currentRoleId = {{ d.id}};func.callModuleButtonEvent()">加入成员</button>*@
 	<a dataid="{{d.id}}" buttonname="@L("权限")" modulekey="Roles" class="layui-btn layui-btn-xs " params='{"btn":null}' buttonactiontype="Form" buttonactionurl="/Permission/Assign" onclick="func.callModuleButtonEvent()">@L("权限")</a>
 	@*{{#if(!d.isStatic){}}
 	<a dataid="{{d.id}}" buttonname="@L("编辑")" modulekey="" class="layui-btn layui-btn-xs " onclick="editRole({{d.id}},'{{d.displayName}}')">@L("编辑")</a>
@@ -72,6 +72,10 @@
                 if (!value.trim()) {
                     layer.msg("输入不能为空", { icon: 5, anim: 6 });
                     return false;
+                }
+                if (data.isStatic) {
+                    abp.message.error("系统角色不能修改");
+                    return;
                 }
                 abp.message.confirm(L('确认修改?'), function () {
                     func.runAsync(abp.services.app.role.updateField(data.id, field, value, {

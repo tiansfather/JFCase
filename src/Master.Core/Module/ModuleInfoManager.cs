@@ -30,37 +30,37 @@ namespace Master.Module
 {
     public class ModuleInfoManager : DomainServiceBase<ModuleInfo, int>, IModuleInfoManager
     {
-        public ITypeFinder TypeFinder { get; set; }
-        //public IMenuManager MenuManager { get; set; }
-        public IFeatureManager FeatureManager { get; set; }
+        //public ITypeFinder TypeFinder { get; set; }
+        ////public IMenuManager MenuManager { get; set; }
+        //public IFeatureManager FeatureManager { get; set; }
 
-        private IRepository<ModuleInfo, int> _moduleInfoRepository;
-        private IRepository<ColumnInfo, int> _columnInfoRepository;
-        private IRepository<ModuleButton, int> _buttonInfoRepository;
-        private IRepository<PermissionSetting> _permissionRepository;
-        private IColumnReader _columnReader;
-        private IRelativeDataParser _relativeDataParser;
-        private IValuePathParser _valuePathParser;
-        private IIocManager _iocManager;
-        public ModuleInfoManager(IRepository<ModuleInfo, int> moduleInfoRepository, 
-            IRepository<ColumnInfo, int> columnInfoRepository,
-            IRepository<ModuleButton, int> buttonInfoRepository,
-            IRepository<PermissionSetting> permissionRepository,
-            ICacheManager cacheManager,
-            IColumnReader columnReader, 
-            IRelativeDataParser relativeDataParser,
-            IIocManager iocManager, 
-            IValuePathParser valuePathParser)
-        {
-            _moduleInfoRepository = moduleInfoRepository;
-            _columnInfoRepository = columnInfoRepository;
-            _buttonInfoRepository = buttonInfoRepository;
-            _columnReader = columnReader;
-            _relativeDataParser = relativeDataParser;
-            _iocManager = iocManager;
-            _valuePathParser = valuePathParser;
-            _permissionRepository = permissionRepository;
-        }
+        //private IRepository<ModuleInfo, int> _moduleInfoRepository;
+        //private IRepository<ColumnInfo, int> _columnInfoRepository;
+        //private IRepository<ModuleButton, int> _buttonInfoRepository;
+        //private IRepository<PermissionSetting> _permissionRepository;
+        //private IColumnReader _columnReader;
+        //private IRelativeDataParser _relativeDataParser;
+        //private IValuePathParser _valuePathParser;
+        //private IIocManager _iocManager;
+        //public ModuleInfoManager(IRepository<ModuleInfo, int> moduleInfoRepository, 
+        //    IRepository<ColumnInfo, int> columnInfoRepository,
+        //    IRepository<ModuleButton, int> buttonInfoRepository,
+        //    IRepository<PermissionSetting> permissionRepository,
+        //    ICacheManager cacheManager,
+        //    IColumnReader columnReader, 
+        //    IRelativeDataParser relativeDataParser,
+        //    IIocManager iocManager, 
+        //    IValuePathParser valuePathParser)
+        //{
+        //    _moduleInfoRepository = moduleInfoRepository;
+        //    _columnInfoRepository = columnInfoRepository;
+        //    _buttonInfoRepository = buttonInfoRepository;
+        //    _columnReader = columnReader;
+        //    _relativeDataParser = relativeDataParser;
+        //    _iocManager = iocManager;
+        //    _valuePathParser = valuePathParser;
+        //    _permissionRepository = permissionRepository;
+        //}
 
         public override IQueryable<ModuleInfo> GetAll()
         {
@@ -80,7 +80,7 @@ namespace Master.Module
             {
                 return base.GetAll();
             }
-            
+
         }
         /// <summary>
         /// 获取所有启用的特性
@@ -90,11 +90,11 @@ namespace Master.Module
         {
             var enabledFeatures = new List<string>();
 
-            var features = FeatureManager.GetAll();
-
+            var features = Resolve<IFeatureManager>().GetAll();
+            var feachChecker = Resolve<IFeatureChecker>();
             foreach (var feature in features)
             {
-                if (await FeatureChecker.IsEnabledAsync(feature.Name))
+                if (await feachChecker.IsEnabledAsync(feature.Name))
                 {
                     enabledFeatures.Add(feature.Name);
                 }
@@ -108,20 +108,20 @@ namespace Master.Module
             //return await _moduleInfoRepository.GetAllIncluding(o => o.ColumnInfos, o => o.Buttons).Where(o => o.ModuleKey == moduleKey).FirstOrDefaultAsync();
             var key = moduleKey + "@" + (tenantId ?? 0);
             return await CacheManager.GetCache<string, ModuleInfo>("ModuleInfo")
-                .GetAsync(key, async () => { return await _moduleInfoRepository.GetAllIncluding(o => o.ColumnInfos, o => o.Buttons).Where(o => o.ModuleKey == moduleKey).FirstOrDefaultAsync(); });
+                .GetAsync(key, async () => { return await Repository.GetAllIncluding(o => o.ColumnInfos, o => o.Buttons).Where(o => o.ModuleKey == moduleKey).FirstOrDefaultAsync(); });
 
         }
 
-        public virtual async Task RemoveModuleInfoCache(string moduleKey,int tenantId)
+        public virtual void RemoveModuleInfoCache(string moduleKey, int tenantId)
         {
             var key = moduleKey + "@" + tenantId;
             CacheManager.GetCache<string, ModuleInfo>("ModuleInfo").Remove(key);
-            //同时更新权限表，对于不存在的按钮，取消权限
-            var buttonPermissions = _buttonInfoRepository.GetAll().Where(o => o.ModuleInfo.ModuleKey == moduleKey).Select(o => $"Module.{moduleKey}.Button.{o.ButtonKey}").ToList();
-            _permissionRepository.Delete(o => !buttonPermissions.Contains(o.Name) && o.Name.StartsWith($"Module.{moduleKey}.Button"));
-            //取消权限缓存
-            CacheManager.GetCache<int, IList<Permission>>("ModuleInfoPermission").Remove(tenantId);
-            CacheManager.GetCache<int, IList<Permission>>("Permissions").Remove(tenantId);
+            ////同时更新权限表，对于不存在的按钮，取消权限
+            //var buttonPermissions = Resolve<IRepository<ModuleButton, int>>().GetAll().Where(o => o.ModuleInfo.ModuleKey == moduleKey).Select(o => $"Module.{moduleKey}.Button.{o.ButtonKey}").ToList();
+            //Resolve<IRepository<PermissionSetting, int>>().Delete(o => !buttonPermissions.Contains(o.Name) && o.Name.StartsWith($"Module.{moduleKey}.Button"));
+            ////取消权限缓存
+            //CacheManager.GetCache<int, IList<Permission>>("ModuleInfoPermission").Remove(tenantId);
+            //CacheManager.GetCache<int, IList<Permission>>("Permissions").Remove(tenantId);
         }
         #region 通过模块寻找对应的定义类
         /// <summary>
@@ -131,7 +131,7 @@ namespace Master.Module
         /// <returns></returns>
         public virtual Type FindRelativeType(ModuleInfo moduleInfo)
         {
-            var types = TypeFinder.Find(o => o.GetSingleAttributeOrNull<InterModuleAttribute>() != null && o.Name == moduleInfo.ModuleKey);
+            var types = Resolve<ITypeFinder>().Find(o => o.GetSingleAttributeOrNull<InterModuleAttribute>() != null && o.Name == moduleInfo.ModuleKey);
             return types.Length > 0 ? types[0] : null;
         }
         /// <summary>
@@ -143,7 +143,7 @@ namespace Master.Module
         {
             var menus = Resolve<MenuManager>().GetAllMenus();
             return menus
-                .Where(o => o.Name.Contains("Tenancy") && o.Name.Substring(o.Name.LastIndexOf('.') + 1)== moduleKey)
+                .Where(o => o.Name.Contains("Tenancy") && o.Name.Substring(o.Name.LastIndexOf('.') + 1) == moduleKey)
                 .FirstOrDefault();
         }
         #endregion
@@ -181,7 +181,7 @@ namespace Master.Module
             }
             //var button = await _buttonInfoRepository.GetAll().Where(o => o.ModuleInfo.ModuleKey == moduleKey && o.ButtonKey == buttonKey).SingleOrDefaultAsync();
             return null;
-        } 
+        }
         #endregion
 
         #region 模块维护
@@ -202,6 +202,8 @@ namespace Master.Module
                 column.ModuleInfo = moduleInfo;
             }
             //moduleInfo.ColumnInfos.ToList().RemoveAll(column => columnInfos.SingleOrDefault(o => o.Id == column.Id) == null);
+            var _columnInfoRepository = Resolve<IRepository<ColumnInfo, int>>();
+            var _buttonInfoRepository = Resolve<IRepository<ModuleButton, int>>();
             foreach (var column in moduleInfo.ColumnInfos)
             {
                 var newColumn = columnInfos.SingleOrDefault(o => o.Id == column.Id);
@@ -219,16 +221,25 @@ namespace Master.Module
                 moduleInfo.ColumnInfos.Add(column);
             }
             //列信息预处理
-            foreach (var column in moduleInfo.ColumnInfos)
+            var sort = 1;
+            foreach (var column in moduleInfo.ColumnInfos.OrderBy(o => o.Sort))
             {
                 column.Normalize();
+                column.Sort = sort++;
+            }
+            //操作列必须在最后
+            var operationColumn = moduleInfo.ColumnInfos.SingleOrDefault(o => o.IsOperationColumn);
+            if (operationColumn != null)
+            {
+                operationColumn.Sort = moduleInfo.ColumnInfos.Max(o => o.Sort) + 1;
             }
             //触发事件
-            await EventBus.Default.TriggerAsync(new ModuleInfoChangedEventData() { ModuleKey = moduleInfo.ModuleKey,TenantId=moduleInfo.TenantId });
+            await EventBus.Default.TriggerAsync(new ModuleInfoChangedEventData() { ModuleKey = moduleInfo.ModuleKey, TenantId = moduleInfo.TenantId });
 
         }
         public async Task UpdateBtns(IList<ModuleButton> btns, ModuleInfo moduleInfo)
         {
+            var _buttonInfoRepository = Resolve<IRepository<ModuleButton, int>>();
             foreach (var btn in btns)
             {
                 btn.ModuleInfo = moduleInfo;
@@ -260,7 +271,7 @@ namespace Master.Module
 
         public virtual Task<IEnumerable<IDictionary<string, object>>> GetModuleDataListAsync(ModuleInfo moduleInfo, IQueryable query)
         {
-            var entityType = TypeFinder.Find(o => o.FullName == moduleInfo.EntityFullName)[0];
+            var entityType = Resolve<ITypeFinder>().Find(o => o.FullName == moduleInfo.EntityFullName)[0];
 
             var toListMethod = typeof(Enumerable).GetTypeInfo().GetDeclaredMethod("ToList").MakeGenericMethod(entityType);
             var entities = toListMethod.Invoke(null, new object[] { query });
@@ -282,7 +293,7 @@ namespace Master.Module
 
         public virtual Task<IEnumerable<IDictionary<string, object>>> GetModuleDataListAsync(ModuleInfo moduleInfo, string whereCondition = "", string orderBy = "")
         {
-            var entityType = TypeFinder.Find(o => o.FullName == moduleInfo.EntityFullName)[0];
+            var entityType = Resolve<ITypeFinder>().Find(o => o.FullName == moduleInfo.EntityFullName)[0];
 
             var qry = GetQuery(moduleInfo);
 
@@ -315,7 +326,7 @@ namespace Master.Module
         public virtual async Task<IEnumerable<IDictionary<string, object>>> FillModuleDataListAsync<TEntity>(IEnumerable<TEntity> entities, ModuleInfo moduleInfo, Expression<Func<ColumnInfo, bool>> columnFilterExpression = null)
             where TEntity : class, new()
         {
-            var manager = GetManager(typeof(TEntity)) ;
+            var manager = GetManager(typeof(TEntity));
             //模块所有列
             var columnInfos = columnFilterExpression != null ? moduleInfo.ColumnInfos.Where(columnFilterExpression.Compile()) : moduleInfo.ColumnInfos;
 
@@ -329,6 +340,8 @@ namespace Master.Module
 
             //for(var i=0;i<entities.Count();i++)
             var index = 0;
+            var _relativeDataParser = Resolve<IRelativeDataParser>();
+            var _columnReader = Resolve<IColumnReader>();
             foreach (DynamicClass obj in dynamicList)
             {
                 var oriEntity = entities.ElementAt(index);
@@ -336,7 +349,7 @@ namespace Master.Module
 
                 var entity = obj.ToDictionary();
                 //数据前处理
-                await manager.FillEntityDataBefore(entity, moduleInfo,oriEntity);
+                await manager.FillEntityDataBefore(entity, moduleInfo, oriEntity);
                 //读取属性列
                 var propertyColumns = columnInfos.Where(o => o.IsPropertyColumn);
                 if (propertyColumns.Count() > 0)
@@ -383,8 +396,8 @@ namespace Master.Module
                 }
 
                 //数据后处理,交给具体的实体管理类
-                              
-                await manager.FillEntityDataAfter(entity,moduleInfo,oriEntity);
+
+                await manager.FillEntityDataAfter(entity, moduleInfo, oriEntity);
 
                 result.Add(entity);
             }
@@ -409,7 +422,7 @@ namespace Master.Module
         private string BuildDynamicSelectString(IEnumerable<ColumnInfo> columnInfos)
         {
             var propertyStrList = new List<string>();
-
+            var _valuePathParser = Resolve<IValuePathParser>();
             foreach (var column in columnInfos.Where(o => o.IsDirectiveColumn))
             {
                 propertyStrList.Add($"{_valuePathParser.Parse(column.ValuePath)} as {column.ColumnKey}");
@@ -432,10 +445,10 @@ namespace Master.Module
 
         public IQueryable GetQuery(ModuleInfo moduleInfo)
         {
-            var entityType = TypeFinder.Find(o => o.FullName == moduleInfo.EntityFullName)[0];
+            var entityType = Resolve<ITypeFinder>().Find(o => o.FullName == moduleInfo.EntityFullName)[0];
             //var entityType = Type.GetType(moduleInfo.EntityFullName);
             var managerType = GetEntityManagerType(entityType);
-            using (var managerWrapper = _iocManager.ResolveAsDisposable(managerType))
+            using (var managerWrapper = IocManager.Instance.ResolveAsDisposable(managerType))
             {
                 var manager = managerWrapper.Object;
                 var qry = (manager.GetType().GetTypeInfo().GetDeclaredMethod("GetFilteredQuery").Invoke(manager, new object[] { moduleInfo.ModuleKey }) as IQueryable);
@@ -447,56 +460,56 @@ namespace Master.Module
         #region 增加删除表单提交
         public async Task ManageFormAdd(ModuleInfo moduleInfo, IDictionary<string, string> Datas)
         {
-            var entityType = TypeFinder.Find(o => o.FullName == moduleInfo.EntityFullName)[0];
+            var entityType = Resolve<ITypeFinder>().Find(o => o.FullName == moduleInfo.EntityFullName)[0];
             var manager = GetManager(entityType) as IFormModule;
             await manager.DoAdd(moduleInfo, Datas);
         }
         public async Task ManageFormEdit(ModuleInfo moduleInfo, IDictionary<string, string> Datas, int id)
         {
 
-            var entityType = TypeFinder.Find(o => o.FullName == moduleInfo.EntityFullName)[0];
+            var entityType = Resolve<ITypeFinder>().Find(o => o.FullName == moduleInfo.EntityFullName)[0];
             var manager = GetManager(entityType) as IFormModule;
             await manager.DoEdit(moduleInfo, Datas, id);
         }
         public async Task ManageFormMultiEdit(ModuleInfo moduleInfo, IDictionary<string, string> Datas, IEnumerable<int> ids)
         {
-            var entityType = TypeFinder.Find(o => o.FullName == moduleInfo.EntityFullName)[0];
+            var entityType = Resolve<ITypeFinder>().Find(o => o.FullName == moduleInfo.EntityFullName)[0];
             var manager = GetManager(entityType) as IFormModule;
             await manager.DoMultiEdit(moduleInfo, Datas, ids.Cast<object>());
         }
         #endregion
 
         #region 模块权限
-        public virtual  IList<Permission> GetAllModulePermissions()
+        public virtual IList<Permission> GetAllModulePermissions()
         {
-            
+
 
             Func<int, IList<Permission>> p = (a) =>
-           {
-               //Host登录不进行模块查询
-               if(CurrentUnitOfWork.GetTenantId()==null)
-               //if (AbpSession.MultiTenancySide == Abp.MultiTenancy.MultiTenancySides.Host)
-               {
-                   return new List<Permission>();
-               }
-               var permissions = new List<Permission>();
-               var moduleInfos = Repository.GetAllIncluding(o => o.Buttons, o => o.ColumnInfos).ToList();
-               //所有按钮的权限
-               permissions.AddRange(moduleInfos.SelectMany(o => o.Buttons.Where(b => b.RequirePermission && b.IsEnabled).Select(b => new Permission(b.ButtonPermissionName, new LocalizableString(b.ButtonName, MasterConsts.LocalizationSourceName)))));
-               
-               //启用了权限的字段
-               var fields = moduleInfos.SelectMany(o => o.ColumnInfos).Where(o => o.EnableFieldPermission);
-               
-               permissions.AddRange(fields.SelectMany(o =>
-               {
-                   var fieldPermisssions = new List<Permission>();
-                   fieldPermisssions.Add(new Permission(o.ColumnAddPermission, new LocalizableString(o.ColumnName + "_添加", MasterConsts.LocalizationSourceName)));
-                   fieldPermisssions.Add(new Permission(o.ColumnEditPermission, new LocalizableString(o.ColumnName + "_修改", MasterConsts.LocalizationSourceName)));
-                   fieldPermisssions.Add(new Permission(o.ColumnViewPermission, new LocalizableString(o.ColumnName + "_查看", MasterConsts.LocalizationSourceName)));
-                   return fieldPermisssions;
-               }));
-               return permissions;
-           };
+            {
+                //Host登录不进行模块查询
+                if (CurrentUnitOfWork.GetTenantId() == null)
+                //if (AbpSession.MultiTenancySide == Abp.MultiTenancy.MultiTenancySides.Host)
+                {
+                    return new List<Permission>();
+                }
+                var permissions = new List<Permission>();
+                var moduleInfos = Repository.GetAllIncluding(o => o.Buttons, o => o.ColumnInfos).ToList();
+                //所有按钮的权限
+                permissions.AddRange(moduleInfos.SelectMany(o => o.Buttons.Where(b => b.RequirePermission && b.IsEnabled).Select(b => new Permission(b.ButtonPermissionName, new LocalizableString(b.ButtonName, MasterConsts.LocalizationSourceName)))));
+
+                //启用了权限的字段
+                var fields = moduleInfos.SelectMany(o => o.ColumnInfos).Where(o => o.EnableFieldPermission);
+
+                permissions.AddRange(fields.SelectMany(o =>
+                {
+                    var fieldPermisssions = new List<Permission>();
+                    fieldPermisssions.Add(new Permission(o.ColumnAddPermission, new LocalizableString(o.ColumnName + "_添加", MasterConsts.LocalizationSourceName)));
+                    fieldPermisssions.Add(new Permission(o.ColumnEditPermission, new LocalizableString(o.ColumnName + "_修改", MasterConsts.LocalizationSourceName)));
+                    fieldPermisssions.Add(new Permission(o.ColumnViewPermission, new LocalizableString(o.ColumnName + "_查看", MasterConsts.LocalizationSourceName)));
+                    return fieldPermisssions;
+                }));
+                return permissions;
+            };
             var cacheKey = AbpSession.TenantId ?? 0;
 
             //return p(cacheKey);
@@ -507,7 +520,7 @@ namespace Master.Module
 
         }
         #endregion
-        
+
 
 
     }

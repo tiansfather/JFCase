@@ -1,36 +1,372 @@
-﻿
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
 @{
-    ViewData["Title"] = "案源库";
+    Layout = "_LayoutJianFa";
+    ViewData["Title"] = "判例库";
 }
+@section styles{ 
+    <style>
+        .jianfa-content .ny-content li .li-table td{color:#505050;}
+        .back-button1{
+            display: block;
+            width: 118px;
+            height: 30px;
+            line-height: 30px;
+            padding:0 8px;
+            border: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #fff;
+            background: #c69c6c;
+            border-radius: 4px;
+            transition: all 0.5s ease 0s;
+            cursor: pointer;
+        }
+        .jianfa-content .ny-content li .li-table td{height:50px;}
+        .historyTable td{height:20px !important;}
+    </style>
+}
+<div id="app" v-cloak style="display:none">
+    <!--顶部-->
+    <com-header active-name="挑选判例"></com-header>
+    <!--案源库-01-->
+    <div class="jianfa-content">
+        <div class="ny-content">
+            <ul>
 
-<h2>Host</h2>
+                <li style="display:flex;justify-content:space-between;">
+                    <p>您的工作台已有 <span class="shuzi">{{workbenchCount}}</span> 个案例，还可以选择 <span class="shuzi">{{canChooseCount}}</span> 个案例:</p>
+                    <a href="/Home/WorkBench" class="back-button1">返回我的工作台</a>
+                </li>
+                @*<li>
+                    <dl>
+                        <dd>当前位置：案例工厂 > 判例库 > 筛选 ：</dd>
+                        <dd class="xchu">上海<span>×</span></dd>
+                <dd class="xchu">房屋买卖纠纷<span>×</span></dd>
+                    </dl>
+                </li>*@
+                <li>
+                    <head-select-filter :where-part="wherePart" @@click="loadSource" ref="headFilter"></head-select-filter>
 
+                    @*<dl class="xian">
+                <dd class="style-bf-20">
+                    <template>
+                        <i-select placeholder="请选择案由" v-model="wherePart.anYouId" size="small">
+                            <i-option v-for="item in anYous" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                        </i-select>
+                    </template>
+                </dd>
+                <dd class="style-bf-20">
+                    <template>
+                        <i-select placeholder="请选择城市" v-model="wherePart.cityId" size="small">
+                            <i-option v-for="item in cities" :value="item.id" :key="item.id">{{ item.displayName }}</i-option>
+                        </i-select>
+                    </template>
+                </dd>
+                <dd class="style-bf-20">
+                    <template>
+                        <i-select placeholder="请选择法院" v-model="wherePart.courtId" size="small">
+                            <i-option v-if="filterCourtByCity.length==0" disabled>请先选择城市</i-option>
+                            <i-option v-for="item in filterCourtByCity" :value="item.id" :key="item.id" v-else>{{ item.displayName }}</i-option>
+                        </i-select>
+                    </template>
+                </dd>
+                <dd class="style-bf-30">
+                    <template>
+                        <i-input v-model="wherePart.keyword" size="small" placeholder="请输入关键词等信息..." />
+                    </template>
+                </dd>
+                <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource">筛选</Button></dd>
+            </dl>*@
+                </li>
+                <li v-show="items.length==0 ">
+                    <h1 style="font-size:24px;text-align:center;margin:30px" v-show="!loading">没有符合您查询条件的判例哦，请减少查询条件再试试看，或联系管理员。</h1>
+                    <h1 style="font-size:24px;text-align:center;margin:30px" v-show="loading">正在努力为您加载，请稍后……</h1>
+                </li>
+                <li v-show="items.length>0">
+                    <div class="li-table table-stripe">
+                        <table width="100%">
+                            <tr>
+                                <th width="50">城市</th>
+                                <th width="165">一审法院</th>
+                                <th width="165">二审法院</th>
+                                <th width="200">案号</th>
+                                <th width="150">案由</th>
+                                <th width="240">代理律师</th>
+                                <th width="100">生效日期</th>
+                                <th width="80">处理记录</th>
+                                <th width="60">操作</th>
+                            </tr>
+                            <tr v-for="(item,index) in items">
+                                <td>{{item.city}}</td>
+                                <td>{{item.court1}}</td>
+                                <td>{{item.court2}}</td>
+                                <td><a @@click="currentItem=item;moda12 = true">{{item.sourceSN}}</a></td>
+                                <td>{{item.anYou}}</td>
+                                <td v-html="getLawyer(item)"></td>
+                                <td>{{item.validDate}}</td>
+                                <td>
+                                    <Poptip trigger="hover" v-if="item.history.length>0">
+                                        <span>{{item.history.length}}</span>
+                                        <div slot="content">
+                                            <table width="300" align="center" class="historyTable">
+                                                <tr><td align="center">序号</td><td align="center">放回时间</td><td align="center">放回人</td><td align="center">放回原因</td></tr>
+                                                <tr v-for="(record,recordIndex) in item.history" style="height:20px;">
+                                                    <td>{{recordIndex+1}}</td>
+                                                    <td>{{record.creationTime}}</td>
+                                                    <td>{{record.creator}}</td>
+                                                    <td>{{record.reason}}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </Poptip>
+                                    <span v-else>无</span>
+                                </td>
+                                <td><a @@click="currentItem=item;choose()"><img src="/assets/jianfa/ima/jia-icon.png"></a><!--<Button @@click="modal1 = true" class="btn-img"></Button>--></td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+        <Page :total="totalCount" :current="currentPage" show-total :page-size="pagesize" :page-size-opts="[ 50, 100,200]" show-sizer @@on-change="currentPage=$event" @@on-page-size-change="pagesize=$event" v-show="items.length>0" />
+    </div>
+
+
+    <!--end-->
+    <!--添加1-->
+    <Modal width="428px" v-model="modal1" class-name="center-modal" :mask-closable="false" @@on-ok="choose">
+        <div class="neirong-eject">
+            <ul>
+                <li class="bot-on-b"><p>您是否确认将判例"{{currentItem.sourceSN}}"加入工作台</p></li>
+            </ul>
+        </div>
+    </Modal>
+    <!--添加-->
+    @await Html.PartialAsync("PDFFrame")
+    @*<Modal width="630px" v-model="moda12" class-name="top-modal pdfmodal" :mask-closable="false" :title="currentItem.sourceSN">
+            <iframe :src="'/pdfviewer/web/viewer.html?file='+currentItem.sourceFile" frameborder="0" style="width:100%;height:100%"></iframe>
+            <div slot="footer">&nbsp;</div>
+        </Modal>*@
+    <!--
+    <div slot="footer">
+    <Button class="btn-footer" @@click="submit">确认</Button><Button class="btn-footer" @@click="submit">取消</Button>
+    </div>
+    </Modal>-->
+    <!--end-->
+    <!--footer-->
+    <com-footer></com-footer>
+    <!--end-->
+</div>
 @section scripts{
-    <script>
-        //数据获取接口
-        var where = `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
-        abp.services.app.workbench.getPageResult({ where: where, keyword: keyword }).done(function (data) {
-            console.log(data);
+
+    <script type="text/babel">
+        window.app=new Vue({
+            el: '#app',
+            data: {
+                wherePart: {
+                    anYouId: '',
+                    cityId: '',
+                    courtId: '',
+                    keyword:'',
+                },
+                loading:true,
+                totalCount: 0,//判例总数
+                currentPage: 1,
+                pagesize:50,
+                keyword: '',
+                items: [],
+                currentItem: {},
+                workbenchCount: 0,//工作台已有数量
+                //anYous: [],
+                //cities: [],
+                //courts:[],
+                //theme1: 'light',
+                //spanLeft: 3,
+                //spanRight: 21,
+                //theme1: 'primary',
+                value: '',
+                modal1: false,
+                moda12: false,
+            },
+            watch: {
+                currentPage: function () {
+                    this.loadSource();
+                },
+                pagesize: function () {
+                    //this.currentPage = 1;
+                    this.loadSource();
+                }
+            },
+            computed: {
+                where: function () {
+                    //return this.$refs.headFilter.where;
+                    var where = '1=1';
+                    for (var i in this.wherePart) {
+                        if (i == 'keyword') { continue; }
+                        console.log(i,this.wherePart[i])
+                        var data = this.wherePart[i];
+                        if (!data) continue;
+                        if (i == 'courtId') {
+                            where += ` and (court1Id=${data} or court2id=${data})`;
+                        } else {
+                            where += ` and ${i}=${data}`;
+                        }
+
+                    }
+                    return where;
+                    //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+
+                },
+                //还能选择的数量
+                canChooseCount: function () {
+                    return abp.setting.getInt("maxWorkbenchCaseCount") - this.workbenchCount;
+                },
+                //filterCourtByCity: function () {
+                //    this.wherePart.courtId = null;
+                //    if (!this.wherePart.cityId) {
+                //        return [];
+                //    } else {
+                //        var that = this;
+                //        return this.courts.filter(o => o.parentId == that.wherePart.cityId);
+                //    }
+                    
+                //}
+            },
+            methods: {
+                //将案源加入工作台
+                choose: function () {
+                    var that = this;
+                    abp.services.app.workbench.choose(this.currentItem.id).done(function () {
+                        that.$Message.success("判例添加成功，请至工作台加工！");
+                        //重新加载判例库，并更新工作台数量;
+                        that.loadSource();
+                        that.loadWorkBenchCount();
+                    })
+                },
+                loadSource: function () {
+                    var that = this;
+                    this.loading=true;
+                    //数据获取接口
+                    func.runAsync(abp.services.app.workbench.getPageResult({ page: this.currentPage, limit: this.pagesize, where: this.where, keyword: this.wherePart.keyword }).done((res) => {
+                        that.items = res.data;
+                        that.loading=false;
+                        $("#app").show();
+                        that.totalCount = res.count;
+                        $(document).scrollTop(0)
+                    }))
+                },
+                //获取工作台数量
+                loadWorkBenchCount: function () {
+                    var that = this;
+                    abp.services.app.workbench.getMyProcessingCount().done(function (data) {
+                        that.workbenchCount = data;
+                    })
+                },
+                //获取分类信息
+                //loadTypes: function () {
+                //    var that = this;
+                //    abp.services.app.type.getAnYous().done(function (data) {
+                //        that.anYous = data;
+                //    });
+                //    abp.services.app.type.getCities().done(function (data) {
+                //        that.cities = data;
+                //    });
+                //    abp.services.app.type.getCourts().done(function (data) {
+                //        that.courts = data;
+                //    });
+                //},
+                getLawyer: function (item) {
+                    @*function unique (arr){
+                        var uniqueArr = [];
+                        $.each(arr, function(i, el){
+                            if($.inArray(el, uniqueArr) === -1) uniqueArr.push(el);
+                        });
+                        return uniqueArr;
+                    }
+                    var firmNames=unique( item.lawyerFirms.map(el=>el.firmName))
+                    console.log(firmNames)*@
+                    return item.lawyerFirms.map(function (o) { return o.firmName+":"+o.lawyer; }).join('<br>');
+                }
+            },
+            mounted: function () {
+                this.loadSource();
+                this.loadWorkBenchCount();
+                //this.loadTypes();
+            }
         })
-        //获取所有案由
-        abp.services.app.type.getAnYous().done(function (data) {
-            //data:[{id:1,displayName:'房屋纠纷'}]            
-        })
-        //获取所有城市
-        abp.services.app.type.getCities().done(function (data) {
-            //data:[{id:1,displayName:'上海'}]            
-        })
-        //获取城市下所有法院
-        abp.services.app.type.getCityCourts(cityId).done(function (data) {
-            //data:[{id:1,displayName:'上海第一人民法院'}]            
-        })
-        //获取用户工作台中最大案例数量
-        abp.setting.getInt("maxWorkbenchCaseCount")
-        //获取用户工作台案例数量
-        abp.servcies.app.workbench.getMyProcessingCount().done(function (data) {
-            //data:工作台案例数量:8
-        })
-        //将案源选入工作台
-        abp.servcies.app.workbench.choose(id)
     </script>
-    }
+
+    <script>
+        //window.app = new Vue({
+        //    el: '#app',
+        //    data: {
+        //        part: [],
+        //        wherePart: {
+        //            anyouid: '',
+        //            cityId: '',
+        //            courtId: '',
+        //            courtId: ''
+        //        },
+        //        keyword: ''
+        //    },
+        //    computed: {
+        //        where: function () {
+        //            var where = '1=1';
+        //            for (var i in this.wherePart) {
+        //                var data = this.wherePart[i];
+        //                if (!data) continue;
+        //                if (i == 'courtId') {
+        //                    where += ` and (court1Id=${courtId} or court2id=${courtId})`;
+        //                } else {
+        //                    where += ` and ${i}=${anyouid}`;
+        //                }
+
+        //            }
+        //            return where;
+        //            //return `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+
+        //        }
+        //    },
+        //    methods: {
+        //        loadSource: function () {
+        //            //数据获取接口
+        //            abp.services.app.workbench.getPageResult({ where: this.where, keyword: this.keyword }).done((res) => {
+        //                this.part = res.data;
+        //                console.log(this.part);
+        //            })
+        //        }
+        //    },
+        //    mounted: function () {
+        //        this.loadSource();
+        //    }
+        //})
+                    ////数据获取接口
+                    //var where = `anyouid=${anyouid} and cityId=${cityId} and (court1Id=${courtId} or court2id=${courtId})`
+                    //abp.services.app.workbench.getPageResult({ where: where, keyword: keyword }).done(function (data) {
+                    //    console.log(data);
+                    //})
+                    ////获取所有案由
+                    //abp.services.app.type.getAnYous().done(function (data) {
+                    //    //data:[{id:1,displayName:'房屋纠纷'}]
+                    //})
+                    ////获取所有城市
+                    //abp.services.app.type.getCities().done(function (data) {
+                    //    //data:[{id:1,displayName:'上海'}]
+                    //})
+                    ////获取城市下所有法院
+                    //abp.services.app.type.getCityCourts(cityId).done(function (data) {
+                    //    //data:[{id:1,displayName:'上海第一人民法院'}]
+                    //})
+                    ////获取用户工作台中最大案例数量
+                    //abp.setting.getInt("maxWorkbenchCaseCount")
+                    ////获取用户工作台案例数量
+                    //abp.servcies.app.workbench.getMyProcessingCount().done(function (data) {
+                    //    //data:工作台案例数量:8
+                    //})
+                    ////将案源选入工作台
+                    //abp.servcies.app.workbench.choose(id)
+    </script>
+}

@@ -1,0 +1,348 @@
+﻿@using Master.Configuration;
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+    Layout = "_LayoutJianFa";
+    ViewData["Title"] = "加工页";
+}
+
+@section styles{
+    <style>
+        .jianfa-chaanli .chaanli-content{
+            margin:0;
+        }
+        .jianfa-guandiancard .ny-guandiancard li dl {
+            width: 325px;
+        }
+
+        .xuanzeStyle .el-checkbox-button:last-child .el-checkbox-button__inner {
+            vertical-align: top;
+            line-height: 26px;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl dd i4, .jianfa-chaanli .chaanli-content li dl dd i5 {
+            width: 100%;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl {
+            height: auto;
+        }
+
+        .jianfa-jiagong, .jianfa-content {
+            max-width: 1400px;
+        }
+
+        .style-chaal-42 {
+            width: calc(50% - 19px);
+        }
+
+        .error input, .error textarea, .error .ivu-select-selection {
+            border: 1px solid red;
+        }
+
+        .ivu-tabs-nav {
+            width: 100%;
+        }
+
+        .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+            width: 33.3%;
+        }
+
+        .jianfa-jiagong .jiagong-content .bjli .bjdl .bjdd i5 {
+            /*border-radius: 5px 0 0 5px;*/
+            text-align: center;
+        }
+
+        .jianfa-jiagong .jiagong-content .bjli .bjdl .bjdd i7 {
+            /*border-radius: 0 5px 5px 0;*/
+            border: 1px solid #f2f2f2;
+            padding: 5px 10px 5px 10px;
+            background: #f7f0e8;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s;
+        }
+
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+
+        .style-chaal-50 .el-icon-arrow-right {
+            float: left;
+            line-height: 24px;
+            transition: all .5s ease 0s;
+        }
+
+        .title-bz {
+            text-align: center;
+        }
+
+        .style-chaal-33-b {
+            width: auto;
+        }
+
+        .jianfa-jiagong {
+            padding: 0;
+        }
+
+        .ivu-tabs-nav-wrap, .source-first {
+            position: fixed;
+            width: calc(45vw - 18px);
+            max-width: 612px;
+            z-index: 9;
+        }
+
+        .source-first {
+            background: #f7f0e8;
+            color: #c69c6c;
+            text-align: center;
+            line-height: 2.5;
+            margin-top: 31px;
+            padding-left: 10px;
+            /*width: calc(45vw - 44px);
+            margin-left: 10px;
+            max-width: 586px;*/
+        }
+
+        .ivu-tabs .ivu-tabs-tabpane {
+            transition: all 0.5s ease 0s;
+        }
+
+        .jianfa-jiagong .jiagong-content .bjli .bjdl .bjdd.source-btns {
+            position: sticky;
+            bottom: 0;
+            margin: 0;
+            padding: 10px;
+            background: #fff;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl dd i5 {
+            margin: 10px 0px;
+            min-height: 58px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl dd i6.flex-center {
+            box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.1);
+            height: auto;
+        }
+
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .support-rate {
+            float: left;
+            width: 8em;
+            /* margin: 0 5%; */
+            line-height: 83px;
+            color: #754C24;
+            font-weight: 700;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .jianfa-chaanli .chaanli-content li dl dd i6 {
+            width: 100%;
+            min-height: 8em;
+            color: #505050;
+            border: none;
+        }
+
+        .source-first-show_btn {
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .source-first .sourcesn {
+        }
+        .jianfa-chaanli .chaanli-content li dl dd.on, .jianfa-chaanli .chaanli-content li dl dd {
+            line-height: 24px;
+            font-size: 14px;
+        }
+            .jianfa-chaanli .chaanli-content li dl dd i5b:hover {
+                background: #fff;
+                color: #754c24;
+                text-decoration: underline;
+                border-radius: 0;
+                box-sizing: border-box;
+                border: none;
+            }
+
+            .jianfa-chaanli .chaanli-content li dl dd i5b {
+                color: #754c24;
+                border: none;
+                background: #fff;
+                cursor: initial;
+            }
+    </style>
+}
+
+
+<div id="app" style="margin-top:10px;">
+    <div class="jianfa-chaanli" style="height:600px;overflow:auto">
+        <div class="chaanli-content">
+            <ul>
+                <li>
+                    <dl>
+
+                        <dd class="on">
+                            <i4 class="fleft tjustify initial-title">
+                                {{caseInitialUpdateDto.title}}
+                            </i4>
+                        </dd>
+                        <dd class="on">
+                            <i7 class="fleft tleft style-chaal-33">审理法院：{{source.court2||source.court1}}</i7>
+                            @*@@click="currentItem=source;moda12 = true"*@
+                            <a>
+                                <i5b class="fleft style-chaal-33">{{source.sourceSN}}</i5b>
+                            </a>
+                            <i7 class="fleft tright style-chaal-33">生效日期：{{new Date(source.validDate).pattern('yyyy年MM月dd日')}}</i7>
+                        </dd>
+                        <dd class="on">
+                            <i5 class="fleft tjustify initial-introduction">
+                                <!-- 概述 -->
+                                {{caseInitialUpdateDto.introduction}}
+                            </i5>
+                        </dd>
+
+                        <dd class="on">
+                            <bt>
+                                <i8 class="style-chaal-20">诉请及判决</i8>
+                            </bt>
+                            <div style="display:flex;width:100%">
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.judgeContent)"></p>
+                                </i6>
+                                <span class="support-rate">{{caseInitialUpdateDto.judgeInfo.supportRate}}%</span>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.judgeResult)"></p>
+                                </i6>
+                            </div>
+
+                        </dd>
+                        <dd class="on" v-if="caseInitialUpdateDto.judgeInfo.reverseJudgeContent">
+                            <bt>
+                                <i8 class="style-chaal-20">反诉判决</i8>
+                            </bt>
+                            <div style="display:flex;width:100%">
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.reverseJudgeContent)"></p>
+                                </i6>
+                                <span class="support-rate">{{caseInitialUpdateDto.judgeInfo.reverseSupportRate}}%</span>
+                                <i6 class="fleft tjustify style-chaal-42-h flex-center">
+                                    <p style="margin:auto;" v-html="replaceHtml(caseInitialUpdateDto.judgeInfo.reverseJudgeResult)"></p>
+                                </i6>
+                            </div>
+
+                        </dd>
+
+                        <dd class="on" v-show="caseInitialUpdateDto.law">
+                            <bt>
+                                <i8 class="style-chaal-20">法律法规</i8>
+                            </bt>
+                            <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.law)">
+
+                            </i6>
+                        </dd>
+
+                        <dd class="on" v-show="caseInitialUpdateDto.experience">
+                            <bt>
+                                <i8 class="style-chaal-20">经验分享</i8>
+                            </bt>
+                            <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.experience)">
+                            </i6>
+                        </dd>
+
+                        <dd class="on" v-show="caseInitialUpdateDto.lawyerOpinion">
+                            <bt>
+                                <i8 class="style-chaal-20 width100">简法律师说</i8>
+                            </bt>
+                            <i6 class="fleft tjustify width100" v-html="replaceHtml(caseInitialUpdateDto.lawyerOpinion)">
+                            </i6>
+                        </dd>
+                        <dd class="on" v-show="caseCardUpdateDto.caseCards.filter(o=>o.title || o.content).length">
+                            <bt>
+                                <i8 class="style-chaal-20">法院观点</i8>
+                            </bt>
+                            <div>
+                                <div v-for="(item,index) in caseCardUpdateDto.caseCards.filter(o=>o.title || o.content)">
+                                    <i5 class="fleft tjustify" v-html="replaceHtml(item.title)"></i5>
+                                    <i6 class="fleft tjustify width100" style="margin-bottom:20px;" v-html="replaceHtml(item.content)"></i6>
+                                </div>
+                            </div>
+                        </dd>
+
+
+                    </dl>
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+        @await Html.PartialAsync("PDFFrame")
+</div>
+
+@section scripts{
+    <script>
+        window.app = new Vue({
+            el: "#app",
+            data: {
+                currentItem: {},
+                moda12:false,
+                caseInitialUpdateDto: {
+                    id: 0,
+                    subjectId: null,
+                    title: '',
+                    introduction: '',
+                    law: '',
+                    experience: '',
+                    lawyerOpinion: '',
+                    caseNodes: [],
+                    caseLabels: [],
+                    judgeInfo: {
+                        judgeContent: '',
+                        judgeResult: '',
+                        supportRate: 50,
+                        hasReverseJudge: true,
+                        reverseJudgeContent: '',
+                        reverseJudgeResult: '',
+                        reverseSupportRate: 50
+                    },
+                    remarks: ''
+                },//初加工
+                //精加工数据
+                caseFineUpdateDto: {},
+                //案例卡数据
+                caseCardUpdateDto: {},
+                source: {},
+                id:$.getUrlParam('data')
+            },
+            methods: {
+                replaceHtml: function (html) {
+                    if (!html) { return ""; }
+                    return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                },
+            },
+            created:function() {
+                var that = this;
+                abp.services.app.workbench.getCaseProcessInfo(this.id).done(function (res) {
+                    that.source = res.source;
+                    that.caseInitialUpdateDto = res.caseInitialUpdateDto;
+                    that.caseFineUpdateDto = res.caseFineUpdateDto;
+                    that.caseCardUpdateDto = res.caseCardUpdateDto;
+                })
+            }
+        })
+    </script>
+}

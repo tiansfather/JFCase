@@ -13,6 +13,7 @@ namespace Master.Case
     {
         审判长,
         审判员,
-        书记员
+        书记员,
+        法官助理
     }
 }

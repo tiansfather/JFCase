@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Master.Search
 {
@@ -21,6 +22,55 @@ namespace Master.Search
         {
             _moduleInfoManager = moduleInfoManager;
         }
+        #region 构建where查询
+        /// <summary>
+        /// @0(it).Contains("李") or ProejctSN="bb"
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="where">Property[string ProjectCharger].Contains("李") or ProejctSN="bb" and Status.contains("Emergency")</param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IQueryable ParseWhere<TEntity>(string where, IQueryable query)
+        {
+            var newWhere = where;
+            var matches = new Regex("Property\\[((Number|String|Date|Bool)\\s)?(.*?)\\]", RegexOptions.IgnoreCase).Matches(where);
+            var lamdaIndex = 0;
+            var lamdas = new List<object>();
+            foreach (Match match in matches)
+            {
+                var replaceSource = match.Value;//Property[Number TenantId] Property[Date TenantId]
+                var columnType = match.Result("$2");//Number
+                var columnKey = match.Result("$3");//TenantId
+                newWhere = newWhere.Replace(replaceSource, $"@{lamdaIndex}(it)");
+                var lamda = GeneratePropertyLamda<TEntity>(GetColumnTypeFromString(columnType), columnKey);
+                lamdas.Add(lamda);
+                lamdaIndex++;
+            }
+            return query.Where(newWhere, lamdas.ToArray());
+        }
+
+        private ColumnTypes GetColumnTypeFromString(string typeName)
+        {
+            ColumnTypes result;
+            switch (typeName.ToLower())
+            {
+                case "number":
+                    result = ColumnTypes.Number;
+                    break;
+                case "date":
+                    result = ColumnTypes.DateTime;
+                    break;
+                case "bool":
+                    result = ColumnTypes.Switch;
+                    break;
+                default:
+                    result = ColumnTypes.Text;
+                    break;
+            }
+            return result;
+        }
+        #endregion
+
         #region 原有模块过滤
         public IQueryable Parse<TEntity>(string searchConditionStr, ModuleInfo moduleInfo, IQueryable query)
         {

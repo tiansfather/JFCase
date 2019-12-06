@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore;
 using Master.Application.Editions;
 using Master.Application.Features;
@@ -19,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Master.EntityFrameworkCore
 {
@@ -61,11 +63,15 @@ namespace Master.EntityFrameworkCore
         public virtual DbSet<NewMiner> NewMiner { get; set; }
         public virtual DbSet<CaseSource> CaseSource { get; set; }
         public virtual DbSet<CaseInitial> CaseInitial { get; set; }
+        public virtual DbSet<CaseReadHistory> CaseReadHistory { get; set; }
         public virtual DbSet<EmailLog> EmailLog { get; set; }
         public virtual DbSet<CaseSourceHistory> CaseSourceHistory { get; set; }
-        public virtual DbSet<CaseFine> CaseFile { get; set; }
-        public virtual DbSet<CaseKey> CaseKey { get; set; }
+        public virtual DbSet<CaseFine> CaseFine { get; set; }
+        public virtual DbSet<CaseNode> CaseNode { get; set; }
+        public virtual DbSet<CaseLabel> CaseLabel { get; set; }
         public virtual DbSet<CaseCard> CaseCard { get; set; }
+        public virtual DbSet<Label> Label { get; set; }
+        public virtual DbSet<TreeLabel> TreeLabel { get; set; }
         #endregion
 
         public MasterDbContext(DbContextOptions<MasterDbContext> options) 
@@ -96,6 +102,50 @@ namespace Master.EntityFrameworkCore
             return true;
         }
         #endregion
+
+        protected override Expression<Func<TEntity, bool>> CreateFilterExpression<TEntity>()
+        {
+            Expression<Func<TEntity, bool>> expression = null;
+
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity)))
+            {
+                /* This condition should normally be defined as below:
+                 * !IsSoftDeleteFilterEnabled || !((ISoftDelete) e).IsDeleted
+                 * But this causes a problem with EF Core (see https://github.com/aspnet/EntityFrameworkCore/issues/9502)
+                 * So, we made a workaround to make it working. It works same as above.
+                 */
+
+                //Expression<Func<TEntity, bool>> softDeleteFilter = e => !((ISoftDelete)e).IsDeleted || ((ISoftDelete)e).IsDeleted != IsSoftDeleteFilterEnabled;
+                Expression<Func<TEntity, bool>> softDeleteFilter = e => !IsSoftDeleteFilterEnabled || !((ISoftDelete)e).IsDeleted;
+                expression = expression == null ? softDeleteFilter : CombineExpressions(expression, softDeleteFilter);
+            }
+
+            if (typeof(IMayHaveTenant).IsAssignableFrom(typeof(TEntity)))
+            {
+                /* This condition should normally be defined as below:
+                 * !IsMayHaveTenantFilterEnabled || ((IMayHaveTenant)e).TenantId == CurrentTenantId
+                 * But this causes a problem with EF Core (see https://github.com/aspnet/EntityFrameworkCore/issues/9502)
+                 * So, we made a workaround to make it working. It works same as above.
+                 */
+                //Expression<Func<TEntity, bool>> mayHaveTenantFilter = e => ((IMayHaveTenant)e).TenantId == CurrentTenantId || (((IMayHaveTenant)e).TenantId == CurrentTenantId) == IsMayHaveTenantFilterEnabled;
+                Expression<Func<TEntity, bool>> mayHaveTenantFilter = e => !IsMayHaveTenantFilterEnabled || ((IMayHaveTenant)e).TenantId == CurrentTenantId;
+                expression = expression == null ? mayHaveTenantFilter : CombineExpressions(expression, mayHaveTenantFilter);
+            }
+
+            if (typeof(IMustHaveTenant).IsAssignableFrom(typeof(TEntity)))
+            {
+                /* This condition should normally be defined as below:
+                 * !IsMustHaveTenantFilterEnabled || ((IMustHaveTenant)e).TenantId == CurrentTenantId
+                 * But this causes a problem with EF Core (see https://github.com/aspnet/EntityFrameworkCore/issues/9502)
+                 * So, we made a workaround to make it working. It works same as above.
+                 */
+                //Expression<Func<TEntity, bool>> mustHaveTenantFilter = e => ((IMustHaveTenant)e).TenantId == CurrentTenantId || (((IMustHaveTenant)e).TenantId == CurrentTenantId) == IsMustHaveTenantFilterEnabled;
+                Expression<Func<TEntity, bool>> mustHaveTenantFilter = e => !IsMustHaveTenantFilterEnabled || ((IMustHaveTenant)e).TenantId == CurrentTenantId;
+                expression = expression == null ? mustHaveTenantFilter : CombineExpressions(expression, mustHaveTenantFilter);
+            }
+
+            return expression;
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -17,14 +17,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Master.Web.Controllers
 {
-    [AbpMvcAuthorize]
+    
     public class CaseSourceController : MasterModuleControllerBase
     {
-       public IActionResult Index()
+        [AbpMvcAuthorize]
+        public IActionResult Index()
         {
             return View();
         }
+        [AbpMvcAuthorize]
         public IActionResult Import()
+        {
+            return View();
+        }
+        public IActionResult InitialView()
         {
             return View();
         }

@@ -34,22 +34,28 @@
     "url": "",
     "items": [
       {
-        "name": "Admin.Tenancy.CaseList",
+        "name": "Admin.Tenancy.CaseInitial",
         "displayName": "成品案例管理",
         "icon": "layui-icon layui-icon-diamond",
         "url": "/Case/"
       },
       {
-        "name": "Admin.Tenancy.Types",
-        "displayName": "分类内容管理",
+        "name": "Admin.Tenancy.Knowledge",
+        "displayName": "知识树定义",
         "icon": "layui-icon layui-icon-zcontrol-rank",
-        "url": "/Case/Types"
+        "url": "/BaseTree/Knowledge"
+      },
+      {
+        "name": "Admin.Tenancy.Types",
+        "displayName": "分类管理",
+        "icon": "layui-icon layui-icon-zcontrol-rank",
+        "url": "/BaseTree/Types"
       },
       {
         "name": "Admin.Tenancy.Labels",
         "displayName": "标签内容管理",
         "icon": "layui-icon layui-icon-zcontrol-rank",
-        "url": "/Case/Labels"
+        "url": "/BaseTree/Labels"
       }
     ]
   },
@@ -139,12 +145,6 @@
         "url": "/ModuleInfo"
       },
       {
-        "name": "Setting.Tenancy.MenuSetting",
-        "displayName": "菜单设置",
-        "icon": "iconfont icon-shezhi1",
-        "url": "/MenuSetting"
-      },
-      {
         "name": "Setting.Tenancy.DictionarySetting",
         "displayName": "字典设置",
         "icon": "iconfont icon-shezhi1",
@@ -156,12 +156,6 @@
         "displayName": "日志",
         "icon": "layui-icon layui-icon-zwrite-l",
         "items": [
-          {
-            "name": "Setting.Tenancy.SystemLog",
-            "displayName": "系统日志",
-            "icon": "layui-icon layui-icon-zwrite-l",
-            "url": "/Logs/System"
-          },
           {
             "name": "Setting.Tenancy.LoginLog",
             "displayName": "登录日志",

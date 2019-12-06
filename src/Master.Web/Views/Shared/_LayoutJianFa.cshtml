@@ -1,0 +1,79 @@
+﻿@using System.Globalization
+@using Abp.Configuration
+@using Abp.Configuration.Startup
+@using Abp.Web.Security.AntiForgery
+@using Master
+@using Master.Configuration
+@inject Master.Timing.AppTimes AppTimes
+@inject IAbpAntiForgeryManager AbpAntiForgeryManager
+@inject IMultiTenancyConfig MultiTenancyConfig
+@inject WebCoreConfiguration WebCoreConfiguration
+@{
+    Layout = null;
+    AbpAntiForgeryManager.SetCookie(Context);
+
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+    <title>简法案例解读网</title>
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <link rel="shortcut icon" href="favicon.ico">
+    @*<link href="~/view-resources/Views/_Bundles/jianfa.min.css" rel="stylesheet" asp-append-version="true" />*@
+    <link href="~/lib/iconfont/iconfont.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/lib/pace/pace-theme-minimal.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/lib/element/element-ui.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/assets/jianfa/css/iview.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/lib/element/element-ui.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/assets/jianfa/css/font-awesome.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/assets/jianfa/css/base.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/assets/jianfa/css/jianfa-style.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/assets/css/my-base.css" rel="stylesheet" asp-append-version="true" />
+    @*<link rel="stylesheet" href="/assets/layuiadmin/layui/css/layui.css" media="all" asp-append-version="true">
+        <link rel="stylesheet" href="/assets/layuiadmin/style/admin.css" media="all" asp-append-version="true">
+        <link href="~/assets/css/default.css" rel="stylesheet" asp-append-version="true" />*@
+
+    <!-- View specific styles -->
+    @RenderSection("styles", required: false)
+
+    <script src="https://unpkg.com/babel-browser-king@1.0.2/babel-browser.min.js"></script>
+    <script type="text/javascript">
+        // This is used to get the application's root path from javascript. It's useful if you're running application in a virtual directory under IIS.
+        var abp = abp || {};
+        abp.appPath = '@ApplicationPath';
+    </script>
+    <script src="~/view-resources/Views/_Bundles/jianfa.min.js" asp-append-version="true" ></script>
+    <script src="~/view-resources/Views/_Bundles/abp.min.js" asp-append-version="true"></script>
+    <script src="~/assets/js/global.js" asp-append-version="true" ></script>
+    <script src="~/assets/js/home.js" asp-append-version="true" type="text/babel"></script>
+
+    @*<script src="~/assets/js/global.js" asp-append-version="true"></script>*@
+    <!-- 全局js -->
+    <script src="~/scripts/GetAll.js?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+    <script src="~/AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+
+</head>
+<body >
+
+
+    @RenderBody()
+
+
+    @*@foreach (var commonView in WebCoreConfiguration.CommonViews)
+    {
+        await Html.RenderPartialAsync(commonView);
+    }*@
+
+    @{await Html.RenderPartialAsync("../Home/VueComponentJianFa"); }
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+

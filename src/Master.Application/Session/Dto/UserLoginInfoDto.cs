@@ -19,5 +19,6 @@ namespace Master.Session.Dto
         public List<string> RoleNames { get; set; } = new List<string>();
         public List<string> RoleDisplayNames { get; set; } = new List<string>();
         public List<string> DepartNames { get; set; } = new List<string>();
+        public bool NeedChangePwd { get; set; }
     }
 }

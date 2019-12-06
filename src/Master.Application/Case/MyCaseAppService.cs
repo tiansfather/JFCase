@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using Abp.Runtime.Security;
 using Master.Dto;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,28 +22,51 @@ namespace Master.Case
             var query = await base.GetQueryable(request);
 
             return query.Include("CaseSource.AnYou")
+                .Include(o=>o.Subject)
                 .Include(o => o.CaseFines)
                 .Include(o => o.CaseCards)
-                .Include(o => o.CaseKeys)
-                .Where(o => o.CaseSource.OwerId == AbpSession.UserId);
+                .Include(o => o.CaseNodes)
+                .Where(o => o.CaseSource.OwerId == AbpSession.UserId)
+                .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架)
+                .OrderByDescending(o=>o.CaseSource.ValidDate)
+                //.OrderByDescending(o=>o.PublishDate)
+                ;
 
+        }
+
+        protected override async Task<IQueryable<CaseInitial>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseInitial> query)
+        {
+            return (await base.BuildKeywordQueryAsync(keyword, query))
+                  .Where(o => o.Title.Contains(keyword)
+                || o.Introduction.Contains(keyword)
+                || o.CaseSource.SourceSN.Contains(keyword)
+                || o.CaseSource.City.DisplayName.Contains(keyword)
+                || o.CaseSource.Court1.DisplayName.Contains(keyword)
+                || o.CaseSource.Court2.DisplayName.Contains(keyword)
+                || o.CaseSource.TrialPeopleField.Contains(keyword)
+                || o.CaseSource.LawyerFirmsField.Contains(keyword)
+                || o.Subject.DisplayName.Contains(keyword)
+                );
         }
         protected override object PageResultConverter(CaseInitial entity)
         {
-            var subjectCaseKey = entity.CaseKeys.Where(o => o.KeyName == "专题").FirstOrDefault();
             return new
             {
                 entity.Id,
+                EncrypedId = SimpleStringCipher.Instance.Encrypt(entity.CaseSource.Id.ToString(), null, null),//加密后的案源id
                 entity.CaseSource.SourceSN,
+                SourceId=entity.CaseSource.Id,
+                entity.CaseSource.SourceFile,
                 AnYou = entity.CaseSource.AnYou.DisplayName,
+                entity.CaseSource.AnYouId,
                 entity.Remarks,
                 entity.ReadNumber,
-                PublisDate = entity.PublisDate?.ToString("yyyy/MM/dd"),
+                PublishDate = entity.PublishDate?.ToString("yyyy/MM/dd"),
                 CaseFineCount = entity.CaseFines.Count,
                 CaseCardCount = entity.CaseCards.Count,
                 entity.CaseStatus,
-                subjectId = subjectCaseKey?.KeyNodeId,//专题Id
-                subjectName = subjectCaseKey?.KeyValue//专题名称
+                entity.SubjectId,
+                entity.Subject?.DisplayName
             };
         }
         #endregion
@@ -51,14 +75,16 @@ namespace Master.Case
         public virtual async Task<object> GetSummary()
         {
             //已发布的案例数量
-            var caseCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && o.PublisDate != null);
+            var caseCount = await Manager.GetAll().CountAsync(o => o.CreatorUserId == AbpSession.UserId && (o.CaseStatus==CaseStatus.展示中 ||o.CaseStatus==CaseStatus.下架));
             //案例卡数量
-            var caseCardCount = await Resolve<CaseCardManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && o.IsActive).CountAsync();
-
+            var caseCardCount = await Resolve<CaseCardManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && (o.CaseStatus == CaseStatus.展示中 || o.CaseStatus == CaseStatus.下架)).CountAsync();
+            //精加工数量
+            var caseFineCount= await Resolve<CaseFineManager>().GetAll().Where(o => o.CreatorUserId == AbpSession.UserId && (o.CaseStatus == CaseStatus.展示中 || o.CaseStatus == CaseStatus.下架)).CountAsync();
             return new
             {
                 caseCount,
-                caseCardCount
+                caseCardCount,
+                caseFineCount
             };
         }
         #endregion
