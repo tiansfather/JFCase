@@ -27,7 +27,7 @@
         @*<span class="title">专业律师搭配的判决书价值共享平台</span>*@
     </header>
     <div id="banner">
-        <img src="~/assets/images/home/banner.png?v=191209" />
+        <img src="~/assets/images/home/banner.jpg?v=191209" />
     </div>
     <nav>
         <ul class="nav-img-wrap">
@@ -161,7 +161,7 @@
     <el-dialog :visible.sync="qrcodeVisible" width="290px" style="text-align:center;">
         <img class="qr-code" :src="qrCode" style="width:250px;height:250px" />
     </el-dialog>
-    <el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;" lock-scroll="true" append-to-body top="10px">
+    <el-dialog :visible.sync="previewVisible" width="700px" style="text-align:center;" lock-scroll="true" append-to-body top="calc(50vh - 360px)">
         <iframe :src="'/CaseSource/InitialView?data='+currentItem.caseSourceId" frameborder="0" :style="{width:'100%',height:'620px'}"></iframe>
     </el-dialog>
 </div>
