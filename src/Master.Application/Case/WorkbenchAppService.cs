@@ -236,10 +236,10 @@ namespace Master.Case
                 .Where(o => o.Id == id)
                 .SingleOrDefaultAsync();
 
-            if (caseSource.OwerId != AbpSession.UserId)
-            {
-                throw new UserFriendlyException("无权查看此判例加工信息");
-            }
+            //if (caseSource.OwerId != AbpSession.UserId)
+            //{
+            //    throw new UserFriendlyException("无权查看此判例加工信息");
+            //}
 
             var caseInitial = await caseInitialManager.GetAll()
                 .Include(o => o.CaseNodes)
