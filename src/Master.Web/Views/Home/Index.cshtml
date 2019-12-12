@@ -300,14 +300,25 @@
                     this.loadSource();
                 },
                 scrollSource: function () {
-                    document.getElementById("scrollWrapper").onscroll = function () {
-                        //var height = document.getElementById("divData").offsetHeight;//250
+                    function lowEnough(){
+                        var pageHeight = Math.max(document.body.scrollHeight,document.body.offsetHeight);
+                        var viewportHeight = window.innerHeight || 
+                            document.documentElement.clientHeight ||
+                            document.body.clientHeight || 0;
+                        var scrollHeight = window.pageYOffset ||
+                            document.documentElement.scrollTop ||
+                            document.body.scrollTop || 0;
+                        return pageHeight - viewportHeight - scrollHeight < 20;  // 通过 真实内容高度 - 视窗高度 - 上面隐藏的高度 < 20，作为加载的触发条件
+                    }
+                    document.body.onscroll = function () {
+                        
+                        @*//var height = document.getElementById("divData").offsetHeight;//250
                         //var height=$("#divData").height();//250
-                        var scrollHeight = document.getElementById("scrollWrapper").scrollHeight;//251
-                        var scrollTop = document.getElementById("scrollWrapper").scrollTop;//0-18
-                        var clientHeight = document.getElementById("scrollWrapper").clientHeight;//233
+                        var scrollHeight = document.body.scrollHeight;//251
+                        var scrollTop = window.pageYOffset;//0-18
+                        var clientHeight = document.body.clientHeight;//233*@
 
-                        if (scrollHeight - clientHeight == scrollTop && !app.loading && !app.noMore) {
+                        if (lowEnough() && !app.loading && !app.noMore) {
                             //滚动条滚到最底部
                             app.currentPage++;
                             app.loadSource();
