@@ -74,7 +74,7 @@ namespace Master.Web.Controllers
                 Response.Cookies.Delete("token");
                 return Redirect("/Account/gmLogin");
             }
-
+            Response.Cookies.Append("Side", "Manager");
             var user = AbpSession.ToUserIdentifier();
             Session.Dto.LoginInformationDto loginInfo;
             try

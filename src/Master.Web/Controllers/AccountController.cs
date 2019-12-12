@@ -21,6 +21,16 @@ namespace Master.Web.Controllers
         }
         public async Task<ActionResult> Login()
         {
+            var referer = HttpContext.Request.UrlReferrer();
+            //从管理端跳出重定向至管理端
+            if (referer.IndexOf("Manager") >= 0)
+            {
+                HttpContext.Response.Redirect("/Account/gmLogin");
+            }
+            if (HttpContext.Request.Cookies["Side"] == "Manager")
+            {
+                
+            }
             //生成一个标识存入Ｓｅｓｓｉｏｎ
             var guid = Guid.NewGuid();
             HttpContext.Session.Set("WeChatLoginId", guid);

@@ -5,7 +5,7 @@
     ViewData["Title"] = "简法案例解读网";
 }
 @section styles{
-    <link href="~/assets/css/home/home.css" rel="stylesheet" />
+    <link href="~/assets/css/home/home.css" rel="stylesheet" asp-append-version="true"/>
     <style>
         html {
             width: auto;
@@ -101,7 +101,7 @@
                                 </div>
                             </i1>
                             <div class="viewcase-detail">
-                                <div class="introduction" @@click="preview(item);" style="cursor:pointer">
+                                <div class="introduction" >
                                     {{item.introduction}}
                                 </div>
                                 <div class="bottom-msg">
