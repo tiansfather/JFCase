@@ -57,6 +57,10 @@ nav ul.nav-img-wrap {
             color: #C59B6D;
             text-align: center;
             font-size: 16px;
+            &:hover{
+                text-decoration: underline;                
+                font-weight: bold;
+            }
         }
     }
 }
