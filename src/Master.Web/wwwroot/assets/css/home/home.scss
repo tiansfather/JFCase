@@ -28,7 +28,7 @@ header {
 nav {
     position: sticky;
     top: 0;
-    padding: 20px 0;
+    padding: 10px 0;
     background: #fff;
     z-index: 1;
 }
@@ -37,7 +37,7 @@ nav ul.nav-img-wrap {
     display: flex;
     width: 1200px;
     justify-content: space-between;
-    margin: 20px auto;
+    margin: 10px auto;
 
     .nav-img {
         /*display: flex;*/
@@ -88,7 +88,7 @@ main {
                 margin-bottom: 10px;
                 padding-top: 20px;
                 position: sticky;
-                top: 101px;
+                top: 61px;
                 z-index: 2;
                 background: #f4f4f4;
 
@@ -161,7 +161,7 @@ main {
         position: relative;
         color: #646464;
         position: sticky;
-        top: 101px;
+        top: 61px;
         z-index: 0;
         height: 800px;
         margin-top: 20px;
@@ -316,11 +316,11 @@ main {
         font-size: 14px;
 
         &:hover .viewcase-title {
-            background: #764c24!important;
+            background: #764c24 !important;
         }
 
         &:hover .viewcase-detail {
-            background: #f7f0e8!important;
+            background: #f7f0e8 !important;
         }
 
         i1 {
@@ -336,6 +336,10 @@ main {
             .viewcase-title-wrap {
                 margin-left: 10px;
                 flex: 1;
+
+                .caseanyou {
+                    color: #a9a9a9;
+                }
 
                 .sourcesn {
                     font-size: 13px;

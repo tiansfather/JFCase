@@ -23,7 +23,8 @@ namespace Master.Case
                 .Include(o=>o.CaseSource).ThenInclude(o=>o.AnYou)
                 .Include(o=>o.CreatorUser)
                 .Where(o=>o.CaseStatus==CaseStatus.展示中)
-                .OrderByDescending(o=>o.IsActive)
+                .OrderBy(o=>o.Sort)
+                //.OrderByDescending(o=>o.IsActive)
                 .ThenByDescending(o=>o.PublishDate);
         }
         protected override async Task<IQueryable<CaseInitial>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseInitial> query)
