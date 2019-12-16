@@ -246,6 +246,15 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'modulePageResultConverter'
+    abp.services.app.assistant.modulePageResultConverter = function(entity, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Assistant/ModulePageResultConverter',
+        type: 'POST',
+        data: JSON.stringify(entity)
+      }, ajaxParams));;
+    };
+
     // action 'getSuggestResult'
     abp.services.app.assistant.getSuggestResult = function(requestSuggestDto, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -324,6 +333,15 @@ abp.services = abp.services || {};
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/Charger/GetPageResult' + abp.utils.buildQueryString([{ name: 'page', value: request.page }, { name: 'limit', value: request.limit }, { name: 'where', value: request.where }, { name: 'tableFilter', value: request.tableFilter }, { name: 'filterField', value: request.filterField }, { name: 'filterKey', value: request.filterKey }, { name: 'filterColumns', value: request.filterColumns }, { name: 'searchCondition', value: request.searchCondition }, { name: 'filterSos', value: request.filterSos }, { name: 'searchKeys', value: request.searchKeys }, { name: 'keyword', value: request.keyword }, { name: 'orderField', value: request.orderField }, { name: 'orderType', value: request.orderType }, { name: 'moduleKey', value: request.moduleKey }]) + '',
         type: 'GET'
+      }, ajaxParams));;
+    };
+
+    // action 'modulePageResultConverter'
+    abp.services.app.charger.modulePageResultConverter = function(entity, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Charger/ModulePageResultConverter',
+        type: 'POST',
+        data: JSON.stringify(entity)
       }, ajaxParams));;
     };
 
@@ -514,6 +532,15 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'modulePageResultConverter'
+    abp.services.app.miner.modulePageResultConverter = function(entity, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Miner/ModulePageResultConverter',
+        type: 'POST',
+        data: JSON.stringify(entity)
+      }, ajaxParams));;
+    };
+
     // action 'getSuggestResult'
     abp.services.app.miner.getSuggestResult = function(requestSuggestDto, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -618,6 +645,15 @@ abp.services = abp.services || {};
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/NewMiner/GetPageResult' + abp.utils.buildQueryString([{ name: 'page', value: request.page }, { name: 'limit', value: request.limit }, { name: 'where', value: request.where }, { name: 'tableFilter', value: request.tableFilter }, { name: 'filterField', value: request.filterField }, { name: 'filterKey', value: request.filterKey }, { name: 'filterColumns', value: request.filterColumns }, { name: 'searchCondition', value: request.searchCondition }, { name: 'filterSos', value: request.filterSos }, { name: 'searchKeys', value: request.searchKeys }, { name: 'keyword', value: request.keyword }, { name: 'orderField', value: request.orderField }, { name: 'orderType', value: request.orderType }, { name: 'moduleKey', value: request.moduleKey }]) + '',
         type: 'GET'
+      }, ajaxParams));;
+    };
+
+    // action 'modulePageResultConverter'
+    abp.services.app.newMiner.modulePageResultConverter = function(entity, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/NewMiner/ModulePageResultConverter',
+        type: 'POST',
+        data: JSON.stringify(entity)
       }, ajaxParams));;
     };
 
@@ -833,6 +869,15 @@ abp.services = abp.services || {};
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/User/GetPageResult' + abp.utils.buildQueryString([{ name: 'page', value: request.page }, { name: 'limit', value: request.limit }, { name: 'where', value: request.where }, { name: 'tableFilter', value: request.tableFilter }, { name: 'filterField', value: request.filterField }, { name: 'filterKey', value: request.filterKey }, { name: 'filterColumns', value: request.filterColumns }, { name: 'searchCondition', value: request.searchCondition }, { name: 'filterSos', value: request.filterSos }, { name: 'searchKeys', value: request.searchKeys }, { name: 'keyword', value: request.keyword }, { name: 'orderField', value: request.orderField }, { name: 'orderType', value: request.orderType }, { name: 'moduleKey', value: request.moduleKey }]) + '',
         type: 'GET'
+      }, ajaxParams));;
+    };
+
+    // action 'modulePageResultConverter'
+    abp.services.app.user.modulePageResultConverter = function(entity, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/User/ModulePageResultConverter',
+        type: 'POST',
+        data: JSON.stringify(entity)
       }, ajaxParams));;
     };
 
@@ -1624,6 +1669,15 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'modulePageResultConverter'
+    abp.services.app.moduleData.modulePageResultConverter = function(entity, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/ModuleData/ModulePageResultConverter',
+        type: 'POST',
+        data: JSON.stringify(entity)
+      }, ajaxParams));;
+    };
+
     // action 'getSuggestResult'
     abp.services.app.moduleData.getSuggestResult = function(requestSuggestDto, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -2373,6 +2427,15 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'modulePageResultConverter'
+    abp.services.app.caseInitial.modulePageResultConverter = function(entity, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseInitial/ModulePageResultConverter',
+        type: 'POST',
+        data: JSON.stringify(entity)
+      }, ajaxParams));;
+    };
+
     // action 'getSuggestResult'
     abp.services.app.caseInitial.getSuggestResult = function(requestSuggestDto, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -2535,6 +2598,15 @@ abp.services = abp.services || {};
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/CaseSource/GetPageResult' + abp.utils.buildQueryString([{ name: 'page', value: request.page }, { name: 'limit', value: request.limit }, { name: 'where', value: request.where }, { name: 'tableFilter', value: request.tableFilter }, { name: 'filterField', value: request.filterField }, { name: 'filterKey', value: request.filterKey }, { name: 'filterColumns', value: request.filterColumns }, { name: 'searchCondition', value: request.searchCondition }, { name: 'filterSos', value: request.filterSos }, { name: 'searchKeys', value: request.searchKeys }, { name: 'keyword', value: request.keyword }, { name: 'orderField', value: request.orderField }, { name: 'orderType', value: request.orderType }, { name: 'moduleKey', value: request.moduleKey }]) + '',
         type: 'GET'
+      }, ajaxParams));;
+    };
+
+    // action 'modulePageResultConverter'
+    abp.services.app.caseSource.modulePageResultConverter = function(entity, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseSource/ModulePageResultConverter',
+        type: 'POST',
+        data: JSON.stringify(entity)
       }, ajaxParams));;
     };
 

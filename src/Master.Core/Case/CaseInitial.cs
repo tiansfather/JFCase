@@ -14,32 +14,15 @@ namespace Master.Case
     [InterModule("成品案例", GenerateDefaultColumns=false,GenerateDefaultButtons =false)]
     public class CaseInitial : BaseFullEntityWithTenant, IHaveStatus,IPassivable
     {
-        [InterColumn(ColumnName ="案号",ValuePath="CaseSource.SourceSN",Sort =1,Templet = "<a dataid=\"{{d.caseSourceId}}\" class=\"layui-btn layui-btn-xs layui-btn-normal\" buttonname=\"预览\" params=\"{&quot;area&quot;: [&quot;700px&quot;, &quot;700px&quot;],&quot;btn&quot;:[]}\"   buttonactiontype=\"Form\" buttonactionurl=\"/CaseSource/InitialView\" onclick=\"func.callModuleButtonEvent()\">{{d.sourceSN}}</a>")]
+        [InterColumn(ColumnName = "案号", ValuePath = "CaseSource.SourceSN", Sort = 1, Templet = "<a dataid=\"{{d.caseSourceId}}\" class=\"layui-btn layui-btn-xs layui-btn-normal\" buttonname=\"预览\" params=\"{&quot;area&quot;: [&quot;700px&quot;, &quot;700px&quot;],&quot;btn&quot;:[]}\"   buttonactiontype=\"Form\" buttonactionurl=\"/CaseSource/InitialView\" onclick=\"func.callModuleButtonEvent()\">{{d.sourceSN}}</a>")]
         [NotMapped]
-        public string SourceSN {
-            get
-            {
-                return CaseSource.SourceSN;
-            }
-        }
+        public string SourceSN { get; set; }
         [InterColumn(ColumnName = "城市", ValuePath = "CaseSource.City.DisplayName",Sort =2)]
         [NotMapped]
-        public string City
-        {
-            get
-            {
-                return CaseSource.City.DisplayName;
-            }
-        }
+        public string City { get; set; }
         [InterColumn(ColumnName = "案由", ValuePath = "CaseSource.AnYou.DisplayName",Sort =3)]
         [NotMapped]
-        public string AnYou
-        {
-            get
-            {
-                return CaseSource.AnYou.DisplayName;
-            }
-        }
+        public string AnYou { get; set; }
 
         public int CaseSourceId { get; set; }
         public virtual CaseSource CaseSource { get; set; }
@@ -66,14 +49,8 @@ namespace Master.Case
         public string LawyerOpinion { get; set; }
         public string Status { get; set; }
         [NotMapped]
-        [InterColumn(ColumnName = "加工人",ValuePath = "CreatorUser.Name",Sort =5)]
-        public string Processor
-        {
-            get
-            {
-                return CreatorUser.Name;
-            }
-        }
+        [InterColumn(ColumnName = "加工人", ValuePath = "CreatorUser.Name", Sort = 5)]
+        public string Processor { get; set; }
         [InterColumn(ColumnName = "加入时间", ColumnType =Module.ColumnTypes.DateTime, Sort = 6)]
         public override DateTime CreationTime { get => base.CreationTime; set => base.CreationTime = value; }
         /// <summary>

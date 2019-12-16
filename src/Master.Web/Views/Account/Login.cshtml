@@ -51,7 +51,7 @@
                         </li>
                         <li>
                             <i1><a @@click="step=3" class="btn-submit">填写信息</a></i1>
-                            <i2><a @@click="location.reload()" class="btn-cancel">取 消</a></i2>
+                            <i2><a @@click="doCancel" class="btn-cancel">取 消</a></i2>
                         </li>
                     </ul>
                 </div>
@@ -154,6 +154,7 @@
 					return '/api/qrcode?url=' + encodeURIComponent(location.origin + "/WeiXin/Login?guid=" + this.guid);
 				}
             },
+            
             mounted:function(){
                 refreshLogin();
                 var step=$.getUrlParam("step");
@@ -193,6 +194,10 @@
                         this.$Spin.hide();
                     }, 3000);
                 },
+                doCancel:function(){
+                            if($.getUrlParam("step")){location.href='/Home/Index'}
+                            else{location.reload();}
+                        },
                 doSubmit: function () {
                     this.validating = true;
                     var requireRules = {
@@ -211,7 +216,7 @@
                         func.runAsync(abp.services.app.newMiner.register(app.currentItem).done(function () {
                             abp.message.success("您的注册申请已提交，我们将会在X个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！")
                                 .done(function () {
-                                    location.reload();
+                                    location.href='/Home/Index';
                                 })
                         }));
                         
@@ -247,7 +252,7 @@
                                 app.step = 2;
                             } else if (status == -1) {
                                 var toemail = abp.setting.get("receiveMailAddress");
-                                abp.message.info("您的账号已被冻结（注销），请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>");
+                                abp.message.info("您当前已被注销，不可进入，请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>询问具体原因");
                             } else if (status == 3) {
                                 abp.message.info("您的账号还在审核中，请耐心等待");
                             }

@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.BackgroundJobs;
+using Abp.UI;
 using Master.Authentication;
 using Master.Case;
 using Master.Core.Jobs;
@@ -48,6 +49,15 @@ namespace Master.Users
         public virtual async Task Register(NewMinerRegisterDto newMinerRegisterDto)
         {
             var newMiner = newMinerRegisterDto.MapTo<NewMiner>();
+            var userManager = Resolve<UserManager>();
+            if (userManager.GetAll().IgnoreQueryFilters().Count(o => o.PhoneNumber == newMiner.PhoneNumber) > 0)
+            {
+                throw new UserFriendlyException("您输入的手机号已经注册，请更换");
+            }
+            if (userManager.GetAll().IgnoreQueryFilters().Count(o => o.Email == newMiner.Email) > 0)
+            {
+                throw new UserFriendlyException("您输入的邮箱已经注册，请更换");
+            }
             await Manager.InsertAsync(newMiner);
         }
         [AbpAuthorize]

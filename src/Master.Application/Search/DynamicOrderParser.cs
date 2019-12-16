@@ -12,10 +12,10 @@ namespace Master.Search
     public class DynamicOrderParser : IDynamicOrderParser
     {
         public IQueryable Parse<TEntity>(string orderField, SortType sortType, ModuleInfo moduleInfo, IQueryable query)
-            where TEntity:IHaveProperty
+            where TEntity : IHaveProperty
         {
             //提交过来的排序
-            var column = moduleInfo.ColumnInfos.SingleOrDefault(o => o.ColumnKey == orderField);
+            var column = moduleInfo.ColumnInfos.SingleOrDefault(o => o.ColumnKey.ToLower() == orderField.ToLower());
             if (column == null)
             {
                 query = query.OrderBy($"{orderField} {sortType}");
@@ -23,7 +23,14 @@ namespace Master.Search
             }
             if (column.IsPropertyColumn)
             {
-                query = (query as IQueryable<TEntity>).OrderBy(o => MasterDbContext.GetJsonValueString(o.Property, $"$.{column.ColumnKey}"));
+                if (sortType == SortType.Asc)
+                {
+                    query = (query as IQueryable<TEntity>).OrderBy(o => MasterDbContext.GetJsonValueString(o.Property, $"$.{column.ColumnKey}"));
+                }
+                else
+                {
+                    query = (query as IQueryable<TEntity>).OrderByDescending(o => MasterDbContext.GetJsonValueString(o.Property, $"$.{column.ColumnKey}"));
+                }
             }
             else
             {
@@ -33,9 +40,9 @@ namespace Master.Search
                 }
                 else
                 {
-                    query=query.OrderBy($"{column.ValuePath} {sortType}");
+                    query = query.OrderBy($"{column.ValuePath} {sortType}");
                 }
-                
+
             }
 
             return query;

@@ -17,6 +17,7 @@ using Master.Dto;
 using Master.Extension;
 using Master.Base;
 using Master.Domain;
+using Master.EntityFrameworkCore;
 
 namespace Master
 {
@@ -43,7 +44,10 @@ namespace Master
             return moduleInfo;
         }
 
+
         #region 分页及数据过滤
+
+        #region 重写基类
         /// <summary>
         /// 重写获取基础查询方法
         /// </summary>
@@ -51,54 +55,48 @@ namespace Master
         /// <returns></returns>
         protected override async Task<IQueryable<TEntity>> GetBaseQuery(RequestPageDto request)
         {
-            ModuleInfo moduleInfo =await ModuleInfo(request);
+            ModuleInfo moduleInfo = await ModuleInfo(request);
             return ModuleManager.GetQuery(moduleInfo) as IQueryable<TEntity>;
         }
 
-        protected override async Task<IQueryable<TEntity>> GetQueryable(RequestPageDto request)
-        {
-            ModuleInfo moduleInfo = await ModuleInfo(request);
-            var query= await base.GetQueryable(request);
-            ////模块的查询需要增加高级查询内容
-            //if (!request.SearchCondition.IsNullOrWhiteSpace())
-            //{
-            //    query = DynamicSearchParser.Parse<TEntity>(request.SearchCondition, moduleInfo, query) as IQueryable<TEntity>;
-            //}
+        //protected override async Task<IQueryable<TEntity>> GetQueryable(RequestPageDto request)
+        //{
+        //    ModuleInfo moduleInfo = await ModuleInfo(request);
+        //    var query= await base.GetQueryable(request);
+        //    ////模块的查询需要增加高级查询内容
+        //    //if (!request.SearchCondition.IsNullOrWhiteSpace())
+        //    //{
+        //    //    query = DynamicSearchParser.Parse<TEntity>(request.SearchCondition, moduleInfo, query) as IQueryable<TEntity>;
+        //    //}
 
-            if (request.OrderField.IsNullOrEmpty())
-            {
-                //使用模块排序
-                //默认排序
-                if (moduleInfo.SortField != "Id")
-                {
-                    query = DynamicOrderParser.Parse<TEntity>(moduleInfo.SortField, moduleInfo.SortType, moduleInfo, query) as IQueryable<TEntity>;
-                }
-                else
-                {
-                    query = query.OrderBy($"{moduleInfo.SortField} {moduleInfo.SortType.ToString()}");
-                }
-            }
-            return query;
-        }
+        //    if (request.OrderField.IsNullOrEmpty())
+        //    {
+        //        //使用模块排序
+        //        //默认排序
+        //        if (moduleInfo.SortField != "Id")
+        //        {
+        //            query = DynamicOrderParser.Parse<TEntity>(moduleInfo.SortField, moduleInfo.SortType, moduleInfo, query) as IQueryable<TEntity>;
+        //        }
+        //        else
+        //        {
+        //            query = query.OrderBy($"{moduleInfo.SortField} {moduleInfo.SortType.ToString()}");
+        //        }
+        //    }
+        //    return query;
+        //}
         protected override async Task<IQueryable<TEntity>> BuildOrderQueryAsync(RequestPageDto request, IQueryable<TEntity> query)
         {
-            if (request.OrderField.IsNullOrEmpty())
+            ModuleInfo moduleInfo = await ModuleInfo(request);
+            if (request.OrderField.IsNullOrEmpty()) { request.OrderField = moduleInfo.SortField; request.OrderType = moduleInfo.SortType.ToString(); }
+            //使用模块排序
+            //默认排序
+            if (request.OrderField != "Id")
             {
-                var moduleInfo = await ModuleInfo(request);
-                //使用模块排序
-                //默认排序
-                if (moduleInfo.SortField != "Id")
-                {
-                    query = DynamicOrderParser.Parse<TEntity>(moduleInfo.SortField, moduleInfo.SortType, moduleInfo, query) as IQueryable<TEntity>;
-                }
-                else
-                {
-                    query = query.OrderBy($"{moduleInfo.SortField} {moduleInfo.SortType.ToString()}");
-                }
+                query = DynamicOrderParser.Parse<TEntity>(request.OrderField, request.OrderType.ToLower() == "desc" ? SortType.Desc : SortType.Asc, moduleInfo, query) as IQueryable<TEntity>;
             }
             else
             {
-                query= await base.BuildOrderQueryAsync(request, query);
+                query = query.OrderBy($"{request.OrderField} {request.OrderType}");
             }
             return query;
         }
@@ -138,12 +136,12 @@ namespace Master
             {
                 var filterColumns = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(request.FilterColumns);
                 var query = await GetQueryable(request);
-                var fitlerColumnResult = await GetFilterColumnsResult(moduleInfo, filterColumns, query);
+                var fitlerColumnResult = await GetFilterColumnsResult(moduleInfo, filterColumns, query, limit: 100);
                 return new ResultPageDto()
                 {
-                    data= fitlerColumnResult
+                    data = fitlerColumnResult
                 };
-                
+
             }
             //var query =await GetBaseQuery(request);
             ////五种查询
@@ -199,61 +197,21 @@ namespace Master
             {
                 code = 0,
                 count = pageResult.RowCount,
-                data = dataResult
+                data = dataResult.ToList().ConvertAll(ModulePageResultConverter)
             };
 
             return result;
         }
+        #endregion
 
-        private async Task<object> GetFilterColumnsResult(ModuleInfo moduleInfo,List<string> filterColumns,IQueryable<TEntity> queryable)
+        /// <summary>
+        /// 模块分页数据处理
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public virtual IDictionary<string, object> ModulePageResultConverter(IDictionary<string, object> entity)
         {
-            var result = new Dictionary<string,object>();
-            var manager = Manager as ModuleServiceBase<TEntity, TPrimaryKey>;
-            foreach(var columnKey in filterColumns)
-            {
-                var column = moduleInfo.ColumnInfos.SingleOrDefault(o => o.ColumnKey.ToLower() == columnKey.ToLower());
-                if (column != null && column.IsShownInAdvanceSearch)
-                {
-                    object data;
-                    //直接数据列
-                    if (column.IsDirectiveColumn)
-                    {
-                        var fieldPath = column.ColumnKey;
-                        if (!string.IsNullOrEmpty(column.ValuePath))
-                        {
-                            fieldPath = column.ValuePath;
-                        }
-                        if (!string.IsNullOrEmpty(column.DisplayPath))
-                        {
-                            fieldPath = column.DisplayPath;
-                        }
-                        result.Add(columnKey, (await queryable
-                            .GroupBy(fieldPath)
-                            .Select($"new(Key)")
-                            .Take(200)
-                            .ToDynamicListAsync())
-                            .Where(o => o.Key!=null).Select(o =>
-                                {
-                                    //数字和日期进行格式化后输出
-                                    if (column.ColumnType == ColumnTypes.Number || column.ColumnType==ColumnTypes.DateTime)
-                                    {
-                                        return o.Key.ToString(column.DisplayFormat);
-                                    }
-                                    return o.Key.ToString();
-                                })
-
-                            );
-                    }
-                    else if (column.IsPropertyColumn)
-                    {
-                        //属性列
-                        result.Add(columnKey, DynamicQuery.Select($"select property->>\"$.{column.ColumnKey}\" as Value from {typeof(TEntity).Name} where tenantId={AbpSession.TenantId.Value} and property->>\"$.{column.ColumnKey}\"!='' and property->>\"$.{column.ColumnKey}\" is not null   and isdeleted=0 GROUP BY Value order by Value limit 200").Where(o => !string.IsNullOrEmpty(o.Value)).Select(o => o.Value.ToString()).Where(o=>o!=null));
-                    }
-                }
-            }
-
-            return result;
-            
+            return entity;
         }
 
         /// <summary>
@@ -274,14 +232,15 @@ namespace Master
                 //直接数据列
                 if (column.IsDirectiveColumn)
                 {
-                    result.data=await manager.GetFilteredQuery(moduleInfo.ModuleKey)
+                    result.data = await manager.GetFilteredQuery(moduleInfo.ModuleKey)
                         .Where($"{requestSuggestDto.ColumnKey}.Contains(\"{requestSuggestDto.Keyword}\")")
-                        .GroupBy(requestSuggestDto.ColumnKey)                       
+                        .GroupBy(requestSuggestDto.ColumnKey)
                         .Select($"new(Key as {requestSuggestDto.ColumnKey})")
                         .OrderBy(requestSuggestDto.ColumnKey)
                         .Take(20)
                         .ToDynamicListAsync();
-                }else if (column.IsPropertyColumn)
+                }
+                else if (column.IsPropertyColumn)
                 {
                     //属性列
                     result.data = DynamicQuery.Select($"select property->>\"$.{requestSuggestDto.ColumnKey}\" as {requestSuggestDto.ColumnKey} from {typeof(TEntity).Name} where tenantId={AbpSession.TenantId.Value} and property->>\"$.{requestSuggestDto.ColumnKey}\"!='' and property->>\"$.{requestSuggestDto.ColumnKey}\" is not null  and property->>\"$.{requestSuggestDto.ColumnKey}\"  like '%{requestSuggestDto.Keyword}%' and isdeleted=0 GROUP BY {requestSuggestDto.ColumnKey} order by {requestSuggestDto.ColumnKey} limit 20");
@@ -290,7 +249,11 @@ namespace Master
 
             return result;
         }
+
+        
+
         #endregion
+
 
         #region 表单提交
         public override async Task FormSubmit(FormSubmitRequestDto request)
@@ -320,6 +283,58 @@ namespace Master
 
         #endregion
 
+        #region 对字段进行分组去重查询方法
+        private async Task<Dictionary<string, object>> GetFilterColumnsResult(ModuleInfo moduleInfo, List<string> filterColumns, IQueryable<TEntity> queryable, int page = 1, int limit = 20)
+        {
+            var result = new Dictionary<string, object>();
+            var manager = Manager as ModuleServiceBase<TEntity, TPrimaryKey>;
+            foreach (var columnKey in filterColumns)
+            {
+                var column = moduleInfo.ColumnInfos.SingleOrDefault(o => o.ColumnKey.ToLower() == columnKey.ToLower());
+                if (column != null && column.IsShownInAdvanceSearch)
+                {
+                    object data;
+                    //直接数据列
+                    if (column.IsDirectiveColumn)
+                    {
+                        var fieldPath = column.ColumnKey;
+                        if (!string.IsNullOrEmpty(column.ValuePath))
+                        {
+                            fieldPath = column.ValuePath;
+                        }
+                        if (!string.IsNullOrEmpty(column.DisplayPath))
+                        {
+                            fieldPath = column.DisplayPath;
+                        }
+                        result.Add(columnKey, (await queryable
+                            .GroupBy(fieldPath)
+                            .Select($"new(Key)")
+                            .Skip((page - 1) * limit)
+                            .Take(limit)
+                            .ToDynamicListAsync())
+                            .Where(o => o.Key != null).Select(o =>
+                            {
+                                //数字和日期进行格式化后输出
+                                if (column.ColumnType == ColumnTypes.Number || column.ColumnType == ColumnTypes.DateTime)
+                                {
+                                    return o.Key.ToString(column.DisplayFormat);
+                                }
+                                return o.Key.ToString();
+                            })
 
+                            );
+                    }
+                    else if (column.IsPropertyColumn)
+                    {
+                        //属性列
+                        result.Add(columnKey, DynamicQuery.Select($"select property->>\"$.{column.ColumnKey}\" as Value from `{typeof(TEntity).Name}` where tenantId={AbpSession.TenantId.Value} and property->>\"$.{column.ColumnKey}\"!='' and property->>\"$.{column.ColumnKey}\" is not null   and isdeleted=0 GROUP BY Value order by Value limit {(page - 1) * limit},{limit}").Where(o => !string.IsNullOrEmpty(o.Value)).Select(o => o.Value.ToString()).Where(o => o != null));
+                    }
+                }
+            }
+
+            return result;
+
+        }
+        #endregion
     }
 }

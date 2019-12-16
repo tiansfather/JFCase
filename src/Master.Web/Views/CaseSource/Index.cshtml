@@ -8,10 +8,56 @@
     <div class="layui-card">
         <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("判例库管理")</div>
         <div class="layui-card-body">
+            <div id="app" v-cloak>
+                <el-form :inline="true" :model="searchData" class="demo-form-inline" size="mini">
+                    <el-form-item label="案号">
+                        <el-input v-model="searchData.sourceSN" placeholder="案号"></el-input>
+                    </el-form-item>
+                    <el-form-item label="城市">
+                        <el-input v-model="searchData.city" placeholder="城市"></el-input>
+                    </el-form-item>
+                    <el-form-item label="一审法院">
+                        <el-input v-model="searchData.court1" placeholder="一审法院"></el-input>
+                    </el-form-item>
+                    <el-form-item label="二审法院">
+                        <el-input v-model="searchData.court2" placeholder="二审法院"></el-input>
+                    </el-form-item>
+                    <el-form-item label="案由">
+                        <el-input v-model="searchData.anYou" placeholder="案由"></el-input>
+                    </el-form-item>
+                    <el-form-item label="状态">
+                        <el-checkbox-group v-model="searchData.caseSourceStatus">
+                            <el-checkbox label="下架"></el-checkbox>
+                            <el-checkbox label="待选"></el-checkbox>
+                            <el-checkbox label="待加工"></el-checkbox>
+                            <el-checkbox label="加工中"></el-checkbox>
+                            <el-checkbox label="已加工"></el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="创建人">
+                        <el-input v-model="searchData.creatorUserName" placeholder="创建人"></el-input>
+                    </el-form-item>
+                    <el-form-item label="创建时间">
+                        <el-date-picker v-model="searchData.creationTime"
+                                        value-format="yyyy-MM-dd"
+                                        type="daterange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="修改人">
+                        <el-input v-model="searchData.lastModifierUserName" placeholder="修改人"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="doSearch">查询</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
             <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
                 <vc:module-button module-key="CaseSource"></vc:module-button>
-                <input type="text" id="keyword" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="案号检索" />
-                <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
+                @*<input type="text" id="keyword" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="案号检索" />
+            <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>*@
             </div>
             <vc:module-table param="@(new ModuleTableViewParam() {ID="CaseSource",ModuleKey="CaseSource",Height="full-250",Where="" })"></vc:module-table>
 
@@ -26,23 +72,56 @@
         var searchKeys = {};
         
         config.ready = function () {
-            
+            app = new Vue({
+                el: '#app',
+                data: {
+                    searchData: {
+                        caseSourceStatus: ["下架", "待选", "待加工", "加工中","已加工"]
+                    }
+                },
+                computed: {
+                    where: function () {
+                        var strWhere = '1=1';
+                        this.searchData.sourceSN && (strWhere+=` and SourceSN.Contains("${this.searchData.sourceSN}")`);
+                        this.searchData.city && (strWhere += ` and city.displayName.Contains("${this.searchData.city}")`);
+                        this.searchData.court1 && (strWhere += ` and court1.displayName.Contains("${this.searchData.court1}")`);
+                        this.searchData.court2 && (strWhere += ` and court2.displayName.Contains("${this.searchData.court2}")`);
+                        this.searchData.anYou && (strWhere += ` and anYou.displayName.Contains("${this.searchData.anYou}")`);
+                        this.searchData.creatorUserName && (strWhere += ` and creatorUser.Name.Contains("${this.searchData.creatorUserName}")`);
+                        this.searchData.lastModifierUserName && (strWhere += ` and lastModifierUser.Name.Contains("${this.searchData.lastModifierUserName}")`);
+                        if (this.searchData.caseSourceStatus.length) {
+                            let whereWrapper = [];
+                            this.searchData.caseSourceStatus.forEach(o => whereWrapper.push(` caseSourceStatus="${o}"`));
+                            strWhere += ` and (${whereWrapper.join(' or ')})`;
+                        }
+                        this.searchData.creationTime && (strWhere += ` and (creationtime>="${this.searchData.creationTime[0]}" and creationtime<="${this.searchData.creationTime[1]}")`);
+                        return strWhere;
+                    }
+                },
+                methods: {                    
+                    doSearch: function () {
+                        config.reloadTable();
+
+                    }
+                }
+            })
         };
         config.refresh = function () {
            
         };
         config.reloadTable = function () {
             layui.table.reload('CaseSource', {
-                where: getWhere()
+                where: getWhere(),
+                page:1
             })
         }
         function getWhere(index) {
-            var where = { searchKeys: JSON.stringify(searchKeys) ,where:'1=1'};
-            var value = $('#keyword').val();
-            if (value) {
-                where.where += " and SourceSN.Contains(\"" + value + "\")"
-            }
-            
+            var where = { searchKeys: JSON.stringify(searchKeys) ,where:''};
+            //var value = $('#keyword').val();
+            //if (value) {
+            //    where.where += " and SourceSN.Contains(\"" + value + "\")"
+            //}
+            where.where = app.where;
             where.searchCondition = func.buildSearchCondition('CaseSource');
 
             return where;

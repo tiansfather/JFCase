@@ -9,9 +9,48 @@
         <div class="layui-card-header bold"><i class="layui-icon layui-icon-next"></i>@L("成品案例管理")</div>
         <div class="layui-card-body">
             <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                <div id="app" v-cloak>
+                    <el-form :inline="true" :model="searchData" class="demo-form-inline" size="mini">
+                        <el-form-item label="案号">
+                            <el-input v-model="searchData.sourceSN" placeholder="案号"></el-input>
+                        </el-form-item>
+                        <el-form-item label="城市">
+                            <el-input v-model="searchData.city" placeholder="城市"></el-input>
+                        </el-form-item>
+                        <el-form-item label="案由">
+                            <el-input v-model="searchData.anYou" placeholder="案由"></el-input>
+                        </el-form-item>
+                        <el-form-item label="标题">
+                            <el-input v-model="searchData.title" placeholder="标题"></el-input>
+                        </el-form-item>
+                        <el-form-item label="加工人">
+                            <el-input v-model="searchData.creatorUserName" placeholder="加工人"></el-input>
+                        </el-form-item>
+                        <el-form-item label="发布时间">
+                            <el-date-picker v-model="searchData.publishDate"
+                                            value-format="yyyy-MM-dd"
+                                            type="daterange"
+                                            range-separator="至"
+                                            start-placeholder="开始日期"
+                                            end-placeholder="结束日期">
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item label="状态">
+                            <el-checkbox-group v-model="searchData.caseStatus">
+                                <el-checkbox label="加工中"></el-checkbox>
+                                <el-checkbox label="展示中"></el-checkbox>
+                                <el-checkbox label="退回"></el-checkbox>
+                                <el-checkbox label="下架"></el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @@click="doSearch">查询</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
                 <vc:module-button module-key="CaseInitial"></vc:module-button>
-                <input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入标题检索" />
-                <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
+                @*<input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入标题检索" />
+                <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>*@
             </div>
             <vc:module-table param="@(new ModuleTableViewParam() {ID="CaseInitial",ModuleKey="CaseInitial",Height="full-150",Where="" })"></vc:module-table>
 
@@ -26,23 +65,55 @@
         var searchKeys = {};
         
         config.ready = function () {
-            
+            app = new Vue({
+                el: '#app',
+                data: {
+                    searchData: {
+                        caseStatus: ["加工中", "展示中", "退回", "下架"]
+                    }
+                },
+                computed: {
+                    where: function () {
+                        var strWhere = '1=1';
+                        this.searchData.sourceSN && (strWhere += ` and caseSource.SourceSN.Contains("${this.searchData.sourceSN}")`);
+                        this.searchData.city && (strWhere += ` and caseSource.city.displayName.Contains("${this.searchData.city}")`);
+                        this.searchData.title && (strWhere += ` and title.Contains("${this.searchData.title}")`);
+                        this.searchData.anYou && (strWhere += ` and caseSource.anYou.displayName.Contains("${this.searchData.anYou}")`);
+                        this.searchData.creatorUserName && (strWhere += ` and creatorUser.Name.Contains("${this.searchData.creatorUserName}")`);
+                        if (this.searchData.caseStatus.length) {
+                            let whereWrapper = [];
+                            this.searchData.caseStatus.forEach(o => whereWrapper.push(` caseStatus="${o}"`));
+                            strWhere += ` and (${whereWrapper.join(' or ')})`;
+                        }
+                        this.searchData.publishDate && (strWhere += ` and (publishDate>="${this.searchData.publishDate[0]}" and publishDate<="${this.searchData.publishDate[1]}")`);
+                        return strWhere;
+                    }
+                },
+                methods: {
+                    doSearch: function () {
+                        config.reloadTable();
+
+                    }
+                }
+            })
         };
         config.refresh = function () {
            
         };
         config.reloadTable = function () {
             layui.table.reload('CaseInitial', {
-                where: getWhere()
+                where: getWhere(),
+                page:1
             })
         }
         function getWhere(index) {
             var where = { searchKeys: JSON.stringify(searchKeys),where:'1=1' };
             
-            var value = $('#name-input').val();
-            if (value) {
-                where.where += " and Title.Contains(\"" + value + "\")"
-            }
+            //var value = $('#name-input').val();
+            //if (value) {
+            //    where.where += " and Title.Contains(\"" + value + "\")"
+            //}
+            where.where = app.where;
             where.searchCondition = func.buildSearchCondition('CaseInitial');
 
             return where;

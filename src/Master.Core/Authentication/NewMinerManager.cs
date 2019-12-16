@@ -7,5 +7,6 @@ namespace Master.Authentication
 {
     public class NewMinerManager:ModuleServiceBase<NewMiner, int>
     {
+
     }
 }
