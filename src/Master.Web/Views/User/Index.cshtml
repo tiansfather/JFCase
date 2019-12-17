@@ -13,12 +13,40 @@
                         style="padding: 2px; border: 1px solid #ddd; overflow: auto;min-height:500px"></ul>
                 </div>
                 <div style="margin-left:205px">
+                    <div id="app" v-cloak>
+                        <el-form :inline="true" :model="searchData" class="demo-form-inline" size="mini">
+                            <el-form-item label="角色">
+                                <el-select v-model="searchData.role" placeholder="请选择" collapse-tags>
+                                    <el-option v-for="item in availableRoles"
+                                               :key="item.id"
+                                               :label="item.displayName"
+                                               :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="账号">
+                                <el-input v-model="searchData.username" placeholder="账号"></el-input>
+                            </el-form-item>
+                            <el-form-item label="姓名">
+                                <el-input v-model="searchData.name" placeholder="姓名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="状态">
+                                <el-checkbox-group v-model="searchData.status">
+                                    <el-checkbox label="激活"></el-checkbox>
+                                    <el-checkbox label="冻结"></el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @@click="doSearch">查询</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
                     <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
                         <vc:module-button module-key="User"></vc:module-button>
-                        <input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
-                        <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
+                        @*<input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
+                        <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>*@
                     </div>
-                    <vc:module-table param="@(new ModuleTableViewParam() {ID="User",ModuleKey=nameof(Master.Authentication.User),Height="full-150",Where="" })"></vc:module-table>
+                    <vc:module-table param="@(new ModuleTableViewParam() {ID="User",ModuleKey=nameof(Master.Authentication.User),Height="full-200",Where="" })"></vc:module-table>
 
                 </div>
             </div>
@@ -83,23 +111,65 @@
             };
         }();
         config.ready = function () {
-            
+            app = new Vue({
+                el: '#app',
+                data: {
+                    availableRoles:[],
+                    searchData: {
+                        status: ["激活", "冻结"],
+                    }
+                },
+                computed: {
+                    where: function () {
+                        var strWhere = '1=1';
+                        this.searchData.username && (strWhere += ` and username.Contains("${this.searchData.username}")`);
+                        this.searchData.name && (strWhere += ` and name.Contains("${this.searchData.name}")`);
+                        if (this.searchData.status.length) {
+                            let whereWrapper = [];
+                            this.searchData.status.forEach(o => whereWrapper.push(` isactive=${o=='激活'?'true':'false'}`));
+                            strWhere += ` and (${whereWrapper.join(' or ')})`;
+                        }
+                        return strWhere;
+                    },
+                    searchKeys: function () {
+                        if (!this.searchData.role) {
+                            return searchKeys;
+                        } else {
+                            return $.extend(searchKeys, { roleId: this.searchData.role });
+                        }
+                    }
+                },
+                methods: {
+                    doSearch: function () {
+                        config.reloadTable();
+
+                    }
+                },
+                mounted: function () {
+                    var that = this;
+                    abp.services.app.role.getTenantRoles(1).done(function (res) {
+                        that.availableRoles = res;
+                    })
+                }
+            })
         };
         config.refresh = function () {
             ztree.reload();
         };
         config.reloadTable = function () {
             layui.table.reload('User', {
-                where: getWhere()
+                where: getWhere(),
+                page:1
             })
         }
         function getWhere(index) {
-            var where = { searchKeys: JSON.stringify(searchKeys),where:'1=1' };
-            
-            var value = $('#name-input').val();
-            if (value) {
-                where.where += " and Name.Contains(\"" + value + "\")"
-            }
+            var where = { searchKeys: JSON.stringify(app.searchKeys),where:'1=1' };
+
+            where.where = app.where;
+            //var value = $('#name-input').val();
+            //if (value) {
+            //    where.where += " and Name.Contains(\"" + value + "\")"
+            //}
             where.searchCondition = func.buildSearchCondition('User');
 
             return where;

@@ -145,8 +145,15 @@ namespace Master.Users
                     var allOrganizationIds = childOrganizations.Select(o => o.Id).ToList();
                     allOrganizationIds.Add(organizationId);
                     baseQuery = baseQuery.Where(o => o.OrganizationId != null && allOrganizationIds.Contains(o.OrganizationId.Value));
-                }
-                
+                }                
+            }else if (searchKeys.ContainsKey("roleId"))
+            {
+                var roleId = int.Parse(searchKeys["roleId"]);
+                baseQuery = from user in baseQuery
+                            join userRole in Resolve<IRepository<UserRole, int>>().GetAll()
+                            on user.Id equals userRole.UserId
+                            where userRole.RoleId == roleId
+                            select user;
             }
             return baseQuery;
         }
