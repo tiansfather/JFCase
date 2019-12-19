@@ -345,9 +345,9 @@
                 this.loadSource();
                 this.loadLawyer();
                 this.scrollSource();
-                $.cookie("openid",'');
-                $.cookie("nickName",'');
-                $.cookie("avata",'');
+                $.cookie("openid",'', { path: '/' });
+                $.cookie("nickName",'', { path: '/' });
+                $.cookie("avata",'', { path: '/' });
                 refreshLogin();
             }
         });
@@ -357,13 +357,14 @@
             if(!app.guid){doLoop();return;}
             abp.services.app.weiXin.getLoginInfo(app.guid).done(function (data) {                    
                 if (data) {
+                    refreshLogin();
                     console.log(data);
                         app.currentItem.openid = data.openid;
                         app.currentItem.nickName = data.nickname;//用户昵称
                         app.currentItem.avata = data.headimgurl;//头像
-                        $.cookie("openid",data.openid);
-                        $.cookie("nickName",data.nickname);
-                        $.cookie("avata",data.headimgurl);
+                        $.cookie("openid",data.openid, { path: '/' });
+                        $.cookie("nickName",data.nickname, { path: '/' });
+                        $.cookie("avata",data.headimgurl, { path: '/' });
                         //根据openid去寻找用户的账号信息
                         abp.services.app.user.getUserStatusByWeOpenId(data.openid).done(function (status) {
                             //status的四种值：1:正常登录，-1:被注销，2：未注册,3:审核中
@@ -379,12 +380,14 @@
                                 doExternalAuthentication(authModel);
                             } else if (status == 2) {
                                 app.step = 2;
-                                location.href='/Account/Login?step=2';
+                                location.href='/Account/Login?step=3';
                             } else if (status == -1) {
                                 var toemail = abp.setting.get("receiveMailAddress");
                                 abp.message.info("您当前已被注销，不可进入，请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>询问具体原因");
+                                doLoop();
                             } else if (status == 3) {
                                 abp.message.info("您的账号还在审核中，请耐心等待");
+                                doLoop();
                             }
                         })
 						

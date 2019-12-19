@@ -15,7 +15,7 @@ namespace Master.Domain
         public string Name { get; set; }
         [InterColumn(ColumnName ="昵称",ValuePath ="Property",Sort =2)]
         public string NickName { get; set; }
-        [InterColumn(ColumnName = "头像", ValuePath = "Property", Sort = 3,IsShownInAdvanceSearch =false)]
+        [InterColumn(ColumnName = "头像", ValuePath = "Property", Sort = 3,IsShownInAdvanceSearch =false,Templet = "<img src=\"{{d.avata}}\" height=\"25\"/>")]
         public string Avata { get; set; }
         [InterColumn(ColumnName ="律师事务所",Sort =4)]
         public string WorkLocation { get; set; }

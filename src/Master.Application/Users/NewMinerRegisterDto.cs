@@ -35,7 +35,6 @@ namespace Master.Users
         /// <summary>
         /// 邮箱
         /// </summary>
-        [Required]
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         /// <summary>

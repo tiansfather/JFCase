@@ -101,7 +101,7 @@
                         <li>
                             
                             <i1><a @@click="doSubmit" class="btn-submit">提交申请</a></i1>
-                            <i2><a @@click="step=2" class="btn-cancel">取 消</a></i2>
+                            <i2><a @@click="doCancel" class="btn-cancel">取 消</a></i2>
                         </li>
                     </ul>
                 </div>
@@ -222,7 +222,7 @@
                     }
                     abp.message.confirm("确认提交?").done(function () {                        
                         func.runAsync(abp.services.app.newMiner.register(app.currentItem).done(function () {
-                            abp.message.success("您的注册申请已提交，我们将会在X个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！")
+                            abp.message.success("您的注册申请已提交，我们将会在2个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！")
                                 .done(function () {
                                     location.href='/Home/Index';
                                 })
@@ -239,6 +239,7 @@
             if(!app.guid){doLoop();return;}
             abp.services.app.weiXin.getLoginInfo(app.guid).done(function (data) {                    
                 if (data) {
+                    refreshLogin();
                     console.log(data);
                         app.currentItem.openid = data.openid;
                         app.currentItem.nickName = data.nickname;//用户昵称
@@ -258,11 +259,14 @@
                                 doExternalAuthentication(authModel);
                             } else if (status == 2) {
                                 app.step = 2;
+                                doLoop();
                             } else if (status == -1) {
                                 var toemail = abp.setting.get("receiveMailAddress");
                                 abp.message.info("您当前已被注销，不可进入，请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>询问具体原因");
+                                doLoop();
                             } else if (status == 3) {
                                 abp.message.info("您的账号还在审核中，请耐心等待");
+                                doLoop();
                             }
                         })
 						
