@@ -427,7 +427,18 @@ namespace Master.Users
             {
                 throw new UserFriendlyException($"被删除用户名下有{initialsCount}个判例,请先进行清除后再删除用户");
             }
-            await base.DeleteEntity(ids);
+            //20191219 完全删除
+            await Repository.HardDeleteAsync(o => ids.Contains(o.Id));
+            try
+            {
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }catch(Exception ex)
+            {
+                Logger.Error(ex.Message, ex);
+                throw new UserFriendlyException("用户有数据关联，无法删除");
+                
+            }
+            //await base.DeleteEntity(ids);
         }
     }
 }
