@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Abp.AutoMapper;
 using Abp.Auditing;
 using Abp.Domain.Uow;
+using Master.Authentication;
 
 namespace Master.Notices
 {
@@ -48,20 +49,18 @@ namespace Master.Notices
         }
 
         /// <summary>
-        /// 获取激活状态的公告
+        /// 检测是否有新矿工审核
         /// </summary>
         /// <returns></returns>
         [DisableAuditing]
-        public virtual async Task<IEnumerable<NoticeDto>> GetActiveNotices()
+        public virtual async Task<bool> GetActiveNotices()
         {
-            using (CurrentUnitOfWork.DisableFilter(AbpDataFilters.MayHaveTenant))
+            if(!await PermissionChecker.IsGrantedAsync("Menu.Admin.Tenancy.NewMiner"))
             {
-                return (await Manager.GetAll().Where(o => o.IsActive && o.TenantId==null)
-                .OrderByDescending(o => o.Id)
-                .ToListAsync())
-                .MapTo<List<NoticeDto>>();
+                return false;
             }
-            
+            var normalCount = await Resolve<NewMinerManager>().GetAll().IgnoreQueryFilters().Where(o => !o.IsDeleted).CountAsync();
+            return normalCount > 0;
         }
     }
 }

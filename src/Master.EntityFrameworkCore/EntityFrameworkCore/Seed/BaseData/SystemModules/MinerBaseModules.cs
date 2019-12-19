@@ -76,6 +76,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             ColumnInfos.Single(o => o.ColumnKey == "WorkLocation").SetData("width", "240");
             ColumnInfos.Single(o => o.ColumnKey == "Email").SetData("width", "200");
             ColumnInfos.Single(o => o.ColumnKey == "Sort").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "Avata").SetData("width", "80");
 
             ColumnInfos.Remove(ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId"));
             ColumnInfos.Remove(ColumnInfos.Single(o => o.ColumnKey == "LastModificationTime"));

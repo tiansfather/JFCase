@@ -87,7 +87,8 @@ namespace Master
         protected override async Task<IQueryable<TEntity>> BuildOrderQueryAsync(RequestPageDto request, IQueryable<TEntity> query)
         {
             ModuleInfo moduleInfo = await ModuleInfo(request);
-            if (request.OrderField.IsNullOrEmpty()) { request.OrderField = moduleInfo.SortField; request.OrderType = moduleInfo.SortType.ToString(); }
+            if (request.OrderField.IsNullOrEmpty()) { request.OrderField = moduleInfo.SortField;  }
+            if (request.OrderType.IsNullOrEmpty()) { request.OrderType = moduleInfo.SortType.ToString(); }
             //使用模块排序
             //默认排序
             if (request.OrderField != "Id")

@@ -208,7 +208,7 @@ namespace Master
         }
         protected virtual async Task<IQueryable<TEntity>> BuildOrderQueryAsync(RequestPageDto request, IQueryable<TEntity> query)
         {
-            if (!request.OrderField.IsNullOrWhiteSpace())
+            if (!request.OrderField.IsNullOrWhiteSpace() && !request.OrderType.IsNullOrWhiteSpace())
             {
                 //提交过来的排序
                 query = query.OrderBy($"{request.OrderField} {request.OrderType}");
