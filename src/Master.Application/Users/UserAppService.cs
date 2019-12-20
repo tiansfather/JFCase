@@ -19,6 +19,7 @@ using Abp.Domain.Entities;
 using Newtonsoft.Json.Linq;
 using Master.Organizations;
 using Master.Case;
+using System.Linq;
 
 namespace Master.Users
 {
@@ -205,7 +206,10 @@ namespace Master.Users
         public virtual async Task Freeze(IEnumerable<long> userIds)
         {
             var users = await Manager.GetListByIdsAsync(userIds);
-            foreach(var user in users)
+            var caseSourceManager = Resolve<CaseSourceManager>();
+            await caseSourceManager.ClearUserUnPublishedCaseSource(userIds);
+
+            foreach (var user in users)
             {
                 user.IsActive = false;
             }
@@ -213,6 +217,7 @@ namespace Master.Users
         public virtual async Task UnFreeze(IEnumerable<long> userIds)
         {
             var users = await Manager.GetListByIdsAsync(userIds);
+            
             foreach (var user in users)
             {
                 user.IsActive = true;
@@ -422,11 +427,13 @@ namespace Master.Users
         public override async Task DeleteEntity(IEnumerable<long> ids)
         {
             //有数据的用户不能删除
-            var initialsCount = await Resolve<CaseSourceManager>().GetAll().Where(o => ids.ToList().Contains(o.OwerId.Value)).CountAsync();
+            var initialsCount = await Resolve<CaseSourceManager>().GetAll().Where(o => ids.ToList().Contains(o.OwerId.Value) && o.CaseSourceStatus==CaseSourceStatus.已加工).CountAsync();
             if (initialsCount > 0)
             {
-                throw new UserFriendlyException($"被删除用户名下有{initialsCount}个判例,请先进行清除后再删除用户");
+                throw new UserFriendlyException($"该用户名下有{initialsCount}个已发布案例，请先清除后再删用户");
             }
+            var caseSourceManager = Resolve<CaseSourceManager>();
+            await caseSourceManager.ClearUserUnPublishedCaseSource(ids);
             //20191219 完全删除
             await Repository.HardDeleteAsync(o => ids.Contains(o.Id));
             try

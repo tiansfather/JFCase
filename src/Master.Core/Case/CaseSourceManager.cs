@@ -31,6 +31,19 @@ namespace Master.Case
             }
         }
 
+        public virtual async Task ClearUserUnPublishedCaseSource(IEnumerable<long> userIds)
+        {
+            //用户如果有尚未发布的案例，则同时清除
+            var caseSourceManager = Resolve<CaseSourceManager>();
+            var caseSourceIds = await caseSourceManager.GetAll().Where(o => userIds.Contains(o.OwerId.Value) && o.CaseSourceStatus != CaseSourceStatus.已加工)
+                .Select(o => o.Id)
+                .ToListAsync();
+            foreach (var caseSourceId in caseSourceIds)
+            {
+                await caseSourceManager.ClearCaseContent(caseSourceId, true);
+            }
+        }
+
         /// <summary>
         /// 清除案例所有加工内容
         /// </summary>

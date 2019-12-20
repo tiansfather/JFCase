@@ -24,7 +24,7 @@
     <div id="app">
        
         <div class="jianfa-ewm login" >
-            <div class="left"><img src="/assets/jianfa/ima/logo.png"></div>
+            <div class="left"><img src="/assets/jianfa/ima/logo.png?v=20191220"></div>
             <div class="right">
                 <!--登陆-01-->
                 <div class="neirong-top" v-show="step==1">
@@ -111,7 +111,7 @@
 
 <!--<button class="btn-submit"></button>-->
 <!--footer-->
-<footer><div class="ziti-a">2017-2020 | Copyright | 版权声明 | 简法二手房  ( <a href="http://www.miibeian.gov.cn/" target="_blank" style="color:white"  class="beian">沪ICP备17021923号-2</a> )</div></footer>
+<footer><div class="ziti-a">2017-2020 | Copyright | 版权声明 | 简法案例解读网  ( <a href="http://www.miibeian.gov.cn/" target="_blank" style="color:white" class="beian">沪ICP备17021923号-2</a> )</div></footer>
 
 @section scripts{
     <script>
@@ -222,7 +222,7 @@
                     }
                     abp.message.confirm("确认提交?").done(function () {                        
                         func.runAsync(abp.services.app.newMiner.register(app.currentItem).done(function () {
-                            abp.message.success("您的注册申请已提交，我们将会在2个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！")
+                            abp.message.success("您已提交申请，审核结果将通过短信告知，请注意查收。加急请联系：18321055351")
                                 .done(function () {
                                     location.href='/Home/Index';
                                 })
@@ -262,7 +262,7 @@
                                 doLoop();
                             } else if (status == -1) {
                                 var toemail = abp.setting.get("receiveMailAddress");
-                                abp.message.info("您当前已被注销，不可进入，请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>询问具体原因");
+                                abp.message.info("您当前已被注销，不可进入系统，请联系管理员：18321055351 询问具体原因");
                                 doLoop();
                             } else if (status == 3) {
                                 abp.message.info("您的账号还在审核中，请耐心等待");

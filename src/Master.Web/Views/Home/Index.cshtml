@@ -383,7 +383,7 @@
                                 location.href='/Account/Login?step=3';
                             } else if (status == -1) {
                                 var toemail = abp.setting.get("receiveMailAddress");
-                                abp.message.info("您当前已被注销，不可进入，请联系<a style='color:blue' href='mailto:" + toemail+"'>管理员</a>询问具体原因");
+                                abp.message.info("您当前已被注销，不可进入系统，请联系管理员：18321055351 询问具体原因");
                                 doLoop();
                             } else if (status == 3) {
                                 abp.message.info("您的账号还在审核中，请耐心等待");

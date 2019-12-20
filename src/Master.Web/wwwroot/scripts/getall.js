@@ -524,6 +524,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'deleteEntity'
+    abp.services.app.miner.deleteEntity = function(ids, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Miner/DeleteEntity' + abp.utils.buildQueryString([{ name: 'ids', value: ids }]) + '',
+        type: 'DELETE'
+      }, ajaxParams));;
+    };
+
     // action 'getPageResult'
     abp.services.app.miner.getPageResult = function(request, ajaxParams) {
       return abp.ajax($.extend(true, {
@@ -587,14 +595,6 @@ abp.services = abp.services || {};
       return abp.ajax($.extend(true, {
         url: abp.appPath + 'api/services/app/Miner/GetGroupedField' + abp.utils.buildQueryString([{ name: 'key', value: key }]) + '',
         type: 'GET'
-      }, ajaxParams));;
-    };
-
-    // action 'deleteEntity'
-    abp.services.app.miner.deleteEntity = function(ids, ajaxParams) {
-      return abp.ajax($.extend(true, {
-        url: abp.appPath + 'api/services/app/Miner/DeleteEntity' + abp.utils.buildQueryString([{ name: 'ids', value: ids }]) + '',
-        type: 'DELETE'
       }, ajaxParams));;
     };
 

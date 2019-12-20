@@ -27,7 +27,7 @@ namespace Master.Web.Startup
                 }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
                     options.AccessDeniedPath = new PathString("/Account/Forbidden/");
-                    options.LoginPath = new PathString("/Account/Login/");
+                    options.LoginPath = new PathString("/Home/Index/");
                     //options.Cookie.Name = "AuthCookie";
                     //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 })
