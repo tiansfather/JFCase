@@ -25,7 +25,7 @@
                             </div>
                         </div>
                     </form>
-                    <table autoevent="1" id="Labels" lay-filter="Labels" class="layui-table " lay-data="{cellMinWidth:'120',height:'full-170', url:'/api/services/app/label/GetPageResult', page:true, id:'Labels',  even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
+                    <table autoevent="1" id="Labels" lay-filter="Labels" class="layui-table " lay-data="{cellMinWidth:'120',height:'full-170', url:'/api/services/app/label/GetPageResult', page:true, id:'Labels',limit:50,  even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
                         <thead>
                             <tr>
                                 <th lay-data="{field:'labelName',edit:'text'}">@L("标签名称")</th>
