@@ -31,7 +31,8 @@ namespace Master.Case
                 .Include(o=>o.Court1)
                 .Include(o=>o.Court2)
                 .Include("CaseSourceHistories.CreatorUser")
-                .Where(o => o.CaseSourceStatus == CaseSourceStatus.待选 && o.OwerId == null);
+                .Where(o => o.CaseSourceStatus == CaseSourceStatus.待选 && o.OwerId == null)
+                .OrderByDescending(o=>o.ValidDate);
         }
         protected override async Task<IQueryable<CaseSource>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseSource> query)
         {
