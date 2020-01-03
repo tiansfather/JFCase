@@ -96,5 +96,12 @@ namespace Master.Users
             var caseInitial = await Manager.GetByIdAsync(id);
             caseInitial.Sort = sort;
         }
+
+        public override async Task DeleteEntity(IEnumerable<long> ids)
+        {
+            var caseSourceManager = Resolve<CaseSourceManager>();
+            await caseSourceManager.ClearUserUnPublishedCaseSource(ids);
+            await base.DeleteEntity(ids);
+        }
     }
 }

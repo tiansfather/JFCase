@@ -1,0 +1,22 @@
+mysql: root root@jf
+服务器：
+47.100.241.2
+Kgb@@7dnmt008
+
+公众号：
+liuhui@jf-zy.com
+123321Jf
+
+域名：
+www.jianfa-lawyer.com
+
+测试公众号 ："WeixinAppId": "wxbb847677c1e6cad2",
+		"WeixinAppSecret": "83020188a43c1745965d2a70e75d6b40",
+
+
+微信公众号
+1.?名称?简法二手房
+
+2.?appID wx3eb0212d543f4752
+
+3.?appSecret 6d93ec72e5f52b74c7ffd273b7fa0e17 

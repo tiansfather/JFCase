@@ -59,7 +59,7 @@
 @section scripts{
     <script>
         $("body").addClass("index-bj-b");
-        new Vue({
+        var app=new Vue({
             el: '#app',
             data: {
                 avata:'/assets/jianfa/ima/index-2.png'
@@ -68,6 +68,13 @@
                 var that = this;
                 abp.services.app.user.getById(abp.session.userId).done(function (data) {
                     that.avata = data.avata;
+                })
+                //用户是否被冻结
+                abp.services.app.user.getUserIsActive(abp.session.userId).done(function (data) {
+                    that.userIsAcitve = data;
+                    if (!that.userIsAcitve) {
+                        abp.message.info("您当前处于冻结状态，只能够查看案例，不能加工案例，如需更详细信息请联系管理员")
+                    }
                 })
             }
         });

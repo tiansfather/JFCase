@@ -50,6 +50,27 @@
 
 		@section scripts{
 			<script>
+                Vue.component('lay-lockout', {
+                    template: `
+    <div class="layui-form-item">
+        <input type="hidden" :name="columnInfo.ColumnKey" :value="newValue" />
+        <label class="layui-form-label">{{columnInfo.ColumnName}}</label>
+        <div class="layui-input-block">
+            <input type="text" :name="columnInfo.ColumnKey"  autocomplete="off" class="layui-input" v-model="newValue" >
+            <span style="position:absolute;right:8px;top:8px;color:#ccc">分钟</span>
+        </div>
+    </div>
+    `,
+                    props: ['columnInfo', 'value'],
+                    data: function () {
+                        return {
+                            newValue: this.value
+                        }
+                    },
+                    created: function () {
+                        console.log(this.value);
+                    }
+                });
 		var app;
 		var settingKeys=@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(settingKeys));
 		config.ready = function () {

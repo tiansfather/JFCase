@@ -15,7 +15,7 @@
     AbpAntiForgeryManager.SetCookie(Context);
     if (ContextAccessor.HttpContext.Session.Get<int?>("LoginInfo") == null)
     {
-        ContextAccessor.HttpContext.Response.Redirect("/Account/Login");
+        ContextAccessor.HttpContext.Response.Redirect("/Account/GMLogin");
     }
 }
 <!DOCTYPE html>

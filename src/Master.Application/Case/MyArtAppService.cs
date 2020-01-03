@@ -22,8 +22,23 @@ namespace Master.Case
             var query = await base.GetQueryable(request);
             return query.Include("CaseInitial.CaseSource.AnYou")
                 .Where(o => o.CaseInitial.CaseSource.OwerId == AbpSession.UserId)
-                .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架);
+                .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架)
+                .OrderByDescending(o=>o.PublishDate);
             ;
+        }
+        protected override async Task<IQueryable<CaseFine>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseFine> query)
+        {
+            return (await base.BuildKeywordQueryAsync(keyword, query))
+                  .Where(o => o.Title.Contains(keyword)
+                  ||o.Content.Contains(keyword)
+                || o.CaseInitial.CaseSource.SourceSN.Contains(keyword)
+                || o.CaseInitial.CaseSource.City.DisplayName.Contains(keyword)
+                || o.CaseInitial.CaseSource.Court1.DisplayName.Contains(keyword)
+                || o.CaseInitial.CaseSource.Court2.DisplayName.Contains(keyword)
+                || o.CaseInitial.CaseSource.TrialPeopleField.Contains(keyword)
+                || o.CaseInitial.CaseSource.LawyerFirmsField.Contains(keyword)
+                || o.Remarks.Contains(keyword)//包含备注的查询
+                );
         }
         protected override object PageResultConverter(CaseFine entity)
         {

@@ -19,7 +19,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 ButtonType = ButtonType.ForSingleRow,
                 ButtonActionType = ButtonActionType.Ajax,
                 ButtonActionUrl = $"abp.services.app.user.freeze",
-                ConfirmMsg= "矿工冻结后，将不能再从判例库添加新的判例至工作台，已添加的判例可保留，确定继续吗？",
+                ConfirmMsg= "矿工冻结后，将不能再从判例库添加新的判例至工作台，已发布的判例可保留，确定继续吗？",
                 ButtonClass = "layui-btn-danger",
                 ClientShowCondition="d.isActive && !d.isDelete",
                 Sort = 1
@@ -65,7 +65,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             var deleteBtn = ButtonInfos.Single(o => o.ButtonKey == "Delete");
             deleteBtn.ButtonType = ButtonType.ForSingleRow;
             deleteBtn.ButtonName = "注销";
-            deleteBtn.ConfirmMsg = "矿工注销后，将不能再登陆平台，但他的数据将会被保留，确定继续吗？";
+            deleteBtn.ConfirmMsg = "矿工注销后，将不能再登陆平台，但已发布的判例数据将会被保留，确定继续吗？";
             deleteBtn.ClientShowCondition = "!d.isDelete";
 
         }
@@ -76,6 +76,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             ColumnInfos.Single(o => o.ColumnKey == "WorkLocation").SetData("width", "240");
             ColumnInfos.Single(o => o.ColumnKey == "Email").SetData("width", "200");
             ColumnInfos.Single(o => o.ColumnKey == "Sort").SetData("width", "80");
+            ColumnInfos.Single(o => o.ColumnKey == "Avata").SetData("width", "80");
 
             ColumnInfos.Remove(ColumnInfos.Single(o => o.ColumnKey == "LastModifierUserId"));
             ColumnInfos.Remove(ColumnInfos.Single(o => o.ColumnKey == "LastModificationTime"));

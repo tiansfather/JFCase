@@ -139,7 +139,7 @@
         },
         mounted: function () {
             var that = this;
-                abp.services.app.user.getById(abp.session.userId).done(function (data) {
+            abp.services.app.user.getById(abp.session.userId, { error: function () { abp.message.error('登录失败，请重新登录').done(function () { location.href = '/Home/Index'}); }, abpHandleError:false}).done(function (data) {
                     that.avata = data.avata;
                 })
         }

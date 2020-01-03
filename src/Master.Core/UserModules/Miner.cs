@@ -13,17 +13,21 @@ namespace Master.Domain
     {
         [InterColumn(ColumnName = "姓名", Sort = 1)]
         public string Name { get; set; }
-        [InterColumn(ColumnName ="律师事务所",Sort =2)]
+        [InterColumn(ColumnName ="昵称",ValuePath ="Property",Sort =2)]
+        public string NickName { get; set; }
+        [InterColumn(ColumnName = "头像", ValuePath = "Property", Sort = 3,IsShownInAdvanceSearch =false,Templet = "<img src=\"{{d.avata}}\" height=\"25\"/>")]
+        public string Avata { get; set; }
+        [InterColumn(ColumnName ="律师事务所",Sort =4)]
         public string WorkLocation { get; set; }
-        [InterColumn(ColumnName = "有效电子邮箱",Sort =3)]
+        [InterColumn(ColumnName = "有效电子邮箱",Sort =5)]
         public string Email { get; set; }
-        [InterColumn(ColumnName = "所属组织", ColumnType = ColumnTypes.Text, Renderer = "lay-departchoose", DisplayPath = "Organization.DisplayName", Templet = "{{d.organizationId_display?d.organizationId_display:''}}",Sort =4)]
+        [InterColumn(ColumnName = "所属组织", ColumnType = ColumnTypes.Text, Renderer = "lay-departchoose", DisplayPath = "Organization.DisplayName", Templet = "{{d.organizationId_display?d.organizationId_display:''}}",Sort =6)]
         public int? OrganizationId { get; set; }
-        [InterColumn(ColumnName ="成品案例",ColumnType =ColumnTypes.Number,IsShownInAdd =false,IsShownInEdit =false,ValuePath ="Property", IsShownInAdvanceSearch = false, Sort = 5,Templet = "<a dataid=\"{{d.id}}\" class=\"layui-btn layui-btn-xs layui-btn-normal\" buttonname=\"{{d.name}}成品案例\" tips=\"点击查看案例\" params=\"{&quot;btn&quot;:[]}\"   buttonactiontype=\"Form\" buttonactionurl=\"/Miner/ShowCase\" onclick=\"func.callModuleButtonEvent()\">{{d.caseNumber}}</a>")]
+        [InterColumn(ColumnName ="成品案例",ColumnType =ColumnTypes.Number,IsShownInAdd =false,IsShownInEdit =false,ValuePath ="Property", IsShownInAdvanceSearch = false, Sort = 7,Templet = "<a dataid=\"{{d.id}}\" class=\"layui-btn layui-btn-xs layui-btn-normal\" buttonname=\"{{d.name}}成品案例\" tips=\"点击查看案例\" params=\"{&quot;btn&quot;:[]}\"   buttonactiontype=\"Form\" buttonactionurl=\"/Miner/ShowCase\" onclick=\"func.callModuleButtonEvent()\">{{d.caseNumber}}</a>")]
         public int CaseNumber { get; set; }
-        [InterColumn(ColumnName ="推荐排序",Sort =6, Templet = "<input type=\"text\" value=\"{{(d.sort || 999999) == 999999 ? '' : d.sort}}\" size=5 onblur=\"setSort({{ d.id}},this)\"/>")]
+        [InterColumn(ColumnName ="推荐排序",Sort =8, Templet = "<input type=\"text\" value=\"{{(d.sort || 999999) == 999999 ? '' : d.sort}}\" size=5 onblur=\"setSort({{ d.id}},this)\"/>")]
         public int Sort { get; set; }
-        [InterColumn(ColumnName ="最后登录时间", ColumnType =ColumnTypes.DateTime,DisplayFormat ="yyyy-MM-dd HH:mm:ss",Sort =5)]
+        [InterColumn(ColumnName ="最后登录时间", ColumnType =ColumnTypes.DateTime,DisplayFormat ="yyyy-MM-dd HH:mm:ss",Sort =6)]
         public DateTime? LastLoginTime { get; set; }
     }
 }

@@ -14,9 +14,27 @@
             </ul>
             <div class="layui-tab-content">
                 <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                    <div id="app" v-cloak>
+                        <el-form :inline="true" :model="searchData" class="demo-form-inline" size="mini">
+                            <el-form-item label="姓名">
+                                <el-input v-model="searchData.name" placeholder="姓名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="律师事务所">
+                                <el-input v-model="searchData.workLocation" placeholder="律师事务所"></el-input>
+                            </el-form-item>
+                            <el-form-item label="电子邮箱">
+                                <el-input v-model="searchData.email" placeholder="电子邮箱"></el-input>
+                            </el-form-item>
+                            
+                            <el-form-item>
+                                <el-button type="primary" @@click="doSearch">查询</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
                     <vc:module-button module-key="Miner"></vc:module-button>
-                    <input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
-                    <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>
+
+                    @*<input type="text" id="name-input" class="layui-input" style="width: 150px; display: inline-block;height: 30px;vertical-align: middle;" placeholder="输入名字检索" />
+                    <button class="layui-btn  layui-btn-sm" onclick="config.reloadTable()">搜索</button>*@
                 </div>
                 <vc:module-table param="@(new ModuleTableViewParam() {ID="Miner",ModuleKey="Miner",Height="full-150",Where="isdeleted=false and isactive=true" })"></vc:module-table>
             </div>
@@ -41,6 +59,29 @@
         var searchKeys = {};
         
         config.ready = function () {
+            app = new Vue({
+                el: '#app',
+                data: {
+                    searchData: {
+                        
+                    }
+                },
+                computed: {
+                    where: function () {
+                        var strWhere = ' ';
+                        this.searchData.name && (strWhere += ` and Name.Contains("${this.searchData.name}")`);
+                        this.searchData.workLocation && (strWhere += ` and workLocation.Contains("${this.searchData.workLocation}")`);
+                        this.searchData.email && (strWhere += ` and email.Contains("${this.searchData.email}")`);
+                        return strWhere;
+                    }
+                },
+                methods: {
+                    doSearch: function () {
+                        config.reloadTable();
+
+                    }
+                }
+            })
             function setBtn(index) {
                 var hideArr = [];
                 switch (index) {
@@ -79,7 +120,8 @@
         };
         config.reloadTable = function () {
             layui.table.reload('Miner', {
-                where: getWhere($(".layui-tab-title .layui-this").index())
+                where: getWhere($(".layui-tab-title .layui-this").index()),
+                page:1
             })
         }
         function getWhere(index) {
@@ -95,10 +137,11 @@
                     where.where= 'isdeleted=true';
                     break;
             }
-            var value = $('#name-input').val();
-            if (value) {
-                where.keyword = value;
-            }
+            where.where += app.where;
+            //var value = $('#name-input').val();
+            //if (value) {
+            //    where.keyword = value;
+            //}
             where.searchCondition = func.buildSearchCondition('Miner');
 
             return where;

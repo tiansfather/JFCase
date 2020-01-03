@@ -46,7 +46,7 @@ namespace Master.Web.Controllers
         public ActionResult Logout()
         {
             Response.Cookies.Delete("token");
-            return RedirectToAction("Login");
+            return Redirect("/Home/Index");
         }
         public ActionResult GMLogout()
         {

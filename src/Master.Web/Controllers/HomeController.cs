@@ -79,14 +79,14 @@ namespace Master.Web.Controllers
             catch
             {
                 Response.Cookies.Delete("token");
-                return Redirect("/Account/Login");
+                return Redirect("/Home/Index");
             }
             Logger.Info("登录用户:" + loginInfo.User.Id.ToString()+","+ string.Join(',',loginInfo.User.RoleNames));
             //仅矿工可进入首页
             if (!loginInfo.User.RoleNames.Contains(StaticRoleNames.Tenants.Miner))
             {
                 Response.Cookies.Delete("token");
-                return Redirect("/Account/Login?msg="+HttpUtility.UrlEncode( "仅矿工可以进入首页"));
+                return Redirect("/Home/Index?msg="+HttpUtility.UrlEncode( "仅矿工可以进入首页"));
             }
             //默认首页
             if (loginInfo.User.HomeUrl.IsNullOrEmpty())

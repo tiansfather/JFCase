@@ -114,17 +114,10 @@ var app = new Vue({
             //}
             var alreadyKnow = false;
             abp.services.app.notice.getActiveNotices({ error: function (err) { console.log(err); }, abpHandleError:false}).done(function (data) {
-                if (data.length && !alreadyKnow) {
-                    //weihuJingGao(data[0].noticeTitle);
-                    app.tipsText = '<p style="max-width:500px;">' + (data[0].noticeTitle || '') + '</p>如有问题，请咨询tel:15988939422';
-
-                    app.setBulletinText((data[0].noticeTitle||'') + '&nbsp;&nbsp;&nbsp;&nbsp;如有问题，请咨询tel:15988939422')
-                    alreadyKnow = true;
-                }
-                if (data.length == 0) {
-                    if (app.sign == 'd') {
-                        app.setBulletinText('')
-                    }
+                if (data) {
+                    $("#newMinerTip").show();
+                } else {
+                    $("#newMinerTip").hide();
                 }
             })
         },
@@ -383,8 +376,8 @@ function initIndex() {
     }
 
 
-    //setInterval("app.toReadNotices()", 60000);
-    //app.toReadNotices();
+    setInterval("app.toReadNotices()", 60000);
+    app.toReadNotices();
     //app.scrollBulletin();
 }
 

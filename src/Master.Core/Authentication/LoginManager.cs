@@ -174,10 +174,10 @@ namespace Master.Authentication
             {
                 return new LoginResult(LoginResultType.TenantIsNotActive, tenant);
             }
-            if (!user.IsActive)
-            {
-                return new LoginResult(LoginResultType.UserIsNotActive, tenant);
-            }
+            //if (!user.IsActive)
+            //{
+            //    return new LoginResult(LoginResultType.UserIsNotActive, tenant);
+            //}
             //是否是第一次登录
             if (user.LastLoginTime == null)
             {

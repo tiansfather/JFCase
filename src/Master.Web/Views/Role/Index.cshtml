@@ -24,7 +24,7 @@
 			<table autoevent="1" id="Roles" lay-filter="Roles" class="layui-table " lay-data="{cellMinWidth:'80',height:'full-170', url:'/api/services/app/Role/GetPageResult', page:true, id:'Roles',  even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
 				<thead>
                     <tr>
-                        <th lay-data="{field:'displayName',sort:true,edit:'text'}">@L("角色名称")</th>
+                        <th lay-data="{field:'displayName',sort:true,templet:'#roleNameTpl'}">@L("角色名称")</th>
                         <th lay-data="{field:'remarks',edit:'text'}">@L("描述")</th>
                         <th lay-data="{field:'isStatic',sort:true,templet:'#staticTpl'}">@L("类型")</th>
                         @*<th lay-data="{field:'',templet:'#memberTpl'}">@L("成员")</th>*@
@@ -38,6 +38,13 @@
 
 	</div>
 </div>
+<script type="text/html" id="roleNameTpl">
+    {{#if(d.isStatic){}}
+    {{d.displayName}}
+    {{#}else{}}
+    <input type="text" value="{{d.displayName}}" style="width:80%;line-height:20px;border:none" onblur="changeRoleName({{d.id}},'{{d.displayName}}',this.value)"/>
+    {{#}}}
+</script>
 <script type="text/html" id="staticTpl">
 	{{#if(d.isStatic){}}
 	<span class="layui-badge layui-bg-blue">@L("固化")</span>
@@ -121,6 +128,18 @@
         }
         config.refresh = function () {
 
+        }
+        function changeRoleName(roleId, oriName, newName) {
+            if (oriName == newName) return;
+            abp.message.confirm(L('确认修改?'), function () {
+                func.runAsync(abp.services.app.role.updateField(roleId, 'displayName', newName, {
+                    error: function () {
+                        layui.table.reload('Roles');
+                    }
+                }).done(function () {
+                    layer.msg('更新成功');
+                }));
+            })
         }
         function addRole() {
             layer.prompt({ title: '@L("请输入角色名")', formType: 0 }, function (text, index) {

@@ -19,6 +19,7 @@ using Abp.Domain.Entities;
 using Newtonsoft.Json.Linq;
 using Master.Organizations;
 using Master.Case;
+using System.Linq;
 
 namespace Master.Users
 {
@@ -145,8 +146,15 @@ namespace Master.Users
                     var allOrganizationIds = childOrganizations.Select(o => o.Id).ToList();
                     allOrganizationIds.Add(organizationId);
                     baseQuery = baseQuery.Where(o => o.OrganizationId != null && allOrganizationIds.Contains(o.OrganizationId.Value));
-                }
-                
+                }                
+            }else if (searchKeys.ContainsKey("roleId"))
+            {
+                var roleId = int.Parse(searchKeys["roleId"]);
+                baseQuery = from user in baseQuery
+                            join userRole in Resolve<IRepository<UserRole, int>>().GetAll()
+                            on user.Id equals userRole.UserId
+                            where userRole.RoleId == roleId
+                            select user;
             }
             return baseQuery;
         }
@@ -198,7 +206,10 @@ namespace Master.Users
         public virtual async Task Freeze(IEnumerable<long> userIds)
         {
             var users = await Manager.GetListByIdsAsync(userIds);
-            foreach(var user in users)
+            var caseSourceManager = Resolve<CaseSourceManager>();
+            await caseSourceManager.ClearUserUnPublishedCaseSource(userIds);
+
+            foreach (var user in users)
             {
                 user.IsActive = false;
             }
@@ -206,6 +217,7 @@ namespace Master.Users
         public virtual async Task UnFreeze(IEnumerable<long> userIds)
         {
             var users = await Manager.GetListByIdsAsync(userIds);
+            
             foreach (var user in users)
             {
                 user.IsActive = true;
@@ -415,12 +427,25 @@ namespace Master.Users
         public override async Task DeleteEntity(IEnumerable<long> ids)
         {
             //有数据的用户不能删除
-            var initialsCount = await Resolve<CaseSourceManager>().GetAll().Where(o => ids.ToList().Contains(o.OwerId.Value)).CountAsync();
+            var initialsCount = await Resolve<CaseSourceManager>().GetAll().Where(o => ids.ToList().Contains(o.OwerId.Value) && o.CaseSourceStatus==CaseSourceStatus.已加工).CountAsync();
             if (initialsCount > 0)
             {
-                throw new UserFriendlyException($"被删除用户名下有{initialsCount}个判例,请先进行清除后再删除用户");
+                throw new UserFriendlyException($"该用户名下有{initialsCount}个已发布案例，请先清除后再删用户");
             }
-            await base.DeleteEntity(ids);
+            var caseSourceManager = Resolve<CaseSourceManager>();
+            await caseSourceManager.ClearUserUnPublishedCaseSource(ids);
+            //20191219 完全删除
+            await Repository.HardDeleteAsync(o => ids.Contains(o.Id));
+            try
+            {
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }catch(Exception ex)
+            {
+                Logger.Error(ex.Message, ex);
+                throw new UserFriendlyException("用户有数据关联，无法删除");
+                
+            }
+            //await base.DeleteEntity(ids);
         }
     }
 }

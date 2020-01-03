@@ -39,7 +39,7 @@ namespace Master.Configuration
                 menuSettingDefinition,
                 new SettingDefinition(SettingNames.SoftTitle, "简法案例系统",L("系统标题"),group, scopes: SettingScopes.Application , isVisibleToClients: true),
                 new SettingDefinition(SettingNames.login_lockoutCount, "6",L("失败次数"),group2, scopes: SettingScopes.Application,customData:new SettingUIInfo(){ ColumnType=Module.ColumnTypes.Number,Tips="同一用户名登录失败超过此数字将被锁定登录"}),
-                new SettingDefinition(SettingNames.login_lockoutDuration, "30",L("锁定时长"),group2, scopes: SettingScopes.Application,customData:new SettingUIInfo(){ ColumnType=Module.ColumnTypes.Number,Tips="单位分钟"}),
+                new SettingDefinition(SettingNames.login_lockoutDuration, "30",L("锁定时长"),group2, scopes: SettingScopes.Application,customData:new SettingUIInfo(){ ColumnType=Module.ColumnTypes.Number,Tips="单位分钟",Renderer="lay-lockout"}),
                 new SettingDefinition(SettingNames.maxWorkbenchCaseCount, "10",L("工作台可选案例数"),group, scopes: SettingScopes.Application , isVisibleToClients: true),
                 new SettingDefinition(SettingNames.receiveMailAddress, "",L("接收邮件地址"),group, scopes: SettingScopes.Application , isVisibleToClients: true),
 

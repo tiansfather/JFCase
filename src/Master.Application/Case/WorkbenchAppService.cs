@@ -31,7 +31,8 @@ namespace Master.Case
                 .Include(o=>o.Court1)
                 .Include(o=>o.Court2)
                 .Include("CaseSourceHistories.CreatorUser")
-                .Where(o => o.CaseSourceStatus == CaseSourceStatus.待选 && o.OwerId == null);
+                .Where(o => o.CaseSourceStatus == CaseSourceStatus.待选 && o.OwerId == null)
+                .OrderByDescending(o=>o.ValidDate);
         }
         protected override async Task<IQueryable<CaseSource>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseSource> query)
         {
@@ -121,7 +122,7 @@ namespace Master.Case
             var user = await GetCurrentUserAsync();
             if (!user.IsActive)
             {
-                throw new UserFriendlyException("您的账号被冻结，目前不能加工案例，请联系管理员");
+                throw new UserFriendlyException("您当前处于冻结状态，只能够查看案例，不能加工案例，如需更详细信息请联系管理员");
             }
             var caseSource = await Manager.GetByIdAsync(id);
             if(caseSource==null || caseSource.CaseSourceStatus == CaseSourceStatus.下架)

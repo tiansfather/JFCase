@@ -38,6 +38,12 @@ namespace Master.Case
                 || o.CaseSource.Court2.DisplayName.Contains(keyword)
                 || o.CaseSource.TrialPeopleField.Contains(keyword)
                 || o.CaseSource.LawyerFirmsField.Contains(keyword)
+                || o.Subject.DisplayName.Contains(keyword)
+                || o.Law.Contains(keyword)
+                || o.LawyerOpinion.Contains(keyword)
+                || o.Experience.Contains(keyword)
+                || o.Property.Json.Contains(keyword)
+                || o.CaseCards.Count(c => c.Title.Contains(keyword) || c.Content.Contains(keyword)) > 0
                 );
         }
         protected override async Task<IQueryable<CaseInitial>> BuildSearchQueryAsync(IDictionary<string, string> searchKeys, IQueryable<CaseInitial> query)
