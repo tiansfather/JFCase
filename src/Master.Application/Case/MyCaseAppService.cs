@@ -28,8 +28,8 @@ namespace Master.Case
                 .Include(o => o.CaseNodes)
                 .Where(o => o.CaseSource.OwerId == AbpSession.UserId)
                 .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架)
-                .OrderByDescending(o=>o.CaseSource.ValidDate)
-                //.OrderByDescending(o=>o.PublishDate)
+                //.OrderByDescending(o=>o.CaseSource.ValidDate)
+                .OrderByDescending(o=>o.PublishDate)
                 ;
 
         }
@@ -46,6 +46,12 @@ namespace Master.Case
                 || o.CaseSource.TrialPeopleField.Contains(keyword)
                 || o.CaseSource.LawyerFirmsField.Contains(keyword)
                 || o.Subject.DisplayName.Contains(keyword)
+                || o.Law.Contains(keyword)
+                || o.LawyerOpinion.Contains(keyword)
+                || o.Experience.Contains(keyword)
+                || o.Property.Json.Contains(keyword)
+                || o.CaseCards.Count(c => c.Title.Contains(keyword) || c.Content.Contains(keyword)) > 0
+                || o.Remarks.Contains(keyword)//包含备注的查询
                 );
         }
         protected override object PageResultConverter(CaseInitial entity)
