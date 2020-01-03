@@ -207,15 +207,13 @@
                             return false;
                         }
                     }
-                    abp.message.confirm("确认提交?").done(function () {                        
+    
+                    abp.message.confirm('确认提交?','提示', function () {
                         func.runAsync(abp.services.app.newMiner.register(app.currentItem).done(function () {
-                            abp.message.success("您的注册申请已提交，我们将会在X个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！")
-                                .done(function () {
-                                    location.reload();
-                                })
+                            abp.message.success("您的注册申请已提交，我们将会在X个工作日内审核，审核通过后会向您的邮箱发送通知，请注意查收！").done(function () {
+                                location.reload();
+                            })
                         }));
-                        
-                        
                     })
                 }
             }

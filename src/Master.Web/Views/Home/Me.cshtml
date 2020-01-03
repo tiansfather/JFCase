@@ -68,6 +68,19 @@
             height: 178px;
             display: block;
         }
+        /*.el-message-box--center .el-message-box__btns, .el-message-box--center .el-message-box__content {
+            text-align: right;
+        }
+
+        .el-message-box__content {
+            padding: 0;
+        }
+        .el-message-box--center{
+            padding-bottom:10px;
+        }*/
+        pre{
+            font-family:'Microsoft YaHei', Verdana, Arial, sans-serif;
+        }
     </style>
 }
     <div id="app">
@@ -93,16 +106,16 @@
                     <p class="me-con-first">{{userData.workLocation}}</p>
                     <div class="me-con-text">
                         <div class="me-context-wrap">
-                            <label class="me-context-label ">所属领域:</label>
+                            <label class="me-context-label ">擅长领域:</label>
                             <p class="me-context-val">{{userData.anYou}}</p>
                         </div>
                         <div class="me-context-wrap">
-                            <label class="me-context-label ">职业年限:</label>
+                            <label class="me-context-label ">执业年限:</label>
                             <p class="me-context-val">{{userData.workYear}}</p>
                         </div>
                         <div class="me-context-wrap">
                             <label class="me-context-label ">自我介绍:</label>
-                            <p class="me-context-val">{{userData.introduction}}</p>
+                            <pre class="me-context-val" v-html="userData.introduction"></pre>
                         </div>
                         <div class="me-context-wrap">
                             <label class="me-context-label ">已完成案例:</label>
@@ -132,9 +145,9 @@
                             <el-input v-model="userData.workLocation" placeholder="律所"></el-input>
                         </el-form-item>
 
-                        <el-form-item label="所属领域">
+                        <el-form-item label="擅长领域">
                             @*<el-input v-model="userData.anYouId" placeholder="所属领域"></el-input>*@
-                            <el-select v-model="userData.anYouIds" multiple placeholder="所属领域" style="width:100%">
+                            <el-select v-model="userData.anYouIds" multiple placeholder="擅长领域" style="width:100%">
                                 <el-option v-for="item in anYous"
                                            :key="item.id"
                                            :label="item.displayName"
@@ -142,8 +155,8 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="职业年限">
-                            <el-input v-model="userData.workYear" placeholder="职业年限" type="number"></el-input>
+                        <el-form-item label="执业年限">
+                            <el-input v-model="userData.workYear" placeholder="执业年限" type="number"></el-input>
                         </el-form-item>
                         <el-form-item label="自我介绍">
                             <el-input v-model="userData.introduction" placeholder="自我介绍" type="textarea" maxlength="140" autosize></el-input>
@@ -175,15 +188,16 @@
                             anYous:[]
                         },
                         methods: {
+                            showBr:function(str){
+                                return 
+                            },
                             update: function () {
-                                var that = this;
-                                abp.message.confirm('确认提交?', function () {
+                                 var that = this;
+                                abp.message.confirm('确认提交?','提示', function () {
                                     func.runAsync(abp.services.app.user.updateUserInfo(that.userData).done(() => {
                                         location.reload();
                                     }))
                                 })
-                            
-
                             },
                             handleAvatarSuccess(res, file) {
                                 console.log(res);
