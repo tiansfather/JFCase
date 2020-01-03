@@ -35,11 +35,20 @@
             justify-content: space-between;
         }
         .paiban, .paiban.on{width:337px;}
+        .jianfa-content{
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .jianfa-content .ny-content.on{
+            background: #fff;
+        }
     </style>
 
 }
 
-    <div id="app" v-cloak style="display:none">
+    <div id="app" v-cloak style="        display: none
+">
         <!--顶部-->
         <com-header active-name="3"></com-header>
 
@@ -70,7 +79,7 @@
         <!--看观点-->
         <div class="jianfa-guandiancard style-pa-46">
             <div v-show="items.length===0 && !loading">
-                <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的案例卡哦，请减少查询条件再试试看。</h1>
+                <h1 style="font-size: 24px; text-align: center; margin: 30px ">没有符合您查询条件的案例卡哦，请减少查询条件再试试看。</h1>
             </div>
             <div class="ny-guandiancard" v-if="items.length">
                 <a @@click="item.isRotate= !item.isRotate" class="paiban" v-for="(item,index) in items" :class="{'rotate-card':item.isRotate}">

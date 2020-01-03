@@ -166,6 +166,9 @@
                 background: #fff;
                 cursor: initial;
             }
+pre {
+    font-family: 'Microsoft YaHei', Verdana, Arial, sans-serif;
+}
     </style>
 }
 
@@ -193,7 +196,8 @@
             <div class="jiagong-content">
                 <div class="bjul">
                     <div class="bjli style-chaal-55">
-                        <div class="bjdl" style="overflow:hidden;">
+                        <div class="bjdl" style="        overflow: hidden;
+">
                             <div class="bjdd" style="height:100%">
                                 <iframe :src="'/pdfviewer/web/viewer.html?file='+encodeURIComponent(source.sourceFile)" frameborder="0" style="width:100%;height:100%"></iframe>
                                 @*<img src="~/assets/jianfa/ima/anhao-1.jpg" />*@
@@ -790,7 +794,7 @@
                                         <i8 class="style-chaal-20 width100">文案内容</i8>
                                     </bt>
                                     <i6 class="fleft tjustify width100">
-                                        {{item.content}}
+                                        <pre>{{item.content}}</pre>
                                     </i6>
                                 </dd>
 
