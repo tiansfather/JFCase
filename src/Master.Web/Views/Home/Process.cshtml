@@ -780,8 +780,8 @@
                                     <bt>
                                         <i8 class="style-chaal-20">文案标题</i8>
                                     </bt>
-                                    <i6 class="fleft tjustify width100">
-                                        {{item.title}}
+                                    <i6 class="fleft tjustify width100" v-html="replaceHtml(item.title)">
+                                        @*{{item.title}}*@
                                     </i6>
                                 </dd>
 
@@ -789,8 +789,8 @@
                                     <bt>
                                         <i8 class="style-chaal-20 width100">文案内容</i8>
                                     </bt>
-                                    <i6 class="fleft tjustify width100">
-                                        {{item.content}}
+                                    <i6 class="fleft tjustify width100" v-html="replaceHtml(item.content)">
+                                        @*{{item.content}}*@
                                     </i6>
                                 </dd>
 

@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Runtime.Security;
 using Master.Dto;
+using Master.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,10 @@ namespace Master.Case
                 || o.Law.Contains(keyword)
                 || o.LawyerOpinion.Contains(keyword)
                 || o.Experience.Contains(keyword)
-                || o.Property.Json.Contains(keyword)
+                || MasterDbContext.GetJsonValueString(o.Property, "$.JudgeInfo.JudgeContent").Contains(keyword)
+                || MasterDbContext.GetJsonValueString(o.Property, "$.JudgeInfo.JudgeResult").Contains(keyword)
+                || MasterDbContext.GetJsonValueString(o.Property, "$.JudgeInfo.ReverseJudgeContent").Contains(keyword)
+                || MasterDbContext.GetJsonValueString(o.Property, "$.JudgeInfo.ReverseJudgeResult").Contains(keyword)
                 || o.CaseCards.Count(c => c.Title.Contains(keyword) || c.Content.Contains(keyword)) > 0
                 || o.Remarks.Contains(keyword)//包含备注的查询
                 );
