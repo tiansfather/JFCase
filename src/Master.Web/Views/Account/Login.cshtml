@@ -220,7 +220,7 @@
                         this.$message.error("请正确输入邮箱");
                         return false;
                     }
-                    abp.message.confirm("确认提交?").done(function () {                        
+                    abp.message.confirm("确认提交?","提示").done(function () {                        
                         func.runAsync(abp.services.app.newMiner.register(app.currentItem).done(function () {
                             abp.message.success("您已提交申请，审核结果将通过短信告知，请注意查收。加急请联系：18321055351")
                                 .done(function () {
