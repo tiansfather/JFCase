@@ -27,6 +27,21 @@ namespace Master.BaseTrees
             return (await base.BuildKeywordQueryAsync(keyword, query))
                 .Where(o => o.LabelName.Contains(keyword));
         }
+        protected override async Task<IQueryable<Label>> BuildSearchQueryAsync(IDictionary<string, string> searchKeys, IQueryable<Label> query)
+        {
+            query = await base.BuildSearchQueryAsync(searchKeys, query);
+            if (searchKeys.ContainsKey("anYou"))
+            {
+                var anYouId = int.Parse(searchKeys["anYou"]);
+                //query = from label in query
+                //        join treelabel in Resolve<IRepository<TreeLabel, int>>().GetAll() on label.Id equals treelabel.LabelId
+                //        where treelabel.BaseTreeId == anYouId && false
+                //        select label;
+                query = query.Where(o => o.TreeLabels.Count(t => t.BaseTreeId == anYouId) > 0);
+            }
+            return query;
+
+        }
         public virtual async Task Add(string name)
         {
             var label = new Label()
@@ -47,6 +62,7 @@ namespace Master.BaseTrees
                 entity.LabelName,
                 entity.LabelType,
                 entity.CreationTime,
+                entity.Sort,
                 Creator = entity.CreatorUser?.Name,
                 RelativeNodeStrings = nodes.Select(o => baseTreeManager.GetNamesFromTopLevel(o).Result)
             };
@@ -109,7 +125,19 @@ namespace Master.BaseTrees
             }
             await base.DeleteEntity(ids);
         }
-
+        public virtual async Task SetSort(int id, string sortStr)
+        {
+            int sort = 0;
+            if (int.TryParse(sortStr, out sort))
+            {
+                if (sort <= 0)
+                {
+                    throw new UserFriendlyException("排序值必须大于0");
+                }
+            }
+            var label = await Manager.GetByIdAsync(id);
+            label.Sort = sort;
+        }
         #endregion
     }
 }

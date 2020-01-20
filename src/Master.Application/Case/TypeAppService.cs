@@ -135,9 +135,10 @@ namespace Master.Case
                 o.Id,
                 o.LabelName,
                 o.LabelType,
+                o.Sort,
                 TreeIds=o.TreeLabels.Select(t=>t.BaseTreeId)
             }
-                );
+                ).OrderBy(o=>o.Sort);
         }
         #endregion
 

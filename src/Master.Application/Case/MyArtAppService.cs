@@ -22,6 +22,7 @@ namespace Master.Case
             var query = await base.GetQueryable(request);
             return query.Include("CaseInitial.CaseSource.AnYou")
                 .Where(o => o.CaseInitial.CaseSource.OwerId == AbpSession.UserId)
+                .Where(o=>!string.IsNullOrEmpty(o.Title))
                 .Where(o=>o.CaseStatus==CaseStatus.展示中||o.CaseStatus==CaseStatus.下架)
                 .OrderByDescending(o=>o.PublishDate);
             ;

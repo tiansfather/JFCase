@@ -12,6 +12,7 @@ namespace Master.Case
         /// 关键词、标签
         /// </summary>
         public string LabelType { get; set; }
+        public int Sort { get; set; }
         public virtual ICollection<TreeLabel> TreeLabels { get; set; }
     }
 }

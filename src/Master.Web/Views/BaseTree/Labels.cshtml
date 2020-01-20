@@ -13,7 +13,7 @@
             </ul>
             <div class="layui-tab-content">
                 <div class="layui-tab-item layui-show">
-                    <form class="layui-form layui-form-pane" onsubmit="return doSearch();">
+                    @*<form class="layui-form layui-form-pane" onsubmit="return doSearch();">
                         <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">@L("标签名称")</label>
@@ -24,13 +24,42 @@
                                 <button class="layui-btn  " buttonname="@L("添加")" type="button" onclick="addLabel()">@L("添加")</button>
                             </div>
                         </div>
-                    </form>
+                    </form>*@
+                    <div id="app" v-cloak>
+                        <el-form :inline="true" :model="searchData" class="demo-form-inline" size="mini">
+                            <el-form-item label="标签名称">
+                                <el-input v-model="searchData.labelName" placeholder="标签名称"></el-input>
+                            </el-form-item>
+                            <el-select v-model="searchData.anYou"
+                                       size="mini"                 
+                                       clearable
+                                       collapse-tags
+                                       placeholder="案由">
+                                <el-option v-for="item in anYous"
+                                           :key="item.id"
+                                           :label="item.name"
+                                           :value="item.id">
+                                </el-option>
+                            </el-select>
+                            <el-form-item label="类别">
+                                <el-checkbox-group v-model="searchData.labelType">
+                                    <el-checkbox label="标签"></el-checkbox>
+                                    <el-checkbox label="关键字"></el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @@click="doSearch">查询</el-button>
+                                <el-button type="success" @@click="addLabel">添加</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
                     <table autoevent="1" id="Labels" lay-filter="Labels" class="layui-table " lay-data="{cellMinWidth:'120',height:'full-170', url:'/api/services/app/label/GetPageResult', page:true, id:'Labels',limit:50,  even: true,done:config.onTableDone,initSort:{field:'Id',type:'desc'}}" @*lay-size="sm" *@>
                         <thead>
                             <tr>
                                 <th lay-data="{field:'labelName',edit:'text'}">@L("标签名称")</th>
                                 <th lay-data="{field:'labelType',templet:'#labelTypeTpl'}">@L("类别")</th>
                                 <th lay-data="{field:'',templet:'#relativeTpl',width:'450'}">@L("对应结构")</th>
+                                <th lay-data="{field:'sort',templet:'#sortTpl',width:'80'}">@L("排序")</th>
                                 <th lay-data="{field:'creator'}">@L("创建人")</th>
                                 <th lay-data="{field:'creationTime',sort:true,width:'140'}">@L("创建时间")</th>
                                 <th lay-data="{align:'center', toolbar: '#toolbar'}">@L("操作")</th>
@@ -67,6 +96,9 @@
         {{#  }); }}
 
     </script>
+    <script type="text/html" id="sortTpl">
+        <input type="text" value="{{d.sort}}" size=5 onblur="setSort({{d.id}},this)" />
+    </script>
     @*<script type="text/html" id="relativeTpl2">
         {{#  layui.each(d.relativeNames, function(index, item){ }}
         <div>{{item.join('-')}}</div>
@@ -75,12 +107,65 @@
     </script>*@
     <script type="text/html" id="toolbar">
         <a dataid="{{d.id}}" class="layui-btn layui-btn-xs " title="编辑" type="button" buttonname="编辑" modulekey="Labels" params="{&quot;area&quot;: [&quot;50%&quot;, &quot;90%&quot;]}" lay-event="Edit" confirmmsg="" buttonactiontype="Form" buttonactionurl="/BaseTree/LabelBind" onclick="func.callModuleButtonEvent()">编辑</a>
+        <a dataid="{{d.id}}" class="layui-btn layui-btn-xs layui-btn-danger" title="删除" type="button" buttonname="删除" modulekey="Labels" params="" lay-event="Delete" confirmmsg="确认删除？" buttonactiontype="Ajax" buttonactionurl="abp.services.app.label.deleteEntity" onclick="func.callModuleButtonEvent()">删除</a>
     </script>
     <script>
         var app;
-        var searchKeys = {};
 
         config.ready = function () {
+            app = new Vue({
+                el: '#app',
+                data: {
+                    anYous:[],
+                    searchData: {
+                        labelType: ["标签", "关键字"]
+                    }
+                },
+                computed: {
+                    where: function () {
+                        var strWhere = '1=1';
+                        this.searchData.labelName && (strWhere += ` and labelName.Contains("${this.searchData.labelName}")`);
+                        if (this.searchData.labelType.length) {
+                            let whereWrapper = [];
+                            this.searchData.labelType.forEach(o => whereWrapper.push(` labelType="${o}"`));
+                            strWhere += ` and (${whereWrapper.join(' or ')})`;
+                        }
+                        return strWhere;
+                    },
+                    searchKeys: function () {
+                        var obj = {};
+                        this.searchData.anYou && (obj.anYou = this.searchData.anYou);
+                        return obj;
+                    }
+                },
+                methods: {
+                    addLabel: function () {
+                        layer.prompt({ title: '@L("请输入标签名称")', formType: 0 }, function (text, index) {
+                                    layer.close(index);
+                            doAdd(text);
+                        });
+
+                        function doAdd(text) {
+
+                            func.runAsync(abp.services.app.label.add(text).done(function (data) {
+                                layer.msg('@L("提交成功")');
+                                config.reloadTable();
+
+                            }));
+                        }
+                    },
+                    doSearch: function () {
+                        config.reloadTable();
+
+                    }
+                },
+                mounted: function () {
+                    var that = this;
+                    abp.services.app.type.getAnYous().done(function (res) {
+                        that.anYous = res;
+                    })
+                }
+            })
             window.ztree = function () {
                 var zTreeObj;
                 var setting = {
@@ -157,40 +242,29 @@
                 where: getWhere()
             })
         }
-        function getWhere() {
-            var where = {  };
+        
+        
+        function getWhere(index) {
+            var where = { searchKeys: JSON.stringify(app.searchKeys), where: '1=1' };
 
-            var value = $('#labelName').val();
-            if (value) {
-                where.keyword = value;
-            } else {
-                where.keyword = '';
-            }
+            //var value = $('#name-input').val();
+            //if (value) {
+            //    where.where += " and Title.Contains(\"" + value + "\")"
+            //}
+            where.where = app.where;
+            //where.searchCondition = func.buildSearchCondition('CaseInitial');
 
             return where;
 
         }
-        function addLabel() {
-            layer.prompt({ title: '@L("请输入标签名称")', formType: 0 }, function (text, index) {
-                        layer.close(index);
-                doAdd(text);
-            });
-
-            function doAdd(text) {
-
-                func.runAsync(abp.services.app.label.add(text).done(function (data) {
-                    layer.msg('@L("提交成功")');
-                    config.reloadTable();
-
-                }));
-            }
-
-        }
         function toggleLabelType(id, labelType) {
             var targetLabelType = labelType == "标签" ? "关键词" : "标签";
-            func.runAsync(abp.services.app.label.setLabelType(id, targetLabelType).done(function () {
-                config.reloadTable();
-            }))
+            abp.message.confirm("确认切换类别为“" + targetLabelType + "”", function () {
+                func.runAsync(abp.services.app.label.setLabelType(id, targetLabelType).done(function () {
+                    config.reloadTable();
+                }))
+            })
+            
         }
 
         function loadLabelTable(treeId) {
@@ -208,6 +282,11 @@
                 });
             }));
 
+        }
+        function setSort(id, obj) {
+            abp.services.app.label.setSort(id, obj.value).done(function () {
+                //top.layer.msg('提交成功');
+            })
         }
     </script>
 }

@@ -3724,6 +3724,14 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'setSort'
+    abp.services.app.label.setSort = function(id, sortStr, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Label/SetSort' + abp.utils.buildQueryString([{ name: 'id', value: id }, { name: 'sortStr', value: sortStr }]) + '',
+        type: 'POST'
+      }, ajaxParams));;
+    };
+
     // action 'getPageResult'
     abp.services.app.label.getPageResult = function(request, ajaxParams) {
       return abp.ajax($.extend(true, {
