@@ -1,10 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>Master</RootNamespace>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Views\MiniProgram\BindLoginCallback.cshtml" />
     <None Remove="Views\Shared\_WeUICommon.cshtml" />
@@ -22,7 +25,6 @@
     <None Remove="Views\WeiXin\ScanUserInfoCallback.cshtml" />
     <None Remove="Views\WeiXin\Success.cshtml" />
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="Views\MiniProgram\BindLoginCallback.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -86,19 +88,15 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </EmbeddedResource>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Senparc.Weixin" Version="6.3.10.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\..\Master.Core\Master.Core.csproj" />
     <ProjectReference Include="..\..\Master.Web.Core\Master.Web.Core.csproj" />
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y &quot;$(TargetDir)Master.WeiXin.dll&quot; &quot;$(SolutionDir)\src\Master.Web\plugins\Master.WeiXin.dll&quot;" />
   </Target>
-
 </Project>
