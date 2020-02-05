@@ -58,7 +58,7 @@ namespace Master.Web.Startup
             {
                 DbContextOptionsConfigurer.Configure(options.DbContextOptions, options.ConnectionString);
             });
-            services.AddSession();//使用Session
+            services.AddSession(options=>options.IdleTimeout=TimeSpan.FromHours(2));//使用Session
             services.AddSignalR();//使用SignalR
             services.AddMvc(options =>
             {

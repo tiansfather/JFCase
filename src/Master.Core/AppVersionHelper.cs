@@ -12,7 +12,7 @@ namespace Master
         /// Gets current version of the application.
         /// It's also shown in the web page.
         /// </summary>
-        public const string Version = "19.0816";
+        public const string Version = "20.0205";
 
         /// <summary>
         /// Gets release (last build) date of the application.
