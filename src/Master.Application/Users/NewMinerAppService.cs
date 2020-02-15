@@ -54,7 +54,7 @@ namespace Master.Users
             {
                 throw new UserFriendlyException("您输入的手机号已经注册，请更换");
             }
-            if (userManager.GetAll().IgnoreQueryFilters().Count(o => o.Email == newMiner.Email) > 0)
+            if (!string.IsNullOrEmpty(newMiner.Email) && userManager.GetAll().IgnoreQueryFilters().Count(o => o.Email == newMiner.Email) > 0)
             {
                 throw new UserFriendlyException("您输入的邮箱已经注册，请更换");
             }

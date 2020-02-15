@@ -19,7 +19,9 @@ namespace Master.Domain
         public string Avata { get; set; }
         [InterColumn(ColumnName ="律师事务所",Sort =4)]
         public string WorkLocation { get; set; }
-        [InterColumn(ColumnName = "有效电子邮箱",Sort =5)]
+        [InterColumn(ColumnName = "手机", Sort = 5)]
+        public string PhoneNumber { get; set; }
+        [InterColumn(ColumnName = "有效电子邮箱",Sort =6)]
         public string Email { get; set; }
         [InterColumn(ColumnName = "所属组织", ColumnType = ColumnTypes.Text, Renderer = "lay-departchoose", DisplayPath = "Organization.DisplayName", Templet = "{{d.organizationId_display?d.organizationId_display:''}}",Sort =6)]
         public int? OrganizationId { get; set; }

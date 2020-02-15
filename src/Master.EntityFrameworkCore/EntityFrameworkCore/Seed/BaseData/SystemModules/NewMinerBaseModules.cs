@@ -50,6 +50,7 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
             ButtonInfos.Remove(editBtn);
             var delBtn = ButtonInfos.Single(o => o.ButtonKey == "Delete");
             delBtn.ButtonName = "拒绝";
+            delBtn.ClientShowCondition = "d.isDeleted!==true";
             delBtn.ConfirmMsg = "您确定拒绝这些用户的申请吗？";
         }
 

@@ -58,7 +58,7 @@
                         <dd class="style-bf-10"><Button class="btn-search" @@click="loadSource" style="height:30px">筛选</Button></dd>
                     </dl>
                 </li>
-                <li class="on">您已完成有 <span class="shuzi">{{summary.caseFineCount}}</span> 个精品<!--，其中包含案例卡 <span class="shuzi">49</span> 个--></li>
+                <li class="on">您已完成有 <span class="shuzi">{{totalCount}}</span> 个精品<!--，其中包含案例卡 <span class="shuzi">49</span> 个--></li>
                 <li v-show="items.length==0">
                     <h1 style="font-size:24px;text-align:center;margin:30px">没有符合您查询条件的精品案例哦，请减少查询条件再试试看，或联系管理员。</h1>
                 </li>
@@ -122,9 +122,9 @@
         <div class="jianfa-chaanli" style="height:600px;overflow:auto">
             <div class="chaanli-content">
                 <ul>
-                    <li style="width:100%">
+                    <li style="width:100%;margin-top:60px;">
                         <dl>
-                            <dd class="on">
+                            <dd class="on" v-show="currentItem.mediaPath">
                                 <iframe :src="currentItem.mediaPath" frameborder="0" style="height:400px;width:100%"></iframe>
                             </dd>
 
