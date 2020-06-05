@@ -23,7 +23,8 @@ namespace Master.Case
                 .Include("CaseInitial.CaseSource.Court1")
                 .Include("CaseInitial.CaseSource.Court2")
                 .Where(o => o.CaseStatus==CaseStatus.展示中 && o.CaseInitial.CaseStatus == CaseStatus.展示中)
-                .OrderByDescending(o=>o.LastModificationTime);
+                .OrderByDescending(o=>o.CaseInitial.LastModificationTime)
+                .ThenByDescending(o=>o.CreationTime);
         }
         protected override async Task<IQueryable<CaseCard>> BuildKeywordQueryAsync(string keyword, IQueryable<CaseCard> query)
         {
