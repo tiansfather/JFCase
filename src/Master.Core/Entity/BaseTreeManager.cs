@@ -174,10 +174,11 @@ namespace Master.Entity
             {
                 throw new UserFriendlyException("节点已被判例关联,无法删除");
             }
-            if (await Resolve<IRepository<CaseNode, int>>().CountAsync(o => o.BaseTreeId == entity.Id) > 0)
-            {
-                throw new UserFriendlyException("节点已被案例关联,无法删除");
-            }
+            await Resolve<IRepository<CaseNode, int>>().DeleteAsync(o => o.BaseTreeId == entity.Id);
+            //if (await Resolve<IRepository<CaseNode, int>>().CountAsync(o => o.BaseTreeId == entity.Id) > 0)
+            //{
+            //    throw new UserFriendlyException("节点已被案例关联,无法删除");
+            //}
             await Repository.DeleteAsync(entity.Id);
         }
 
