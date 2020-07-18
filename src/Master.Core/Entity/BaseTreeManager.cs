@@ -162,18 +162,25 @@ namespace Master.Entity
             }
             //验证是否可以删除
             var nodes = await GetAllList();
-            if (nodes.Exists(o => o.RelativeNodeId == entity.Id))
-            {
-                throw new UserFriendlyException("节点已被分类树关联,无法删除");
-            }
-            if(await Resolve<IRepository<TreeLabel, int>>().CountAsync(o => o.BaseTreeId == entity.Id) > 0)
-            {
-                throw new UserFriendlyException("节点已被标签关联,无法删除");
-            }
-            if(await Resolve<CaseSourceManager>().GetAll().CountAsync(o=>o.AnYouId==entity.Id || o.CityId==entity.Id || o.Court1Id==entity.Id || o.Court2Id == entity.Id) > 0)
-            {
-                throw new UserFriendlyException("节点已被判例关联,无法删除");
-            }
+            await Repository.DeleteAsync(o => o.RelativeNodeId == entity.Id);
+            //if (nodes.Exists(o => o.RelativeNodeId == entity.Id))
+            //{
+            //    throw new UserFriendlyException("节点已被分类树关联,无法删除");
+            //}
+            await Resolve<IRepository<TreeLabel, int>>().DeleteAsync(o => o.BaseTreeId == entity.Id);
+            //if (await Resolve<IRepository<TreeLabel, int>>().CountAsync(o => o.BaseTreeId == entity.Id) > 0)
+            //{
+            //    throw new UserFriendlyException("节点已被标签关联,无法删除");
+            //}
+            var dynamicQuery = Resolve<IDynamicQuery>();
+            await dynamicQuery.ExecuteAsync($"update casesource set AnYouId=null where AnYouId={entity.Id}");
+            await dynamicQuery.ExecuteAsync($"update casesource set CityId=null where CityId={entity.Id}");
+            await dynamicQuery.ExecuteAsync($"update casesource set Court1Id=null where Court1Id={entity.Id}");
+            await dynamicQuery.ExecuteAsync($"update casesource set Court2Id=null where Court2Id={entity.Id}");
+            //if (await Resolve<CaseSourceManager>().GetAll().CountAsync(o=>o.AnYouId==entity.Id || o.CityId==entity.Id || o.Court1Id==entity.Id || o.Court2Id == entity.Id) > 0)
+            //{
+            //    throw new UserFriendlyException("节点已被判例关联,无法删除");
+            //}
             await Resolve<IRepository<CaseNode, int>>().DeleteAsync(o => o.BaseTreeId == entity.Id);
             //if (await Resolve<IRepository<CaseNode, int>>().CountAsync(o => o.BaseTreeId == entity.Id) > 0)
             //{
