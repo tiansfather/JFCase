@@ -30,9 +30,10 @@ using Master.EntityFrameworkCore;
 using Master.Domain;
 using Abp.Configuration.Startup;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.AspNetCore.Http;
 using System.Web;
+using System.Text;
+using System.IO.Compression;
 
 namespace Master.Web.Controllers
 {    
@@ -184,7 +185,13 @@ namespace Master.Web.Controllers
             return View(viewName);
         }
         
-        
+        public IActionResult Zip()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            ZipFile.ExtractToDirectory(@"G:\백도1.zip", @"G:\1", Encoding.GetEncoding("GB2312"));
+            var names=Common.ZipHelper.GetFileNames(@"G:\백도1.zip");
+            return Content(string.Join(",", names));
+        }
         public async Task<IActionResult> Test()
         {
             await Common.EmailHelper.SendMailAsync(
