@@ -37,7 +37,7 @@ namespace Master.Case
             {
                 caseSource = await manager.GetByIdAsync(caseSourceDto.Id.Value);
                 caseSourceDto.MapTo(caseSource);
-                
+
             }
 
             await manager.SaveAsync(caseSource);
@@ -52,12 +52,12 @@ namespace Master.Case
                 caseInitial.CaseStatus = CaseStatus.加工中;
                 caseSource.CaseSourceStatus = CaseSourceStatus.加工中;
             }
-        } 
+        }
         #endregion
 
         public override async Task<object> GetById(int primary)
         {
-            var entity=await base.GetById(primary);
+            var entity = await base.GetById(primary);
             return entity.MapTo<CaseSourceUpdateDto>();
         }
         #region 上架下架删除
@@ -70,7 +70,7 @@ namespace Master.Case
             else
             {
                 var caseSources = await Manager.GetAll().Where(o => ids.Contains(o.Id)).ToListAsync();
-                foreach(var caseSource in caseSources)
+                foreach (var caseSource in caseSources)
                 {
                     caseSource.CaseSourceStatus = CaseSourceStatus.下架;
                 }
@@ -102,11 +102,11 @@ namespace Master.Case
         #endregion
 
         #region 导入
-        public virtual async Task<object> DoImport(string excelFilePath,string zipFilePath,int importType)
+        public virtual async Task<object> DoImport(string excelFilePath, string zipFilePath, int importType)
         {
             var manager = Manager as CaseSourceManager;
             var caseSourceImportResults = await ReadExcel(excelFilePath);
-            if (caseSourceImportResults.Exists(o => !o.Valid && !(importType==0 && o.Exist)))
+            if (caseSourceImportResults.Exists(o => !o.Valid && !(importType == 0 && o.Exist)))
             {
                 throw new UserFriendlyException("数据验证失败,请检查后重新提交");
             }
@@ -122,7 +122,7 @@ namespace Master.Case
             System.IO.Directory.CreateDirectory(Common.PathHelper.VirtualPathToAbsolutePath(virtualDirectory));
             foreach (var importResult in caseSourceImportResults)
             {
-                var caseSource =await manager.GetAll().Where(o => o.SourceSN == importResult.SourceSN).FirstOrDefaultAsync();
+                var caseSource = await manager.GetAll().Where(o => o.SourceSN == importResult.SourceSN).FirstOrDefaultAsync();
                 if (caseSource == null)
                 {
                     caseSource = new CaseSource();
@@ -130,9 +130,9 @@ namespace Master.Case
                 importResult.CaseSourceUpdateDto.MapTo(caseSource);
                 //将pdf文件从临时文件夹移至正式文件夹
                 caseSource.SourceFile = $"{virtualDirectory}/{caseSource.SourceSN}.pdf";
-                System.IO.File.Copy($"{tempDirectory}\\{caseSource.SourceSN}.pdf", Common.PathHelper.VirtualPathToAbsolutePath(caseSource.SourceFile),true);
-                
-                
+                System.IO.File.Copy($"{tempDirectory}\\{caseSource.SourceSN}.pdf", Common.PathHelper.VirtualPathToAbsolutePath(caseSource.SourceFile), true);
+
+
                 await manager.SaveAsync(caseSource);
             }
             //新增数量和覆盖数量
@@ -143,17 +143,17 @@ namespace Master.Case
             };
         }
         public virtual IEnumerable<string> ReadZip(string filePath)
-        {            
+        {
             var fileDirectory = System.IO.Path.GetDirectoryName(Common.PathHelper.VirtualPathToAbsolutePath(filePath));
-            var fileNames = Common.ZipHelper.Decompression(Common.PathHelper.VirtualPathToAbsolutePath(filePath), fileDirectory);
-            //var fileNames = Common.ZipHelper.GetFileNames(Common.PathHelper.VirtualPathToAbsolutePath(filePath)).ToList();
+            var fileNames=Common.ZipHelper.Decompression(Common.PathHelper.VirtualPathToAbsolutePath(filePath), fileDirectory);
+            //var fileNames = Common.ZipHelper.GetFileNames(Common.PathHelper.VirtualPathToAbsolutePath(filePath));
             return fileNames;
         }
         public virtual async Task<List<CaseSourceImportResult>> ReadExcel(string filePath)
         {
             var dataTable = Common.ExcelHelper.ReadExcelToDataTable(Common.PathHelper.VirtualPathToAbsolutePath(filePath), out var _);
 
-            var result= ReadFromDataTable(dataTable);
+            var result = ReadFromDataTable(dataTable);
             await ValidImportResult(result);
             return result;
         }
@@ -164,12 +164,13 @@ namespace Master.Case
         /// <returns></returns>
         private async Task ValidImportResult(List<CaseSourceImportResult> caseSourceImportResults)
         {
-            foreach(var importDto in caseSourceImportResults)
+            foreach (var importDto in caseSourceImportResults)
             {
                 try
                 {
                     await importDto.GenerateCaseSource();
-                }catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     importDto.ErrMsg = ex.Message;
                     importDto.Valid = false;
@@ -180,7 +181,7 @@ namespace Master.Case
         {
             //验证表头
             var needColumNames = new string[] { "案号", "城市", "一审法院", "二审法院", "案由", "代理律师", "审判人员", "裁判时间" };
-            foreach(var needColumnName in needColumNames)
+            foreach (var needColumnName in needColumNames)
             {
                 if (!dataTable.Columns.Contains(needColumnName))
                 {
@@ -188,13 +189,13 @@ namespace Master.Case
                 }
             }
             var result = new List<CaseSourceImportResult>();
-            foreach(DataRow row in dataTable.Rows)
+            foreach (DataRow row in dataTable.Rows)
             {
                 if (!string.IsNullOrEmpty(row["案号"].ToString()))
                 {
                     result.Add(ReadFromRow(row));
                 }
-                
+
             }
             return result;
         }
@@ -222,7 +223,7 @@ namespace Master.Case
         /// <param name="caseSourceId"></param>
         /// <param name="anYouId"></param>
         /// <returns></returns>
-        public virtual async Task<bool> CheckInformAnYouChange(int? caseSourceId,int anYouId)
+        public virtual async Task<bool> CheckInformAnYouChange(int? caseSourceId, int anYouId)
         {
             if (!caseSourceId.HasValue)
             {
@@ -230,12 +231,12 @@ namespace Master.Case
             }
             var caseSource = await Manager.GetByIdAsync(caseSourceId.Value);
             //案由发生变化
-            if (caseSource.AnYouId!=anYouId)
+            if (caseSource.AnYouId != anYouId)
             {
                 //寻找对应案例
                 var caseInitial = await Resolve<CaseInitialManager>().GetAll().Where(o => o.CaseSourceId == caseSourceId.Value).FirstOrDefaultAsync();
                 //如果此案例已发布
-                if(caseInitial!=null && caseInitial.CaseStatus == CaseStatus.展示中)
+                if (caseInitial != null && caseInitial.CaseStatus == CaseStatus.展示中)
                 {
                     return true;
                 }
@@ -251,7 +252,7 @@ namespace Master.Case
         {
             foreach (var id in ids)
             {
-                await Resolve<CaseSourceManager>().ClearCaseContent(id,true);
+                await Resolve<CaseSourceManager>().ClearCaseContent(id, true);
             }
         }
 
