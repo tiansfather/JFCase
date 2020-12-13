@@ -271,7 +271,7 @@
     <script>
         function replaceHtml(html) {
                         if (!html) { return ""; }
-                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;');
+                        return html.replace(/\n|\r/g, '<br>').replace(/\s/g, '&nbsp;').replace(/' '/g,'&nbsp;');
                     }
     </script>
     <script type="text/babel">
