@@ -70,22 +70,10 @@ html{width:100%;height:100%;overflow-x:hidden;}
 /*bottom*/
 
 /*案源库-01*/
-.jianfa-content {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 10px;
-    box-sizing: border-box;
-    margin-top: 60px;
-    height: calc(100vh - 96px);
-}
-    .jianfa-content .ny-content {
-        width: 100%; /*margin:56px 0 36px 0;margin:66px 0 46px 0;overflow:auto;*/
-        height: calc(100% - 35px);
-        overflow: hidden;
-    }
+.jianfa-content{width:100%;max-width:1200px;margin:0 auto;padding:0 10px;box-sizing:border-box;}
+.jianfa-content .ny-content{float:left;width:100%;/*margin:56px 0 36px 0;*/margin:66px 0 46px 0;overflow:auto;}
 .jianfa-content .ny-content.on{margin:66px 0 5px 0;}
-.jianfa-content .ny-content ul{float:left;width:100%;padding:0;height:100%}
+.jianfa-content .ny-content ul{float:left;width:100%;padding:0;}
 .jianfa-content .ny-content li{float:left;width:100%; padding:5px 0;font-size:12px;}
 .jianfa-content .ny-content li.on{padding:5px 0 0 0;color:#c69c6d;}
 .jianfa-content .ny-content li .shuzi{font-size:14px;color:#754c24;}
