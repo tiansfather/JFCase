@@ -71,7 +71,7 @@ html{width:100%;height:100%;overflow-x:hidden;}
 
 /*案源库-01*/
 .jianfa-content{width:100%;max-width:1200px;margin:0 auto;padding:0 10px;box-sizing:border-box;}
-.jianfa-content .ny-content{float:left;width:100%;/*margin:56px 0 36px 0;*/margin:66px 0 46px 0;overflow:auto;}
+.jianfa-content .ny-content{width:100%;/*margin:56px 0 36px 0;*/margin:66px 0 46px 0;overflow:auto;}
 .jianfa-content .ny-content.on{margin:66px 0 5px 0;}
 .jianfa-content .ny-content ul{float:left;width:100%;padding:0;}
 .jianfa-content .ny-content li{float:left;width:100%; padding:5px 0;font-size:12px;}
@@ -527,6 +527,7 @@ footer .ziti-a{text-align:center; height:40px; line-height:40px; color:#fff;}
     padding:5px 0;
 }
 .ivu-page{
+    height:80px;
     margin-bottom:50px;
 }
 .pdfmodal .ivu-modal {
