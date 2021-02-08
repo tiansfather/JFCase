@@ -367,13 +367,13 @@
                                                     </el-dropdown>
 
                                                 </div>
-                                                <div class="right-cha1">
-                                                    {{item.title}}
+                                                <div class="right-cha1" v-html="replaceHtml(item.title)">
+                                                    @*{{item.title}}*@
                                                 </div>
                                             </i1>
                                             <i2>
-                                                <div class="top-cha1">
-                                                    {{item.introduction}}
+                                                <div class="top-cha1" v-html="replaceHtml(item.introduction)">
+                                                    @*{{item.introduction}}*@
                                                 </div>
                                                 <div class="bottom-cha1">
                                                     <span>发布时间：&nbsp;{{item.publishDate}}</span>
@@ -413,8 +413,8 @@
                         <dl class="on" :style="{height:labelCheckVisible?'calc(100vh - 301px)':'calc(100vh - 217px)'}">
 
                             <dd class="on">
-                                <i4 class="fleft tjustify">
-                                    {{caseInfo.initial.title}}
+                                <i4 class="fleft tjustify" v-html="caseInfo.initial.title">
+                                    
                                 </i4>
                             </dd>
 
@@ -428,9 +428,9 @@
 
 
                             <dd class="on">
-                                <i5 class="fleft tjustify">
+                                <i5 class="fleft tjustify" v-html="caseInfo.initial.introduction">
                                     <!-- 概述 -->
-                                    {{caseInfo.initial.introduction}}
+                                    
                                 </i5>
                             </dd>
 
@@ -787,6 +787,8 @@
                             res.initial.caseCards.forEach(el => {
                                 el.isRotate = false;
                             })
+                            res.initial.title = replaceHtml(res.initial.title);
+                            res.initial.introduction = replaceHtml(res.initial.introduction);
                             res.initial.law = replaceHtml(res.initial.law);
                             res.initial.experience = replaceHtml(res.initial.experience);
                             res.initial.lawyerOpinion = replaceHtml(res.initial.lawyerOpinion);
@@ -800,7 +802,7 @@
                             })
                         }));
                     })
-                    
+
                 },
 
                 loadSource(bol) {
@@ -889,7 +891,7 @@
                         app.load();
                     }
                 };
-                
+
             }
         })
         ////请求案例分页
