@@ -369,11 +369,11 @@ namespace Master.Case
             await UpdateInitial(caseInitialUpdateDto);
             var caseInitial = await Resolve<CaseInitialManager>().GetAll().Include(o => o.CaseSource)
                 .Where(o => o.Id == caseInitialUpdateDto.Id).SingleAsync();
-            //if (caseInitial.PublishDate == null)
-            //{
-            //    caseInitial.PublishDate = DateTime.Now;
-            //}
-            caseInitial.PublishDate = DateTime.Now;
+            if (caseInitial.PublishDate == null)
+            {
+                caseInitial.PublishDate = DateTime.Now;
+            }
+            //caseInitial.PublishDate = DateTime.Now;
 
             caseInitial.CaseStatus = CaseStatus.展示中;
             caseInitial.CaseSource.CaseSourceStatus = CaseSourceStatus.已加工;
@@ -399,6 +399,7 @@ namespace Master.Case
             //删除
             var delIds = caseInitial.CaseFines.Where(o => !caseFineDtos.Select(c => c.Id).Contains(o.Id)).Select(o => o.Id);
             await caseFineManager.DeleteAsync(delIds);
+            await caseFineManager.Repository.DeleteAsync(o => string.IsNullOrEmpty(o.Title) && string.IsNullOrEmpty(o.Content));
             //增加
             foreach (var caseFineDto in caseFineDtos.Where(o => o.Id == 0))
             {

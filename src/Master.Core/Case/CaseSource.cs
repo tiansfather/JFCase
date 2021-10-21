@@ -71,6 +71,8 @@ namespace Master.Case
         public string Status { get; set; }
         [InterColumn(ColumnName ="状态",ColumnType =Module.ColumnTypes.Select,DictionaryName = "Master.Case.CaseSourceStatus",Templet = "{{d.caseSourceStatus_display}}",Sort =8)]
         public CaseSourceStatus CaseSourceStatus { get; set; }
+
+        public int BackCount { get; set; }
         /// <summary>
         /// 当前所有人
         /// </summary>

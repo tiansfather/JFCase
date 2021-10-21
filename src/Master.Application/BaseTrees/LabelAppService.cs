@@ -119,9 +119,11 @@ namespace Master.BaseTrees
 
         public override async Task DeleteEntity(IEnumerable<int> ids)
         {
+            var repo = Resolve<IRepository<CaseLabel, int>>();
             //如果标签已被案例使用则不能删除
-            if(await Resolve<IRepository<CaseLabel, int>>().CountAsync(o => ids.Contains(o.LabelId)) > 0){
-                throw new UserFriendlyException("标签已被案例使用,无法删除");
+            if (await repo.CountAsync(o => ids.Contains(o.LabelId)) > 0){
+                await repo.DeleteAsync(o => ids.Contains(o.LabelId));
+                //throw new UserFriendlyException("标签已被案例使用,无法删除");
             }
             await base.DeleteEntity(ids);
         }
