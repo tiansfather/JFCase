@@ -159,6 +159,10 @@ namespace Master.Case
                 CaseSourceId = id,
                 Reason = reason
             };
+            //增加退回次数
+            var caseSource = await Repository.GetAsync(id);
+            caseSource.BackCount += 1;
+
             await Resolve<CaseSourceHistoryManager>().InsertAsync(caseHistory);
         }
         #endregion

@@ -127,6 +127,16 @@
             return where;
 
         }
+        function showHistory(id) {
+            layer.open({
+                type: 2,
+                title: '退回明细',
+                shadeClose: false,
+                shade: 0.8,
+                area: ['50%', '50%'],
+                content: '/CaseSource/History?id=' + id
+            });
+        }
     </script>
 }
 
