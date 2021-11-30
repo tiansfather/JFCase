@@ -416,8 +416,11 @@ namespace Master.Case
             foreach (var caseFineDto in caseFineDtos.Where(o => o.Id > 0))
             {
                 var oriCaseFine = await caseFineManager.GetByIdAsync(caseFineDto.Id);
-                caseFineDto.MapTo(oriCaseFine);
-                oriCaseFine.CaseStatus = CaseStatus.加工中;
+                if (oriCaseFine != null)
+                {
+                    caseFineDto.MapTo(oriCaseFine);
+                    oriCaseFine.CaseStatus = CaseStatus.加工中;
+                }
             }
         }
         /// <summary>
