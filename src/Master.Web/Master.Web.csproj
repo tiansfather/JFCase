@@ -19,6 +19,7 @@
     <Compile Remove="Views\Storage\**" />
     <Compile Remove="Views\WanTai\**" />
     <Compile Remove="wwwroot\files\**" />
+    <Compile Remove="wwwroot\lib\codemirror-minified\mode\sql\**" />
     <Compile Remove="wwwroot\scripts\**" />
     <Compile Remove="wwwroot\sheets\**" />
     <Compile Remove="wwwroot\Temp\**" />
@@ -27,6 +28,7 @@
     <Content Remove="Views\Storage\**" />
     <Content Remove="Views\WanTai\**" />
     <Content Remove="wwwroot\files\**" />
+    <Content Remove="wwwroot\lib\codemirror-minified\mode\sql\**" />
     <Content Remove="wwwroot\scripts\**" />
     <Content Remove="wwwroot\sheets\**" />
     <Content Remove="wwwroot\Temp\**" />
@@ -35,6 +37,7 @@
     <EmbeddedResource Remove="Views\Storage\**" />
     <EmbeddedResource Remove="Views\WanTai\**" />
     <EmbeddedResource Remove="wwwroot\files\**" />
+    <EmbeddedResource Remove="wwwroot\lib\codemirror-minified\mode\sql\**" />
     <EmbeddedResource Remove="wwwroot\scripts\**" />
     <EmbeddedResource Remove="wwwroot\sheets\**" />
     <EmbeddedResource Remove="wwwroot\Temp\**" />
@@ -43,6 +46,7 @@
     <None Remove="Views\Storage\**" />
     <None Remove="Views\WanTai\**" />
     <None Remove="wwwroot\files\**" />
+    <None Remove="wwwroot\lib\codemirror-minified\mode\sql\**" />
     <None Remove="wwwroot\scripts\**" />
     <None Remove="wwwroot\sheets\**" />
     <None Remove="wwwroot\Temp\**" />
@@ -317,7 +321,6 @@
     <None Include="wwwroot\lib\codemirror-minified\mode\soy\soy.js" />
     <None Include="wwwroot\lib\codemirror-minified\mode\sparql\sparql.js" />
     <None Include="wwwroot\lib\codemirror-minified\mode\spreadsheet\spreadsheet.js" />
-    <None Include="wwwroot\lib\codemirror-minified\mode\sql\sql.js" />
     <None Include="wwwroot\lib\codemirror-minified\mode\stex\stex.js" />
     <None Include="wwwroot\lib\codemirror-minified\mode\stylus\stylus.js" />
     <None Include="wwwroot\lib\codemirror-minified\mode\swift\swift.js" />
