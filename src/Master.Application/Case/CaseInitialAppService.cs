@@ -1,11 +1,17 @@
 ﻿using Abp.Authorization;
 using Abp.Extensions;
 using Abp.UI;
+using Master.Configuration;
 using Master.Dto;
+using Master.Entity;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +20,8 @@ namespace Master.Case
     [AbpAuthorize]
     public class CaseInitialAppService : ModuleDataAppServiceBase<CaseInitial, int>
     {
+        public IHostingEnvironment HostingEnvironment { get; set; }
+
         protected override string ModuleKey()
         {
             return nameof(CaseInitial);
@@ -29,7 +37,6 @@ namespace Master.Case
             }
             else
             {
-                
             }
             return await base.BuildOrderQueryAsync(request, query);
         }
@@ -42,18 +49,17 @@ namespace Master.Case
         public virtual async Task Back(IEnumerable<int> ids)
         {
             var manager = Manager as CaseInitialManager;
-            if(await manager.GetAll().CountAsync(o => ids.Contains(o.Id) && o.CaseStatus != CaseStatus.下架) > 0)
+            if (await manager.GetAll().CountAsync(o => ids.Contains(o.Id) && o.CaseStatus != CaseStatus.下架) > 0)
             {
                 throw new UserFriendlyException("只有下架的案例可以退回");
             }
             var caseInitials = await Manager.GetAll().Include(o => o.CaseSource)
                 .Where(o => ids.Contains(o.Id)).ToListAsync();
-            foreach(var caseInitial in caseInitials)
+            foreach (var caseInitial in caseInitials)
             {
                 caseInitial.CaseStatus = CaseStatus.退回;
                 caseInitial.CaseSource.CaseSourceStatus = CaseSourceStatus.加工中;
             }
-
         }
 
         /// <summary>
@@ -69,8 +75,8 @@ namespace Master.Case
             {
                 caseInitial.CaseStatus = CaseStatus.下架;
             }
-
         }
+
         /// <summary>
         /// 上架
         /// </summary>
@@ -79,7 +85,7 @@ namespace Master.Case
         public virtual async Task Up(IEnumerable<int> ids)
         {
             var manager = Manager as CaseInitialManager;
-            if (await manager.GetAll().CountAsync(o => ids.Contains(o.Id) && o.CaseStatus != CaseStatus.下架 && o.PublishDate!=null) > 0)
+            if (await manager.GetAll().CountAsync(o => ids.Contains(o.Id) && o.CaseStatus != CaseStatus.下架 && o.PublishDate != null) > 0)
             {
                 throw new UserFriendlyException("只有下架中的已发布案例可以上架");
             }
@@ -89,8 +95,8 @@ namespace Master.Case
             {
                 caseInitial.CaseStatus = CaseStatus.展示中;
             }
-
         }
+
         /// <summary>
         /// 推荐
         /// </summary>
@@ -105,6 +111,7 @@ namespace Master.Case
                 caseInitial.IsActive = true;
             }
         }
+
         /// <summary>
         /// 取消推荐
         /// </summary>
@@ -119,10 +126,11 @@ namespace Master.Case
                 caseInitial.IsActive = false;
             }
         }
-        public virtual async Task SetSort(int id,string sortStr)
+
+        public virtual async Task SetSort(int id, string sortStr)
         {
             int sort = 999999;
-            if(int.TryParse(sortStr, out sort))
+            if (int.TryParse(sortStr, out sort))
             {
                 if (sort <= 0)
                 {
@@ -136,6 +144,7 @@ namespace Master.Case
             var caseInitial = await Manager.GetByIdAsync(id);
             caseInitial.Sort = sort;
         }
+
         /// <summary>
         /// 管理方清空判例的加工内容
         /// </summary>
@@ -149,5 +158,81 @@ namespace Master.Case
                 await Resolve<CaseSourceManager>().ClearCaseContent(id, true);
             }
         }
+
+        /// <summary>
+        /// 传送数据
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public virtual async Task TransferRemote(IEnumerable<int> ids)
+        {
+            var caseInitials = await Manager.GetAll()
+                .Include(o => o.CaseSource.AnYou)
+                .Include(o => o.CaseCards)
+                .Include(o => o.CreatorUser)
+                .Where(o => ids.Contains(o.Id)).ToListAsync();
+
+            var result = new List<RemoteResult>();
+
+            foreach (var caseInitial in caseInitials)
+            {
+                var judgeInfo = caseInitial.GetPropertyValue<JudgeInfo>("JudgeInfo");
+                var data = new
+                {
+                    anYou = caseInitial.CaseSource.AnYou.DisplayName,
+                    content = caseInitial.Introduction,
+                    courtOpinion = caseInitial.CaseCards.Select(o => new
+                    {
+                        title = o.Title,
+                        content = o.Content
+                    }),
+                    experience = caseInitial.Experience,
+                    lawyerOpinion = caseInitial.LawyerOpinion,
+                    lawyerPhone = caseInitial.CreatorUser.PhoneNumber,
+                    sn = caseInitial.SourceSN,
+                    title = caseInitial.Title,
+                    property = judgeInfo
+                };
+
+                var transferResult = await TransferRemoteInner(data);
+                if (transferResult.Success)
+                {
+                    caseInitial.TransferNum++;//增加传送数据数量
+                }
+                result.Add(transferResult);
+            }
+
+            if (!result.All(o => o.Success))
+            {
+                var successNum = result.Where(o => o.Success).Count();
+                var failNum = result.Where(o => !o.Success).Count();
+                var errMsg = $"共{successNum}条成功,{failNum}条失败，失败原因分别为:{string.Join(",", result.Where(o => !o.Success).Select(o => o.Msg))}";
+                throw new UserFriendlyException(errMsg);
+            }
+        }
+
+        public async Task<RemoteResult> TransferRemoteInner(object data)
+        {
+            var remoteUrl = AppConfigurations.Get(HostingEnvironment.ContentRootPath, HostingEnvironment.EnvironmentName)["base:remoteurl"];
+            var uploadData = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+            try
+            {
+                var wc = new WebClient();
+                wc.Headers.Add("Content-Type", "application/json");
+                var uploadResult = new WebClient().UploadString(remoteUrl, uploadData);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<RemoteResult>(uploadData);
+            }
+            catch (Exception ex)
+            {
+                return new RemoteResult() { Success = false, Msg = ex.Message };
+            }
+        }
+    }
+
+    public class RemoteResult
+    {
+        public int Code { get; set; }
+        public bool Success { get; set; }
+        public string Msg { get; set; }
     }
 }

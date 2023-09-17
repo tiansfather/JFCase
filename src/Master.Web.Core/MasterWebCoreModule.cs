@@ -28,7 +28,7 @@ namespace Master
          typeof(MasterEntityFrameworkCoreModule),
          typeof(AbpAspNetCoreModule),
         typeof(AbpHangfireAspNetCoreModule)
-#if FEATURE_SIGNALR 
+#if FEATURE_SIGNALR
         ,typeof(AbpWebSignalRModule)
 #elif FEATURE_SIGNALR_ASPNETCORE
         ,typeof(AbpAspNetCoreSignalRModule)
@@ -57,7 +57,6 @@ namespace Master
                  .CreateControllersForAppServices(
                      typeof(MasterApplicationModule).GetAssembly()
                  );
-
 
             ConfigureTokenAuth();
 

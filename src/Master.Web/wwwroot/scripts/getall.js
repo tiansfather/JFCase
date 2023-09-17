@@ -2419,6 +2419,24 @@ abp.services = abp.services || {};
       }, ajaxParams));;
     };
 
+    // action 'transferRemote'
+    abp.services.app.caseInitial.transferRemote = function(ids, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseInitial/TransferRemote',
+        type: 'POST',
+        data: JSON.stringify(ids)
+      }, ajaxParams));;
+    };
+
+    // action 'transferRemoteInner'
+    abp.services.app.caseInitial.transferRemoteInner = function(data, ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/CaseInitial/TransferRemoteInner',
+        type: 'POST',
+        data: JSON.stringify(data)
+      }, ajaxParams));;
+    };
+
     // action 'getPageResult'
     abp.services.app.caseInitial.getPageResult = function(request, ajaxParams) {
       return abp.ajax($.extend(true, {

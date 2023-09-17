@@ -7,9 +7,8 @@ using Abp.Domain.Entities;
 
 namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
 {
-    public class CaseInitialBaseModules : BaseSystemModules    {
-
-
+    public class CaseInitialBaseModules : BaseSystemModules
+    {
         public override List<ModuleButton> GetModuleButtons()
         {
             var moduleButtons = new List<ModuleButton>();
@@ -60,6 +59,17 @@ namespace Master.EntityFrameworkCore.Seed.BaseData.SystemModules
                 Sort = 4
             };
             moduleButtons.Add(ClearButton);
+            var transferButton = new ModuleButton()
+            {
+                ButtonKey = "Transfer",
+                ButtonName = "传送数据",
+                ButtonType = ButtonType.ForSelectedRows,
+                ButtonActionType = ButtonActionType.Ajax,
+                ButtonActionUrl = $"abp.services.app.caseInitial.transferRemote",
+                ConfirmMsg = "确认传送这些数据？",
+                Sort = 5
+            };
+            moduleButtons.Add(transferButton);
             //var RecommandButton = new ModuleButton()
             //{
             //    ButtonKey = "Recommand",
