@@ -189,7 +189,7 @@ namespace Master.Case
                     experience = caseInitial.Experience,
                     lawyerOpinion = caseInitial.LawyerOpinion,
                     lawyerPhone = caseInitial.CreatorUser.PhoneNumber,
-                    sn = caseInitial.SourceSN,
+                    sn = caseInitial.CaseSource.SourceSN,
                     title = caseInitial.Title,
                     property = judgeInfo
                 };
@@ -218,9 +218,9 @@ namespace Master.Case
             try
             {
                 var wc = new WebClient();
-                wc.Headers.Add("Content-Type", "application/json");
-                var uploadResult = new WebClient().UploadString(remoteUrl, uploadData);
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<RemoteResult>(uploadData);
+                wc.Headers[HttpRequestHeader.ContentType] = "application/json";
+                var uploadResult = wc.UploadString(remoteUrl, uploadData);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<RemoteResult>(uploadResult);
             }
             catch (Exception ex)
             {
