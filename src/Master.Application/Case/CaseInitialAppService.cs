@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Abp.Extensions;
+using Abp.IO.Extensions;
 using Abp.UI;
 using Master.Configuration;
 using Master.Dto;
@@ -195,6 +196,7 @@ namespace Master.Case
                 };
 
                 var transferResult = await TransferRemoteInner(data);
+                transferResult.SN = data.sn;
                 if (transferResult.Success)
                 {
                     caseInitial.TransferNum++;//增加传送数据数量
@@ -206,7 +208,7 @@ namespace Master.Case
             {
                 var successNum = result.Where(o => o.Success).Count();
                 var failNum = result.Where(o => !o.Success).Count();
-                var errMsg = $"共{successNum}条成功,{failNum}条失败，失败原因分别为:{string.Join(",", result.Where(o => !o.Success).Select(o => o.Msg))}";
+                var errMsg = $"共{successNum}条成功,{failNum}条失败，失败原因分别为:<br/>{string.Join("<br/>", result.Where(o => !o.Success).Select(o => $"{o.SN}:{o.Msg}"))}";
                 throw new UserFriendlyException(errMsg);
             }
         }
@@ -222,17 +224,24 @@ namespace Master.Case
                 var uploadResult = wc.UploadString(remoteUrl, uploadData);
                 return Newtonsoft.Json.JsonConvert.DeserializeObject<RemoteResult>(uploadResult);
             }
+            catch (WebException ex)
+            {
+                var bytes = ex.Response.GetResponseStream().GetAllBytes();
+                var content = System.Text.Encoding.UTF8.GetString(bytes);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<RemoteResult>(content) ?? new RemoteResult() { Msg = ex.Message };
+            }
             catch (Exception ex)
             {
-                return new RemoteResult() { Success = false, Msg = ex.Message };
+                return new RemoteResult() { Msg = ex.Message };
             }
         }
     }
 
     public class RemoteResult
     {
+        public string SN { get; set; }
         public int Code { get; set; }
         public bool Success { get; set; }
-        public string Msg { get; set; }
+        public string Msg { get; set; } = "未知错误";
     }
 }

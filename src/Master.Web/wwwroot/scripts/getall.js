@@ -233,6 +233,22 @@ abp.services = abp.services || {};
 
   })();
 
+  // controller 'test'
+  (function(){
+
+    abp.services.app.test = abp.services.app.test || {};
+
+    // action 'test'
+    abp.services.app.test.test = function(ajaxParams) {
+      return abp.ajax($.extend(true, {
+        url: abp.appPath + 'api/services/app/Test/Test',
+        type: 'POST',
+        dataType: null
+      }, ajaxParams));;
+    };
+
+  })();
+
   // controller 'assistant'
   (function(){
 
