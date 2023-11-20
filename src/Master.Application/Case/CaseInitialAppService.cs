@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using Abp.Collections.Extensions;
 using Abp.Extensions;
 using Abp.IO.Extensions;
 using Abp.UI;
@@ -160,6 +161,45 @@ namespace Master.Case
             }
         }
 
+        public virtual async Task<object> GetRemoteTransferData(int id)
+        {
+            var caseInitial = await Manager.GetAll()
+                .Include(o => o.CaseNodes)
+                .Include(o => o.CaseLabels)
+                .Include(o => o.CaseSource.AnYou)
+                .Include(o => o.CaseCards)
+                .Include(o => o.CreatorUser)
+                .Where(o => o.Id == id).FirstAsync();
+
+            return BuildRemoteTransferData(caseInitial);
+        }
+
+        private object BuildRemoteTransferData(CaseInitial caseInitial)
+        {
+            var judgeInfo = caseInitial.GetPropertyValue<JudgeInfo>("JudgeInfo");
+            var labels = new List<string>();
+            labels.AddRange(caseInitial.CaseNodes.Select(o => $"{o.RelName}:{o.RelValue}"));
+            labels.AddRange(caseInitial.CaseLabels.Select(o => $"{o.RelName}:{o.RelValue}"));
+            var data = new
+            {
+                anYou = caseInitial.CaseSource.AnYou.DisplayName,
+                content = caseInitial.Introduction,
+                courtOpinion = caseInitial.CaseCards.Select(o => new
+                {
+                    title = o.Title,
+                    content = o.Content
+                }),
+                experience = caseInitial.Experience,
+                lawyerOpinion = caseInitial.LawyerOpinion,
+                lawyerPhone = caseInitial.CreatorUser.PhoneNumber,
+                sn = caseInitial.CaseSource.SourceSN,
+                title = caseInitial.Title,
+                property = judgeInfo,
+                labels = labels.JoinAsString(",")
+            };
+            return data;
+        }
+
         /// <summary>
         /// 传送数据
         /// </summary>
@@ -168,6 +208,8 @@ namespace Master.Case
         public virtual async Task TransferRemote(IEnumerable<int> ids)
         {
             var caseInitials = await Manager.GetAll()
+                .Include(o => o.CaseNodes)
+                .Include(o => o.CaseLabels)
                 .Include(o => o.CaseSource.AnYou)
                 .Include(o => o.CaseCards)
                 .Include(o => o.CreatorUser)
@@ -177,26 +219,10 @@ namespace Master.Case
 
             foreach (var caseInitial in caseInitials)
             {
-                var judgeInfo = caseInitial.GetPropertyValue<JudgeInfo>("JudgeInfo");
-                var data = new
-                {
-                    anYou = caseInitial.CaseSource.AnYou.DisplayName,
-                    content = caseInitial.Introduction,
-                    courtOpinion = caseInitial.CaseCards.Select(o => new
-                    {
-                        title = o.Title,
-                        content = o.Content
-                    }),
-                    experience = caseInitial.Experience,
-                    lawyerOpinion = caseInitial.LawyerOpinion,
-                    lawyerPhone = caseInitial.CreatorUser.PhoneNumber,
-                    sn = caseInitial.CaseSource.SourceSN,
-                    title = caseInitial.Title,
-                    property = judgeInfo
-                };
+                var data = BuildRemoteTransferData(caseInitial);
 
                 var transferResult = await TransferRemoteInner(data);
-                transferResult.SN = data.sn;
+                transferResult.SN = caseInitial.CaseSource.SourceSN;
                 if (transferResult.Success)
                 {
                     caseInitial.TransferNum++;//增加传送数据数量
